@@ -10,4 +10,8 @@ export type { SlotProps } from './primitives';
 export { tokens, themes } from './theme';
 export type { ColorMode, ColorTokenName, Tokens } from './theme';
 
+// Utilities
+export { cx } from './utils/cx';
+
+// Components
 // NOTE: the 12 components are exported here as they are built in Phases 1–4.

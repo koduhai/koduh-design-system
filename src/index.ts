@@ -21,3 +21,5 @@ export { LoadingButton } from './components/LoadingButton';
 export type { LoadingButtonProps } from './components/LoadingButton';
 export { Chip } from './components/Chip';
 export type { ChipProps, ChipVariant, ChipTone, ChipSize } from './components/Chip';
+export { Avatar } from './components/Avatar';
+export type { AvatarProps, AvatarSize, AvatarShape } from './components/Avatar';

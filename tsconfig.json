@@ -17,5 +17,5 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "scripts", "e2e", "*.config.ts", ".storybook"]
+  "include": ["src", "scripts", "e2e", "*.config.ts", ".storybook", "vitest.setup.ts"]
 }

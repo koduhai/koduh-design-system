@@ -1,5 +1,15 @@
 import { defineConfig } from 'tsup';
 
+/**
+ * loader: { '.css': 'local-css' } applies to ALL CSS files processed by
+ * tsup's built-in postcss plugin.  It is safe for both use-cases here:
+ *
+ * - reset.css uses only element/pseudo selectors — local-css does NOT scope
+ *   those, so the global reset is preserved as-is.
+ * - *.module.css files use class selectors — local-css hashes them (e.g.
+ *   `.box` → `.Spike_box`) AND produces a JS default-export object mapping
+ *   original → scoped names, so `import styles from './X.module.css'` works.
+ */
 export default defineConfig({
   entry: ['src/index.ts', 'src/theme/index.ts', 'src/icons/index.ts'],
   format: ['cjs', 'esm'],
@@ -8,5 +18,5 @@ export default defineConfig({
   sourcemap: true,
   treeshake: true,
   external: ['react', 'react-dom', 'react/jsx-runtime'],
-  loader: { '.css': 'css' },
+  loader: { '.css': 'local-css' },
 });

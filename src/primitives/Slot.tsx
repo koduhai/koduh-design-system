@@ -3,7 +3,7 @@ import type { HTMLAttributes, ReactElement, Ref } from 'react';
 import { mergeRefs } from './mergeRefs';
 import { composeEventHandlers } from './composeEventHandlers';
 
-export interface SlotProps extends HTMLAttributes<HTMLElement> {}
+export type SlotProps = HTMLAttributes<HTMLElement>;
 
 type AnyProps = Record<string, unknown>;
 

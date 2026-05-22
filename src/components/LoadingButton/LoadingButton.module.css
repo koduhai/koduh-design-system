@@ -1,0 +1,15 @@
+.spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: var(--ku-radius-full);
+  animation: ku-loadingbutton-spin var(--ku-duration-base) linear infinite;
+}
+
+@keyframes ku-loadingbutton-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

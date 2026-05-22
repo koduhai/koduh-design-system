@@ -15,3 +15,5 @@ export { cx } from './utils/cx';
 
 // Components
 // NOTE: the 12 components are exported here as they are built in Phases 1–4.
+export { Button } from './components/Button';
+export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize } from './components/Button';

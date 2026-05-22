@@ -131,6 +131,15 @@ Components consume tokens via CSS variables, compose primitives for behavior, an
 
 **Token source → CSS generation:** A build script reads the TS token definitions and emits `dist/theme.css` (and a dev copy). This keeps a single source of truth while delivering zero-runtime CSS. The generation step is part of `npm run build`.
 
+### 5a. Icons
+
+The new system does **not** depend on `@mui/icons-material`. Instead it ships a **small, vendored in-house SVG icon set** under `src/icons`, sized to cover only what the 12 components and common app usage need (e.g. close, chevron/caret, check, info/success/warning/error, menu/hamburger, search, user).
+
+- Each icon is a standalone React component rendering an inline `<svg>` with `currentColor` fill/stroke, a configurable `size` prop, and `aria-hidden` by default (decorative); consumers add a label when an icon is meaningful.
+- Icons are tree-shakeable individual exports, surfaced via the `@koduhai/design-system/icons` entry (§11).
+- Every component prop that accepts an icon (`startIcon`, `endIcon`, `Alert` icon, `Avatar`/`Chip` icon, etc.) accepts **any `ReactNode`**, so consumers may pass our icons, their own SVGs, or another icon library — the system never forces our set on them.
+- The set is intentionally minimal; it is not a general-purpose icon library and will grow only as concrete needs arise (YAGNI).
+
 ---
 
 ## 6. Primitives & Accessibility Infrastructure
@@ -223,6 +232,7 @@ Mirror the current proven layers:
   | -------------------------------------- | --------------------------------- |
   | `@koduhai/design-system`               | Components + provider + hooks + types |
   | `@koduhai/design-system/theme`         | Tokens (TS) only                  |
+  | `@koduhai/design-system/icons`         | Vendored SVG icon components      |
   | `@koduhai/design-system/styles.css`    | Compiled component styles         |
   | `@koduhai/design-system/theme.css`     | Token CSS variables               |
 
@@ -248,7 +258,7 @@ Mirror the current proven layers:
 
 Because this is a **clean-break API** and a **major version**, migration is explicit and opt-in:
 
-- Ship as **`@koduhai/design-system` v1.0.0** (a major bump signaling the breaking redesign), or optionally as a parallel package name during transition (decided in writing-plans).
+- Ship as **`@koduhai/design-system` v1.0.0** — a major bump signaling the breaking redesign, published under the **same package name** (no transition alias).
 - Provide a **`MIGRATION.md`** with a per-component before/after table (MUI-era prop → new prop) and theme-setup changes (`ThemeProvider`/`darkTheme` → `KoduhThemeProvider` + CSS imports).
 - **Removed components** (`Dialog`, `ConfirmDialog`, `DataTable`, `Snackbar`) are documented as "not yet available in v1; remain on the v0.x package until reintroduced." Consumers needing them stay on v0.x for those.
 - Codemod is **not** in scope; migration is manual but guided.
@@ -264,14 +274,14 @@ Because this is a **clean-break API** and a **major version**, migration is expl
 | 3 | Theme switching via `data-theme` must not flash wrong theme on first paint.     | Document an inline `<head>` script snippet for consumers doing SSR/static hosting.      |
 | 4 | Consumers depending on removed components must stay on v0.x.                     | Clearly documented in MIGRATION.md; v0.x package remains published.                     |
 | 5 | Open: single `styles.css` vs. per-component CSS for tree-shaking.               | v1 = single file (decided). Revisit if bundle analysis shows it matters.                |
-| 6 | Open: ship as v1.0.0 in-place vs. new package name during transition.           | Decide at writing-plans stage with stakeholder input.                                   |
-| 7 | Icons: current system re-exports MUI icons. New system must not depend on them. | Adopt an icon strategy (e.g. consumer-provided icon nodes, or a small vendored SVG set). Decide at writing-plans. |
+| 6 | Versioning approach.                                                            | **Decided:** ship as `@koduhai/design-system` v1.0.0 under the same package name.       |
+| 7 | Icons: current system re-exports MUI icons. New system must not depend on them. | **Decided:** vendor a small in-house SVG icon set under `src/icons` (§5a). Icon-accepting props also take any `ReactNode`. |
 
 ---
 
 ## 15. Phased Delivery Plan
 
-1. **Phase 0 — Foundations & build spike.** Token source + CSS generation, `reset.css`, primitives (Layer 2), and a validated tsup + CSS Modules extraction pipeline proven on one throwaway component. Storybook + theme decorator + axe + Playwright wired up.
+1. **Phase 0 — Foundations & build spike.** Token source + CSS generation, `reset.css`, primitives (Layer 2), the vendored SVG icon set (§5a), and a validated tsup + CSS Modules extraction pipeline proven on one throwaway component. Storybook + theme decorator + axe + Playwright wired up.
 2. **Phase 1 — Trivial components.** `Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`, `Alert`. Establishes patterns end to end (styling, tests, stories, both themes).
 3. **Phase 2 — Form & content.** `TextField`, `Card`, `EmptyState`, `PageHeader`.
 4. **Phase 3 — Layout.** `AppBar`, `Sidebar`.

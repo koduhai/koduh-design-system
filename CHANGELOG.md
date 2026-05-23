@@ -4,6 +4,50 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-05-23
+
+Additive, backward-compatible expansion: 4 data & forms components (Phase 8),
+filling the highest-frequency real-world gaps. Built native-first with no new
+Layer 2 infrastructure — every v1 architectural rule intact (zero runtime
+dependencies, zero-runtime CSS Modules, tokens-as-CSS-variables, WCAG AA).
+
+### Added
+
+- **`Textarea`** — multiline text input with full `TextField` API parity
+  (`label`, `value`/`defaultValue`, `onChange(value, event)`, `helperText`,
+  `error`/`errorText`, `size`, `required`, `aria-describedby`/`aria-invalid`
+  wiring) plus opt-in `autoResize` with `minRows`/`maxRows` clamping.
+- **`Progress`** — linear progress bar (`role="progressbar"`) supporting both
+  determinate (`value`/`max`, with optional visible label + percentage) and
+  indeterminate modes, across `tone` and `size` variants; the indeterminate
+  animation honors `prefers-reduced-motion`. Circular progress stays `Spinner`'s
+  job.
+- **`Pagination`** — controlled numbered pager with ellipsis windowing
+  (`count`/`page`/`onPageChange`/`siblingCount`/`boundaryCount`): `<nav>`
+  landmark, `aria-current` on the active page, boundary-aware Previous/Next. The
+  page-window math lives in the separately unit-tested `getPaginationRange`
+  helper, exported alongside the component.
+- **`Table`** — generic, data-driven table (`columns`/`data`/`getRowId`):
+  intent-only column sorting (`aria-sort`; consumer owns the comparator),
+  controlled row selection (select-all + indeterminate, composing `Checkbox`),
+  skeleton loading rows (composing `Skeleton`), an `empty` slot, and an optional
+  sticky header.
+
+### Notes
+
+- All four components and their prop types are exported from
+  `@koduhai/design-system`, pass axe-core in both themes (zero violations), and
+  ship with unit tests, stories, and Linux visual-regression baselines. The
+  missing Linux baselines for the Phase 5–7 components were also backfilled, so
+  the full catalog now has committed visual baselines.
+- No new runtime dependencies; tree-shaking still verified by
+  `npm run verify:bundle`.
+- `Table` sorting and selection are controlled (intent-emitting): the component
+  does not reorder `data`, and select-all operates over the current `data` only.
+- Out of scope (by design): table virtualization, built-in data fetching /
+  client-side filtering, a compact prev/next-only `Pagination` variant, and a
+  circular `Progress`.
+
 ## [1.2.0] - 2026-05-22
 
 Additive, backward-compatible expansion: 4 floating-UI components (Phase 7),

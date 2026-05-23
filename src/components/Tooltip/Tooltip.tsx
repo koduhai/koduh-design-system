@@ -19,6 +19,7 @@ export interface TooltipProps {
   children: ReactElement<HTMLAttributes<HTMLElement>>;
 }
 
+/** `ref` forwards to the tooltip panel (the floating element), not the trigger. */
 export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(function Tooltip(
   { content, placement = 'top', delay = 200, className, children },
   ref,

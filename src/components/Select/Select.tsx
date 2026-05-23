@@ -31,6 +31,7 @@ export interface SelectProps {
   id?: string;
 }
 
+/** `ref` forwards to the trigger `<button>`, not the listbox panel. */
 export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>(function Select(
   {
     value,

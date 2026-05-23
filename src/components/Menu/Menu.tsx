@@ -32,6 +32,7 @@ function isSeparator(entry: MenuEntry): entry is MenuSeparator {
   return (entry as MenuSeparator).type === 'separator';
 }
 
+/** `ref` forwards to the trigger element, not the menu panel. */
 export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function Menu(
   { trigger, items, placement = 'bottom-start', className },
   ref,

@@ -1,0 +1,137 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: var(--ku-sidebar-width, 240px);
+  height: 100%;
+  background-color: var(--ku-color-bg-surface);
+  border-right: 1px solid var(--ku-color-border);
+  color: var(--ku-color-text-primary);
+  font-family: var(--ku-font-family-base);
+  transition: width var(--ku-duration-base) var(--ku-easing-standard);
+}
+
+.root[data-collapsed='true'] {
+  width: 64px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-3);
+  min-height: 56px;
+}
+
+.header {
+  min-width: 0;
+  overflow: hidden;
+}
+.root[data-collapsed='true'] .header {
+  display: none;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--ku-radius-md);
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+}
+.toggle:hover {
+  background-color: var(--ku-color-bg-raised);
+  color: var(--ku-color-text-primary);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: var(--ku-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.item {
+  display: block;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-3);
+  width: 100%;
+  padding: var(--ku-space-2) var(--ku-space-3);
+  border: 0;
+  border-radius: var(--ku-radius-md);
+  background: transparent;
+  color: var(--ku-color-text-secondary);
+  font: inherit;
+  font-size: var(--ku-font-size-sm);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+.link:hover:not(:disabled) {
+  background-color: var(--ku-color-bg-raised);
+  color: var(--ku-color-text-primary);
+}
+.link[data-active='true'] {
+  /* High-contrast text (passes WCAG AA in both themes) plus a primary accent
+     bar + tint + weight as color-independent "active" signals. Primary-colored
+     text on the tinted background fell just under 4.5:1 in the light theme. */
+  background-color: color-mix(in srgb, var(--ku-color-primary) 16%, transparent);
+  color: var(--ku-color-text-primary);
+  font-weight: var(--ku-font-weight-medium);
+  box-shadow: inset 3px 0 0 var(--ku-color-primary);
+}
+.link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Collapsed: hide labels visually but keep them in the accessibility tree
+   (clip technique, NOT display:none) so each link/button keeps its name. */
+.root[data-collapsed='true'] .label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.root[data-collapsed='true'] .link {
+  justify-content: center;
+}
+
+.footer {
+  padding: var(--ku-space-3);
+  border-top: 1px solid var(--ku-color-border);
+}
+.root[data-collapsed='true'] .footer {
+  display: none;
+}

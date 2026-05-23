@@ -56,7 +56,8 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
-  const baseId = useId(id ?? 'select');
+  const reactId = useId('select');
+  const baseId = id ?? reactId;
   const labelId = `${baseId}-label`;
   const listboxId = `${baseId}-listbox`;
   const optionId = (i: number) => `${baseId}-opt-${i}`;

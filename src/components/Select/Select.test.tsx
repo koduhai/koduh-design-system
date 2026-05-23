@@ -66,4 +66,9 @@ describe('Select', () => {
     fireEvent.keyDown(listbox, { key: 'Escape' });
     expect(trigger).toHaveFocus();
   });
+
+  it('uses a consumer-provided id verbatim on the trigger', () => {
+    render(<Select id="country" label="Country" options={options} />);
+    expect(screen.getByRole('button', { name: /Country/ })).toHaveAttribute('id', 'country');
+  });
 });

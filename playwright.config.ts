@@ -4,6 +4,8 @@ export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
   fullyParallel: true,
+  // HTML report (never auto-opens) so CI can upload it as an artifact on failure.
+  reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   expect: {
     // Allow a small tolerance so anti-aliasing / sub-pixel rendering differences
     // don't fail otherwise-identical themed snapshots.

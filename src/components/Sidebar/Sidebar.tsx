@@ -22,7 +22,7 @@ export interface SidebarItem {
   onClick?: () => void;
 }
 
-export interface SidebarProps extends Omit<HTMLAttributes<HTMLElement>, 'onToggle'> {
+export interface SidebarProps extends HTMLAttributes<HTMLElement> {
   /** Flat list of navigation items. */
   items: SidebarItem[];
   /** Controlled collapsed state. */
@@ -30,7 +30,7 @@ export interface SidebarProps extends Omit<HTMLAttributes<HTMLElement>, 'onToggl
   /** Initial collapsed state when uncontrolled. Defaults to false. */
   defaultCollapsed?: boolean;
   /** Called with the next collapsed value when the toggle is pressed. */
-  onToggle?: (collapsed: boolean) => void;
+  onCollapsedChange?: (collapsed: boolean) => void;
   /** Expanded width (number → px). Defaults to 240. */
   width?: number | string;
   /** Content above the item list (e.g. brand). */
@@ -75,7 +75,7 @@ export const Sidebar = /* @__PURE__ */ forwardRef<HTMLElement, SidebarProps>(fun
     items,
     collapsed,
     defaultCollapsed = false,
-    onToggle,
+    onCollapsedChange,
     width = 240,
     header,
     footer,
@@ -89,7 +89,7 @@ export const Sidebar = /* @__PURE__ */ forwardRef<HTMLElement, SidebarProps>(fun
   const [isCollapsed, setCollapsed] = useControllableState<boolean>({
     value: collapsed,
     defaultValue: defaultCollapsed,
-    onChange: onToggle,
+    onChange: onCollapsedChange,
   });
   const listId = useId('sidebar-list');
   const widthValue = typeof width === 'number' ? `${width}px` : width;

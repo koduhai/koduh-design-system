@@ -47,7 +47,7 @@ documents the **current** state.
 | `Chip`          | Compact label / tag       | `label`, `variant` (`solid`/`outline`), `tone`, `size`, `onClick`, `onDelete`, `icon`                                                |
 | `Avatar`        | User avatar               | `src`, `alt`, `name` (initials fallback), `size` (`sm`/`md`/`lg`), `shape`                                                           |
 | `StatusBadge`   | Semantic status indicator | `status` (`active`/`inactive`/`pending`/`error`), `label`, `variant`                                                                 |
-| `Alert`         | Inline feedback banner    | `severity` (`info`/`success`/`warning`/`error`), `title`, `closable`, `onClose`, `icon`                                              |
+| `Alert`         | Inline feedback banner    | `severity` (`info`/`success`/`warning`/`error`), `title`, `dismissable`, `onClose`, `icon`                                           |
 
 ### Planned (Phases 2–4)
 

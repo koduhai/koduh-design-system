@@ -5,9 +5,13 @@ import { cx } from '../../utils/cx';
 import styles from './Tabs.module.css';
 
 export interface TabItem {
+  /** Stable identity; used as the controlled/uncontrolled value. */
   id: string;
+  /** Content rendered inside the tab trigger button. */
   label: ReactNode;
+  /** Content rendered inside the associated tab panel. */
   content: ReactNode;
+  /** Disables the tab trigger; the panel is never shown while disabled. */
   disabled?: boolean;
 }
 
@@ -15,6 +19,7 @@ export interface TabsProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   'onChange' | 'defaultValue'
 > {
+  /** Tab definitions — each item produces one trigger + one panel pair. */
   items: TabItem[];
   /** Controlled selected tab id. */
   value?: string;
@@ -56,6 +61,9 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
     tabRefs.current[index]?.focus();
   };
 
+  // Build the list of item indexes that can be navigated to (non-disabled tabs only).
+  // Arrow keys step through this list rather than the full `items` array, so
+  // disabled tabs are transparently skipped.
   const enabledIndexes = items.reduce<number[]>((acc, item, index) => {
     if (!item.disabled) acc.push(index);
     return acc;
@@ -66,13 +74,21 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
     const prevKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
 
     if (enabledIndexes.length === 0) return;
+    // Find the current tab's position within the enabled-only list.
+    // posInEnabled === -1 means the focused tab is disabled; we treat it as a
+    // boundary so the next/prev key jumps to the nearest enabled tab.
     const posInEnabled = enabledIndexes.indexOf(index);
 
     let targetIndex: number | null = null;
     if (event.key === nextKey) {
+      // Roving-focus wrap-around: `% length` keeps the result in range.
+      // posInEnabled === -1 fallback jumps to the first enabled tab.
       const next = posInEnabled === -1 ? 0 : (posInEnabled + 1) % enabledIndexes.length;
       targetIndex = enabledIndexes[next] ?? null;
     } else if (event.key === prevKey) {
+      // `+ enabledIndexes.length` before `%` prevents a negative remainder in
+      // JS (e.g. (-1 + 4) % 4 === 3 rather than -1 % 4 === -1).
+      // posInEnabled === -1 fallback jumps to the last enabled tab.
       const prev =
         posInEnabled === -1
           ? enabledIndexes.length - 1
@@ -86,6 +102,8 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
 
     if (targetIndex !== null) {
       event.preventDefault();
+      // focusTabAt calls select() then moves DOM focus — this is deliberate
+      // automatic-activation (ARIA "activates on focus") tablist behaviour.
       focusTabAt(targetIndex);
     }
   };

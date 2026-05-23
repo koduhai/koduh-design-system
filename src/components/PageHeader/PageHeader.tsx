@@ -1,9 +1,10 @@
 import { forwardRef, createElement } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cx } from '../../utils/cx';
+import type { HeadingLevel } from '../../utils/headingLevel';
 import styles from './PageHeader.module.css';
 
-export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+export type { HeadingLevel };
 
 export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   /** Page or section title. Required. */

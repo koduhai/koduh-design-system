@@ -52,10 +52,21 @@ describe('Select', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('marks the trigger invalid and shows helper text on error', () => {
-    render(<Select label="Fruit" options={options} error helperText="Required" />);
+  it('shows helper text and links it via aria-describedby', () => {
+    render(<Select label="Fruit" options={options} helperText="Pick one" />);
+    const trigger = screen.getByRole('button', { name: /Fruit/ });
+    const describedBy = trigger.getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    expect(document.getElementById(describedBy!)).toHaveTextContent('Pick one');
+  });
+
+  it('marks the trigger invalid and shows errorText (replacing helperText) on error', () => {
+    render(
+      <Select label="Fruit" options={options} error errorText="Required" helperText="Pick one" />,
+    );
     expect(screen.getByRole('button', { name: /Fruit/ })).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText('Required')).toBeInTheDocument();
+    expect(screen.queryByText('Pick one')).toBeNull();
   });
 
   it('restores focus to the trigger when closed via Escape', () => {

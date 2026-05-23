@@ -11,7 +11,7 @@ export interface TextFieldProps extends Omit<
   'size' | 'value' | 'defaultValue' | 'onChange'
 > {
   /** Visible label, associated with the input via htmlFor/id. */
-  label: string;
+  label: ReactNode;
   /** Controlled value. */
   value?: string;
   /** Initial value when uncontrolled. */

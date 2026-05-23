@@ -16,8 +16,8 @@ export const Default: Story = {
 export const Showcase: Story = {
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-      <Card variant="outlined" style={{ width: 200 }}>
-        Outlined
+      <Card variant="outline" style={{ width: 200 }}>
+        Outline
       </Card>
       <Card variant="elevated" style={{ width: 200 }}>
         Elevated
@@ -25,7 +25,7 @@ export const Showcase: Story = {
       <Card variant="flat" style={{ width: 200 }}>
         Flat
       </Card>
-      <Card variant="outlined" padding="lg" style={{ width: 200 }}>
+      <Card variant="outline" padding="lg" style={{ width: 200 }}>
         Large padding
       </Card>
     </div>

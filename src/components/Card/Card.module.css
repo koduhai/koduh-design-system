@@ -6,7 +6,7 @@
   color: var(--ku-color-text-primary);
 }
 
-.root[data-variant='outlined'] {
+.root[data-variant='outline'] {
   border-color: var(--ku-color-border);
 }
 .root[data-variant='elevated'] {

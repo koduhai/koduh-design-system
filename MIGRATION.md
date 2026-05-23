@@ -319,17 +319,17 @@ custom alert.
 
 ### Prop mapping
 
-| v0.x (MUI) prop                            | v1 prop               | Notes                                                                                          |
-| ------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------------------- |
-| `severity="info\|success\|warning\|error"` | `severity` (required) | Same values; now a **required** prop (v0.x defaulted to `'info'`).                             |
-| `title`                                    | `title`               | v1 widened the type from `string` to `ReactNode`.                                              |
-| `closable`                                 | `closable`            | v1 shows the dismiss button whenever `closable` is true (does **not** also require `onClose`). |
-| `onClose`                                  | `onClose`             | Called on dismiss. No longer gates whether the button renders.                                 |
-| `children` (message)                       | `children`            | Same.                                                                                          |
-| `variant="filled\|outlined\|standard"`     | _removed_             | v1 has a single visual style. No `variant`.                                                    |
-| `icon` (MUI)                               | `icon`                | Custom leading icon. **v1 addition:** pass a falsy value (e.g. `null`) to disable the icon.    |
-| `action`                                   | _removed_             | No custom action slot in v1 (only the built-in close button).                                  |
-| `sx`                                       | `className`           | No `sx`.                                                                                       |
+| v0.x (MUI) prop                            | v1 prop               | Notes                                                                                                      |
+| ------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `severity="info\|success\|warning\|error"` | `severity` (required) | Same values; now a **required** prop (v0.x defaulted to `'info'`).                                         |
+| `title`                                    | `title`               | v1 widened the type from `string` to `ReactNode`.                                                          |
+| `closable`                                 | `dismissable`         | Renamed. v1 shows the dismiss button whenever `dismissable` is true (does **not** also require `onClose`). |
+| `onClose`                                  | `onClose`             | Called on dismiss. No longer gates whether the button renders.                                             |
+| `children` (message)                       | `children`            | Same.                                                                                                      |
+| `variant="filled\|outlined\|standard"`     | _removed_             | v1 has a single visual style. No `variant`.                                                                |
+| `icon` (MUI)                               | `icon`                | Custom leading icon. **v1 addition:** pass a falsy value (e.g. `null`) to disable the icon.                |
+| `action`                                   | _removed_             | No custom action slot in v1 (only the built-in close button).                                              |
+| `sx`                                       | `className`           | No `sx`.                                                                                                   |
 
 > **Note (role/severity):** v1 sets ARIA role automatically from severity
 > (`warning`/`error` → `alert`, `info`/`success` → `status`). You generally do
@@ -344,7 +344,7 @@ custom alert.
 </Alert>
 
 // v1
-<Alert severity="error" title="Failed" closable onClose={dismiss}>
+<Alert severity="error" title="Failed" dismissable onClose={dismiss}>
   Could not save changes.
 </Alert>
 ```

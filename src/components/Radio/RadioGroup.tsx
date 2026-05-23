@@ -1,5 +1,5 @@
 import { forwardRef, useMemo } from 'react';
-import type { HTMLAttributes } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { useId, useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
 import { RadioGroupContext } from './Radio';
@@ -21,7 +21,7 @@ export interface RadioGroupProps extends Omit<
   /** Layout + a11y orientation. Defaults to 'vertical'. */
   orientation?: 'horizontal' | 'vertical';
   /** Accessible group label, rendered as a <span> referenced by aria-labelledby. */
-  label?: string;
+  label?: ReactNode;
 }
 
 export const RadioGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, RadioGroupProps>(

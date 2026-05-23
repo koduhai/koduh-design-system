@@ -8,8 +8,11 @@ import styles from './Select.module.css';
 export type SelectSize = 'sm' | 'md' | 'lg';
 
 export interface SelectOption {
+  /** Value submitted/compared when this option is chosen. */
   value: string;
+  /** Visible option text (kept a string so it renders in the closed trigger). */
   label: string;
+  /** Renders the option non-selectable. */
   disabled?: boolean;
 }
 
@@ -18,16 +21,31 @@ export interface SelectProps {
   value?: string;
   /** Initial selected value when uncontrolled. */
   defaultValue?: string;
-  /** Fires with the chosen value and the originating event. */
+  /**
+   * Fires with the chosen value and the originating event. The event is a
+   * generic `SyntheticEvent` (click or keydown) rather than a `ChangeEvent`:
+   * a custom listbox selection has no native `change` event to forward.
+   */
   onChange?: (value: string, event: React.SyntheticEvent) => void;
+  /** The selectable options, in order. */
   options: SelectOption[];
+  /** Text shown when no value is selected. Defaults to 'Select…'. */
   placeholder?: string;
+  /** Visible label, associated with the trigger via aria-labelledby. */
   label?: ReactNode;
+  /** Disables the trigger. */
   disabled?: boolean;
+  /** Puts the control in the error state (aria-invalid). */
   error?: boolean;
+  /** Hint shown below the control. Hidden when an error is shown. */
   helperText?: ReactNode;
+  /** Message shown below the control when `error` is set; replaces helperText. */
+  errorText?: ReactNode;
+  /** Defaults to 'md'. */
   size?: SelectSize;
+  /** Class applied to the root wrapper. */
   className?: string;
+  /** Base id for the control; ids for the label/listbox/description derive from it. */
   id?: string;
 }
 
@@ -43,12 +61,14 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     disabled,
     error,
     helperText,
+    errorText,
     size = 'md',
     className,
     id,
   },
   ref,
 ) {
+  const description = error ? errorText : helperText;
   const [selected, setSelected] = useControllableState<string | undefined>({
     value,
     defaultValue,
@@ -157,7 +177,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       aria-expanded={open}
       aria-controls={open ? listboxId : undefined}
       aria-labelledby={label ? `${labelId} ${baseId}` : undefined}
-      aria-describedby={helperText != null ? `${baseId}-desc` : undefined}
+      aria-describedby={description != null ? `${baseId}-desc` : undefined}
       aria-invalid={error || undefined}
       onClick={() => setOpen((o) => !o)}
     >
@@ -209,13 +229,13 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
           ))}
         </ul>
       </Popover>
-      {helperText != null ? (
+      {description != null ? (
         <span
           id={`${baseId}-desc`}
           className={styles.helperText}
           data-error={error ? 'true' : undefined}
         >
-          {helperText}
+          {description}
         </span>
       ) : null}
     </div>

@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import type { MouseEvent, ReactNode, Ref } from 'react';
+import type { HTMLAttributes, MouseEvent, ReactNode, Ref } from 'react';
 import { CloseIcon } from '../../icons';
 import { cx } from '../../utils/cx';
 import styles from './Chip.module.css';
@@ -8,11 +8,14 @@ export type ChipVariant = 'solid' | 'outline';
 export type ChipTone = 'primary' | 'neutral' | 'danger';
 export type ChipSize = 'sm' | 'md';
 
-export interface ChipProps {
-  /** Text shown in the chip. */
+export interface ChipProps extends Omit<HTMLAttributes<HTMLElement>, 'children' | 'onClick'> {
+  /** Text shown in the chip; kept a string so it can seed the delete button's label. */
   label: string;
+  /** Visual style. Defaults to 'solid'. */
   variant?: ChipVariant;
+  /** Semantic color. Defaults to 'neutral'. */
   tone?: ChipTone;
+  /** Defaults to 'md'. */
   size?: ChipSize;
   /** Leading icon (decorative). */
   icon?: ReactNode;
@@ -22,7 +25,6 @@ export interface ChipProps {
   onDelete?: () => void;
   /** Accessible label for the delete button. Defaults to "Remove <label>". */
   deleteLabel?: string;
-  className?: string;
 }
 
 export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function Chip(
@@ -36,6 +38,7 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
     onDelete,
     deleteLabel,
     className,
+    ...props
   },
   ref,
 ) {
@@ -78,6 +81,7 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
         className={classes}
         onClick={onClick}
         {...dataAttrs}
+        {...props}
       >
         {content}
       </button>
@@ -85,7 +89,13 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
   }
 
   return (
-    <span ref={ref as Ref<HTMLSpanElement>} className={classes} onClick={onClick} {...dataAttrs}>
+    <span
+      ref={ref as Ref<HTMLSpanElement>}
+      className={classes}
+      onClick={onClick}
+      {...dataAttrs}
+      {...props}
+    >
       {content}
     </span>
   );

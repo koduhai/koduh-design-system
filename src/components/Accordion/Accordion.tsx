@@ -6,9 +6,13 @@ import { ChevronDownIcon } from '../../icons';
 import styles from './Accordion.module.css';
 
 export interface AccordionItemData {
+  /** Stable identity; used as the controlled/uncontrolled value. */
   id: string;
+  /** Content rendered inside the disclosure trigger button. */
   title: ReactNode;
+  /** Content revealed when the item is expanded. */
   content: ReactNode;
+  /** Disables the trigger; the panel cannot be opened while disabled. */
   disabled?: boolean;
 }
 
@@ -66,6 +70,8 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
       if (multiple) {
         next = isOpen ? expandedIds.filter((x) => x !== id) : [...expandedIds, id];
       } else {
+        // Single mode: clicking the already-open item closes it only when
+        // `collapsible` is true; otherwise the open item stays open.
         next = isOpen ? (collapsible ? '' : id) : id;
       }
       setState(next);

@@ -25,11 +25,15 @@ export interface Column<Row> {
 }
 
 export interface TableProps<Row> extends Omit<HTMLAttributes<HTMLTableElement>, 'children'> {
+  /** Column definitions; order matches the rendered column order. */
   columns: Column<Row>[];
+  /** Rows to render. An empty array triggers the `empty` slot. */
   data: Row[];
+  /** Returns a stable unique string id for each row (used as React key and selection id). */
   getRowId: (row: Row) => string;
   /** Accessible name; visually hidden unless `captionVisible`. */
   caption?: ReactNode;
+  /** When true, renders the caption visibly above the table. Defaults to false. */
   captionVisible?: boolean;
   /** Controlled sort key. */
   sortKey?: string;

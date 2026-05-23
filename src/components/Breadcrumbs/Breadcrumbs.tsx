@@ -5,12 +5,14 @@ import { cx } from '../../utils/cx';
 import styles from './Breadcrumbs.module.css';
 
 export interface BreadcrumbItem {
+  /** Visible text (or node) for the breadcrumb step. */
   label: ReactNode;
   /** Last item typically has no href (current page). */
   href?: string;
 }
 
 export interface BreadcrumbsProps extends HTMLAttributes<HTMLElement> {
+  /** Ordered list of breadcrumb steps, first → last (current page). */
   items: BreadcrumbItem[];
   /** Separator between items. Defaults to a chevron icon. */
   separator?: ReactNode;

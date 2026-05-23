@@ -9,10 +9,10 @@ describe('Card', () => {
     expect(el.tagName).toBe('DIV');
   });
 
-  it('defaults to outlined variant and md padding, reflected as data attributes', () => {
+  it('defaults to outline variant and md padding, reflected as data attributes', () => {
     const { container } = render(<Card>X</Card>);
     const root = container.firstElementChild!;
-    expect(root).toHaveAttribute('data-variant', 'outlined');
+    expect(root).toHaveAttribute('data-variant', 'outline');
     expect(root).toHaveAttribute('data-padding', 'md');
   });
 

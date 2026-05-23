@@ -12,7 +12,7 @@ export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
   /** Optional bold heading shown above the body. */
   title?: ReactNode;
   /** When true, shows a labeled dismiss button. */
-  closable?: boolean;
+  dismissable?: boolean;
   /** Called when the dismiss button is clicked. */
   onClose?: () => void;
   /**
@@ -38,7 +38,7 @@ const roleForSeverity: Record<AlertSeverity, 'alert' | 'status'> = {
 };
 
 export const Alert = /* @__PURE__ */ forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { severity, title, closable = false, onClose, icon, className, children, ...props },
+  { severity, title, dismissable = false, onClose, icon, className, children, ...props },
   ref,
 ) {
   const resolvedIcon = icon === undefined ? defaultIcons[severity] : icon;
@@ -61,7 +61,7 @@ export const Alert = /* @__PURE__ */ forwardRef<HTMLDivElement, AlertProps>(func
         {title ? <div className={styles.title}>{title}</div> : null}
         {children ? <div className={styles.body}>{children}</div> : null}
       </div>
-      {closable ? (
+      {dismissable ? (
         <button type="button" className={styles.close} aria-label="Dismiss" onClick={onClose}>
           <CloseIcon size={18} />
         </button>

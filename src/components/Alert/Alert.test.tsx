@@ -36,10 +36,10 @@ describe('Alert', () => {
     expect(screen.getByRole('status')).toHaveAttribute('data-severity', 'success');
   });
 
-  it('renders a labeled close button that fires onClose when closable', async () => {
+  it('renders a labeled close button that fires onClose when dismissable', async () => {
     const onClose = vi.fn();
     render(
-      <Alert severity="info" closable onClose={onClose}>
+      <Alert severity="info" dismissable onClose={onClose}>
         Dismiss me
       </Alert>,
     );

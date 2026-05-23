@@ -1,22 +1,22 @@
 import { forwardRef } from 'react';
-import type { CSSProperties } from 'react';
+import type { HTMLAttributes } from 'react';
 import { cx } from '../../utils/cx';
 import styles from './Avatar.module.css';
 
 export type AvatarSize = 'sm' | 'md' | 'lg';
 export type AvatarShape = 'circle' | 'square';
 
-export interface AvatarProps {
+export interface AvatarProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {
   /** Image URL. When set, an <img> is rendered. */
   src?: string;
   /** Alt text for the image. Required (for a11y) when src is set. */
   alt?: string;
   /** Used to derive initials and the aria-label when there is no image. */
   name?: string;
+  /** Defaults to 'md'. */
   size?: AvatarSize;
+  /** Defaults to 'circle'. */
   shape?: AvatarShape;
-  className?: string;
-  style?: CSSProperties;
 }
 
 function initialsOf(name: string): string {
@@ -29,7 +29,7 @@ function initialsOf(name: string): string {
 }
 
 export const Avatar = /* @__PURE__ */ forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
-  { src, alt, name, size = 'md', shape = 'circle', className, style },
+  { src, alt, name, size = 'md', shape = 'circle', className, ...props },
   ref,
 ) {
   const dataAttrs = { 'data-size': size, 'data-shape': shape };
@@ -39,10 +39,10 @@ export const Avatar = /* @__PURE__ */ forwardRef<HTMLSpanElement, AvatarProps>(f
     <span
       ref={ref}
       className={classes}
-      style={style}
       role={!src && name ? 'img' : undefined}
       aria-label={!src && name ? name : undefined}
       {...dataAttrs}
+      {...props}
     >
       {src ? (
         <img className={styles.image} src={src} alt={alt ?? ''} />

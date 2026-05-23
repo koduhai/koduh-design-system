@@ -4,11 +4,11 @@ import { Slot } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Card.module.css';
 
-export type CardVariant = 'outlined' | 'elevated' | 'flat';
+export type CardVariant = 'outline' | 'elevated' | 'flat';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  /** Surface style. Defaults to 'outlined'. */
+  /** Surface style. Defaults to 'outline'. */
   variant?: CardVariant;
   /** Inner padding scale. Defaults to 'md'. */
   padding?: CardPadding;
@@ -17,7 +17,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Card = /* @__PURE__ */ forwardRef<HTMLDivElement, CardProps>(function Card(
-  { variant = 'outlined', padding = 'md', asChild = false, className, children, ...props },
+  { variant = 'outline', padding = 'md', asChild = false, className, children, ...props },
   ref,
 ) {
   const dataAttrs = {

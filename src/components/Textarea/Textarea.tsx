@@ -11,7 +11,7 @@ export interface TextareaProps extends Omit<
   'size' | 'value' | 'defaultValue' | 'onChange'
 > {
   /** Visible label, associated with the textarea via htmlFor/id. */
-  label: string;
+  label: ReactNode;
   /** Controlled value. */
   value?: string;
   /** Initial value when uncontrolled. */

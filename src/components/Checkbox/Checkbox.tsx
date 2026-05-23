@@ -50,6 +50,8 @@ export const Checkbox = /* @__PURE__ */ forwardRef<HTMLInputElement, CheckboxPro
       onChange: undefined,
     });
 
+    // `indeterminate` is a DOM property only (not a reflectable HTML attribute),
+    // so it must be set imperatively via the ref rather than through JSX.
     useEffect(() => {
       if (inputRef.current) {
         inputRef.current.indeterminate = !!indeterminate;

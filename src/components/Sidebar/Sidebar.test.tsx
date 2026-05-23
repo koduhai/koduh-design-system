@@ -57,13 +57,15 @@ describe('Sidebar', () => {
     expect(expandToggle).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('respects controlled collapsed and calls onToggle without changing state itself', async () => {
-    const onToggle = vi.fn();
-    const { container } = render(<Sidebar items={ITEMS} collapsed onToggle={onToggle} />);
+  it('respects controlled collapsed and calls onCollapsedChange without changing state itself', async () => {
+    const onCollapsedChange = vi.fn();
+    const { container } = render(
+      <Sidebar items={ITEMS} collapsed onCollapsedChange={onCollapsedChange} />,
+    );
     const nav = container.querySelector('nav')!;
     expect(nav).toHaveAttribute('data-collapsed', 'true');
     await userEvent.click(screen.getByRole('button', { name: 'Expand sidebar' }));
-    expect(onToggle).toHaveBeenCalledWith(false);
+    expect(onCollapsedChange).toHaveBeenCalledWith(false);
     expect(nav).toHaveAttribute('data-collapsed', 'true'); // controlled — unchanged
   });
 

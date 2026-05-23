@@ -4,10 +4,15 @@ import type { ReactNode } from 'react';
 import styles from './Dialog.module.css';
 
 export interface ConfirmDialogProps {
+  /** Controls whether the dialog is visible. */
   open: boolean;
+  /** Called when the dialog requests to be closed (cancel or backdrop). */
   onClose: () => void;
+  /** Called when the user presses the confirm button; `onClose` is also called. */
   onConfirm: () => void;
+  /** Dialog heading. */
   title: ReactNode;
+  /** Optional body text elaborating on what will be confirmed. */
   description?: ReactNode;
   /** Confirm button label. Defaults to 'Confirm'. */
   confirmLabel?: string;

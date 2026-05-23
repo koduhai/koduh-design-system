@@ -30,7 +30,7 @@ export const Showcase: Story = {
         Something went wrong.
       </Alert>
       <Alert severity="info">An alert without a title.</Alert>
-      <Alert severity="warning" title="Dismissible" closable onClose={() => {}}>
+      <Alert severity="warning" title="Dismissible" dismissable onClose={() => {}}>
         This alert can be dismissed.
       </Alert>
     </div>

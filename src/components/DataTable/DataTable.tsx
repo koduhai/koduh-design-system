@@ -1,10 +1,10 @@
 import { forwardRef } from 'react';
-import type { ForwardedRef, Ref } from 'react';
+import type { ForwardedRef, MouseEvent, Ref } from 'react';
 import { Table } from '../Table';
 import type { Column } from '../Table';
 import { useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
-import { runPipeline } from './pipeline';
+import { runPipeline, cycleSort } from './pipeline';
 import type { DataTableProps, FilterState, SortRule } from './types';
 import styles from './DataTable.module.css';
 
@@ -91,9 +91,12 @@ function DataTableInner<Row>(
     pageSize: pageSizeState,
   });
 
-  // Setters/values consumed by later tasks (sort interaction, pagination, search,
+  const handleSortChange = (key: string, _dir: SortRule['dir'], event?: MouseEvent) => {
+    setSort(cycleSort(sortState, key, event?.shiftKey ?? false));
+  };
+
+  // Setters/values consumed by later tasks (pagination, search,
   // filters, selection). Referenced here so strict unused checks pass until wired.
-  void setSort;
   void setPage;
   void setPageSize;
   void setSelected;
@@ -120,6 +123,7 @@ function DataTableInner<Row>(
         loadingRows={loadingRows}
         empty={empty}
         sort={sortState}
+        onSortChange={handleSortChange}
         selectedIds={selected}
         selectAllIds={matchingIds}
       />

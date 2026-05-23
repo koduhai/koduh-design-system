@@ -8,6 +8,7 @@ import {
   pageCount,
   clampPage,
   runPipeline,
+  cycleSort,
 } from './pipeline';
 import type { DataColumn, FilterState } from './types';
 
@@ -208,4 +209,33 @@ test('applyGlobalSearch returns a copy when no columns are searchable', () => {
 
 test('applyGlobalSearch treats a whitespace-only query as a no-op', () => {
   expect(applyGlobalSearch(data, '   ', columns)).toHaveLength(3);
+});
+
+test('single-sort click cycles asc → desc → none', () => {
+  expect(cycleSort([], 'name', false)).toEqual([{ key: 'name', dir: 'asc' }]);
+  expect(cycleSort([{ key: 'name', dir: 'asc' }], 'name', false)).toEqual([
+    { key: 'name', dir: 'desc' },
+  ]);
+  expect(cycleSort([{ key: 'name', dir: 'desc' }], 'name', false)).toEqual([]);
+});
+
+test('single-sort click on a new column replaces the rules', () => {
+  expect(cycleSort([{ key: 'age', dir: 'asc' }], 'name', false)).toEqual([
+    { key: 'name', dir: 'asc' },
+  ]);
+});
+
+test('shift-click appends, toggles, then removes a rule without touching others', () => {
+  const a = cycleSort([{ key: 'age', dir: 'asc' }], 'name', true);
+  expect(a).toEqual([
+    { key: 'age', dir: 'asc' },
+    { key: 'name', dir: 'asc' },
+  ]);
+  const b = cycleSort(a, 'name', true);
+  expect(b).toEqual([
+    { key: 'age', dir: 'asc' },
+    { key: 'name', dir: 'desc' },
+  ]);
+  const c = cycleSort(b, 'name', true);
+  expect(c).toEqual([{ key: 'age', dir: 'asc' }]);
 });

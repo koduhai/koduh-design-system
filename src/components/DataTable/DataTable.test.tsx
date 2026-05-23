@@ -1,5 +1,6 @@
 import { test, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { DataTable } from './DataTable';
 import type { DataColumn } from './types';
 
@@ -35,4 +36,46 @@ test('renders the empty slot when data is empty', () => {
     />,
   );
   expect(screen.getByText('Nothing here')).toBeInTheDocument();
+});
+
+test('clicking a sortable header sorts ascending then descending', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', sortable: true },
+        { key: 'age', header: 'Age', type: 'number', sortable: true },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+      defaultPageSize={25}
+    />,
+  );
+  const ageHeader = screen.getByRole('button', { name: /Age/ });
+  await user.click(ageHeader);
+  const firstAsc = screen.getAllByRole('row')[1]!;
+  expect(within(firstAsc).getByText('20')).toBeInTheDocument(); // youngest first
+  await user.click(ageHeader);
+  const firstDesc = screen.getAllByRole('row')[1]!;
+  expect(within(firstDesc).getByText('31')).toBeInTheDocument(); // oldest first (20+11)
+});
+
+test('shift-click builds multi-sort (priority badges shown)', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', sortable: true },
+        { key: 'age', header: 'Age', type: 'number', sortable: true },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+    />,
+  );
+  await user.click(screen.getByRole('button', { name: /Name/ }));
+  await user.keyboard('{Shift>}');
+  await user.click(screen.getByRole('button', { name: /Age/ }));
+  await user.keyboard('{/Shift}');
+  expect(screen.getByText('1')).toBeInTheDocument(); // priority badge for Name
+  expect(screen.getByText('2')).toBeInTheDocument(); // priority badge for Age
 });

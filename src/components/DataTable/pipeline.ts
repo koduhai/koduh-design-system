@@ -104,6 +104,21 @@ export function clampPage(page: number, total: number, pageSize: number): number
   return Math.min(Math.max(1, page), pageCount(total, pageSize));
 }
 
+/** Next sort rules after clicking `key`. `additive` = shift-click (multi-sort). */
+export function cycleSort(current: SortRule[], key: string, additive: boolean): SortRule[] {
+  const existing = current.find((r) => r.key === key);
+  if (additive) {
+    if (!existing) return [...current, { key, dir: 'asc' }];
+    if (existing.dir === 'asc')
+      return current.map((r) => (r.key === key ? { key, dir: 'desc' } : r));
+    return current.filter((r) => r.key !== key); // desc → remove
+  }
+  // single-sort: operate only on this key, discarding other rules
+  if (!existing) return [{ key, dir: 'asc' }];
+  if (existing.dir === 'asc') return [{ key, dir: 'desc' }];
+  return []; // desc → none
+}
+
 export interface PipelineInput<Row> {
   data: Row[];
   columns: DataColumn<Row>[];

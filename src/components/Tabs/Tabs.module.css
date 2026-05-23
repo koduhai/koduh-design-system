@@ -1,0 +1,106 @@
+.root {
+  display: flex;
+  font-family: var(--ku-font-family-base);
+  color: var(--ku-color-text-primary);
+}
+
+.root[data-orientation='horizontal'] {
+  flex-direction: column;
+  gap: var(--ku-space-4);
+}
+
+.root[data-orientation='vertical'] {
+  flex-direction: row;
+  gap: var(--ku-space-4);
+}
+
+.tablist {
+  display: flex;
+  gap: var(--ku-space-1);
+}
+
+.root[data-orientation='horizontal'] .tablist {
+  flex-direction: row;
+  border-bottom: 1px solid var(--ku-color-border);
+}
+
+.root[data-orientation='vertical'] .tablist {
+  flex-direction: column;
+  border-right: 1px solid var(--ku-color-border);
+}
+
+.tab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  margin: 0;
+  font-family: inherit;
+  font-size: var(--ku-font-size-md);
+  font-weight: var(--ku-font-weight-medium);
+  line-height: 1;
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  padding: var(--ku-space-2) var(--ku-space-3);
+  position: relative;
+  border-radius: var(--ku-radius-sm);
+  transition:
+    color var(--ku-duration-fast) var(--ku-easing-standard),
+    background-color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.tab:hover:not(:disabled) {
+  color: var(--ku-color-text-primary);
+  background-color: color-mix(in srgb, var(--ku-color-primary) 10%, transparent);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+.tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tab[data-selected='true'] {
+  color: var(--ku-color-primary);
+  font-weight: var(--ku-font-weight-semibold);
+}
+
+/* Active indicator (non-color signal: a thick rule on the active edge). */
+.tab[data-selected='true']::after {
+  content: '';
+  position: absolute;
+  background-color: var(--ku-color-primary);
+}
+
+.root[data-orientation='horizontal'] .tab[data-selected='true']::after {
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+}
+
+.root[data-orientation='vertical'] .tab[data-selected='true']::after {
+  top: 0;
+  bottom: 0;
+  right: -1px;
+  width: 2px;
+}
+
+.panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
+  }
+}

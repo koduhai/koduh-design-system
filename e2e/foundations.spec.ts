@@ -12,9 +12,7 @@ for (const theme of ['dark', 'light'] as const) {
   test(`icon gallery has no axe violations (${theme})`, async ({ page }) => {
     await page.goto(`${STORY_URL}&globals=theme:${theme}`);
     await page.locator('svg').first().waitFor();
-    const results = await new AxeBuilder({ page })
-      .disableRules(DISABLED_RULES)
-      .analyze();
+    const results = await new AxeBuilder({ page }).disableRules(DISABLED_RULES).analyze();
     expect(results.violations).toEqual([]);
   });
 }

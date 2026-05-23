@@ -26,11 +26,7 @@ function storyUrl(storyId: string, theme: string): string {
   return `/iframe.html?id=${storyId}&viewMode=story&globals=theme:${theme}`;
 }
 
-async function gotoStory(
-  page: import('@playwright/test').Page,
-  storyId: string,
-  theme: string,
-) {
+async function gotoStory(page: import('@playwright/test').Page, storyId: string, theme: string) {
   await page.goto(storyUrl(storyId, theme));
   // Storybook renders into #storybook-root; wait for the story body to paint.
   await page.locator('#storybook-root').waitFor();
@@ -41,9 +37,7 @@ for (const { name, storyId } of COMPONENTS) {
   for (const theme of THEMES) {
     test(`${name} has no axe violations (${theme})`, async ({ page }) => {
       await gotoStory(page, storyId, theme);
-      const results = await new AxeBuilder({ page })
-        .disableRules(DISABLED_RULES)
-        .analyze();
+      const results = await new AxeBuilder({ page }).disableRules(DISABLED_RULES).analyze();
       expect(results.violations).toEqual([]);
     });
 

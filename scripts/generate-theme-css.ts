@@ -37,6 +37,5 @@ if (isMain) {
   const outDir = resolve(dirname(fileURLToPath(import.meta.url)), '../dist');
   mkdirSync(outDir, { recursive: true });
   writeFileSync(resolve(outDir, 'theme.css'), buildThemeCss(), 'utf8');
-  // eslint-disable-next-line no-console
   console.log('Wrote dist/theme.css');
 }

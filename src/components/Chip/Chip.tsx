@@ -26,7 +26,17 @@ export interface ChipProps {
 }
 
 export const Chip = forwardRef<HTMLElement, ChipProps>(function Chip(
-  { label, variant = 'solid', tone = 'neutral', size = 'md', icon, onClick, onDelete, deleteLabel, className },
+  {
+    label,
+    variant = 'solid',
+    tone = 'neutral',
+    size = 'md',
+    icon,
+    onClick,
+    onDelete,
+    deleteLabel,
+    className,
+  },
   ref,
 ) {
   const interactive = Boolean(onClick) && !onDelete;
@@ -62,7 +72,13 @@ export const Chip = forwardRef<HTMLElement, ChipProps>(function Chip(
 
   if (interactive) {
     return (
-      <button ref={ref as Ref<HTMLButtonElement>} type="button" className={classes} onClick={onClick} {...dataAttrs}>
+      <button
+        ref={ref as Ref<HTMLButtonElement>}
+        type="button"
+        className={classes}
+        onClick={onClick}
+        {...dataAttrs}
+      >
         {content}
       </button>
     );

@@ -54,6 +54,7 @@ Each component task adds one export block to `src/index.ts` (replacing the `// N
 ## Task 1: `cx` className helper
 
 **Files:**
+
 - Create: `src/utils/cx.ts`
 - Test: `src/utils/cx.test.ts`
 - Modify: `src/index.ts`
@@ -101,10 +102,13 @@ Expected: PASS (3 tests).
 - [ ] **Step 5: Export `cx` from the package entry**
 
 In `src/index.ts`, replace the line:
+
 ```ts
 // NOTE: the 12 components are exported here as they are built in Phases 1–4.
 ```
+
 with:
+
 ```ts
 // Utilities
 export { cx } from './utils/cx';
@@ -125,6 +129,7 @@ git commit -m "feat: add cx className helper"
 ## Task 2: Button
 
 **Files:**
+
 - Create: `src/components/Button/Button.tsx`, `Button.module.css`, `Button.test.tsx`, `Button.stories.tsx`, `index.ts`
 - Modify: `src/index.ts`
 
@@ -404,9 +409,15 @@ export const Default: Story = { args: { children: 'Button' } };
 export const Showcase: Story = {
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
-      <Button variant="solid" tone="primary">Solid</Button>
-      <Button variant="outline" tone="primary">Outline</Button>
-      <Button variant="ghost" tone="primary">Ghost</Button>
+      <Button variant="solid" tone="primary">
+        Solid
+      </Button>
+      <Button variant="outline" tone="primary">
+        Outline
+      </Button>
+      <Button variant="ghost" tone="primary">
+        Ghost
+      </Button>
       <Button tone="neutral">Neutral</Button>
       <Button tone="danger">Danger</Button>
       <Button size="sm">Small</Button>
@@ -427,6 +438,7 @@ export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize } from './Butto
 - [ ] **Step 8: Export from the package entry**
 
 In `src/index.ts`, immediately below the `// Components` comment, add:
+
 ```ts
 export { Button } from './components/Button';
 export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize } from './components/Button';
@@ -449,6 +461,7 @@ git commit -m "feat: add Button component"
 ## Task 3: LoadingButton
 
 **Files:**
+
 - Create: `src/components/LoadingButton/LoadingButton.tsx`, `LoadingButton.module.css`, `LoadingButton.test.tsx`, `LoadingButton.stories.tsx`, `index.ts`
 - Modify: `src/index.ts`
 
@@ -585,8 +598,12 @@ export const Showcase: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <LoadingButton>Idle</LoadingButton>
-      <LoadingButton loading loadingText="Saving…">Saving</LoadingButton>
-      <LoadingButton loading tone="danger" loadingText="Deleting…">Deleting</LoadingButton>
+      <LoadingButton loading loadingText="Saving…">
+        Saving
+      </LoadingButton>
+      <LoadingButton loading tone="danger" loadingText="Deleting…">
+        Deleting
+      </LoadingButton>
     </div>
   ),
 };
@@ -602,6 +619,7 @@ export type { LoadingButtonProps } from './LoadingButton';
 - [ ] **Step 8: Export from the package entry**
 
 In `src/index.ts`, below the Button exports, add:
+
 ```ts
 export { LoadingButton } from './components/LoadingButton';
 export type { LoadingButtonProps } from './components/LoadingButton';
@@ -624,6 +642,7 @@ git commit -m "feat: add LoadingButton component"
 ## Task 4: Chip
 
 **Files:**
+
 - Create: `src/components/Chip/Chip.tsx`, `Chip.module.css`, `Chip.test.tsx`, `Chip.stories.tsx`, `index.ts`
 - Modify: `src/index.ts`
 
@@ -707,7 +726,17 @@ export interface ChipProps {
 }
 
 export const Chip = forwardRef<HTMLElement, ChipProps>(function Chip(
-  { label, variant = 'solid', tone = 'neutral', size = 'md', icon, onClick, onDelete, deleteLabel, className },
+  {
+    label,
+    variant = 'solid',
+    tone = 'neutral',
+    size = 'md',
+    icon,
+    onClick,
+    onDelete,
+    deleteLabel,
+    className,
+  },
   ref,
 ) {
   const interactive = Boolean(onClick) && !onDelete;
@@ -880,6 +909,7 @@ export type { ChipProps, ChipVariant, ChipTone, ChipSize } from './Chip';
 - [ ] **Step 8: Export from the package entry**
 
 In `src/index.ts`, add:
+
 ```ts
 export { Chip } from './components/Chip';
 export type { ChipProps, ChipVariant, ChipTone, ChipSize } from './components/Chip';
@@ -902,6 +932,7 @@ git commit -m "feat: add Chip component"
 ## Task 5: Avatar
 
 **Files:**
+
 - Create: `src/components/Avatar/Avatar.tsx`, `Avatar.module.css`, `Avatar.test.tsx`, `Avatar.stories.tsx`, `index.ts`
 - Modify: `src/index.ts`
 
@@ -1101,6 +1132,7 @@ export type { AvatarProps, AvatarSize, AvatarShape } from './Avatar';
 - [ ] **Step 8: Export from the package entry**
 
 In `src/index.ts`, add:
+
 ```ts
 export { Avatar } from './components/Avatar';
 export type { AvatarProps, AvatarSize, AvatarShape } from './components/Avatar';
@@ -1123,6 +1155,7 @@ git commit -m "feat: add Avatar component"
 ## Task 6: StatusBadge
 
 **Files:**
+
 - Create: `src/components/StatusBadge/StatusBadge.tsx`, `StatusBadge.module.css`, `StatusBadge.test.tsx`, `StatusBadge.stories.tsx`, `index.ts`
 - Modify: `src/index.ts`
 
@@ -1303,9 +1336,14 @@ export type { StatusBadgeProps, StatusBadgeStatus, StatusBadgeVariant } from './
 - [ ] **Step 8: Export from the package entry**
 
 In `src/index.ts`, add:
+
 ```ts
 export { StatusBadge } from './components/StatusBadge';
-export type { StatusBadgeProps, StatusBadgeStatus, StatusBadgeVariant } from './components/StatusBadge';
+export type {
+  StatusBadgeProps,
+  StatusBadgeStatus,
+  StatusBadgeVariant,
+} from './components/StatusBadge';
 ```
 
 - [ ] **Step 9: Verify typecheck + lint**
@@ -1325,6 +1363,7 @@ git commit -m "feat: add StatusBadge component"
 ## Task 7: Alert
 
 **Files:**
+
 - Create: `src/components/Alert/Alert.tsx`, `Alert.module.css`, `Alert.test.tsx`, `Alert.stories.tsx`, `index.ts`
 - Modify: `src/index.ts`
 
@@ -1419,7 +1458,17 @@ export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
 }
 
 export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { severity, title, icon, closable = false, onClose, closeLabel = 'Close', className, children, ...props },
+  {
+    severity,
+    title,
+    icon,
+    closable = false,
+    onClose,
+    closeLabel = 'Close',
+    className,
+    children,
+    ...props
+  },
   ref,
 ) {
   const role = severity === 'error' || severity === 'warning' ? 'alert' : 'status';
@@ -1545,9 +1594,15 @@ export const Default: Story = {
 export const Showcase: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 480 }}>
-      <Alert severity="info" title="Info">An informational message.</Alert>
-      <Alert severity="success" title="Saved">Your changes were saved.</Alert>
-      <Alert severity="warning" title="Careful">This action needs attention.</Alert>
+      <Alert severity="info" title="Info">
+        An informational message.
+      </Alert>
+      <Alert severity="success" title="Saved">
+        Your changes were saved.
+      </Alert>
+      <Alert severity="warning" title="Careful">
+        This action needs attention.
+      </Alert>
       <Alert severity="error" title="Error" closable onClose={() => {}}>
         Something went wrong.
       </Alert>
@@ -1566,6 +1621,7 @@ export type { AlertProps, AlertSeverity } from './Alert';
 - [ ] **Step 8: Export from the package entry**
 
 In `src/index.ts`, add:
+
 ```ts
 export { Alert } from './components/Alert';
 export type { AlertProps, AlertSeverity } from './components/Alert';
@@ -1588,6 +1644,7 @@ git commit -m "feat: add Alert component"
 ## Task 8: Component accessibility e2e (both themes)
 
 **Files:**
+
 - Create: `e2e/components.spec.ts`
 
 This reuses the Phase-0 pattern: navigate to each component's `Showcase` story in the Storybook iframe, run axe, expect zero violations, in both dark and light. The two document-structure rules (`landmark-one-main`, `page-has-heading-one`) are disabled because Storybook story fragments are not full pages — same justification as `e2e/foundations.spec.ts`.
@@ -1643,6 +1700,7 @@ git commit -m "test: add axe a11y e2e for Phase 1 components (both themes)"
 ## Task 9: Visual regression snapshots
 
 **Files:**
+
 - Create: `e2e/snapshots.spec.ts`
 - Modify: `package.json` (add `test:e2e:update` script)
 - Create (generated baselines): `e2e/snapshots.spec.ts-snapshots/*.png`
@@ -1650,6 +1708,7 @@ git commit -m "test: add axe a11y e2e for Phase 1 components (both themes)"
 - [ ] **Step 1: Add the update script to `package.json`**
 
 In the `scripts` block, add (next to `test:e2e`):
+
 ```json
     "test:e2e:update": "playwright test --update-snapshots",
 ```
@@ -1675,7 +1734,9 @@ for (const id of STORY_IDS) {
       const root = page.locator('#storybook-root');
       await root.waitFor();
       // Disable the spinner animation so the LoadingButton snapshot is deterministic.
-      await page.addStyleTag({ content: '*{ animation: none !important; transition: none !important; }' });
+      await page.addStyleTag({
+        content: '*{ animation: none !important; transition: none !important; }',
+      });
       await page.waitForTimeout(150);
       await expect(root).toHaveScreenshot(`${id}-${theme}.png`);
     });
@@ -1707,13 +1768,14 @@ git commit -m "test: add visual regression snapshots for Phase 1 components"
 ## Task 10: README usage docs + full verification gate
 
 **Files:**
+
 - Modify: `README.md`
 
 - [ ] **Step 1: Add a consumer Usage section to `README.md`**
 
 Insert the following section immediately AFTER the `## Develop` code block and BEFORE the `## Architecture` heading (this documents the two-stylesheet import the final Phase-0 review flagged, plus a component example):
 
-```markdown
+````markdown
 ## Usage (in a consuming app)
 
 Wrap your app once and import BOTH stylesheets — `theme.css` (the design tokens as
@@ -1725,20 +1787,20 @@ import '@koduhai/design-system/theme.css';
 import '@koduhai/design-system/styles.css';
 
 export function App() {
-  return (
-    <KoduhThemeProvider defaultMode="dark">
-      <Alert severity="success" title="Welcome">You're all set.</Alert>
-      <Button onClick={() => alert('hi')}>Get started</Button>
-    </KoduhThemeProvider>
-  );
+return (
+<KoduhThemeProvider defaultMode="dark">
+<Alert severity="success" title="Welcome">You're all set.</Alert>
+<Button onClick={() => alert('hi')}>Get started</Button>
+</KoduhThemeProvider>
+);
 }
 ​```
 
 Available components (Phase 1): `Button`, `LoadingButton`, `Chip`, `Avatar`,
 `StatusBadge`, `Alert`. More arrive in later phases.
-```
+````
 
-IMPORTANT: write the code fence above as a normal triple-backtick ```` ```tsx ```` block in the file (the leading `​` zero-width marks are only to escape the fence inside this plan — do NOT include them).
+IMPORTANT: write the code fence above as a normal triple-backtick ` ```tsx ` block in the file (the leading `​` zero-width marks are only to escape the fence inside this plan — do NOT include them).
 
 - [ ] **Step 2: Run the COMPLETE verification gate**
 
@@ -1755,9 +1817,11 @@ npm run test:e2e      # Expected: foundations (2) + components a11y (12) + snaps
 - [ ] **Step 3: Confirm the component CSS is in the bundle**
 
 Run (Bash):
+
 ```bash
 node -e "const s=require('fs').readFileSync('C:/dev/work/koduhai-design-system-v2/dist/index.css','utf8'); console.log('HAS_BUTTON_SCOPE', /Button_root/.test(s)); console.log('HAS_ALERT_SCOPE', /Alert_root/.test(s));"
 ```
+
 Expected: both `true` — confirms the component `.module.css` files were scoped and bundled into `dist/index.css`.
 
 - [ ] **Step 4: Commit**

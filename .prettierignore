@@ -1,0 +1,13 @@
+# Build & generated output
+dist
+storybook-static
+coverage
+
+# Test artifacts
+test-results
+playwright-report
+**/*-snapshots
+
+# Dependencies & lockfile
+node_modules
+package-lock.json

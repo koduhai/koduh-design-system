@@ -110,16 +110,16 @@ Components consume tokens via CSS variables, compose primitives for behavior, an
 
 **Token categories:**
 
-| Category    | Examples                                                            |
-| ----------- | ------------------------------------------------------------------- |
-| Color       | `--ku-color-primary`, `--ku-color-bg-default`, `--ku-color-text-*`  |
+| Category    | Examples                                                              |
+| ----------- | --------------------------------------------------------------------- |
+| Color       | `--ku-color-primary`, `--ku-color-bg-default`, `--ku-color-text-*`    |
 | Typography  | `--ku-font-family`, `--ku-font-size-*`, `--ku-line-height-*`, weights |
-| Spacing     | `--ku-space-1` … `--ku-space-n` (4px base scale)                    |
-| Radii       | `--ku-radius-sm/md/lg/full`                                         |
-| Shadows     | `--ku-shadow-1/2/3`                                                  |
-| Z-index     | `--ku-z-appbar`, `--ku-z-sidebar`                                   |
-| Breakpoints | `--ku-bp-sm/md/lg/xl` (also exported as TS for media queries)       |
-| Motion      | `--ku-duration-fast/base`, `--ku-easing-standard`                   |
+| Spacing     | `--ku-space-1` … `--ku-space-n` (4px base scale)                      |
+| Radii       | `--ku-radius-sm/md/lg/full`                                           |
+| Shadows     | `--ku-shadow-1/2/3`                                                   |
+| Z-index     | `--ku-z-appbar`, `--ku-z-sidebar`                                     |
+| Breakpoints | `--ku-bp-sm/md/lg/xl` (also exported as TS for media queries)         |
+| Motion      | `--ku-duration-fast/base`, `--ku-easing-standard`                     |
 
 **Theming model (dark-first):**
 
@@ -160,20 +160,20 @@ This layer has **no portal and no focus-trap** because all overlay components ar
 
 **Final scope: 12 components.** All are styling + light-state components with no portal/focus-trap needs.
 
-| Component        | Purpose                                          | Key props (clean-break API)                                                                 | A11y notes                                                                 |
-| ---------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `Button`         | Primary action trigger                           | `variant` (`solid`/`outline`/`ghost`), `tone` (`primary`/`neutral`/`danger`), `size`, `asChild`, `startIcon`, `endIcon`, `fullWidth` | Native `<button>`; `asChild` for links keeps correct role; visible focus ring |
-| `LoadingButton`  | Button with loading state                        | All `Button` props + `loading`, `loadingText`                                               | `aria-busy` while loading; disabled interaction; spinner has `aria-hidden`  |
-| `Card`           | Surface container                                | `variant` (`outlined`/`elevated`/`flat`), `padding`, `as`                                   | Semantic container; heading structure left to consumer                      |
-| `TextField`      | Single-line text input                           | `label`, `value`/`defaultValue`, `onChange`, `helperText`, `error`, `errorText`, `size`, `startAdornment`, `endAdornment`, `required` | Label `htmlFor` linked via `useId`; helper/error via `aria-describedby`; `aria-invalid` |
-| `AppBar`         | Top navigation bar                               | `logo`, `title`, `actions`, `position` (`static`/`sticky`), `elevation`                     | `<header>` landmark; nav actions keyboard-reachable                         |
-| `Sidebar`        | Collapsible nav sidebar                          | `items`, `collapsed`, `defaultCollapsed`, `onToggle`, `width`, `header`, `footer`           | `<nav>` landmark; toggle is a labeled `<button>`; current item `aria-current`; pure layout, no focus trap |
-| `Alert`          | Inline feedback banner                           | `severity` (`info`/`success`/`warning`/`error`), `title`, `closable`, `onClose`, `icon`     | `role="alert"` / `role="status"` per severity; close button labeled         |
-| `Chip`           | Compact label / tag                              | `label`, `variant` (`solid`/`outline`), `tone`, `size`, `onClick`, `onDelete`, `icon`       | Clickable chip is a `<button>`; delete affordance labeled                   |
-| `Avatar`         | User avatar                                      | `src`, `alt`, `name` (initials fallback), `size` (`sm`/`md`/`lg`), `shape`                  | `alt` required when image; initials get `aria-label`                        |
-| `EmptyState`     | Placeholder for empty views                      | `icon`, `title`, `description`, `action`                                                     | Heading semantics; action is a real button/link                            |
-| `PageHeader`     | Page title region                                | `title`, `subtitle`, `breadcrumbs`, `actions`                                               | `<h1>`/heading level configurable; breadcrumbs in `<nav aria-label>`        |
-| `StatusBadge`    | Semantic status indicator                        | `status` (`active`/`inactive`/`pending`/`error`), `label`, `variant`                        | Color never the sole signal — text label always present                    |
+| Component       | Purpose                     | Key props (clean-break API)                                                                                                           | A11y notes                                                                                                |
+| --------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `Button`        | Primary action trigger      | `variant` (`solid`/`outline`/`ghost`), `tone` (`primary`/`neutral`/`danger`), `size`, `asChild`, `startIcon`, `endIcon`, `fullWidth`  | Native `<button>`; `asChild` for links keeps correct role; visible focus ring                             |
+| `LoadingButton` | Button with loading state   | All `Button` props + `loading`, `loadingText`                                                                                         | `aria-busy` while loading; disabled interaction; spinner has `aria-hidden`                                |
+| `Card`          | Surface container           | `variant` (`outlined`/`elevated`/`flat`), `padding`, `as`                                                                             | Semantic container; heading structure left to consumer                                                    |
+| `TextField`     | Single-line text input      | `label`, `value`/`defaultValue`, `onChange`, `helperText`, `error`, `errorText`, `size`, `startAdornment`, `endAdornment`, `required` | Label `htmlFor` linked via `useId`; helper/error via `aria-describedby`; `aria-invalid`                   |
+| `AppBar`        | Top navigation bar          | `logo`, `title`, `actions`, `position` (`static`/`sticky`), `elevation`                                                               | `<header>` landmark; nav actions keyboard-reachable                                                       |
+| `Sidebar`       | Collapsible nav sidebar     | `items`, `collapsed`, `defaultCollapsed`, `onToggle`, `width`, `header`, `footer`                                                     | `<nav>` landmark; toggle is a labeled `<button>`; current item `aria-current`; pure layout, no focus trap |
+| `Alert`         | Inline feedback banner      | `severity` (`info`/`success`/`warning`/`error`), `title`, `closable`, `onClose`, `icon`                                               | `role="alert"` / `role="status"` per severity; close button labeled                                       |
+| `Chip`          | Compact label / tag         | `label`, `variant` (`solid`/`outline`), `tone`, `size`, `onClick`, `onDelete`, `icon`                                                 | Clickable chip is a `<button>`; delete affordance labeled                                                 |
+| `Avatar`        | User avatar                 | `src`, `alt`, `name` (initials fallback), `size` (`sm`/`md`/`lg`), `shape`                                                            | `alt` required when image; initials get `aria-label`                                                      |
+| `EmptyState`    | Placeholder for empty views | `icon`, `title`, `description`, `action`                                                                                              | Heading semantics; action is a real button/link                                                           |
+| `PageHeader`    | Page title region           | `title`, `subtitle`, `breadcrumbs`, `actions`                                                                                         | `<h1>`/heading level configurable; breadcrumbs in `<nav aria-label>`                                      |
+| `StatusBadge`   | Semantic status indicator   | `status` (`active`/`inactive`/`pending`/`error`), `label`, `variant`                                                                  | Color never the sole signal — text label always present                                                   |
 
 > Exact prop names are finalized during the writing-plans phase; the table sets intent and the clean-break direction (§8).
 
@@ -208,12 +208,12 @@ The new API is designed for clarity, not MUI compatibility:
 
 Mirror the current proven layers:
 
-| Layer        | Tool                              | Requirement                                                                 |
-| ------------ | --------------------------------- | --------------------------------------------------------------------------- |
-| Unit         | Vitest + React Testing Library    | Behavior, props, controlled/uncontrolled, event callbacks, edge cases       |
-| Visual       | Playwright snapshots              | One+ snapshot per story per theme (dark & light) for regression             |
-| Accessibility| Playwright + axe-core             | Every story, zero violations, both themes                                   |
-| Type         | `tsc --noEmit`                    | Strict mode passes; exported types verified                                 |
+| Layer         | Tool                           | Requirement                                                           |
+| ------------- | ------------------------------ | --------------------------------------------------------------------- |
+| Unit          | Vitest + React Testing Library | Behavior, props, controlled/uncontrolled, event callbacks, edge cases |
+| Visual        | Playwright snapshots           | One+ snapshot per story per theme (dark & light) for regression       |
+| Accessibility | Playwright + axe-core          | Every story, zero violations, both themes                             |
+| Type          | `tsc --noEmit`                 | Strict mode passes; exported types verified                           |
 
 - Each component ships with co-located `*.test.tsx` and `*.stories.tsx`.
 - Test count target: meet or exceed current coverage proportionally for the 12 retained components.
@@ -225,16 +225,16 @@ Mirror the current proven layers:
 
 - **Build tool:** tsup → CJS (`.js`) + ESM (`.mjs`) + types (`.d.ts`).
 - **Token CSS generation:** a pre-build script emits `dist/theme.css` from the TS token source.
-- **Component CSS:** CSS Modules compiled and extracted to a single `dist/styles.css` that consumers import once (`import '@koduhai/design-system/styles.css'`). Class names are hashed/scoped at build time. *(Per-component CSS extraction is a possible future optimization; single-file is the v1 requirement for simplicity.)*
+- **Component CSS:** CSS Modules compiled and extracted to a single `dist/styles.css` that consumers import once (`import '@koduhai/design-system/styles.css'`). Class names are hashed/scoped at build time. _(Per-component CSS extraction is a possible future optimization; single-file is the v1 requirement for simplicity.)_
 - **Exports:**
 
-  | Import path                            | Contents                          |
-  | -------------------------------------- | --------------------------------- |
-  | `@koduhai/design-system`               | Components + provider + hooks + types |
-  | `@koduhai/design-system/theme`         | Tokens (TS) only                  |
-  | `@koduhai/design-system/icons`         | Vendored SVG icon components      |
-  | `@koduhai/design-system/styles.css`    | Compiled component styles         |
-  | `@koduhai/design-system/theme.css`     | Token CSS variables               |
+  | Import path                         | Contents                              |
+  | ----------------------------------- | ------------------------------------- |
+  | `@koduhai/design-system`            | Components + provider + hooks + types |
+  | `@koduhai/design-system/theme`      | Tokens (TS) only                      |
+  | `@koduhai/design-system/icons`      | Vendored SVG icon components          |
+  | `@koduhai/design-system/styles.css` | Compiled component styles             |
+  | `@koduhai/design-system/theme.css`  | Token CSS variables                   |
 
 - **`sideEffects`:** mark JS as side-effect-free for tree-shaking; CSS files listed as having side effects so bundlers retain them.
 - **Peer dependencies:** `react` and `react-dom` (`^18 || ^19`) only. **No MUI, no Emotion.**
@@ -267,15 +267,15 @@ Because this is a **clean-break API** and a **major version**, migration is expl
 
 ## 14. Risks & Open Questions
 
-| # | Risk / Question                                                                 | Mitigation / Resolution                                                                 |
-| - | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| 1 | CSS Modules extraction in a tsup/esbuild library build can be fiddly.            | Spike the build pipeline in Phase 1 before any component work; pick PostCSS plugin.     |
-| 2 | Hand-built focus/keyboard behavior on `Sidebar` could regress a11y.             | Sidebar needs no focus trap; cover with axe + keyboard tests. Low risk.                 |
-| 3 | Theme switching via `data-theme` must not flash wrong theme on first paint.     | Document an inline `<head>` script snippet for consumers doing SSR/static hosting.      |
-| 4 | Consumers depending on removed components must stay on v0.x.                     | Clearly documented in MIGRATION.md; v0.x package remains published.                     |
-| 5 | Open: single `styles.css` vs. per-component CSS for tree-shaking.               | v1 = single file (decided). Revisit if bundle analysis shows it matters.                |
-| 6 | Versioning approach.                                                            | **Decided:** ship as `@koduhai/design-system` v1.0.0 under the same package name.       |
-| 7 | Icons: current system re-exports MUI icons. New system must not depend on them. | **Decided:** vendor a small in-house SVG icon set under `src/icons` (§5a). Icon-accepting props also take any `ReactNode`. |
+| #   | Risk / Question                                                                 | Mitigation / Resolution                                                                                                    |
+| --- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1   | CSS Modules extraction in a tsup/esbuild library build can be fiddly.           | Spike the build pipeline in Phase 1 before any component work; pick PostCSS plugin.                                        |
+| 2   | Hand-built focus/keyboard behavior on `Sidebar` could regress a11y.             | Sidebar needs no focus trap; cover with axe + keyboard tests. Low risk.                                                    |
+| 3   | Theme switching via `data-theme` must not flash wrong theme on first paint.     | Document an inline `<head>` script snippet for consumers doing SSR/static hosting.                                         |
+| 4   | Consumers depending on removed components must stay on v0.x.                    | Clearly documented in MIGRATION.md; v0.x package remains published.                                                        |
+| 5   | Open: single `styles.css` vs. per-component CSS for tree-shaking.               | v1 = single file (decided). Revisit if bundle analysis shows it matters.                                                   |
+| 6   | Versioning approach.                                                            | **Decided:** ship as `@koduhai/design-system` v1.0.0 under the same package name.                                          |
+| 7   | Icons: current system re-exports MUI icons. New system must not depend on them. | **Decided:** vendor a small in-house SVG icon set under `src/icons` (§5a). Icon-accepting props also take any `ReactNode`. |
 
 ---
 

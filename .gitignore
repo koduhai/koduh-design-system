@@ -3,6 +3,7 @@ dist/
 storybook-static/
 test-results/
 playwright-report/
+coverage/
 *.log
 .DS_Store
 test-output.txt

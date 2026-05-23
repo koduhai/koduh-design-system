@@ -64,6 +64,7 @@ koduhai-design-system-v2/
 ## Task 1: Project scaffold & tooling
 
 **Files:**
+
 - Create: `package.json`, `tsconfig.json`, `.gitignore`, `.prettierrc`, `eslint.config.js`, `vitest.config.ts`, `vitest.setup.ts`
 
 - [ ] **Step 1: Create `package.json`**
@@ -96,12 +97,8 @@ koduhai-design-system-v2/
     "./styles.css": "./dist/index.css",
     "./theme.css": "./dist/theme.css"
   },
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "files": [
-    "dist"
-  ],
+  "sideEffects": ["**/*.css"],
+  "files": ["dist"],
   "scripts": {
     "build": "npm run build:tokens && tsup",
     "build:tokens": "tsx scripts/generate-theme-css.ts",
@@ -285,6 +282,7 @@ git commit -m "chore: scaffold project tooling (ts, vitest, eslint, prettier)"
 ## Task 2: Design tokens
 
 **Files:**
+
 - Create: `src/theme/tokens.ts`
 - Create: `src/theme/index.ts`
 - Test: `src/theme/tokens.test.ts`
@@ -469,6 +467,7 @@ git commit -m "feat: add design tokens (scales + dark/light color themes)"
 ## Task 3: Theme CSS generation script
 
 **Files:**
+
 - Create: `scripts/generate-theme-css.ts`
 - Test: `scripts/generate-theme-css.test.ts`
 
@@ -583,6 +582,7 @@ git commit -m "feat: generate theme.css custom properties from tokens"
 ## Task 4: Global reset stylesheet
 
 **Files:**
+
 - Create: `src/styles/reset.css`
 
 This is plain CSS (no test); it is validated by the build (Task 9) and Storybook (Task 11).
@@ -653,6 +653,7 @@ git commit -m "feat: add global reset stylesheet"
 ## Task 5: Primitive — mergeRefs
 
 **Files:**
+
 - Create: `src/primitives/mergeRefs.ts`
 - Test: `src/primitives/mergeRefs.test.ts`
 
@@ -726,6 +727,7 @@ git commit -m "feat: add mergeRefs primitive"
 ## Task 6: Primitive — composeEventHandlers
 
 **Files:**
+
 - Create: `src/primitives/composeEventHandlers.ts`
 - Test: `src/primitives/composeEventHandlers.test.ts`
 
@@ -801,6 +803,7 @@ git commit -m "feat: add composeEventHandlers primitive"
 ## Task 7: Primitive — useId
 
 **Files:**
+
 - Create: `src/primitives/useId.ts`
 - Test: `src/primitives/useId.test.tsx`
 
@@ -870,6 +873,7 @@ git commit -m "feat: add useId primitive"
 ## Task 8: Primitive — useControllableState
 
 **Files:**
+
 - Create: `src/primitives/useControllableState.ts`
 - Test: `src/primitives/useControllableState.test.tsx`
 
@@ -884,9 +888,7 @@ import { useControllableState } from './useControllableState';
 
 describe('useControllableState', () => {
   it('manages internal state when uncontrolled', () => {
-    const { result } = renderHook(() =>
-      useControllableState<string>({ defaultValue: 'a' }),
-    );
+    const { result } = renderHook(() => useControllableState<string>({ defaultValue: 'a' }));
     expect(result.current[0]).toBe('a');
     act(() => result.current[1]('b'));
     expect(result.current[0]).toBe('b');
@@ -894,9 +896,7 @@ describe('useControllableState', () => {
 
   it('respects a controlled value and does not change it internally', () => {
     const onChange = vi.fn();
-    const { result } = renderHook(() =>
-      useControllableState<string>({ value: 'fixed', onChange }),
-    );
+    const { result } = renderHook(() => useControllableState<string>({ value: 'fixed', onChange }));
     expect(result.current[0]).toBe('fixed');
     act(() => result.current[1]('next'));
     expect(result.current[0]).toBe('fixed'); // controlled value unchanged
@@ -973,6 +973,7 @@ git commit -m "feat: add useControllableState primitive"
 ## Task 9: Primitive — Slot (asChild polymorphism)
 
 **Files:**
+
 - Create: `src/primitives/Slot.tsx`
 - Test: `src/primitives/Slot.test.tsx`
 
@@ -1101,6 +1102,7 @@ git commit -m "feat: add Slot primitive for asChild polymorphism"
 ## Task 10: Primitive — VisuallyHidden + primitives barrel
 
 **Files:**
+
 - Create: `src/primitives/VisuallyHidden.tsx`
 - Create: `src/primitives/index.ts`
 - Test: `src/primitives/VisuallyHidden.test.tsx`
@@ -1194,6 +1196,7 @@ git commit -m "feat: add VisuallyHidden primitive and primitives barrel"
 ## Task 11: Icon factory + initial icon set
 
 **Files:**
+
 - Create: `src/icons/createIcon.tsx`
 - Create: `src/icons/icons.tsx`
 - Create: `src/icons/index.ts`
@@ -1361,6 +1364,7 @@ git commit -m "feat: add SVG icon factory and initial vendored icon set"
 ## Task 12: KoduhThemeProvider + useColorMode
 
 **Files:**
+
 - Create: `src/provider/useColorMode.ts`
 - Create: `src/provider/KoduhThemeProvider.tsx`
 - Create: `src/provider/index.ts`
@@ -1564,6 +1568,7 @@ git commit -m "feat: add KoduhThemeProvider and useColorMode"
 ## Task 13: Package entry & full unit suite
 
 **Files:**
+
 - Create: `src/index.ts`
 
 - [ ] **Step 1: Create the main entry `src/index.ts`**
@@ -1574,7 +1579,14 @@ export { KoduhThemeProvider, useColorMode } from './provider';
 export type { KoduhThemeProviderProps, ColorModeContextValue } from './provider';
 
 // Primitives (public utilities reused by component consumers)
-export { Slot, VisuallyHidden, mergeRefs, composeEventHandlers, useId, useControllableState } from './primitives';
+export {
+  Slot,
+  VisuallyHidden,
+  mergeRefs,
+  composeEventHandlers,
+  useId,
+  useControllableState,
+} from './primitives';
 export type { SlotProps } from './primitives';
 
 // Theme tokens
@@ -1611,6 +1623,7 @@ git commit -m "feat: add package entry barrel"
 ## Task 14: Build pipeline + CSS Modules extraction validation
 
 **Files:**
+
 - Create: `tsup.config.ts`
 - Create (temporary spike): `src/_spike/Spike.tsx`, `src/_spike/Spike.module.css`
 
@@ -1699,6 +1712,7 @@ git commit -m "build: configure tsup with CSS module extraction (validated)"
 ## Task 15: Storybook setup + theme decorator
 
 **Files:**
+
 - Create: `.storybook/main.ts`
 - Create: `.storybook/preview.tsx`
 - Create: `src/icons/Icons.stories.tsx` (sample story to render in Storybook)
@@ -1775,7 +1789,16 @@ export default preview;
 
 ```tsx
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CloseIcon, CheckIcon, InfoIcon, WarningIcon, ErrorIcon, MenuIcon, SearchIcon, UserIcon } from './icons';
+import {
+  CloseIcon,
+  CheckIcon,
+  InfoIcon,
+  WarningIcon,
+  ErrorIcon,
+  MenuIcon,
+  SearchIcon,
+  UserIcon,
+} from './icons';
 
 const meta: Meta = {
   title: 'Foundations/Icons',
@@ -1822,6 +1845,7 @@ git commit -m "chore: add Storybook with dark/light theme decorator"
 ## Task 16: Playwright + axe-core e2e smoke test
 
 **Files:**
+
 - Create: `playwright.config.ts`
 - Create: `e2e/foundations.spec.ts`
 
@@ -1887,6 +1911,7 @@ git commit -m "test: add Playwright + axe-core e2e smoke test"
 ## Task 17: README + final verification
 
 **Files:**
+
 - Create: `README.md`
 
 - [ ] **Step 1: Create `README.md`**
@@ -1906,10 +1931,10 @@ set of accessible primitives and icons.
 
 \`\`\`bash
 npm install
-npm run storybook        # dev docs at http://localhost:6006
-npm test                 # unit tests (Vitest)
-npm run test:e2e         # a11y/visual e2e (Playwright + axe)
-npm run build            # generate theme.css + bundle (tsup)
+npm run storybook # dev docs at http://localhost:6006
+npm test # unit tests (Vitest)
+npm run test:e2e # a11y/visual e2e (Playwright + axe)
+npm run build # generate theme.css + bundle (tsup)
 \`\`\`
 
 ## Architecture

@@ -40,10 +40,21 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "lint": "eslint src",
-    "format": "prettier --write src",
-    "format:check": "prettier --check src"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,mjs,cjs,json,css,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
@@ -59,6 +70,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
+    "@eslint/js": "^10.0.0",
     "@playwright/test": "^1.58.2",
     "@storybook/addon-a11y": "^10.2.16",
     "@storybook/react-vite": "^10.2.16",
@@ -69,9 +81,11 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.4",
-    "@eslint/js": "^10.0.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "eslint": "^10.0.2",
+    "husky": "^9.1.7",
     "jsdom": "^28.1.0",
+    "lint-staged": "^17.0.5",
     "prettier": "^3.8.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

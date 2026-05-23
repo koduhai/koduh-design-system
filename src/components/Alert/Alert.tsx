@@ -45,7 +45,13 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   const classes = cx(styles.root, className);
 
   return (
-    <div ref={ref} role={roleForSeverity[severity]} className={classes} data-severity={severity} {...props}>
+    <div
+      ref={ref}
+      role={roleForSeverity[severity]}
+      className={classes}
+      data-severity={severity}
+      {...props}
+    >
       {resolvedIcon ? (
         <span className={styles.icon} aria-hidden>
           {resolvedIcon}

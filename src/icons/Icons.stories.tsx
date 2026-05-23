@@ -1,5 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CloseIcon, CheckIcon, InfoIcon, WarningIcon, ErrorIcon, MenuIcon, SearchIcon, UserIcon } from './icons';
+import {
+  CloseIcon,
+  CheckIcon,
+  InfoIcon,
+  WarningIcon,
+  ErrorIcon,
+  MenuIcon,
+  SearchIcon,
+  UserIcon,
+} from './icons';
 
 const meta: Meta = {
   title: 'Foundations/Icons',

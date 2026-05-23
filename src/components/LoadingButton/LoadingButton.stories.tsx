@@ -15,8 +15,12 @@ export const Showcase: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <LoadingButton>Idle</LoadingButton>
-      <LoadingButton loading loadingText="Saving…">Saving</LoadingButton>
-      <LoadingButton loading tone="danger" loadingText="Deleting…">Deleting</LoadingButton>
+      <LoadingButton loading loadingText="Saving…">
+        Saving
+      </LoadingButton>
+      <LoadingButton loading tone="danger" loadingText="Deleting…">
+        Deleting
+      </LoadingButton>
     </div>
   ),
 };

@@ -3,7 +3,14 @@ export { KoduhThemeProvider, useColorMode } from './provider';
 export type { KoduhThemeProviderProps, ColorModeContextValue } from './provider';
 
 // Primitives (public utilities reused by component consumers)
-export { Slot, VisuallyHidden, mergeRefs, composeEventHandlers, useId, useControllableState } from './primitives';
+export {
+  Slot,
+  VisuallyHidden,
+  mergeRefs,
+  composeEventHandlers,
+  useId,
+  useControllableState,
+} from './primitives';
 export type { SlotProps } from './primitives';
 
 // Theme tokens
@@ -24,6 +31,10 @@ export type { ChipProps, ChipVariant, ChipTone, ChipSize } from './components/Ch
 export { Avatar } from './components/Avatar';
 export type { AvatarProps, AvatarSize, AvatarShape } from './components/Avatar';
 export { StatusBadge } from './components/StatusBadge';
-export type { StatusBadgeProps, StatusBadgeStatus, StatusBadgeVariant } from './components/StatusBadge';
+export type {
+  StatusBadgeProps,
+  StatusBadgeStatus,
+  StatusBadgeVariant,
+} from './components/StatusBadge';
 export { Alert } from './components/Alert';
 export type { AlertProps, AlertSeverity } from './components/Alert';

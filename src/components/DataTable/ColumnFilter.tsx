@@ -111,7 +111,7 @@ function SelectFilter<Row>({ column, header, data, value, onChange }: SelectFilt
     const seen = new Set<string>();
     for (const row of data) seen.add(String(getColumnValue(column, row)));
     return [...seen].map((v) => ({ value: v, label: v }));
-  }, [column, data]);
+  }, [column.key, column.filterOptions, data]);
 
   const chosen = Array.isArray(value) ? value : [];
   const toggle = (v: string) =>
@@ -126,7 +126,11 @@ function SelectFilter<Row>({ column, header, data, value, onChange }: SelectFilt
       onClick={() => setOpen((o) => !o)}
     >
       {header}
-      {chosen.length > 0 ? <span className={styles.filterCount}>{chosen.length}</span> : null}
+      {chosen.length > 0 ? (
+        <span className={styles.filterCount} aria-label={`${chosen.length} selected`}>
+          {chosen.length}
+        </span>
+      ) : null}
     </button>
   );
 

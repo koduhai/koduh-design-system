@@ -61,6 +61,14 @@
   cursor: pointer;
 }
 
+.filterTrigger:hover {
+  background: color-mix(in srgb, var(--ku-color-text-primary) 8%, var(--ku-color-bg-default));
+}
+
+.filterTrigger:active {
+  background: color-mix(in srgb, var(--ku-color-text-primary) 14%, var(--ku-color-bg-default));
+}
+
 .filterCount {
   display: inline-flex;
   align-items: center;

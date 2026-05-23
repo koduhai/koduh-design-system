@@ -25,7 +25,18 @@ export interface PopoverProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role
   defaultOpen?: boolean;
   /** Called with the requested next open state (trigger toggle, Esc, outside click). */
   onOpenChange?: (open: boolean) => void;
-  /** The anchor element. Rendered via Slot so anchor wiring merges onto your element. */
+  /**
+   * The anchor element. Rendered via `Slot`, which merges only the anchor wiring
+   * (anchor-name custom property + ref) onto your element.
+   *
+   * Opening/closing is the CALLER's responsibility: wire your own `onClick`
+   * (or hover/focus) on this element to drive `open`/`onOpenChange`. Likewise,
+   * trigger ARIA (`aria-expanded`, `aria-haspopup`, `aria-controls`, or
+   * `aria-describedby`) lives on your element, not here — it is intentionally
+   * consumer-specific because the correct `haspopup` value and the
+   * controls-vs-describedby choice differ per pattern (listbox/menu/tooltip).
+   * The composing components (`Select`, `Menu`, `Tooltip`) each supply it.
+   */
   trigger: ReactElement;
   /** Anchored placement. Defaults to 'bottom'. */
   placement?: PopoverPlacement;

@@ -1,0 +1,14 @@
+.tooltip {
+  padding: var(--ku-space-1) var(--ku-space-2);
+  font-size: var(--ku-font-size-sm);
+  line-height: var(--ku-line-height-tight);
+  max-width: 16rem;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition: none;
+  }
+}

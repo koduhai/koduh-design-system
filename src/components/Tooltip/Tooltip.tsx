@@ -1,8 +1,8 @@
-import { cloneElement, forwardRef, useRef, useState } from 'react';
+import { cloneElement, forwardRef, useEffect, useRef, useState } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactElement, ReactNode } from 'react';
 import { Popover } from '../Popover';
 import type { PopoverPlacement } from '../Popover';
-import { useId } from '../../primitives';
+import { useId, composeEventHandlers } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Tooltip.module.css';
 
@@ -42,16 +42,23 @@ export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(
     setOpen(false);
   };
 
+  // Fix 1: Clear pending timer on unmount to avoid setState on an unmounted component.
+  useEffect(() => {
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, []);
+
+  // Fix 2: Compose our handlers with the child's existing handlers so consumers don't lose theirs.
   const trigger = cloneElement(children, {
     'aria-describedby': open ? tooltipId : undefined,
-    onMouseEnter: scheduleOpen,
-    onMouseLeave: close,
-    onFocus: scheduleOpen,
-    onBlur: close,
-    onKeyDown: (e: KeyboardEvent<HTMLElement>) => {
+    onMouseEnter: composeEventHandlers(children.props.onMouseEnter, scheduleOpen),
+    onMouseLeave: composeEventHandlers(children.props.onMouseLeave, close),
+    onFocus: composeEventHandlers(children.props.onFocus, scheduleOpen),
+    onBlur: composeEventHandlers(children.props.onBlur, close),
+    onKeyDown: composeEventHandlers(children.props.onKeyDown, (e: KeyboardEvent<HTMLElement>) => {
       if (e.key === 'Escape') close();
-      children.props.onKeyDown?.(e);
-    },
+    }),
   });
 
   return (

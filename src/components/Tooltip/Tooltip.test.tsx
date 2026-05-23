@@ -50,4 +50,20 @@ describe('Tooltip', () => {
     act(() => fireEvent.blur(trigger));
     expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'false');
   });
+
+  it('closes on Escape key', () => {
+    render(
+      <Tooltip content="Hi" delay={0}>
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    const trigger = screen.getByRole('button');
+    act(() => {
+      fireEvent.focus(trigger);
+      vi.runAllTimers();
+    });
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'true');
+    act(() => fireEvent.keyDown(trigger, { key: 'Escape' }));
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'false');
+  });
 });

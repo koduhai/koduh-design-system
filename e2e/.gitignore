@@ -1,0 +1,5 @@
+# Visual-regression baselines are platform-specific (rendered per-OS, e.g.
+# *-chromium-win32.png locally vs *-chromium-linux.png in CI). Committing
+# locally generated baselines causes false diffs across machines. Generate
+# them on the target platform with: npx playwright test --update-snapshots
+*-snapshots/

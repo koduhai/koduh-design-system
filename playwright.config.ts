@@ -4,6 +4,11 @@ export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
   fullyParallel: true,
+  expect: {
+    // Allow a small tolerance so anti-aliasing / sub-pixel rendering differences
+    // don't fail otherwise-identical themed snapshots.
+    toHaveScreenshot: { maxDiffPixelRatio: 0.01 },
+  },
   use: {
     baseURL: 'http://localhost:6006',
   },

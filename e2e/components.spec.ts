@@ -43,6 +43,10 @@ const COMPONENTS = [
   // the first trigger so axe inspects the rendered listbox/menu (see gotoStory).
   { name: 'Select', storyId: 'components-select--showcase', open: true },
   { name: 'Menu', storyId: 'components-menu--showcase', open: true },
+  { name: 'Textarea', storyId: 'components-textarea--showcase' },
+  { name: 'Progress', storyId: 'components-progress--showcase' },
+  { name: 'Pagination', storyId: 'components-pagination--showcase' },
+  { name: 'Table', storyId: 'components-table--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

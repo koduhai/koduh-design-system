@@ -86,3 +86,17 @@ export { Select } from './components/Select';
 export type { SelectProps, SelectOption, SelectSize } from './components/Select';
 export { Menu } from './components/Menu';
 export type { MenuProps, MenuEntry, MenuItemConfig, MenuSeparator } from './components/Menu';
+
+// Phase 8 — data & forms
+export { Textarea } from './components/Textarea';
+export type { TextareaProps, TextareaSize } from './components/Textarea';
+export { Progress } from './components/Progress';
+export type { ProgressProps, ProgressSize, ProgressTone } from './components/Progress';
+export { Pagination, getPaginationRange } from './components/Pagination';
+export type {
+  PaginationProps,
+  PaginationItem,
+  PaginationRangeOptions,
+} from './components/Pagination';
+export { Table } from './components/Table';
+export type { TableProps, Column, SortDirection, CellAlign } from './components/Table';

@@ -1,0 +1,40 @@
+.root {
+  display: block;
+  background-color: var(--ku-color-bg-raised);
+  border-radius: var(--ku-radius-sm);
+}
+
+/* Text lines collapse to a sensible default size when none is provided. */
+.root[data-variant='text'] {
+  width: 100%;
+  height: 1em;
+  border-radius: var(--ku-radius-sm);
+}
+
+.root[data-variant='rect'] {
+  border-radius: var(--ku-radius-md);
+}
+
+.root[data-variant='circle'] {
+  border-radius: var(--ku-radius-full);
+}
+
+.root[data-animation='pulse'] {
+  animation: ku-skeleton-pulse 1.5s var(--ku-easing-standard) infinite;
+}
+
+@keyframes ku-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-animation='pulse'] {
+    animation: none;
+  }
+}

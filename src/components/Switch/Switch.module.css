@@ -1,0 +1,117 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  font-family: var(--ku-font-family-base);
+  cursor: pointer;
+}
+
+.root[data-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Visually hidden but accessible: overlay the native input on the track. */
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background-color: var(--ku-color-border);
+  border-radius: var(--ku-radius-full);
+  transition: background-color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.thumb {
+  position: absolute;
+  border-radius: var(--ku-radius-full);
+  background-color: var(--ku-color-bg-default);
+  box-shadow: var(--ku-shadow-1);
+  transition: transform var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+/* Checked state: color swap (one signal) + thumb position (non-color signal). */
+.root[data-checked='true'] .track {
+  background-color: var(--ku-color-primary);
+}
+
+/* Focus ring driven by the native input. */
+.input:focus-visible + .track {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+.label {
+  font-size: var(--ku-font-size-md);
+  color: var(--ku-color-text-primary);
+}
+
+/* Sizes: track dimensions, thumb size, inset and checked travel distance. */
+.root[data-size='sm'] .track {
+  width: 32px;
+  height: 18px;
+  padding: 2px;
+}
+.root[data-size='sm'] .thumb {
+  width: 14px;
+  height: 14px;
+  left: 2px;
+}
+.root[data-size='sm'][data-checked='true'] .thumb {
+  transform: translateX(14px);
+}
+.root[data-size='sm'] .label {
+  font-size: var(--ku-font-size-sm);
+}
+
+.root[data-size='md'] .track {
+  width: 40px;
+  height: 22px;
+  padding: 2px;
+}
+.root[data-size='md'] .thumb {
+  width: 18px;
+  height: 18px;
+  left: 2px;
+}
+.root[data-size='md'][data-checked='true'] .thumb {
+  transform: translateX(18px);
+}
+
+.root[data-size='lg'] .track {
+  width: 52px;
+  height: 28px;
+  padding: 3px;
+}
+.root[data-size='lg'] .thumb {
+  width: 22px;
+  height: 22px;
+  left: 3px;
+}
+.root[data-size='lg'][data-checked='true'] .thumb {
+  transform: translateX(24px);
+}
+.root[data-size='lg'] .label {
+  font-size: var(--ku-font-size-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .thumb {
+    transition: none;
+  }
+}

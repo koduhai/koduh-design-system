@@ -4,11 +4,14 @@ Koduh AI's design system, rebuilt from scratch without Material UI. Dark-first
 theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
 set of accessible primitives and icons.
 
-> **Status:** v1.0.0 — all phases complete. All 12 components ship
-> (`Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`, `Alert`,
-> `TextField`, `Card`, `EmptyState`, `PageHeader`, `AppBar`, `Sidebar`) on top
-> of the token pipeline, primitives, icon set, and theme provider. Tree-shaking,
-> a full accessibility audit ([`ACCESSIBILITY.md`](./ACCESSIBILITY.md)), and CI
+> **Status:** v1.0 shipped; Phase 5 (Tier 1) components landed. The original 12
+> components (`Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`,
+> `Alert`, `TextField`, `Card`, `EmptyState`, `PageHeader`, `AppBar`, `Sidebar`)
+> are joined by the Phase 5 set: `Checkbox`, `Radio`/`RadioGroup`, `Switch`,
+> `Spinner`, `Skeleton`, `Divider`, `Accordion`, `Breadcrumbs`, `Tabs`. Overlay
+> components (`Dialog`, `ConfirmDialog`, `Snackbar`) follow in Phase 6. All ride
+> the token pipeline, primitives, icon set, and theme provider. Tree-shaking, a
+> full accessibility audit ([`ACCESSIBILITY.md`](./ACCESSIBILITY.md)), and CI
 > visual-regression are in place. See [`CHANGELOG.md`](./CHANGELOG.md). Publishing
 > is maintainer-triggered via a GitHub Release (`.github/workflows/release.yml`).
 

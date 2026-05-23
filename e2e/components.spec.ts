@@ -26,6 +26,15 @@ const COMPONENTS = [
   { name: 'PageHeader', storyId: 'components-pageheader--showcase' },
   { name: 'AppBar', storyId: 'components-appbar--showcase' },
   { name: 'Sidebar', storyId: 'components-sidebar--showcase' },
+  { name: 'Checkbox', storyId: 'components-checkbox--showcase' },
+  { name: 'Radio', storyId: 'components-radio--showcase' },
+  { name: 'Switch', storyId: 'components-switch--showcase' },
+  { name: 'Spinner', storyId: 'components-spinner--showcase' },
+  { name: 'Skeleton', storyId: 'components-skeleton--showcase' },
+  { name: 'Divider', storyId: 'components-divider--showcase' },
+  { name: 'Accordion', storyId: 'components-accordion--showcase' },
+  { name: 'Breadcrumbs', storyId: 'components-breadcrumbs--showcase' },
+  { name: 'Tabs', storyId: 'components-tabs--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {
@@ -35,8 +44,11 @@ function storyUrl(storyId: string, theme: string): string {
 async function gotoStory(page: import('@playwright/test').Page, storyId: string, theme: string) {
   await page.goto(storyUrl(storyId, theme));
   // Storybook renders into #storybook-root; wait for the story body to paint.
+  // Wait for a rendered element child rather than text — some components
+  // (e.g. Skeleton) render only decorative, text-free nodes, which a
+  // text-based emptiness check would wrongly treat as "not yet rendered".
   await page.locator('#storybook-root').waitFor();
-  await expect(page.locator('#storybook-root')).not.toBeEmpty();
+  await expect(page.locator('#storybook-root > *').first()).toBeAttached();
 }
 
 for (const { name, storyId } of COMPONENTS) {

@@ -50,3 +50,23 @@ export { AppBar } from './components/AppBar';
 export type { AppBarProps, AppBarPosition } from './components/AppBar';
 export { Sidebar } from './components/Sidebar';
 export type { SidebarProps, SidebarItem } from './components/Sidebar';
+
+// Phase 5 — Tier 1 components
+export { Checkbox } from './components/Checkbox';
+export type { CheckboxProps, CheckboxSize } from './components/Checkbox';
+export { Radio, RadioGroup } from './components/Radio';
+export type { RadioProps, RadioGroupProps } from './components/Radio';
+export { Switch } from './components/Switch';
+export type { SwitchProps, SwitchSize } from './components/Switch';
+export { Spinner } from './components/Spinner';
+export type { SpinnerProps, SpinnerSize, SpinnerTone } from './components/Spinner';
+export { Skeleton } from './components/Skeleton';
+export type { SkeletonProps, SkeletonVariant } from './components/Skeleton';
+export { Divider } from './components/Divider';
+export type { DividerProps } from './components/Divider';
+export { Accordion } from './components/Accordion';
+export type { AccordionProps, AccordionItemData } from './components/Accordion';
+export { Breadcrumbs } from './components/Breadcrumbs';
+export type { BreadcrumbsProps, BreadcrumbItem } from './components/Breadcrumbs';
+export { Tabs } from './components/Tabs';
+export type { TabsProps, TabItem } from './components/Tabs';

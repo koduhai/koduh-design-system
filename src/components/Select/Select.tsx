@@ -123,16 +123,22 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     }
   };
 
+  const wasOpen = useRef(false);
+
   // Focus the listbox when it opens (keyboard nav); seed the active index to the
   // currently selected option so arrow keys start from a sensible place.
+  // On close, return focus to the trigger (Fix 1) unless this is the initial mount.
+  // Fix 2: skip disabled options when seeding the active index.
   useEffect(() => {
     if (open) {
       listRef.current?.focus();
-      const sel = options.findIndex((o) => o.value === selected);
+      const sel = options.findIndex((o) => o.value === selected && !o.disabled);
       setActiveIndex(sel);
     } else {
       setActiveIndex(-1);
+      if (wasOpen.current) triggerRef.current?.focus();
     }
+    wasOpen.current = open;
     // Intentionally keyed only on `open`: re-seeding on every options/selected
     // change would fight user navigation. Mirrors the Popover open/close effect.
   }, [open]);
@@ -149,6 +155,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       aria-expanded={open}
       aria-controls={open ? listboxId : undefined}
       aria-labelledby={label ? `${labelId} ${baseId}` : undefined}
+      aria-describedby={helperText != null ? `${baseId}-desc` : undefined}
       aria-invalid={error || undefined}
       onClick={() => setOpen((o) => !o)}
     >
@@ -201,7 +208,11 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
         </ul>
       </Popover>
       {helperText != null ? (
-        <span className={styles.helperText} data-error={error ? 'true' : undefined}>
+        <span
+          id={`${baseId}-desc`}
+          className={styles.helperText}
+          data-error={error ? 'true' : undefined}
+        >
           {helperText}
         </span>
       ) : null}

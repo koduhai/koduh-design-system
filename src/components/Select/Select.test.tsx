@@ -57,4 +57,13 @@ describe('Select', () => {
     expect(screen.getByRole('button', { name: /Fruit/ })).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText('Required')).toBeInTheDocument();
   });
+
+  it('restores focus to the trigger when closed via Escape', () => {
+    render(<Select label="Fruit" options={options} />);
+    const trigger = screen.getByRole('button', { name: /Fruit/ });
+    fireEvent.click(trigger);
+    const listbox = screen.getByRole('listbox');
+    fireEvent.keyDown(listbox, { key: 'Escape' });
+    expect(trigger).toHaveFocus();
+  });
 });

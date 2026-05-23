@@ -101,17 +101,19 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       case 'End':
         event.preventDefault();
         for (let i = options.length - 1; i >= 0; i--) {
-          if (!options[i].disabled) {
+          if (!options[i]?.disabled) {
             setActiveIndex(i);
             break;
           }
         }
         break;
       case 'Enter':
-      case ' ':
+      case ' ': {
         event.preventDefault();
-        if (activeIndex >= 0) choose(options[activeIndex], event);
+        const active = activeIndex >= 0 ? options[activeIndex] : undefined;
+        if (active) choose(active, event);
         break;
+      }
       case 'Escape':
         event.preventDefault();
         setOpen(false);

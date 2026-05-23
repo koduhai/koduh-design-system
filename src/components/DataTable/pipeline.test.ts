@@ -191,3 +191,21 @@ test('runPipeline clamps an out-of-range page', () => {
   expect(result.page).toBe(2); // 3 rows / 2 per page = 2 pages
   expect(result.rows.map((r) => r.id)).toEqual(['3']);
 });
+
+test('clampPage returns 1 when there are no rows', () => {
+  expect(clampPage(1, 0, 10)).toBe(1);
+});
+
+test('applyGlobalSearch returns a copy when no columns are searchable', () => {
+  const cols: DataColumn<Row>[] = [
+    { key: 'age', header: 'Age', type: 'number' },
+    { key: 'joined', header: 'Joined', type: 'date' },
+  ];
+  const out = applyGlobalSearch(data, 'anything', cols);
+  expect(out).toHaveLength(3);
+  expect(out).not.toBe(data);
+});
+
+test('applyGlobalSearch treats a whitespace-only query as a no-op', () => {
+  expect(applyGlobalSearch(data, '   ', columns)).toHaveLength(3);
+});

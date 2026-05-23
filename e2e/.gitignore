@@ -1,5 +1,10 @@
-# Visual-regression baselines are platform-specific (rendered per-OS, e.g.
-# *-chromium-win32.png locally vs *-chromium-linux.png in CI). Committing
-# locally generated baselines causes false diffs across machines. Generate
-# them on the target platform with: npx playwright test --update-snapshots
-*-snapshots/
+# Visual-regression baselines are platform-specific. We commit ONLY the Linux
+# baselines (*-linux.png) so the CI ubuntu runner can diff against them. Local
+# baselines for other OSes (e.g. *-win32.png) stay ignored to avoid churn.
+# Regenerate Linux baselines with the Playwright Docker image:
+#   PW=$(node -p "require('@playwright/test/package.json').version")
+#   docker run --rm -v "$PWD:/work" -v /work/node_modules -w /work \
+#     mcr.microsoft.com/playwright:v$PW-jammy \
+#     bash -c "npm ci && npx playwright test --grep visual --update-snapshots"
+*-snapshots/*
+!*-snapshots/*-linux.png

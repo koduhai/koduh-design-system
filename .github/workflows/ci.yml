@@ -38,8 +38,21 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      # Runs only the axe a11y e2e tests — these are deterministic and platform
-      # independent. Visual-snapshot tests are excluded until baseline images are
-      # generated on this CI platform and committed (see task: visual regression).
-      - name: E2E a11y tests
+      - name: E2E a11y tests (axe, both themes)
         run: npm run test:e2e -- --grep axe
+
+      # Visual regression against the committed Linux baselines
+      # (e2e/components.spec.ts-snapshots/*-linux.png). The ubuntu runner and the
+      # playwright:*-jammy image used to generate the baselines share the same
+      # Chromium + glibc, so rendering matches; playwright.config.ts allows a
+      # small maxDiffPixelRatio for sub-pixel anti-aliasing differences.
+      - name: E2E visual regression
+        run: npm run test:e2e -- --grep visual
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

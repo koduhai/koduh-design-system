@@ -62,14 +62,14 @@ export const Chip = forwardRef<HTMLElement, ChipProps>(function Chip(
 
   if (interactive) {
     return (
-      <button ref={ref as Ref<HTMLElement>} type="button" className={classes} onClick={onClick} {...dataAttrs}>
+      <button ref={ref as Ref<HTMLButtonElement>} type="button" className={classes} onClick={onClick} {...dataAttrs}>
         {content}
       </button>
     );
   }
 
   return (
-    <span ref={ref as Ref<HTMLElement>} className={classes} onClick={onClick} {...dataAttrs}>
+    <span ref={ref as Ref<HTMLSpanElement>} className={classes} onClick={onClick} {...dataAttrs}>
       {content}
     </span>
   );

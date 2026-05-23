@@ -98,3 +98,29 @@ test('date-range filter respects open-ended bounds', () => {
 test('an empty text filter is a no-op', () => {
   expect(applyColumnFilters(data, { name: '' }, columns)).toHaveLength(3);
 });
+
+test('number-range min of 0 is respected (not treated as absent)', () => {
+  // all ages are >= 0, so min:0 keeps everything
+  expect(applyColumnFilters(data, { age: { min: 0 } }, columns)).toHaveLength(3);
+});
+
+test('multiple active filters combine with AND', () => {
+  // name contains 'b' → only Bob(1); age <= 30 keeps Bob too
+  expect(
+    applyColumnFilters(data, { name: 'b', age: { max: 30 } }, columns).map((r) => r.id),
+  ).toEqual(['1']);
+  // name contains 'b' but age < 30 excludes Bob(30) → empty
+  expect(applyColumnFilters(data, { name: 'b', age: { max: 29 } }, columns)).toHaveLength(0);
+});
+
+test('empty date-range object is a no-op', () => {
+  expect(applyColumnFilters(data, { joined: {} }, columns)).toHaveLength(3);
+});
+
+test('a column without `filter` set does not participate even if filters has its key', () => {
+  // build columns where `name` has NO filter kind
+  const noFilterCols: DataColumn<Row>[] = columns.map((c) =>
+    c.key === 'name' ? { ...c, filter: undefined } : c,
+  );
+  expect(applyColumnFilters(data, { name: 'zzz-no-match' }, noFilterCols)).toHaveLength(3);
+});

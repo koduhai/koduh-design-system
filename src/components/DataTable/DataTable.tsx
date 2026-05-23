@@ -113,9 +113,6 @@ function DataTableInner<Row>(
     setPage(1);
   };
 
-  // Selection wired in Task 11.
-  void setSelected;
-
   const filterColumns = columns.filter((c) => c.filter);
 
   const handleFilterChange = (key: string, next: FilterValue) => {
@@ -128,16 +125,31 @@ function DataTableInner<Row>(
 
   return (
     <div ref={ref} className={cx(styles.root, className)} {...props}>
-      {searchable ? (
+      {searchable || selected.length > 0 ? (
         <div className={styles.toolbar}>
-          <TextField
-            type="search"
-            className={styles.search}
-            label="Search"
-            placeholder="Search…"
-            value={searchState}
-            onChange={handleSearchChange}
-          />
+          {searchable ? (
+            <TextField
+              type="search"
+              className={styles.search}
+              label="Search"
+              placeholder="Search…"
+              value={searchState}
+              onChange={handleSearchChange}
+            />
+          ) : null}
+          {selected.length > 0 ? (
+            <div className={styles.selection}>
+              <span>{selected.length} selected</span>
+              <button
+                type="button"
+                className={styles.clearSelection}
+                aria-label="Clear selection"
+                onClick={() => setSelected([])}
+              >
+                Clear
+              </button>
+            </div>
+          ) : null}
         </div>
       ) : null}
       {filterColumns.length > 0 ? (
@@ -167,6 +179,7 @@ function DataTableInner<Row>(
         onSortChange={handleSortChange}
         selectedIds={selected}
         selectAllIds={matchingIds}
+        onSelectionChange={setSelected}
       />
       <div className={styles.footer}>
         <Select

@@ -88,3 +88,20 @@
   padding: var(--ku-space-2);
   min-width: 12rem;
 }
+
+.selection {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  margin-inline-start: auto;
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+}
+.clearSelection {
+  border: none;
+  background: none;
+  color: var(--ku-color-primary);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}

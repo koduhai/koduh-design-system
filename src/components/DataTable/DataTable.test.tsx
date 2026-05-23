@@ -1,4 +1,6 @@
 import { test, expect } from 'vitest';
+import { vi } from 'vitest';
+import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DataTable } from './DataTable';
@@ -161,4 +163,40 @@ test('multi-select enum filter toggles values via checkboxes', async () => {
   await user.click(screen.getByRole('checkbox', { name: 'admin' }));
   expect(screen.getByText('User 1')).toBeInTheDocument(); // id 1 odd → admin
   expect(screen.queryByText('User 2')).not.toBeInTheDocument(); // id 2 even → user
+});
+
+test('select-all selects every matching row across pages, not just the page', async () => {
+  const user = userEvent.setup();
+  const onSelectionChange = vi.fn();
+  render(
+    <DataTable
+      columns={columns}
+      data={data}
+      getRowId={(r) => r.id}
+      selectedIds={[]}
+      onSelectionChange={onSelectionChange}
+    />,
+  ); // 12 rows, page size 10
+  await user.click(screen.getByRole('checkbox', { name: /select all/i }));
+  expect(onSelectionChange).toHaveBeenCalledWith(data.map((r) => r.id)); // all 12
+});
+
+test('shows a selection count and clears selection', async () => {
+  const user = userEvent.setup();
+  function Wrapper() {
+    const [ids, setIds] = useState<string[]>(['1', '2']);
+    return (
+      <DataTable
+        columns={columns}
+        data={data}
+        getRowId={(r) => r.id}
+        selectedIds={ids}
+        onSelectionChange={setIds}
+      />
+    );
+  }
+  render(<Wrapper />);
+  expect(screen.getByText('2 selected')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /clear selection/i }));
+  expect(screen.queryByText('2 selected')).not.toBeInTheDocument();
 });

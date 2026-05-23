@@ -1,0 +1,90 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+  font-family: var(--ku-font-family-base);
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.label {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+
+.value {
+  font-size: var(--ku-font-size-xs);
+  color: var(--ku-color-text-secondary);
+}
+
+.track {
+  --progress-fill: var(--ku-color-primary);
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--ku-color-bg-muted, var(--ku-color-border));
+  border-radius: var(--ku-radius-pill, 9999px);
+}
+
+.root[data-size='sm'] .track {
+  height: 4px;
+}
+.root[data-size='md'] .track {
+  height: 8px;
+}
+.root[data-size='lg'] .track {
+  height: 12px;
+}
+
+.track[data-tone='primary'] {
+  --progress-fill: var(--ku-color-primary);
+}
+.track[data-tone='neutral'] {
+  --progress-fill: var(--ku-color-text-secondary);
+}
+.track[data-tone='success'] {
+  --progress-fill: var(--ku-color-success);
+}
+.track[data-tone='warning'] {
+  --progress-fill: var(--ku-color-warning);
+}
+.track[data-tone='danger'] {
+  --progress-fill: var(--ku-color-danger);
+}
+
+.bar {
+  height: 100%;
+  background-color: var(--progress-fill);
+  border-radius: inherit;
+  transition: width var(--ku-duration-normal, 240ms) var(--ku-easing-standard);
+}
+
+.track[data-indeterminate='true'] .bar {
+  width: 40%;
+  animation: ku-progress-indeterminate 1.4s ease-in-out infinite;
+}
+
+@keyframes ku-progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
+  .track[data-indeterminate='true'] .bar {
+    animation: none;
+    width: 100%;
+    opacity: 0.4;
+  }
+}

@@ -1,0 +1,110 @@
+.root {
+  /* Fixed-position fallback for environments without top-layer popover support.
+     When promoted to the top layer the UA positions it; we still set the
+     anchoring offsets so both paths agree. */
+  position: fixed;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-3);
+  max-width: min(28rem, calc(100vw - 2 * var(--ku-space-4)));
+  padding: var(--ku-space-3) var(--ku-space-4);
+  font-family: var(--ku-font-family-base);
+  font-size: var(--ku-font-size-md);
+  line-height: var(--ku-line-height-base);
+  color: var(--ku-color-text-primary);
+  background-color: var(--ku-color-bg-surface);
+  border: 1px solid color-mix(in srgb, var(--snack-main) 40%, transparent);
+  border-inline-start: 3px solid var(--snack-main);
+  border-radius: var(--ku-radius-md);
+  box-shadow: var(--ku-shadow-3);
+  z-index: var(--ku-z-snackbar, 1400);
+}
+
+/* Native popover defaults to display:none until shown; the data-open fallback
+   covers the no-popover-API path. */
+.root:not(:popover-open):not([data-open='true']) {
+  display: none;
+}
+
+.root[data-severity='info'] {
+  --snack-main: var(--ku-color-info);
+}
+.root[data-severity='success'] {
+  --snack-main: var(--ku-color-success);
+}
+.root[data-severity='warning'] {
+  --snack-main: var(--ku-color-warning);
+}
+.root[data-severity='error'] {
+  --snack-main: var(--ku-color-danger);
+}
+
+/* Placement (fixed-position anchoring). */
+.root[data-placement='bottom-center'] {
+  inset: auto auto var(--ku-space-6) 50%;
+  transform: translateX(-50%);
+}
+.root[data-placement='bottom-left'] {
+  inset: auto auto var(--ku-space-6) var(--ku-space-6);
+}
+.root[data-placement='bottom-right'] {
+  inset: auto var(--ku-space-6) var(--ku-space-6) auto;
+}
+.root[data-placement='top-center'] {
+  inset: var(--ku-space-6) auto auto 50%;
+  transform: translateX(-50%);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  color: var(--snack-main);
+}
+
+.message {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.action {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 0;
+  margin-inline-start: var(--ku-space-1);
+  background: transparent;
+  border: 0;
+  border-radius: var(--ku-radius-sm);
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity var(--ku-duration-fast) var(--ku-easing-standard);
+}
+.close:hover {
+  opacity: 1;
+}
+
+/* Enter transition, gated on reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .root[data-open='true'] {
+    animation: snackbar-enter var(--ku-duration-base) var(--ku-easing-standard);
+  }
+}
+
+@keyframes snackbar-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

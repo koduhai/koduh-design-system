@@ -1,0 +1,54 @@
+.root {
+  border: 0;
+  background: none;
+  flex-shrink: 0;
+}
+
+/* Plain separator (no label) renders as a single line. */
+.root[data-orientation='horizontal']:not(.labelled) {
+  width: 100%;
+  height: 1px;
+  background-color: var(--ku-color-border);
+}
+
+.root[data-orientation='vertical'] {
+  align-self: stretch;
+  width: 1px;
+  min-height: var(--ku-space-4);
+  background-color: var(--ku-color-border);
+}
+
+.root[data-orientation='horizontal'][data-inset='true']:not(.labelled) {
+  width: auto;
+  margin-inline-start: var(--ku-space-4);
+}
+
+.root[data-orientation='vertical'][data-inset='true'] {
+  margin-block: var(--ku-space-2);
+}
+
+/* Labelled divider: two rules flanking a centered label. */
+.labelled {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-3);
+  width: 100%;
+}
+
+.labelled[data-inset='true'] {
+  margin-inline-start: var(--ku-space-4);
+}
+
+.rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background-color: var(--ku-color-border);
+}
+
+.label {
+  flex: 0 0 auto;
+  color: var(--ku-color-text-secondary);
+  font-family: var(--ku-font-family-base);
+  font-size: var(--ku-font-size-sm);
+  line-height: 1;
+}

@@ -169,6 +169,23 @@ test('onSortChange forwards the originating mouse event (for shift detection)', 
   );
 });
 
+test('header checkbox is indeterminate when only some of selectAllIds are selected', () => {
+  render(
+    <Table
+      columns={cols}
+      data={rows}
+      getRowId={(r) => r.id}
+      selectedIds={['1', '2']}
+      onSelectionChange={() => {}}
+      selectAllIds={['1', '2', '3']}
+    />,
+  );
+  const selectAll = screen.getByRole('checkbox', { name: /select all/i }) as HTMLInputElement;
+  // 2 of the 3 superset ids selected → indeterminate, NOT fully checked
+  expect(selectAll).toHaveProperty('indeterminate', true);
+  expect(selectAll).not.toBeChecked();
+});
+
 test('selectAllIds targets that id set instead of the rendered page', async () => {
   const user = userEvent.setup();
   const onSelectionChange = vi.fn();

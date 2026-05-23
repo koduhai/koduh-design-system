@@ -1,4 +1,4 @@
-import type { ColumnType, DataColumn, SortRule } from './types';
+import type { ColumnType, DataColumn, FilterState, FilterValue, SortRule } from './types';
 
 export function getColumnValue<Row>(col: DataColumn<Row>, row: Row): string | number | Date {
   if (col.getValue) return col.getValue(row);
@@ -39,4 +39,40 @@ export function applySort<Row>(rows: Row[], sort: SortRule[], columns: DataColum
     }
     return 0;
   });
+}
+
+function matches(value: string | number | Date, filter: FilterValue): boolean {
+  if (typeof filter === 'string') {
+    if (filter === '') return true;
+    return String(value).toLowerCase().includes(filter.toLowerCase());
+  }
+  if (Array.isArray(filter)) {
+    if (filter.length === 0) return true;
+    return filter.includes(String(value));
+  }
+  if ('min' in filter || 'max' in filter) {
+    const n = Number(value);
+    if (filter.min != null && n < filter.min) return false;
+    if (filter.max != null && n > filter.max) return false;
+    return true;
+  }
+  if ('from' in filter || 'to' in filter) {
+    const t = value instanceof Date ? value.getTime() : new Date(value as string).getTime();
+    if (filter.from && t < new Date(filter.from).getTime()) return false;
+    if (filter.to && t > new Date(filter.to).getTime()) return false;
+    return true;
+  }
+  return true; // empty object {} — no-op
+}
+
+export function applyColumnFilters<Row>(
+  rows: Row[],
+  filters: FilterState,
+  columns: DataColumn<Row>[],
+): Row[] {
+  const active = columns.filter((c) => c.filter && filters[c.key] !== undefined);
+  if (active.length === 0) return rows.slice();
+  return rows.filter((row) =>
+    active.every((col) => matches(getColumnValue(col, row), filters[col.key]!)),
+  );
 }

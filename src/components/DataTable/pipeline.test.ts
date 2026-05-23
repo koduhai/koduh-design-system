@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import { getColumnValue, applySort } from './pipeline';
-import type { DataColumn } from './types';
+import { getColumnValue, applySort, applyColumnFilters } from './pipeline';
+import type { DataColumn, FilterState } from './types';
 
 interface Row {
   id: string;
@@ -14,9 +14,9 @@ const data: Row[] = [
   { id: '3', name: 'Cy', age: 25, joined: '2022-03-30' },
 ];
 const columns: DataColumn<Row>[] = [
-  { key: 'name', header: 'Name', type: 'text' },
-  { key: 'age', header: 'Age', type: 'number' },
-  { key: 'joined', header: 'Joined', type: 'date' },
+  { key: 'name', header: 'Name', type: 'text', filter: 'text' },
+  { key: 'age', header: 'Age', type: 'number', filter: 'number-range' },
+  { key: 'joined', header: 'Joined', type: 'date', filter: 'date-range' },
 ];
 
 test('getColumnValue defaults to row[key] and honors getValue', () => {
@@ -64,4 +64,37 @@ test('custom compare overrides the default', () => {
   ];
   const out = applySort(data, [{ key: 'name', dir: 'desc' }], cols);
   expect(out.map((r) => r.id)).toEqual(['3', '2', '1']);
+});
+
+test('text filter is a case-insensitive substring match', () => {
+  const filters: FilterState = { name: 'b' };
+  expect(applyColumnFilters(data, filters, columns).map((r) => r.id)).toEqual(['1']); // 'Bob'
+});
+
+test('select filter matches any chosen value; empty array is a no-op', () => {
+  const filters: FilterState = { name: ['Bob', 'Cy'] };
+  expect(applyColumnFilters(data, filters, columns).map((r) => r.id)).toEqual(['1', '3']);
+  expect(applyColumnFilters(data, { name: [] }, columns)).toHaveLength(3);
+});
+
+test('number-range filter respects open-ended bounds', () => {
+  expect(applyColumnFilters(data, { age: { min: 26 } }, columns).map((r) => r.id)).toEqual([
+    '1',
+    '2',
+  ]);
+  expect(applyColumnFilters(data, { age: { max: 25 } }, columns).map((r) => r.id)).toEqual(['3']);
+  expect(applyColumnFilters(data, { age: {} }, columns)).toHaveLength(3); // no-op
+});
+
+test('date-range filter respects open-ended bounds', () => {
+  expect(
+    applyColumnFilters(data, { joined: { from: '2021-01-01' } }, columns).map((r) => r.id),
+  ).toEqual(['1', '3']);
+  expect(
+    applyColumnFilters(data, { joined: { to: '2020-12-31' } }, columns).map((r) => r.id),
+  ).toEqual(['2']);
+});
+
+test('an empty text filter is a no-op', () => {
+  expect(applyColumnFilters(data, { name: '' }, columns)).toHaveLength(3);
 });

@@ -4,7 +4,9 @@ import { Table } from '../Table';
 import type { Column } from '../Table';
 import { useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
-import { runPipeline, cycleSort } from './pipeline';
+import { runPipeline, cycleSort, pageCount } from './pipeline';
+import { Pagination } from '../Pagination';
+import { Select } from '../Select';
 import type { DataTableProps, FilterState, SortRule } from './types';
 import styles from './DataTable.module.css';
 
@@ -95,17 +97,21 @@ function DataTableInner<Row>(
     setSort(cycleSort(sortState, key, event?.shiftKey ?? false));
   };
 
-  // Setters/values consumed by later tasks (pagination, search,
-  // filters, selection). Referenced here so strict unused checks pass until wired.
-  void setPage;
-  void setPageSize;
+  const totalPages = pageCount(total, pageSizeState);
+  const rangeStart = total === 0 ? 0 : (safePage - 1) * pageSizeState + 1;
+  const rangeEnd = Math.min(safePage * pageSizeState, total);
+
+  const handlePageSizeChange = (value: string) => {
+    setPageSize(Number(value));
+    setPage(1); // reset to first page so the user isn't stranded past the new last page
+  };
+
+  // Setters/values consumed by later tasks (search, filters, selection).
+  // Referenced here so strict unused checks pass until wired.
   void setSelected;
   void setSearch;
   void setFilters;
-  void total;
-  void safePage;
   void searchable;
-  void pageSizeOptions;
 
   // DataColumn carries extra fields; Table only needs the base Column shape.
   const tableColumns = columns as Column<Row>[];
@@ -127,6 +133,20 @@ function DataTableInner<Row>(
         selectedIds={selected}
         selectAllIds={matchingIds}
       />
+      <div className={styles.footer}>
+        <Select
+          className={styles.pageSize}
+          label="Rows per page"
+          size="sm"
+          value={String(pageSizeState)}
+          onChange={handlePageSizeChange}
+          options={pageSizeOptions.map((n) => ({ value: String(n), label: String(n) }))}
+        />
+        <span className={styles.range} aria-live="polite">
+          {rangeStart}–{rangeEnd} of {total}
+        </span>
+        <Pagination count={totalPages} page={safePage} onPageChange={setPage} />
+      </div>
     </div>
   );
 }

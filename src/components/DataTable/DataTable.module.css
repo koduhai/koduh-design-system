@@ -3,3 +3,20 @@
   flex-direction: column;
   gap: var(--ku-space-3);
 }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ku-space-4);
+  flex-wrap: wrap;
+}
+
+.range {
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+}
+
+.pageSize {
+  min-width: 0;
+}

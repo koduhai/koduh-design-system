@@ -76,6 +76,30 @@ test('shift-click builds multi-sort (priority badges shown)', async () => {
   await user.keyboard('{Shift>}');
   await user.click(screen.getByRole('button', { name: /Age/ }));
   await user.keyboard('{/Shift}');
-  expect(screen.getByText('1')).toBeInTheDocument(); // priority badge for Name
-  expect(screen.getByText('2')).toBeInTheDocument(); // priority badge for Age
+  const nameHeader = screen.getByRole('columnheader', { name: /Name/ });
+  const ageHeader = screen.getByRole('columnheader', { name: /Age/ });
+  expect(within(nameHeader).getByText('1')).toBeInTheDocument(); // priority badge for Name
+  expect(within(ageHeader).getByText('2')).toBeInTheDocument(); // priority badge for Age
+});
+
+test('paginates via the Pagination control', async () => {
+  const user = userEvent.setup();
+  render(<DataTable columns={columns} data={data} getRowId={(r) => r.id} />); // 12 rows, size 10
+  expect(screen.queryByText('User 11')).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Go to page 2' }));
+  expect(screen.getByText('User 11')).toBeInTheDocument();
+  expect(screen.getByText('User 12')).toBeInTheDocument();
+});
+
+test('changing page size re-pages and shows more rows', async () => {
+  const user = userEvent.setup();
+  render(<DataTable columns={columns} data={data} getRowId={(r) => r.id} />);
+  await user.click(screen.getByRole('button', { name: /rows per page/i }));
+  await user.click(screen.getByRole('option', { name: '25' }));
+  expect(screen.getByText('User 11')).toBeInTheDocument(); // all 12 now on one page
+});
+
+test('shows an aria-live range readout', () => {
+  render(<DataTable columns={columns} data={data} getRowId={(r) => r.id} />);
+  expect(screen.getByText('1–10 of 12')).toBeInTheDocument();
 });

@@ -1,5 +1,14 @@
 import { expect, test } from 'vitest';
-import { getColumnValue, applySort, applyColumnFilters } from './pipeline';
+import {
+  getColumnValue,
+  applySort,
+  applyColumnFilters,
+  applyGlobalSearch,
+  paginate,
+  pageCount,
+  clampPage,
+  runPipeline,
+} from './pipeline';
 import type { DataColumn, FilterState } from './types';
 
 interface Row {
@@ -123,4 +132,62 @@ test('a column without `filter` set does not participate even if filters has its
     c.key === 'name' ? { ...c, filter: undefined } : c,
   );
   expect(applyColumnFilters(data, { name: 'zzz-no-match' }, noFilterCols)).toHaveLength(3);
+});
+
+test('global search matches across searchable columns, case-insensitive', () => {
+  // name is text → searchable by default; age/joined are not text → excluded
+  expect(applyGlobalSearch(data, 'an', columns).map((r) => r.id)).toEqual(['2']); // 'ann'
+  expect(applyGlobalSearch(data, '', columns)).toHaveLength(3); // empty query no-op
+});
+
+test('searchable override includes a non-text column', () => {
+  const cols: DataColumn<Row>[] = [{ key: 'age', header: 'Age', type: 'number', searchable: true }];
+  expect(applyGlobalSearch(data, '25', cols).map((r) => r.id)).toEqual(['3']);
+});
+
+test('paginate slices the current page (1-based)', () => {
+  expect(paginate(data, 1, 2).map((r) => r.id)).toEqual(['1', '2']);
+  expect(paginate(data, 2, 2).map((r) => r.id)).toEqual(['3']);
+});
+
+test('pageCount is at least 1', () => {
+  expect(pageCount(0, 10)).toBe(1);
+  expect(pageCount(21, 10)).toBe(3);
+});
+
+test('clampPage keeps the page within [1, pageCount]', () => {
+  expect(clampPage(5, 21, 10)).toBe(3);
+  expect(clampPage(0, 21, 10)).toBe(1);
+});
+
+test('runPipeline composes filter → search → sort → paginate and reports matching ids', () => {
+  const result = runPipeline({
+    data,
+    columns,
+    getRowId: (r) => r.id,
+    filters: { age: { min: 26 } }, // keeps Bob(1) + ann(2)
+    search: '',
+    sort: [{ key: 'name', dir: 'asc' }], // ann, Bob
+    page: 1,
+    pageSize: 1,
+  });
+  expect(result.total).toBe(2);
+  expect(result.matchingIds).toEqual(['2', '1']);
+  expect(result.rows.map((r) => r.id)).toEqual(['2']); // page 1, size 1
+  expect(result.page).toBe(1);
+});
+
+test('runPipeline clamps an out-of-range page', () => {
+  const result = runPipeline({
+    data,
+    columns,
+    getRowId: (r) => r.id,
+    filters: {},
+    search: '',
+    sort: [],
+    page: 99,
+    pageSize: 2,
+  });
+  expect(result.page).toBe(2); // 3 rows / 2 per page = 2 pages
+  expect(result.rows.map((r) => r.id)).toEqual(['3']);
 });

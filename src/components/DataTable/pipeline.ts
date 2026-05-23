@@ -76,3 +76,63 @@ export function applyColumnFilters<Row>(
     active.every((col) => matches(getColumnValue(col, row), filters[col.key]!)),
   );
 }
+
+export function applyGlobalSearch<Row>(
+  rows: Row[],
+  query: string,
+  columns: DataColumn<Row>[],
+): Row[] {
+  const q = query.trim().toLowerCase();
+  if (q === '') return rows.slice();
+  const searchable = columns.filter((c) => c.searchable ?? (c.type ?? 'text') === 'text');
+  if (searchable.length === 0) return rows.slice();
+  return rows.filter((row) =>
+    searchable.some((col) => String(getColumnValue(col, row)).toLowerCase().includes(q)),
+  );
+}
+
+export function paginate<Row>(rows: Row[], page: number, pageSize: number): Row[] {
+  const start = (page - 1) * pageSize;
+  return rows.slice(start, start + pageSize);
+}
+
+export function pageCount(total: number, pageSize: number): number {
+  return Math.max(1, Math.ceil(total / pageSize));
+}
+
+export function clampPage(page: number, total: number, pageSize: number): number {
+  return Math.min(Math.max(1, page), pageCount(total, pageSize));
+}
+
+export interface PipelineInput<Row> {
+  data: Row[];
+  columns: DataColumn<Row>[];
+  getRowId: (row: Row) => string;
+  filters: FilterState;
+  search: string;
+  sort: SortRule[];
+  page: number;
+  pageSize: number;
+}
+
+export interface PipelineResult<Row> {
+  rows: Row[];
+  matchingIds: string[];
+  total: number;
+  page: number;
+}
+
+export function runPipeline<Row>(input: PipelineInput<Row>): PipelineResult<Row> {
+  const { data, columns, getRowId, filters, search, sort, page, pageSize } = input;
+  const filtered = applyColumnFilters(data, filters, columns);
+  const searched = applyGlobalSearch(filtered, search, columns);
+  const sorted = applySort(searched, sort, columns);
+  const total = sorted.length;
+  const safePage = clampPage(page, total, pageSize);
+  return {
+    rows: paginate(sorted, safePage, pageSize),
+    matchingIds: sorted.map(getRowId),
+    total,
+    page: safePage,
+  };
+}

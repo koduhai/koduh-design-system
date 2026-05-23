@@ -4,6 +4,46 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-05-22
+
+Additive, backward-compatible expansion: 4 floating-UI components (Phase 7),
+built native-first on the Popover API + CSS Anchor Positioning — **no**
+`Portal`, `FocusTrap`, or JS positioning engine added to Layer 2. Every v1
+architectural rule intact (zero runtime dependencies, zero-runtime CSS Modules,
+tokens-as-CSS-variables, WCAG AA).
+
+### Added
+
+- **`Popover`** — generic anchored container and the shared foundation: renders
+  its content in the browser top layer via the native Popover API (no portal, no
+  clipping) and positions it with CSS Anchor Positioning (`anchor-name` /
+  `position-anchor` / `position-area`, `@position-try` for flip). Trigger
+  toggle and ARIA are consumer-owned.
+- **`Tooltip`** — hover/focus-triggered label (`role="tooltip"`,
+  `aria-describedby`), open/close delay, Escape to dismiss; transition honors
+  `prefers-reduced-motion`.
+- **`Select`** — single-choice listbox form control (`aria-haspopup="listbox"`,
+  `role="listbox"`/`option`, `aria-activedescendant`); arrow/Home/End keyboard
+  nav, controlled/uncontrolled via `value`/`defaultValue`, `error`/`helperText`,
+  and focus restored to the trigger on close.
+- **`Menu`** — actions menu (`aria-haspopup="menu"`, `role="menu"`/`menuitem`,
+  separators); roving keyboard nav, Escape/outside-click close, focus restored
+  to the trigger on close.
+
+### Notes
+
+- All four components and their prop types are exported from
+  `@koduhai/design-system`, pass axe-core in both themes (zero violations), and
+  ship with unit tests, stories, and visual-regression baselines.
+- No new runtime dependencies; tree-shaking still verified by
+  `npm run verify:bundle`.
+- CSS Anchor Positioning support is uneven in early 2026; where unsupported the
+  floating element degrades gracefully to a usable default placement.
+- Deferred (documented, not bugs): `Select` type-ahead; `Popover` delegates
+  trigger toggle/ARIA to consumers (the correct `haspopup`/`describedby` choice
+  is pattern-specific). Multi-select `Select`, `Autocomplete`, and `DataTable`
+  remain out of scope.
+
 ## [1.1.0] - 2026-05-22
 
 Additive, backward-compatible expansion: 12 new components across two phases,
@@ -59,5 +99,6 @@ First stable release of the from-scratch, MUI-free design system.
 - No runtime dependencies; React 18/19 are peer dependencies.
 - Clean break from the v0.x MUI wrapper — see `MIGRATION.md`.
 
+[1.2.0]: https://github.com/koduhai/koduhai-design-system-v2/releases/tag/v1.2.0
 [1.1.0]: https://github.com/koduhai/koduhai-design-system-v2/releases/tag/v1.1.0
 [1.0.0]: https://github.com/koduhai/koduhai-design-system-v2/releases/tag/v1.0.0

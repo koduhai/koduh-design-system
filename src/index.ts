@@ -21,7 +21,7 @@ export type { ColorMode, ColorTokenName, Tokens } from './theme';
 export { cx } from './utils/cx';
 
 // Components
-// NOTE: the 12 components are exported here as they are built in Phases 1–4.
+// Phase 1–4 — v1.0 components
 export { Button } from './components/Button';
 export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize } from './components/Button';
 export { LoadingButton } from './components/LoadingButton';

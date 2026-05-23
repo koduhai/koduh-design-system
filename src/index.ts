@@ -99,4 +99,15 @@ export type {
   PaginationRangeOptions,
 } from './components/Pagination';
 export { Table } from './components/Table';
-export type { TableProps, Column, SortDirection, CellAlign } from './components/Table';
+export type { TableProps, Column, SortDirection, SortRule, CellAlign } from './components/Table';
+
+// Phase 9 — DataTable (stateful Table orchestrator)
+export { DataTable } from './components/DataTable';
+export type {
+  DataTableProps,
+  DataColumn,
+  ColumnType,
+  FilterKind,
+  FilterValue,
+  FilterState,
+} from './components/DataTable';

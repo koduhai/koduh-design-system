@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Table } from './Table';
-import type { Column } from './Table';
+import type { Column, SortRule } from './Table';
 
 interface User {
   id: string;
@@ -48,13 +48,13 @@ describe('Table', () => {
     const onSortChange = vi.fn();
     const { rerender } = render(<Table {...base} onSortChange={onSortChange} />);
     await userEvent.click(screen.getByRole('button', { name: /Name/ }));
-    expect(onSortChange).toHaveBeenCalledWith('name', 'asc');
+    expect(onSortChange).toHaveBeenCalledWith('name', 'asc', expect.anything());
     rerender(<Table {...base} sortKey="name" sortDir="asc" onSortChange={onSortChange} />);
     await userEvent.click(screen.getByRole('button', { name: /Name/ }));
-    expect(onSortChange).toHaveBeenLastCalledWith('name', 'desc');
+    expect(onSortChange).toHaveBeenLastCalledWith('name', 'desc', expect.anything());
     rerender(<Table {...base} sortKey="name" sortDir="desc" onSortChange={onSortChange} />);
     await userEvent.click(screen.getByRole('button', { name: /Name/ }));
-    expect(onSortChange).toHaveBeenLastCalledWith('name', 'asc');
+    expect(onSortChange).toHaveBeenLastCalledWith('name', 'asc', expect.anything());
   });
 
   it('reflects sort state via aria-sort on the active header', () => {
@@ -109,4 +109,96 @@ describe('Table', () => {
     render(<Table {...base} ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLTableElement);
   });
+});
+
+// ── New tests for multi-sort, event forwarding, and selectAllIds ────────────
+
+interface Row {
+  id: string;
+  name: string;
+  age: number;
+}
+const rows: Row[] = [
+  { id: '1', name: 'Ann', age: 30 },
+  { id: '2', name: 'Bob', age: 25 },
+];
+const cols: Column<Row>[] = [
+  { key: 'name', header: 'Name', sortable: true },
+  { key: 'age', header: 'Age', sortable: true },
+];
+
+test('renders an aria-sort and priority badge for each rule in multi-sort', () => {
+  const sort: SortRule[] = [
+    { key: 'name', dir: 'asc' },
+    { key: 'age', dir: 'desc' },
+  ];
+  render(
+    <Table columns={cols} data={rows} getRowId={(r) => r.id} sort={sort} onSortChange={() => {}} />,
+  );
+  expect(screen.getByRole('columnheader', { name: /Name/ })).toHaveAttribute(
+    'aria-sort',
+    'ascending',
+  );
+  expect(screen.getByRole('columnheader', { name: /Age/ })).toHaveAttribute(
+    'aria-sort',
+    'descending',
+  );
+  expect(screen.getByText('1')).toBeInTheDocument();
+  expect(screen.getByText('2')).toBeInTheDocument();
+});
+
+test('onSortChange forwards the originating mouse event (for shift detection)', async () => {
+  const user = userEvent.setup();
+  const onSortChange = vi.fn();
+  render(
+    <Table
+      columns={cols}
+      data={rows}
+      getRowId={(r) => r.id}
+      sort={[]}
+      onSortChange={onSortChange}
+    />,
+  );
+  await user.keyboard('{Shift>}');
+  await user.click(screen.getByRole('button', { name: /Name/ }));
+  await user.keyboard('{/Shift}');
+  expect(onSortChange).toHaveBeenCalledWith(
+    'name',
+    expect.any(String),
+    expect.objectContaining({ shiftKey: true }),
+  );
+});
+
+test('header checkbox is indeterminate when only some of selectAllIds are selected', () => {
+  render(
+    <Table
+      columns={cols}
+      data={rows}
+      getRowId={(r) => r.id}
+      selectedIds={['1', '2']}
+      onSelectionChange={() => {}}
+      selectAllIds={['1', '2', '3']}
+    />,
+  );
+  const selectAll = screen.getByRole('checkbox', { name: /select all/i }) as HTMLInputElement;
+  // 2 of the 3 superset ids selected → indeterminate, NOT fully checked
+  expect(selectAll).toHaveProperty('indeterminate', true);
+  expect(selectAll).not.toBeChecked();
+});
+
+test('selectAllIds targets that id set instead of the rendered page', async () => {
+  const user = userEvent.setup();
+  const onSelectionChange = vi.fn();
+  render(
+    <Table
+      columns={cols}
+      data={rows}
+      getRowId={(r) => r.id}
+      selectedIds={[]}
+      onSelectionChange={onSelectionChange}
+      selectAllIds={['1', '2', '3']}
+    />,
+  );
+  await user.click(screen.getByRole('checkbox', { name: /select all/i }));
+  expect(onSelectionChange).toHaveBeenCalledWith(['1', '2', '3']);
 });

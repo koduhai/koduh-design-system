@@ -47,6 +47,7 @@ const COMPONENTS = [
   { name: 'Progress', storyId: 'components-progress--showcase' },
   { name: 'Pagination', storyId: 'components-pagination--showcase' },
   { name: 'Table', storyId: 'components-table--showcase' },
+  { name: 'DataTable', storyId: 'components-datatable--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

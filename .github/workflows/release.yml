@@ -1,0 +1,42 @@
+# Publishes the package to GitHub Packages when a GitHub Release is published.
+# Trigger: create a Release in the GitHub UI (tag like v1.0.0). This builds,
+# runs the gates, and publishes — the maintainer controls the trigger.
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify gates
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test
+          npm run build
+          npm run verify:bundle
+
+      - name: Publish to GitHub Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

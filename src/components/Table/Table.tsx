@@ -39,7 +39,11 @@ export interface TableProps<Row> extends Omit<HTMLAttributes<HTMLTableElement>, 
   onSortChange?: (key: string, dir: SortDirection) => void;
   /** Controlled selected row ids. */
   selectedIds?: string[];
-  /** Fires with the next selected id set. */
+  /**
+   * Fires with the next selected id set. Select-all operates over the current
+   * `data` only: it emits exactly the current rows' ids (or `[]` to clear), so
+   * a paginated consumer should merge with selections from other pages itself.
+   */
   onSelectionChange?: (ids: string[]) => void;
   /** Renders skeleton rows in place of data. */
   loading?: boolean;
@@ -182,7 +186,7 @@ function TableInner<Row>(
                 {selectable ? (
                   <td className={styles.td} data-select="true">
                     <Checkbox
-                      aria-label="Select row"
+                      aria-label={`Select row ${id}`}
                       checked={isSelected}
                       onChange={() => toggleRow(id)}
                     />

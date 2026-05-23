@@ -52,6 +52,9 @@ describe('Table', () => {
     rerender(<Table {...base} sortKey="name" sortDir="asc" onSortChange={onSortChange} />);
     await userEvent.click(screen.getByRole('button', { name: /Name/ }));
     expect(onSortChange).toHaveBeenLastCalledWith('name', 'desc');
+    rerender(<Table {...base} sortKey="name" sortDir="desc" onSortChange={onSortChange} />);
+    await userEvent.click(screen.getByRole('button', { name: /Name/ }));
+    expect(onSortChange).toHaveBeenLastCalledWith('name', 'asc');
   });
 
   it('reflects sort state via aria-sort on the active header', () => {
@@ -65,8 +68,7 @@ describe('Table', () => {
   it('renders a selection column and toggles a single row', async () => {
     const onSelectionChange = vi.fn();
     render(<Table {...base} selectedIds={[]} onSelectionChange={onSelectionChange} />);
-    const rowCheckboxes = screen.getAllByRole('checkbox', { name: 'Select row' });
-    await userEvent.click(rowCheckboxes[0]!);
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Select row u1' }));
     expect(onSelectionChange).toHaveBeenCalledWith(['u1']);
   });
 
@@ -81,6 +83,11 @@ describe('Table', () => {
     render(<Table {...base} selectedIds={['u1']} onSelectionChange={() => {}} />);
     const selectAll = screen.getByRole('checkbox', { name: 'Select all rows' }) as HTMLInputElement;
     expect(selectAll.indeterminate).toBe(true);
+  });
+
+  it('sets the sticky data attribute when stickyHeader is enabled', () => {
+    const { container } = render(<Table {...base} stickyHeader />);
+    expect(container.querySelector('table')).toHaveAttribute('data-sticky', 'true');
   });
 
   it('renders skeleton rows while loading', () => {

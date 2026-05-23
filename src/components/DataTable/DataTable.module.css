@@ -31,3 +31,52 @@
 .search {
   min-width: 16rem;
 }
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ku-space-3);
+  flex-wrap: wrap;
+}
+
+.rangeGroup {
+  display: flex;
+  gap: var(--ku-space-2);
+}
+
+.filterControl {
+  min-width: 10rem;
+}
+
+.filterTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-2) var(--ku-space-3);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+  background: var(--ku-color-bg-default);
+  color: var(--ku-color-text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.filterCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25em;
+  height: 1.25em;
+  border-radius: var(--ku-radius-full);
+  background: var(--ku-color-primary);
+  color: var(--ku-color-primary-contrast);
+  font-size: var(--ku-font-size-xs);
+}
+
+.filterMenu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-2);
+  min-width: 12rem;
+}

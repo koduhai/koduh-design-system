@@ -8,7 +8,8 @@ import { runPipeline, cycleSort, pageCount } from './pipeline';
 import { Pagination } from '../Pagination';
 import { Select } from '../Select';
 import { TextField } from '../TextField';
-import type { DataTableProps, FilterState, SortRule } from './types';
+import type { DataTableProps, FilterState, FilterValue, SortRule } from './types';
+import { ColumnFilter } from './ColumnFilter';
 import styles from './DataTable.module.css';
 
 function DataTableInner<Row>(
@@ -112,10 +113,15 @@ function DataTableInner<Row>(
     setPage(1);
   };
 
-  // Setters/values consumed by later tasks (filters, selection).
-  // Referenced here so strict unused checks pass until wired.
+  // Selection wired in Task 11.
   void setSelected;
-  void setFilters;
+
+  const filterColumns = columns.filter((c) => c.filter);
+
+  const handleFilterChange = (key: string, next: FilterValue) => {
+    setFilters({ ...filterState, [key]: next });
+    setPage(1);
+  };
 
   // DataColumn carries extra fields; Table only needs the base Column shape.
   const tableColumns = columns as Column<Row>[];
@@ -132,6 +138,19 @@ function DataTableInner<Row>(
             value={searchState}
             onChange={handleSearchChange}
           />
+        </div>
+      ) : null}
+      {filterColumns.length > 0 ? (
+        <div className={styles.filters}>
+          {filterColumns.map((col) => (
+            <ColumnFilter
+              key={col.key}
+              column={col}
+              data={data}
+              value={filterState[col.key]}
+              onChange={(next) => handleFilterChange(col.key, next)}
+            />
+          ))}
         </div>
       ) : null}
       <Table

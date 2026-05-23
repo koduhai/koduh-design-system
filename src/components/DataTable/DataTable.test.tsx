@@ -118,3 +118,47 @@ test('search box is hidden when searchable={false}', () => {
   render(<DataTable columns={columns} data={data} getRowId={(r) => r.id} searchable={false} />);
   expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
 });
+
+// ─── Per-column filter tests ──────────────────────────────────────────────────
+
+const filterCols: DataColumn<Row>[] = [
+  { key: 'name', header: 'Name', filter: 'text' },
+  { key: 'age', header: 'Age', type: 'number', filter: 'number-range' },
+  {
+    key: 'role',
+    header: 'Role',
+    getValue: (r) => (Number(r.id) % 2 ? 'admin' : 'user'),
+    filter: 'select',
+  },
+];
+
+test('text column filter narrows rows', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable columns={filterCols} data={data} getRowId={(r) => r.id} defaultPageSize={25} />,
+  );
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'User 1');
+  expect(screen.getByText('User 10')).toBeInTheDocument();
+  expect(screen.queryByText('User 2')).not.toBeInTheDocument();
+});
+
+test('number-range column filter narrows rows', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable columns={filterCols} data={data} getRowId={(r) => r.id} defaultPageSize={25} />,
+  );
+  await user.type(screen.getByRole('spinbutton', { name: /Age min/i }), '30');
+  expect(screen.getByText('User 11')).toBeInTheDocument(); // age 30
+  expect(screen.queryByText('User 1')).not.toBeInTheDocument(); // age 20
+});
+
+test('multi-select enum filter toggles values via checkboxes', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable columns={filterCols} data={data} getRowId={(r) => r.id} defaultPageSize={25} />,
+  );
+  await user.click(screen.getByRole('button', { name: /Role/ }));
+  await user.click(screen.getByRole('checkbox', { name: 'admin' }));
+  expect(screen.getByText('User 1')).toBeInTheDocument(); // id 1 odd → admin
+  expect(screen.queryByText('User 2')).not.toBeInTheDocument(); // id 2 even → user
+});

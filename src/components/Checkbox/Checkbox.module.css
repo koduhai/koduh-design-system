@@ -1,0 +1,117 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  font-family: var(--ku-font-family-base);
+  font-size: var(--ku-font-size-md);
+  line-height: var(--ku-line-height-base);
+  color: var(--ku-color-text-primary);
+  cursor: pointer;
+  /* anchor for the absolutely-positioned input overlay */
+  position: relative;
+}
+
+.root[data-disabled='true'] {
+  cursor: not-allowed;
+  color: var(--ku-color-text-disabled);
+}
+
+/* The real native input: visually hidden but accessible, overlaid on the box. */
+.input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  width: var(--cb-size, 20px);
+  height: var(--cb-size, 20px);
+  opacity: 0;
+  cursor: inherit;
+}
+
+/* Visual indicator. */
+.box {
+  --cb-size: 20px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--cb-size);
+  height: var(--cb-size);
+  border: 2px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-sm);
+  background-color: var(--ku-color-bg-default);
+  color: var(--ku-color-primary-contrast);
+  transition:
+    background-color var(--ku-duration-fast) var(--ku-easing-standard),
+    border-color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.box[data-size='sm'] {
+  --cb-size: 16px;
+}
+.box[data-size='md'] {
+  --cb-size: 20px;
+}
+.box[data-size='lg'] {
+  --cb-size: 24px;
+}
+
+/* Keep the input overlay matched to the visual box size. */
+.root[data-size='sm'] .input {
+  --cb-size: 16px;
+}
+.root[data-size='md'] .input {
+  --cb-size: 20px;
+}
+.root[data-size='lg'] .input {
+  --cb-size: 24px;
+}
+
+.box[data-checked='true'],
+.box[data-indeterminate='true'] {
+  background-color: var(--ku-color-primary);
+  border-color: var(--ku-color-primary);
+}
+
+.box[data-error='true'] {
+  border-color: var(--ku-color-danger);
+}
+.box[data-error='true'][data-checked='true'],
+.box[data-error='true'][data-indeterminate='true'] {
+  background-color: var(--ku-color-danger);
+  border-color: var(--ku-color-danger);
+}
+
+/* The check / dash glyph: hidden until checked/indeterminate. */
+.check {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--ku-duration-fast) var(--ku-easing-standard);
+}
+.box[data-checked='true'] .check,
+.box[data-indeterminate='true'] .check {
+  opacity: 1;
+}
+
+/* Visible focus ring driven by the native input's focus state. */
+.input:focus-visible + .box {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+.label {
+  user-select: none;
+}
+
+.root[data-disabled='true'] .box {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .box,
+  .check {
+    transition: none;
+  }
+}

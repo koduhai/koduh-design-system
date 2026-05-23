@@ -46,6 +46,17 @@ describe('Pagination', () => {
     expect(onPageChange).not.toHaveBeenCalled();
   });
 
+  it('disables every button when the disabled prop is set', () => {
+    render(<Pagination count={5} page={3} disabled />);
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.every((btn) => btn.hasAttribute('disabled'))).toBe(true);
+  });
+
+  it('allows overriding the navigation aria-label', () => {
+    render(<Pagination count={5} page={1} aria-label="Article pages" />);
+    expect(screen.getByRole('navigation', { name: 'Article pages' })).toBeInTheDocument();
+  });
+
   it('renders ellipses as inert, non-button nodes', () => {
     render(<Pagination count={20} page={10} />);
     expect(screen.getAllByText('…').length).toBeGreaterThan(0);

@@ -4,12 +4,13 @@ Koduh AI's design system, rebuilt from scratch without Material UI. Dark-first
 theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
 set of accessible primitives and icons.
 
-> **Status:** Phase 0 (foundations), Phase 1 (the six simple components —
-> `Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`, `Alert`),
-> Phase 2 (form & content — `TextField`, `Card`, `EmptyState`, `PageHeader`),
-> and Phase 3 (layout — `AppBar`, `Sidebar`) are complete. Tokens, primitives,
-> icon set, theme provider, and the build/test/Storybook pipeline are in place.
-> Only Phase 4 (polish & release) remains (see `docs/superpowers/plans`).
+> **Status:** v1.0.0 — all phases complete. All 12 components ship
+> (`Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`, `Alert`,
+> `TextField`, `Card`, `EmptyState`, `PageHeader`, `AppBar`, `Sidebar`) on top
+> of the token pipeline, primitives, icon set, and theme provider. Tree-shaking,
+> a full accessibility audit ([`ACCESSIBILITY.md`](./ACCESSIBILITY.md)), and CI
+> visual-regression are in place. See [`CHANGELOG.md`](./CHANGELOG.md). Publishing
+> is maintainer-triggered via a GitHub Release (`.github/workflows/release.yml`).
 
 ## Develop
 

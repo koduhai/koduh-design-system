@@ -103,3 +103,18 @@ test('shows an aria-live range readout', () => {
   render(<DataTable columns={columns} data={data} getRowId={(r) => r.id} />);
   expect(screen.getByText('1–10 of 12')).toBeInTheDocument();
 });
+
+test('global search filters rows and resets to page 1', async () => {
+  const user = userEvent.setup();
+  render(<DataTable columns={columns} data={data} getRowId={(r) => r.id} />);
+  const box = screen.getByRole('searchbox', { name: /search/i });
+  await user.type(box, 'User 11');
+  expect(screen.getByText('User 11')).toBeInTheDocument();
+  expect(screen.queryByText('User 1')).not.toBeInTheDocument();
+  expect(screen.getByText('1–1 of 1')).toBeInTheDocument();
+});
+
+test('search box is hidden when searchable={false}', () => {
+  render(<DataTable columns={columns} data={data} getRowId={(r) => r.id} searchable={false} />);
+  expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+});

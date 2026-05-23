@@ -7,6 +7,7 @@ import { cx } from '../../utils/cx';
 import { runPipeline, cycleSort, pageCount } from './pipeline';
 import { Pagination } from '../Pagination';
 import { Select } from '../Select';
+import { TextField } from '../TextField';
 import type { DataTableProps, FilterState, SortRule } from './types';
 import styles from './DataTable.module.css';
 
@@ -106,18 +107,33 @@ function DataTableInner<Row>(
     setPage(1); // reset to first page so the user isn't stranded past the new last page
   };
 
-  // Setters/values consumed by later tasks (search, filters, selection).
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  // Setters/values consumed by later tasks (filters, selection).
   // Referenced here so strict unused checks pass until wired.
   void setSelected;
-  void setSearch;
   void setFilters;
-  void searchable;
 
   // DataColumn carries extra fields; Table only needs the base Column shape.
   const tableColumns = columns as Column<Row>[];
 
   return (
     <div ref={ref} className={cx(styles.root, className)} {...props}>
+      {searchable ? (
+        <div className={styles.toolbar}>
+          <TextField
+            type="search"
+            className={styles.search}
+            label="Search"
+            placeholder="Search…"
+            value={searchState}
+            onChange={handleSearchChange}
+          />
+        </div>
+      ) : null}
       <Table
         columns={tableColumns}
         data={rows}

@@ -20,3 +20,14 @@
 .pageSize {
   min-width: 0;
 }
+
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ku-space-3);
+  flex-wrap: wrap;
+}
+
+.search {
+  min-width: 16rem;
+}

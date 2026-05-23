@@ -200,3 +200,19 @@ test('shows a selection count and clears selection', async () => {
   await user.click(screen.getByRole('button', { name: /clear selection/i }));
   expect(screen.queryByText('2 selected')).not.toBeInTheDocument();
 });
+
+test('selection toolbar appears even when searchable is false', () => {
+  render(
+    <DataTable
+      columns={columns}
+      data={data}
+      getRowId={(r) => r.id}
+      searchable={false}
+      selectedIds={['1', '2', '3']}
+      onSelectionChange={() => {}}
+    />,
+  );
+  expect(screen.getByText('3 selected')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /clear selection/i })).toBeInTheDocument();
+  expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+});

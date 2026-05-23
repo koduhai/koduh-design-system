@@ -104,4 +104,5 @@
   font: inherit;
   cursor: pointer;
   text-decoration: underline;
+  padding: var(--ku-space-1) var(--ku-space-2);
 }

@@ -216,3 +216,58 @@ test('selection toolbar appears even when searchable is false', () => {
   expect(screen.getByRole('button', { name: /clear selection/i })).toBeInTheDocument();
   expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
 });
+
+test('controlled sort: clicking a header fires onSortChange and respects the controlled value', async () => {
+  const user = userEvent.setup();
+  const onSortChange = vi.fn();
+  function Controlled() {
+    const [sort, setSort] = useState<{ key: string; dir: 'asc' | 'desc' }[]>([]);
+    return (
+      <DataTable
+        columns={[
+          { key: 'name', header: 'Name', sortable: true },
+          { key: 'age', header: 'Age', type: 'number', sortable: true },
+        ]}
+        data={data}
+        getRowId={(r) => r.id}
+        defaultPageSize={25}
+        sort={sort}
+        onSortChange={(s) => {
+          onSortChange(s);
+          setSort(s);
+        }}
+      />
+    );
+  }
+  render(<Controlled />);
+  await user.click(screen.getByRole('button', { name: /Age/ }));
+  expect(onSortChange).toHaveBeenCalledWith([{ key: 'age', dir: 'asc' }]);
+  // controlled value applied → youngest (age 20) first
+  const firstRow = screen.getAllByRole('row')[1]!;
+  expect(within(firstRow).getByText('20')).toBeInTheDocument();
+});
+
+test('filter, sort, and pagination compose together', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', filter: 'text' },
+        { key: 'age', header: 'Age', type: 'number', sortable: true },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+      defaultPageSize={5}
+    />,
+  );
+  // filter to the 4 rows whose name contains 'User 1' (User 1, 10, 11, 12; ages 20,29,30,31)
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'User 1');
+  // sort by age descending (click Age twice: asc then desc)
+  const ageHeader = screen.getByRole('button', { name: /Age/ });
+  await user.click(ageHeader);
+  await user.click(ageHeader);
+  // 4 matching rows, pageSize 5 → all on one page, oldest first (age 31 = User 12)
+  const firstRow = screen.getAllByRole('row')[1]!;
+  expect(within(firstRow).getByText('31')).toBeInTheDocument();
+  expect(screen.getByText('1–4 of 4')).toBeInTheDocument(); // en-dash
+});

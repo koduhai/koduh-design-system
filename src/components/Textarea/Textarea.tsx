@@ -79,9 +79,13 @@ export const Textarea = /* @__PURE__ */ forwardRef<HTMLTextAreaElement, Textarea
       const minH = lineHeight * minRows + vPad + vBorder;
       const maxH = maxRows ? lineHeight * maxRows + vPad + vBorder : Infinity;
       el.style.height = 'auto';
-      const next = Math.min(Math.max(el.scrollHeight, minH), maxH);
+      // Capture the natural height while unconstrained — reading scrollHeight
+      // again after applying the clamped height would report the pre-clamp value
+      // (no reflow happens synchronously) and misfire the overflow toggle.
+      const naturalH = el.scrollHeight;
+      const next = Math.min(Math.max(naturalH, minH), maxH);
       el.style.height = `${next}px`;
-      el.style.overflowY = el.scrollHeight > maxH ? 'auto' : 'hidden';
+      el.style.overflowY = naturalH > maxH ? 'auto' : 'hidden';
     }, [state, autoResize, minRows, maxRows]);
 
     return (
@@ -105,6 +109,7 @@ export const Textarea = /* @__PURE__ */ forwardRef<HTMLTextAreaElement, Textarea
           className={styles.input}
           value={state}
           rows={autoResize ? minRows : rows}
+          style={autoResize ? { resize: 'none' } : undefined}
           required={required}
           aria-invalid={error || undefined}
           aria-describedby={description ? descriptionId : undefined}

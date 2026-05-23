@@ -58,4 +58,15 @@ describe('Textarea', () => {
     await userEvent.type(el, 'a lot of text');
     expect(el.style.height).not.toBe('');
   });
+
+  it('clamps height to maxRows and enables scrolling when content overflows', async () => {
+    // jsdom getComputedStyle returns no line-height → the effect falls back to
+    // 20px/row with 0 padding/border, so maxRows={3} caps height at 60px.
+    render(<Textarea label="Bio" autoResize minRows={2} maxRows={3} />);
+    const el = screen.getByLabelText('Bio') as HTMLTextAreaElement;
+    Object.defineProperty(el, 'scrollHeight', { configurable: true, value: 500 });
+    await userEvent.type(el, 'overflowing content');
+    expect(el.style.height).toBe('60px');
+    expect(el.style.overflowY).toBe('auto');
+  });
 });

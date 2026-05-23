@@ -9,6 +9,10 @@ name: Update visual baselines
 
 on:
   workflow_dispatch:
+  # TEMP: lets this run on the feature branch before it reaches the default
+  # branch (workflow_dispatch requires the file on default). Removed before merge.
+  push:
+    branches: [ci/visual-baselines-2404]
 
 permissions:
   contents: write

@@ -40,6 +40,7 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
       ref={ref}
       className={classes}
       style={style}
+      role={!src && name ? 'img' : undefined}
       aria-label={!src && name ? name : undefined}
       {...dataAttrs}
     >

@@ -4,10 +4,11 @@ Koduh AI's design system, rebuilt from scratch without Material UI. Dark-first
 theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
 set of accessible primitives and icons.
 
-> **Status:** Phase 0 (foundations) and Phase 1 (the six simple components —
-> `Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`, `Alert`) are
-> complete. Tokens, primitives, icon set, theme provider, and the
-> build/test/Storybook pipeline are in place. Phases 2–4 remain (see
+> **Status:** Phase 0 (foundations), Phase 1 (the six simple components —
+> `Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`, `Alert`), and
+> Phase 2 (form & content — `TextField`, `Card`, `EmptyState`, `PageHeader`)
+> are complete. Tokens, primitives, icon set, theme provider, and the
+> build/test/Storybook pipeline are in place. Phases 3–4 remain (see
 > `docs/superpowers/plans`).
 
 ## Develop

@@ -20,6 +20,10 @@ const COMPONENTS = [
   { name: 'Avatar', storyId: 'components-avatar--showcase' },
   { name: 'StatusBadge', storyId: 'components-statusbadge--showcase' },
   { name: 'Alert', storyId: 'components-alert--showcase' },
+  { name: 'TextField', storyId: 'components-textfield--showcase' },
+  { name: 'Card', storyId: 'components-card--showcase' },
+  { name: 'EmptyState', storyId: 'components-emptystate--showcase' },
+  { name: 'PageHeader', storyId: 'components-pageheader--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

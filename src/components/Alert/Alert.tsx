@@ -37,7 +37,7 @@ const roleForSeverity: Record<AlertSeverity, 'alert' | 'status'> = {
   error: 'alert',
 };
 
-export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
+export const Alert = /* @__PURE__ */ forwardRef<HTMLDivElement, AlertProps>(function Alert(
   { severity, title, closable = false, onClose, icon, className, children, ...props },
   ref,
 ) {

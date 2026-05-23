@@ -28,7 +28,7 @@ function initialsOf(name: string): string {
     .join('');
 }
 
-export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
+export const Avatar = /* @__PURE__ */ forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
   { src, alt, name, size = 'md', shape = 'circle', className, style },
   ref,
 ) {

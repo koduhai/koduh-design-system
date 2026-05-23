@@ -16,7 +16,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   asChild?: boolean;
 }
 
-export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+export const Card = /* @__PURE__ */ forwardRef<HTMLDivElement, CardProps>(function Card(
   { variant = 'outlined', padding = 'md', asChild = false, className, children, ...props },
   ref,
 ) {

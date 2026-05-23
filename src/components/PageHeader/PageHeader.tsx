@@ -18,24 +18,26 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 'titl
   headingLevel?: HeadingLevel;
 }
 
-export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function PageHeader(
-  { title, subtitle, breadcrumbs, actions, headingLevel = 1, className, ...props },
-  ref,
-) {
-  return (
-    <header ref={ref} className={cx(styles.root, className)} {...props}>
-      {breadcrumbs ? (
-        <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-          {breadcrumbs}
-        </nav>
-      ) : null}
-      <div className={styles.bar}>
-        <div className={styles.titles}>
-          {createElement(`h${headingLevel}`, { className: styles.title }, title)}
-          {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}
+export const PageHeader = /* @__PURE__ */ forwardRef<HTMLElement, PageHeaderProps>(
+  function PageHeader(
+    { title, subtitle, breadcrumbs, actions, headingLevel = 1, className, ...props },
+    ref,
+  ) {
+    return (
+      <header ref={ref} className={cx(styles.root, className)} {...props}>
+        {breadcrumbs ? (
+          <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
+            {breadcrumbs}
+          </nav>
+        ) : null}
+        <div className={styles.bar}>
+          <div className={styles.titles}>
+            {createElement(`h${headingLevel}`, { className: styles.title }, title)}
+            {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}
+          </div>
+          {actions ? <div className={styles.actions}>{actions}</div> : null}
         </div>
-        {actions ? <div className={styles.actions}>{actions}</div> : null}
-      </div>
-    </header>
-  );
-});
+      </header>
+    );
+  },
+);

@@ -25,7 +25,7 @@ export interface ChipProps {
   className?: string;
 }
 
-export const Chip = forwardRef<HTMLElement, ChipProps>(function Chip(
+export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function Chip(
   {
     label,
     variant = 'solid',

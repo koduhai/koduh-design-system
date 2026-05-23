@@ -11,7 +11,7 @@ export interface LoadingButtonProps extends ButtonProps {
   loadingText?: string;
 }
 
-export const LoadingButton = forwardRef<HTMLButtonElement, LoadingButtonProps>(
+export const LoadingButton = /* @__PURE__ */ forwardRef<HTMLButtonElement, LoadingButtonProps>(
   function LoadingButton(
     { loading = false, loadingText, disabled, startIcon, children, ...props },
     ref,

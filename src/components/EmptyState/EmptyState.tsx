@@ -18,20 +18,22 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 't
   headingLevel?: HeadingLevel;
 }
 
-export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(function EmptyState(
-  { icon, title, description, action, headingLevel = 2, className, ...props },
-  ref,
-) {
-  return (
-    <div ref={ref} className={cx(styles.root, className)} {...props}>
-      {icon ? (
-        <div className={styles.icon} aria-hidden="true">
-          {icon}
-        </div>
-      ) : null}
-      {createElement(`h${headingLevel}`, { className: styles.title }, title)}
-      {description ? <p className={styles.description}>{description}</p> : null}
-      {action ? <div className={styles.action}>{action}</div> : null}
-    </div>
-  );
-});
+export const EmptyState = /* @__PURE__ */ forwardRef<HTMLDivElement, EmptyStateProps>(
+  function EmptyState(
+    { icon, title, description, action, headingLevel = 2, className, ...props },
+    ref,
+  ) {
+    return (
+      <div ref={ref} className={cx(styles.root, className)} {...props}>
+        {icon ? (
+          <div className={styles.icon} aria-hidden="true">
+            {icon}
+          </div>
+        ) : null}
+        {createElement(`h${headingLevel}`, { className: styles.title }, title)}
+        {description ? <p className={styles.description}>{description}</p> : null}
+        {action ? <div className={styles.action}>{action}</div> : null}
+      </div>
+    );
+  },
+);

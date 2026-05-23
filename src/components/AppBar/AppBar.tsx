@@ -18,7 +18,7 @@ export interface AppBarProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> 
   elevation?: boolean;
 }
 
-export const AppBar = forwardRef<HTMLElement, AppBarProps>(function AppBar(
+export const AppBar = /* @__PURE__ */ forwardRef<HTMLElement, AppBarProps>(function AppBar(
   { logo, title, actions, position = 'static', elevation = true, className, children, ...props },
   ref,
 ) {

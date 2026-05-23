@@ -15,20 +15,19 @@ export interface StatusBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: StatusBadgeVariant;
 }
 
-export const StatusBadge = forwardRef<HTMLSpanElement, StatusBadgeProps>(function StatusBadge(
-  { status, label, variant = 'subtle', className, ...props },
-  ref,
-) {
-  const dataAttrs = {
-    'data-status': status,
-    'data-variant': variant,
-  };
-  const classes = cx(styles.root, className);
+export const StatusBadge = /* @__PURE__ */ forwardRef<HTMLSpanElement, StatusBadgeProps>(
+  function StatusBadge({ status, label, variant = 'subtle', className, ...props }, ref) {
+    const dataAttrs = {
+      'data-status': status,
+      'data-variant': variant,
+    };
+    const classes = cx(styles.root, className);
 
-  return (
-    <span ref={ref} className={classes} {...dataAttrs} {...props}>
-      <span className={styles.dot} aria-hidden />
-      <span className={styles.label}>{label}</span>
-    </span>
-  );
-});
+    return (
+      <span ref={ref} className={classes} {...dataAttrs} {...props}>
+        <span className={styles.dot} aria-hidden />
+        <span className={styles.label}>{label}</span>
+      </span>
+    );
+  },
+);

@@ -32,83 +32,85 @@ export interface TextFieldProps extends Omit<
   endAdornment?: ReactNode;
 }
 
-export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(
-  {
-    label,
-    value,
-    defaultValue,
-    onChange,
-    helperText,
-    error = false,
-    errorText,
-    size = 'md',
-    startAdornment,
-    endAdornment,
-    required,
-    className,
-    id: idProp,
-    ...props
-  },
-  ref,
-) {
-  const reactId = useId('textfield');
-  const id = idProp ?? reactId;
-  const descriptionId = `${id}-description`;
+export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldProps>(
+  function TextField(
+    {
+      label,
+      value,
+      defaultValue,
+      onChange,
+      helperText,
+      error = false,
+      errorText,
+      size = 'md',
+      startAdornment,
+      endAdornment,
+      required,
+      className,
+      id: idProp,
+      ...props
+    },
+    ref,
+  ) {
+    const reactId = useId('textfield');
+    const id = idProp ?? reactId;
+    const descriptionId = `${id}-description`;
 
-  const [state, setState] = useControllableState<string>({
-    value,
-    defaultValue: defaultValue ?? '',
-    onChange: undefined,
-  });
+    const [state, setState] = useControllableState<string>({
+      value,
+      defaultValue: defaultValue ?? '',
+      onChange: undefined,
+    });
 
-  const description = error ? errorText : helperText;
+    const description = error ? errorText : helperText;
 
-  return (
-    <div
-      className={cx(styles.root, className)}
-      data-size={size}
-      data-error={error ? 'true' : undefined}
-    >
-      <label className={styles.label} htmlFor={id}>
-        {label}
-        {required ? (
-          <span className={styles.required} aria-hidden>
-            {' '}
-            *
-          </span>
-        ) : null}
-      </label>
-      <div className={styles.field}>
-        {startAdornment ? (
-          <span className={styles.adornment} aria-hidden>
-            {startAdornment}
-          </span>
-        ) : null}
-        <input
-          ref={ref}
-          id={id}
-          className={styles.input}
-          value={state}
-          required={required}
-          aria-invalid={error || undefined}
-          aria-describedby={description ? descriptionId : undefined}
-          onChange={(event) => {
-            setState(event.target.value);
-            onChange?.(event.target.value, event);
-          }}
-          {...props}
-        />
-        {endAdornment ? (
-          <span className={styles.adornment} aria-hidden>
-            {endAdornment}
-          </span>
+    return (
+      <div
+        className={cx(styles.root, className)}
+        data-size={size}
+        data-error={error ? 'true' : undefined}
+      >
+        <label className={styles.label} htmlFor={id}>
+          {label}
+          {required ? (
+            <span className={styles.required} aria-hidden>
+              {' '}
+              *
+            </span>
+          ) : null}
+        </label>
+        <div className={styles.field}>
+          {startAdornment ? (
+            <span className={styles.adornment} aria-hidden>
+              {startAdornment}
+            </span>
+          ) : null}
+          <input
+            ref={ref}
+            id={id}
+            className={styles.input}
+            value={state}
+            required={required}
+            aria-invalid={error || undefined}
+            aria-describedby={description ? descriptionId : undefined}
+            onChange={(event) => {
+              setState(event.target.value);
+              onChange?.(event.target.value, event);
+            }}
+            {...props}
+          />
+          {endAdornment ? (
+            <span className={styles.adornment} aria-hidden>
+              {endAdornment}
+            </span>
+          ) : null}
+        </div>
+        {description ? (
+          <p id={descriptionId} className={styles.description}>
+            {description}
+          </p>
         ) : null}
       </div>
-      {description ? (
-        <p id={descriptionId} className={styles.description}>
-          {description}
-        </p>
-      ) : null}
-    </div>
-  );
-});
+    );
+  },
+);

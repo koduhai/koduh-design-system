@@ -70,7 +70,7 @@ function SidebarItemControl({ item }: { item: SidebarItem }) {
   );
 }
 
-export const Sidebar = forwardRef<HTMLElement, SidebarProps>(function Sidebar(
+export const Sidebar = /* @__PURE__ */ forwardRef<HTMLElement, SidebarProps>(function Sidebar(
   {
     items,
     collapsed,

@@ -13,13 +13,13 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -38,5 +38,9 @@ jobs:
 
       - name: Publish to GitHub Packages
         run: npm publish
+        # GITHUB_TOKEN often can't create a *new* package under a personal-account
+        # namespace (E403 permission_denied: write_package). Set an NPM_TOKEN repo
+        # secret — a classic PAT with write:packages — to publish; falls back to
+        # GITHUB_TOKEN (works once the package exists / for org-owned repos).
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GITHUB_TOKEN }}

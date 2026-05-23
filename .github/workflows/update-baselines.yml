@@ -1,0 +1,51 @@
+# Manually regenerate the committed *-chromium-linux.png visual baselines ON the
+# GitHub hosted runner. The hosted ubuntu-24.04 image renders fonts slightly
+# differently from the mcr.microsoft.com/playwright Docker image, so baselines
+# made in Docker drift against CI; this job produces runner-accurate ones and
+# commits them back to the branch it was dispatched on.
+#
+#   gh workflow run update-baselines.yml --ref <branch>
+name: Update visual baselines
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # Updating snapshots reports the touched tests as failed (exit 1) on the
+      # creating run, so don't fail the job here — the PR's CI is the real gate.
+      - name: Regenerate visual baselines
+        run: npm run test:e2e -- --grep visual --update-snapshots
+        continue-on-error: true
+
+      - name: Commit updated baselines
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add e2e
+          if git diff --cached --quiet; then
+            echo "No baseline changes to commit."
+          else
+            git commit -m "test(e2e): regenerate Linux visual baselines on ubuntu-24.04 runner"
+            git push
+          fi

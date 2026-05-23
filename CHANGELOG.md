@@ -4,6 +4,17 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Components
+
+- **`DataTable`** — a client-side, stateful wrapper around `Table` adding multi-column
+  sort (shift-click), pagination with page-size control, row selection across pages
+  (select-all targets all matching rows), global search, and per-column filters
+  (text, multi-select enum, number range, date range). Fully controllable
+  (uncontrolled by default). `Table` gains an additive `selectAllIds` prop and
+  multi-column `sort` rendering.
+
 ## [1.0.0] - 2026-05-23
 
 First stable release of the from-scratch, MUI-free design system: **zero runtime

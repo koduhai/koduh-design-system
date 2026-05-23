@@ -46,4 +46,19 @@ describe('Progress', () => {
     expect(bar).toHaveAttribute('data-tone', 'danger');
     expect(bar.closest('[data-size]')).toHaveAttribute('data-size', 'lg');
   });
+
+  it('does not produce a negative aria-valuenow when max is non-positive', () => {
+    render(<Progress value={50} max={0} label="Edge" />);
+    expect(screen.getByRole('progressbar', { name: 'Edge' })).toHaveAttribute('aria-valuenow', '0');
+  });
+
+  it('reports aria-valuenow equal to max at completion', () => {
+    render(<Progress value={5} max={5} label="Done" />);
+    expect(screen.getByRole('progressbar', { name: 'Done' })).toHaveAttribute('aria-valuenow', '5');
+  });
+
+  it('omits the visible value row when showValue is set without a label', () => {
+    render(<Progress value={30} showValue />);
+    expect(screen.queryByText('30%')).toBeNull();
+  });
 });

@@ -23,12 +23,11 @@
 }
 
 .track {
-  --progress-fill: var(--ku-color-primary);
   position: relative;
   width: 100%;
   overflow: hidden;
-  background-color: var(--ku-color-bg-muted, var(--ku-color-border));
-  border-radius: var(--ku-radius-pill, 9999px);
+  background-color: var(--ku-color-border);
+  border-radius: var(--ku-radius-full);
 }
 
 .root[data-size='sm'] .track {
@@ -61,7 +60,7 @@
   height: 100%;
   background-color: var(--progress-fill);
   border-radius: inherit;
-  transition: width var(--ku-duration-normal, 240ms) var(--ku-easing-standard);
+  transition: width var(--ku-duration-base) var(--ku-easing-standard);
 }
 
 .track[data-indeterminate='true'] .bar {

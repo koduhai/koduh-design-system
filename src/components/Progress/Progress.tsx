@@ -36,13 +36,13 @@ export const Progress = /* @__PURE__ */ forwardRef<HTMLDivElement, ProgressProps
   ref,
 ) {
   const indeterminate = value == null;
-  const clamped = indeterminate ? 0 : Math.min(Math.max(value, 0), max);
+  const clamped = indeterminate ? 0 : Math.min(Math.max(value, 0), Math.max(max, 0));
   const pct = indeterminate || max <= 0 ? 0 : (clamped / max) * 100;
   const labelId = useId('progress-label');
   const showLabelBlock = showValue && label != null;
 
   return (
-    <div className={cx(styles.root, className)} data-size={size} {...props}>
+    <div ref={ref} className={cx(styles.root, className)} data-size={size} {...props}>
       {showLabelBlock ? (
         <div className={styles.labelRow}>
           <span id={labelId} className={styles.label}>
@@ -52,7 +52,6 @@ export const Progress = /* @__PURE__ */ forwardRef<HTMLDivElement, ProgressProps
         </div>
       ) : null}
       <div
-        ref={ref}
         className={styles.track}
         data-tone={tone}
         data-indeterminate={indeterminate ? 'true' : undefined}

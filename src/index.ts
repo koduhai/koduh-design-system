@@ -76,3 +76,13 @@ export { Dialog, ConfirmDialog } from './components/Dialog';
 export type { DialogProps, DialogSize, ConfirmDialogProps } from './components/Dialog';
 export { Snackbar } from './components/Snackbar';
 export type { SnackbarProps, SnackbarSeverity, SnackbarPlacement } from './components/Snackbar';
+
+// Phase 7 — floating components (Popover API + CSS anchor positioning)
+export { Popover } from './components/Popover';
+export type { PopoverProps, PopoverPlacement } from './components/Popover';
+export { Tooltip } from './components/Tooltip';
+export type { TooltipProps } from './components/Tooltip';
+export { Select } from './components/Select';
+export type { SelectProps, SelectOption, SelectSize } from './components/Select';
+export { Menu } from './components/Menu';
+export type { MenuProps, MenuEntry, MenuItemConfig, MenuSeparator } from './components/Menu';

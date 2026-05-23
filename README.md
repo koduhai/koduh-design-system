@@ -4,14 +4,16 @@ Koduh AI's design system, rebuilt from scratch without Material UI. Dark-first
 theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
 set of accessible primitives and icons.
 
-> **Status:** v1.0 shipped; Phases 5 (Tier 1) and 6 (overlays) landed. The
-> original 12 components (`Button`, `LoadingButton`, `Chip`, `Avatar`,
-> `StatusBadge`, `Alert`, `TextField`, `Card`, `EmptyState`, `PageHeader`,
-> `AppBar`, `Sidebar`) are joined by the Phase 5 set (`Checkbox`,
+> **Status:** v1.0 shipped; Phases 5 (Tier 1), 6 (overlays), and 7 (floating)
+> landed. The original 12 components (`Button`, `LoadingButton`, `Chip`,
+> `Avatar`, `StatusBadge`, `Alert`, `TextField`, `Card`, `EmptyState`,
+> `PageHeader`, `AppBar`, `Sidebar`) are joined by the Phase 5 set (`Checkbox`,
 > `Radio`/`RadioGroup`, `Switch`, `Spinner`, `Skeleton`, `Divider`, `Accordion`,
-> `Breadcrumbs`, `Tabs`) and the Phase 6 overlays (`Dialog`, `ConfirmDialog`,
+> `Breadcrumbs`, `Tabs`), the Phase 6 overlays (`Dialog`, `ConfirmDialog`,
 > `Snackbar`, built on the native `<dialog>` element + Popover API — no portal or
-> focus-trap primitives). All ride the token pipeline, primitives, icon set, and
+> focus-trap primitives), and the Phase 7 floating components (`Popover`,
+> `Tooltip`, `Select`, `Menu`, built on the Popover API + CSS Anchor Positioning —
+> no positioning engine). All ride the token pipeline, primitives, icon set, and
 > theme provider. Tree-shaking, a full accessibility audit
 > ([`ACCESSIBILITY.md`](./ACCESSIBILITY.md)), and CI visual-regression are in
 > place. See [`CHANGELOG.md`](./CHANGELOG.md). Publishing is maintainer-triggered

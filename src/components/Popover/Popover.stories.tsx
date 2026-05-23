@@ -35,7 +35,13 @@ export const Showcase: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
     <div style={{ padding: 120 }}>
-      <Popover open onOpenChange={() => {}} role="dialog" trigger={<Button>Anchor</Button>}>
+      <Popover
+        open
+        onOpenChange={() => {}}
+        role="dialog"
+        aria-label="Example popover"
+        trigger={<Button>Anchor</Button>}
+      >
         <div style={{ padding: 16, maxWidth: 260 }}>
           This popover is rendered open for accessibility and visual testing.
         </div>

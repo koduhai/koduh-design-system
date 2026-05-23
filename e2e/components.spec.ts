@@ -37,6 +37,12 @@ const COMPONENTS = [
   { name: 'Tabs', storyId: 'components-tabs--showcase' },
   { name: 'Dialog', storyId: 'components-dialog--showcase' },
   { name: 'Snackbar', storyId: 'components-snackbar--showcase' },
+  { name: 'Popover', storyId: 'components-popover--showcase' },
+  { name: 'Tooltip', storyId: 'components-tooltip--showcase' },
+  // Select/Menu floating content is closed until interaction; the harness opens
+  // the first trigger so axe inspects the rendered listbox/menu (see gotoStory).
+  { name: 'Select', storyId: 'components-select--showcase', open: true },
+  { name: 'Menu', storyId: 'components-menu--showcase', open: true },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {
@@ -53,16 +59,27 @@ async function gotoStory(page: import('@playwright/test').Page, storyId: string,
   await expect(page.locator('#storybook-root > *').first()).toBeAttached();
 }
 
-for (const { name, storyId } of COMPONENTS) {
+// Open a floating component (Select/Menu) by clicking its first trigger, then
+// wait for the popup to render so axe/visual capture the live listbox/menu.
+async function openFloating(page: import('@playwright/test').Page) {
+  await page.locator('#storybook-root button').first().click();
+  await page.locator('[role="listbox"], [role="menu"]').first().waitFor();
+}
+
+for (const component of COMPONENTS) {
+  const { name, storyId } = component;
+  const shouldOpen = 'open' in component && component.open;
   for (const theme of THEMES) {
     test(`${name} has no axe violations (${theme})`, async ({ page }) => {
       await gotoStory(page, storyId, theme);
+      if (shouldOpen) await openFloating(page);
       const results = await new AxeBuilder({ page }).disableRules(DISABLED_RULES).analyze();
       expect(results.violations).toEqual([]);
     });
 
     test(`${name} matches visual snapshot (${theme})`, async ({ page }) => {
       await gotoStory(page, storyId, theme);
+      if (shouldOpen) await openFloating(page);
       // Animations are disabled by toHaveScreenshot by default.
       await expect(page).toHaveScreenshot(`${storyId}-${theme}.png`);
     });

@@ -54,9 +54,9 @@ export interface TableProps<Row> extends Omit<HTMLAttributes<HTMLTableElement>, 
   /** Controlled selected row ids. */
   selectedIds?: string[];
   /**
-   * Fires with the next selected id set. Select-all operates over the current
-   * `data` only: it emits exactly the current rows' ids (or `[]` to clear), so
-   * a paginated consumer should merge with selections from other pages itself.
+   * Fires with the next selected id set. When `selectAllIds` is omitted, select-all
+   * emits the current page's row ids; when `selectAllIds` is provided it emits that
+   * set instead — so a paginated consumer can select across pages.
    */
   onSelectionChange?: (ids: string[]) => void;
   /**
@@ -164,39 +164,42 @@ function TableInner<Row>(
               />
             </th>
           ) : null}
-          {columns.map((col) => (
-            <th
-              key={col.key}
-              scope="col"
-              className={styles.th}
-              data-align={col.align ?? 'start'}
-              aria-sort={ariaSort(col)}
-              style={col.width ? { width: col.width } : undefined}
-            >
-              {col.sortable ? (
-                <button
-                  type="button"
-                  className={styles.sortButton}
-                  onClick={(event) => handleSort(col, event)}
-                  data-active={ruleFor(col.key) ? 'true' : undefined}
-                >
-                  {col.header}
-                  {rules.length > 1 && ruleFor(col.key) ? (
-                    <span className={styles.sortPriority} aria-hidden="true">
-                      {ruleFor(col.key)!.index + 1}
-                    </span>
-                  ) : null}
-                  <span
-                    className={styles.sortIcon}
-                    aria-hidden="true"
-                    data-dir={ruleFor(col.key)?.rule.dir}
-                  />
-                </button>
-              ) : (
-                col.header
-              )}
-            </th>
-          ))}
+          {columns.map((col) => {
+            const found = ruleFor(col.key);
+            return (
+              <th
+                key={col.key}
+                scope="col"
+                className={styles.th}
+                data-align={col.align ?? 'start'}
+                aria-sort={ariaSort(col)}
+                style={col.width ? { width: col.width } : undefined}
+              >
+                {col.sortable ? (
+                  <button
+                    type="button"
+                    className={styles.sortButton}
+                    onClick={(event) => handleSort(col, event)}
+                    data-active={found ? 'true' : undefined}
+                  >
+                    {col.header}
+                    {rules.length > 1 && found ? (
+                      <span className={styles.sortPriority} aria-hidden="true">
+                        {found.index + 1}
+                      </span>
+                    ) : null}
+                    <span
+                      className={styles.sortIcon}
+                      aria-hidden="true"
+                      data-dir={found?.rule.dir}
+                    />
+                  </button>
+                ) : (
+                  col.header
+                )}
+              </th>
+            );
+          })}
         </tr>
       </thead>
       <tbody>

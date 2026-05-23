@@ -46,3 +46,7 @@ export { EmptyState } from './components/EmptyState';
 export type { EmptyStateProps, HeadingLevel } from './components/EmptyState';
 export { PageHeader } from './components/PageHeader';
 export type { PageHeaderProps } from './components/PageHeader';
+export { AppBar } from './components/AppBar';
+export type { AppBarProps, AppBarPosition } from './components/AppBar';
+export { Sidebar } from './components/Sidebar';
+export type { SidebarProps, SidebarItem } from './components/Sidebar';

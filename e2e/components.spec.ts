@@ -24,6 +24,8 @@ const COMPONENTS = [
   { name: 'Card', storyId: 'components-card--showcase' },
   { name: 'EmptyState', storyId: 'components-emptystate--showcase' },
   { name: 'PageHeader', storyId: 'components-pageheader--showcase' },
+  { name: 'AppBar', storyId: 'components-appbar--showcase' },
+  { name: 'Sidebar', storyId: 'components-sidebar--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

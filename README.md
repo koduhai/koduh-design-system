@@ -5,11 +5,11 @@ theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
 set of accessible primitives and icons.
 
 > **Status:** Phase 0 (foundations), Phase 1 (the six simple components —
-> `Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`, `Alert`), and
-> Phase 2 (form & content — `TextField`, `Card`, `EmptyState`, `PageHeader`)
-> are complete. Tokens, primitives, icon set, theme provider, and the
-> build/test/Storybook pipeline are in place. Phases 3–4 remain (see
-> `docs/superpowers/plans`).
+> `Button`, `LoadingButton`, `Chip`, `Avatar`, `StatusBadge`, `Alert`),
+> Phase 2 (form & content — `TextField`, `Card`, `EmptyState`, `PageHeader`),
+> and Phase 3 (layout — `AppBar`, `Sidebar`) are complete. Tokens, primitives,
+> icon set, theme provider, and the build/test/Storybook pipeline are in place.
+> Only Phase 4 (polish & release) remains (see `docs/superpowers/plans`).
 
 ## Develop
 

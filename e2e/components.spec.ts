@@ -35,6 +35,8 @@ const COMPONENTS = [
   { name: 'Accordion', storyId: 'components-accordion--showcase' },
   { name: 'Breadcrumbs', storyId: 'components-breadcrumbs--showcase' },
   { name: 'Tabs', storyId: 'components-tabs--showcase' },
+  { name: 'Dialog', storyId: 'components-dialog--showcase' },
+  { name: 'Snackbar', storyId: 'components-snackbar--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

@@ -70,3 +70,9 @@ export { Breadcrumbs } from './components/Breadcrumbs';
 export type { BreadcrumbsProps, BreadcrumbItem } from './components/Breadcrumbs';
 export { Tabs } from './components/Tabs';
 export type { TabsProps, TabItem } from './components/Tabs';
+
+// Phase 6 — overlays (native <dialog> + Popover API)
+export { Dialog, ConfirmDialog } from './components/Dialog';
+export type { DialogProps, DialogSize, ConfirmDialogProps } from './components/Dialog';
+export { Snackbar } from './components/Snackbar';
+export type { SnackbarProps, SnackbarSeverity, SnackbarPlacement } from './components/Snackbar';

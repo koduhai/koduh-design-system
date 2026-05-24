@@ -115,7 +115,9 @@
 }
 .step[data-state='upcoming'] .label,
 .step[data-state='upcoming'] .description {
-  color: var(--ku-color-text-disabled);
+  /* text-secondary (not text-disabled) so upcoming-step labels meet AA contrast —
+     they're informational text, not disabled controls. */
+  color: var(--ku-color-text-secondary);
 }
 
 /* Connector line between steps. Uses logical properties so it mirrors in RTL. */

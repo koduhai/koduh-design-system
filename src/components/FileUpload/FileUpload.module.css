@@ -59,16 +59,12 @@
 
 /* Visually-hidden native input — kept in the accessibility tree and focusable
    targetable via the wrapper's click, but removed from layout. */
+/* display:none (not sr-only clip) so the native input is neither focusable nor
+   in the accessibility tree — the role="button" wrapper is the operable control
+   and opens the picker via .click(). This avoids a nested-interactive violation
+   (focusable input inside a button) while keeping programmatic open working. */
 .input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

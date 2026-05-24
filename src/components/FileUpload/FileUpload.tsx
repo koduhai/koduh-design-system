@@ -126,6 +126,9 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
           ref={mergeRefs(inputRef, ref)}
           id={id}
           type="file"
+          // The dropzone wrapper (role="button") is the perceived control, but the
+          // native input still needs its own accessible name to satisfy axe's label rule.
+          aria-label={typeof label === 'string' ? label : 'Upload files'}
           className={styles.input}
           accept={accept}
           multiple={multiple}

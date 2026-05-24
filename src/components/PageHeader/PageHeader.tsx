@@ -1,6 +1,8 @@
 import { forwardRef, createElement } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cx } from '../../utils/cx';
+import { Breadcrumbs } from '../Breadcrumbs';
+import type { BreadcrumbItem } from '../Breadcrumbs';
 import type { HeadingLevel } from '../../utils/headingLevel';
 import styles from './PageHeader.module.css';
 
@@ -11,8 +13,13 @@ export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 'titl
   title: ReactNode;
   /** Supporting line shown beneath the title. */
   subtitle?: ReactNode;
-  /** Breadcrumb trail — rendered inside <nav aria-label="Breadcrumb">. */
-  breadcrumbs?: ReactNode;
+  /**
+   * Breadcrumb trail. An array of `BreadcrumbItem` renders a single internal
+   * `<Breadcrumbs>` (one nav landmark). A `ReactNode` is rendered as-is — it
+   * owns its own landmark and is NOT wrapped in a `<nav>` (so passing your own
+   * `<Breadcrumbs>` won't create a nested duplicate nav).
+   */
+  breadcrumbs?: BreadcrumbItem[] | ReactNode;
   /** Right-aligned actions (buttons, menus). */
   actions?: ReactNode;
   /** Semantic heading level for the title. Defaults to 1. */
@@ -26,10 +33,12 @@ export const PageHeader = /* @__PURE__ */ forwardRef<HTMLElement, PageHeaderProp
   ) {
     return (
       <header ref={ref} className={cx(styles.root, className)} {...props}>
-        {breadcrumbs ? (
-          <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-            {breadcrumbs}
-          </nav>
+        {breadcrumbs != null ? (
+          Array.isArray(breadcrumbs) ? (
+            <Breadcrumbs className={styles.breadcrumbs} items={breadcrumbs as BreadcrumbItem[]} />
+          ) : (
+            <div className={styles.breadcrumbs}>{breadcrumbs}</div>
+          )
         ) : null}
         <div className={styles.bar}>
           <div className={styles.titles}>

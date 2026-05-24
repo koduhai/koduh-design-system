@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { Dialog } from './Dialog';
+import type { DialogProps } from './Dialog';
 import { Button } from '../Button';
 import type { ReactNode } from 'react';
 import styles from './Dialog.module.css';
@@ -20,6 +22,8 @@ export interface ConfirmDialogProps {
   cancelLabel?: string;
   /** Confirm button tone. Defaults to 'primary'. */
   tone?: 'primary' | 'danger';
+  /** Override initial focus. Defaults to the confirm button. */
+  initialFocus?: DialogProps['initialFocus'];
 }
 
 export function ConfirmDialog({
@@ -31,7 +35,9 @@ export function ConfirmDialog({
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
   tone = 'primary',
+  initialFocus,
 }: ConfirmDialogProps) {
+  const confirmRef = useRef<HTMLButtonElement>(null);
   const handleConfirm = () => {
     onConfirm();
     onOpenChange(false);
@@ -43,12 +49,13 @@ export function ConfirmDialog({
       onOpenChange={onOpenChange}
       title={title}
       size="sm"
+      initialFocus={initialFocus ?? confirmRef}
       footer={
         <>
           <Button variant="ghost" tone="neutral" onClick={() => onOpenChange(false)}>
             {cancelLabel}
           </Button>
-          <Button variant="solid" tone={tone} onClick={handleConfirm}>
+          <Button ref={confirmRef} variant="solid" tone={tone} onClick={handleConfirm}>
             {confirmLabel}
           </Button>
         </>

@@ -48,6 +48,23 @@ const COMPONENTS = [
   { name: 'Pagination', storyId: 'components-pagination--showcase' },
   { name: 'Table', storyId: 'components-table--showcase' },
   { name: 'DataTable', storyId: 'components-datatable--showcase' },
+  // v2 issues #13/#14/#15
+  { name: 'Stack', storyId: 'components-stack--showcase' },
+  { name: 'Inline', storyId: 'components-inline--showcase' },
+  { name: 'Grid', storyId: 'components-grid--showcase' },
+  { name: 'Container', storyId: 'components-container--showcase' },
+  { name: 'Text', storyId: 'components-text--showcase' },
+  { name: 'Heading', storyId: 'components-heading--showcase' },
+  { name: 'Link', storyId: 'components-link--showcase' },
+  { name: 'Toaster', storyId: 'components-toaster--showcase' },
+  { name: 'FormField', storyId: 'components-formfield--showcase' },
+  { name: 'NumberField', storyId: 'components-numberfield--showcase' },
+  { name: 'Slider', storyId: 'components-slider--showcase' },
+  { name: 'TagInput', storyId: 'components-taginput--showcase' },
+  // Combobox's trigger is an <input role="combobox">, not a button, so the
+  // button-click openFloating helper doesn't apply; the closed combobox input
+  // is fully accessible on its own. Listbox a11y is covered by unit tests.
+  { name: 'Combobox', storyId: 'components-combobox--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

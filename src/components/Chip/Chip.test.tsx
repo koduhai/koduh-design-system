@@ -29,6 +29,35 @@ describe('Chip', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
+  it('is keyboard-operable when both onClick and onDelete are set', async () => {
+    const onClick = vi.fn();
+    const onDelete = vi.fn();
+    render(<Chip label="Apple" onClick={onClick} onDelete={onDelete} />);
+
+    // The main click target is a focusable, operable region (role/tabindex),
+    // separate from the delete button (no nested buttons). The root <span> is
+    // the click target; the delete <button> is its own button element.
+    const target = screen.getByText('Apple').closest('[data-variant]')!;
+    expect(target.tagName).toBe('SPAN');
+    expect(target).toHaveAttribute('role', 'button');
+    expect(target).toHaveAttribute('tabindex', '0');
+
+    (target as HTMLElement).focus();
+    expect(target).toHaveFocus();
+
+    await userEvent.keyboard('{Enter}');
+    expect(onClick).toHaveBeenCalledTimes(1);
+    await userEvent.keyboard(' ');
+    expect(onClick).toHaveBeenCalledTimes(2);
+    expect(onDelete).not.toHaveBeenCalled();
+
+    // The delete button fires onDelete independently, without triggering onClick.
+    const del = screen.getByRole('button', { name: 'Remove Apple' });
+    await userEvent.click(del);
+    expect(onDelete).toHaveBeenCalledTimes(1);
+    expect(onClick).toHaveBeenCalledTimes(2);
+  });
+
   it('reflects variant/tone/size as data attributes', () => {
     render(<Chip label="X" variant="outline" tone="danger" size="sm" />);
     const el = screen.getByText('X').closest('[data-variant]')!;

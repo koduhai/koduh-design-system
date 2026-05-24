@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import type { HTMLAttributes, MouseEvent, ReactNode, Ref } from 'react';
+import type { HTMLAttributes, KeyboardEvent, MouseEvent, ReactNode, Ref } from 'react';
 import { CloseIcon } from '../../icons';
 import { cx } from '../../utils/cx';
 import styles from './Chip.module.css';
@@ -88,14 +88,35 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
     );
   }
 
+  // Clickable AND deletable: a real <button> here would nest the delete <button>
+  // (invalid + a11y violation), so the click target is a focusable, operable
+  // region — role/tabIndex/keydown — alongside the separate delete <button>.
+  if (onClick) {
+    return (
+      <span
+        ref={ref as Ref<HTMLSpanElement>}
+        role="button"
+        tabIndex={0}
+        className={classes}
+        onClick={onClick}
+        onKeyDown={(event: KeyboardEvent<HTMLSpanElement>) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            // Keyboard activation forwards to the same click handler; the
+            // consumer's onClick is typed for mouse events, so narrow here.
+            onClick(event as unknown as MouseEvent<HTMLElement>);
+          }
+        }}
+        {...dataAttrs}
+        {...props}
+      >
+        {content}
+      </span>
+    );
+  }
+
   return (
-    <span
-      ref={ref as Ref<HTMLSpanElement>}
-      className={classes}
-      onClick={onClick}
-      {...dataAttrs}
-      {...props}
-    >
+    <span ref={ref as Ref<HTMLSpanElement>} className={classes} {...dataAttrs} {...props}>
       {content}
     </span>
   );

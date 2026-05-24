@@ -11,6 +11,24 @@ describe('Chip', () => {
     expect(screen.queryByRole('button')).toBeNull();
   });
 
+  it('accepts a ReactNode label and renders it', () => {
+    render(
+      <Chip
+        label={
+          <span>
+            <span aria-hidden>▲</span> +12.5%
+          </span>
+        }
+      />,
+    );
+    expect(screen.getByText('+12.5%', { exact: false })).toBeInTheDocument();
+  });
+
+  it('falls back to "Remove" for the delete label when label is not a string', () => {
+    render(<Chip label={<span>x</span>} onDelete={() => {}} />);
+    expect(screen.getByRole('button', { name: 'Remove' })).toBeInTheDocument();
+  });
+
   it('renders a button and fires onClick when clickable', async () => {
     const onClick = vi.fn();
     render(<Chip label="Filter" onClick={onClick} />);

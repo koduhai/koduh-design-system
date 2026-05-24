@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useEffect, useRef } from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode, RefObject } from 'react';
 import { mergeRefs, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import { CloseIcon } from '../../icons';
@@ -22,6 +22,12 @@ export interface DialogProps extends Omit<HTMLAttributes<HTMLDialogElement>, 'ti
   size?: DialogSize;
   /** Allow Esc and backdrop click to close. Default true. */
   dismissable?: boolean;
+  /**
+   * Where to send focus when the dialog opens, overriding the native default
+   * (the first focusable descendant — usually the Close button). A ref to an
+   * element, or a CSS selector queried within the dialog.
+   */
+  initialFocus?: RefObject<HTMLElement | null> | string;
   /** Actions rendered in the dialog footer. */
   footer?: ReactNode;
   children?: ReactNode;
@@ -34,6 +40,7 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
     title,
     size = 'md',
     dismissable = true,
+    initialFocus,
     footer,
     children,
     className,
@@ -52,9 +59,19 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
     if (!dialog) return;
     if (open && !dialog.open) {
       dialog.showModal();
+      // Override the native default focus target (the Close button) when the
+      // consumer points us at a specific element (e.g. the first form field).
+      if (initialFocus) {
+        const target =
+          typeof initialFocus === 'string'
+            ? dialog.querySelector<HTMLElement>(initialFocus)
+            : initialFocus.current;
+        target?.focus();
+      }
     } else if (!open && dialog.open) {
       dialog.close();
     }
+    // Keyed on `open`; `initialFocus` is read via closure (no exhaustive-deps rule).
   }, [open]);
 
   // Wire native close/cancel (browser fires these on Esc) to onClose.

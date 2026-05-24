@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { useRef } from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Dialog, ConfirmDialog } from './';
 
@@ -60,6 +61,29 @@ describe('Dialog', () => {
     dlg.dispatchEvent(new Event('close'));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
+
+  it('focuses the initialFocus ref when opened', async () => {
+    function Harness() {
+      const inputRef = useRef<HTMLInputElement>(null);
+      return (
+        <Dialog open onOpenChange={() => {}} title="Form" initialFocus={inputRef}>
+          <button>before</button>
+          <input ref={inputRef} aria-label="first field" />
+        </Dialog>
+      );
+    }
+    render(<Harness />);
+    await waitFor(() => expect(screen.getByLabelText('first field')).toHaveFocus());
+  });
+
+  it('focuses an initialFocus selector when opened', async () => {
+    render(
+      <Dialog open onOpenChange={() => {}} title="Form" initialFocus="#target">
+        <input id="target" aria-label="target field" />
+      </Dialog>,
+    );
+    await waitFor(() => expect(screen.getByLabelText('target field')).toHaveFocus());
+  });
 });
 
 describe('ConfirmDialog', () => {
@@ -95,5 +119,18 @@ describe('ConfirmDialog', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
     expect(onConfirm).toHaveBeenCalled();
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('focuses the confirm button by default', async () => {
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={() => {}}
+        onConfirm={() => {}}
+        title="Sure?"
+        confirmLabel="Yes"
+      />,
+    );
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Yes' })).toHaveFocus());
   });
 });

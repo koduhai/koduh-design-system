@@ -9,8 +9,11 @@ export type ChipTone = 'primary' | 'neutral' | 'success' | 'warning' | 'danger';
 export type ChipSize = 'sm' | 'md';
 
 export interface ChipProps extends Omit<HTMLAttributes<HTMLElement>, 'children' | 'onClick'> {
-  /** Text shown in the chip; kept a string so it can seed the delete button's label. */
-  label: string;
+  /**
+   * Content shown in the chip. A string also seeds the delete button's default
+   * accessible label (`Remove <label>`); for non-string labels pass `deleteLabel`.
+   */
+  label: ReactNode;
   /** Visual style. Defaults to 'solid'. */
   variant?: ChipVariant;
   /** Semantic color. Defaults to 'neutral'. */
@@ -61,7 +64,7 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
         <button
           type="button"
           className={styles.delete}
-          aria-label={deleteLabel ?? `Remove ${label}`}
+          aria-label={deleteLabel ?? (typeof label === 'string' ? `Remove ${label}` : 'Remove')}
           onClick={(event) => {
             event.stopPropagation();
             onDelete();

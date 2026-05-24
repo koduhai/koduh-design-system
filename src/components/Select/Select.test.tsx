@@ -171,4 +171,10 @@ describe('Select', () => {
     fireEvent.pointerDown(elsewhere);
     expect(trigger).not.toHaveFocus();
   });
+
+  it('renders a required indicator and sets aria-required on the trigger', () => {
+    render(<Select label="Model" required options={[{ value: 'a', label: 'A' }]} />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+    expect(screen.getByRole('button')).toHaveAttribute('aria-required', 'true');
+  });
 });

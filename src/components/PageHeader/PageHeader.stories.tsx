@@ -19,11 +19,11 @@ export const Showcase: Story = {
   render: () => (
     <div style={{ minWidth: 480 }}>
       <PageHeader
-        breadcrumbs={
-          <span>
-            <a href="#a">Home</a> / <a href="#b">Projects</a>
-          </span>
-        }
+        breadcrumbs={[
+          { label: 'Home', href: '#a' },
+          { label: 'Projects', href: '#b' },
+          { label: 'Project Atlas' },
+        ]}
         title="Project Atlas"
         subtitle="Last updated 2 hours ago"
         actions={

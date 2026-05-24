@@ -4,21 +4,26 @@ Koduh AI's design system, rebuilt from scratch without Material UI. Dark-first
 theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
 set of accessible primitives and icons.
 
-> **Status:** v2.0 — 32 components shipped through Phases 1–9 (`Textarea`,
-> `Progress`, `Pagination`, `Table`, and the `DataTable` orchestrator round out
-> the data/forms phases). v2 is a small breaking release harmonizing the overlay
-> open/close API (`onClose` → `onOpenChange`; see [`MIGRATION.md`](./MIGRATION.md));
-> the rest is additive (aligned `tone` vocabulary, status text tokens, `Select`
-> `clearable`, an expanded icon set). The original 12 components (`Button`, `LoadingButton`, `Chip`,
+> **Status:** v2.0 — 45 components shipped through Phases 1–9 plus the v2 issue
+> follow-ups (`Textarea`, `Progress`, `Pagination`, `Table`, and the `DataTable`
+> orchestrator round out the data/forms phases). v2 is a small breaking release
+> harmonizing the overlay open/close API (`onClose` → `onOpenChange`; see
+> [`MIGRATION.md`](./MIGRATION.md)); the rest is additive (aligned `tone`
+> vocabulary, status text tokens, `Select` `clearable`, an expanded icon set).
+> The original 12 components (`Button`, `LoadingButton`, `Chip`,
 > `Avatar`, `StatusBadge`, `Alert`, `TextField`, `Card`, `EmptyState`,
 > `PageHeader`, `AppBar`, `Sidebar`) are joined by the Phase 5 set (`Checkbox`,
 > `Radio`/`RadioGroup`, `Switch`, `Spinner`, `Skeleton`, `Divider`, `Accordion`,
 > `Breadcrumbs`, `Tabs`), the Phase 6 overlays (`Dialog`, `ConfirmDialog`,
 > `Snackbar`, built on the native `<dialog>` element + Popover API — no portal or
-> focus-trap primitives), and the Phase 7 floating components (`Popover`,
+> focus-trap primitives), the Phase 7 floating components (`Popover`,
 > `Tooltip`, `Select`, `Menu`, built on the Popover API + CSS Anchor Positioning —
-> no positioning engine). All ride the token pipeline, primitives, icon set, and
-> theme provider. Tree-shaking, a full accessibility audit
+> no positioning engine), and the **v2 follow-up layer**: layout/typography
+> primitives (`Stack`, `Inline`, `Grid`, `Container`, `Text`, `Heading`, `Link`),
+> a notification system (`Toaster` + the `useToast()` hook over the Snackbar
+> visuals), and a form layer (`FormField` + the `useField` hook, `NumberField`,
+> `Slider`, `TagInput`, `Combobox`). All ride the token pipeline, primitives, icon
+> set, and theme provider. Tree-shaking, a full accessibility audit
 > ([`ACCESSIBILITY.md`](./ACCESSIBILITY.md)), and CI visual-regression are in
 > place. See [`CHANGELOG.md`](./CHANGELOG.md). Publishing is maintainer-triggered
 > via a GitHub Release (`.github/workflows/release.yml`).

@@ -7,6 +7,9 @@
   font-size: var(--ku-font-size-sm);
   color: var(--ku-color-text-secondary);
 }
+.required {
+  color: var(--ku-color-danger);
+}
 .trigger {
   display: inline-flex;
   align-items: center;

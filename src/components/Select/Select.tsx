@@ -42,6 +42,8 @@ export interface SelectProps extends Omit<
   disabled?: boolean;
   /** Puts the control in the error state (aria-invalid). */
   error?: boolean;
+  /** Marks the field required: shows the indicator and sets aria-required. */
+  required?: boolean;
   /** Hint shown below the control. Hidden when an error is shown. */
   helperText?: ReactNode;
   /** Message shown below the control when `error` is set; replaces helperText. */
@@ -73,6 +75,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     label,
     disabled,
     error,
+    required,
     helperText,
     errorText,
     size = 'md',
@@ -254,6 +257,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       aria-labelledby={label ? `${labelId} ${baseId}` : undefined}
       aria-describedby={description != null ? `${baseId}-desc` : undefined}
       aria-invalid={error || undefined}
+      aria-required={required || undefined}
       onClick={composeEventHandlers(rest.onClick, () => setOpen((o) => !o))}
       onKeyDown={composeEventHandlers(rest.onKeyDown, onTriggerKeyDown)}
     >
@@ -269,6 +273,12 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       {label != null ? (
         <span id={labelId} className={styles.label}>
           {label}
+          {required ? (
+            <span className={styles.required} aria-hidden>
+              {' '}
+              *
+            </span>
+          ) : null}
         </span>
       ) : null}
       <div className={styles.control}>

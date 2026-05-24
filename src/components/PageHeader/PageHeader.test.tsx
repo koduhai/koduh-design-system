@@ -20,10 +20,35 @@ describe('PageHeader', () => {
     expect(screen.getByText('Welcome back')).toBeInTheDocument();
   });
 
-  it('wraps breadcrumbs in a labelled nav', () => {
-    render(<PageHeader title="Dashboard" breadcrumbs={<a href="/">Home</a>} />);
-    const nav = screen.getByRole('navigation', { name: 'Breadcrumb' });
-    expect(nav).toContainElement(screen.getByRole('link', { name: 'Home' }));
+  it('renders a single Breadcrumb nav when given an items array', () => {
+    render(
+      <PageHeader
+        title="Agent"
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Agents', href: '/agents' },
+          { label: 'Agent' },
+        ]}
+      />,
+    );
+    const navs = screen.getAllByRole('navigation', { name: 'Breadcrumb' });
+    expect(navs).toHaveLength(1);
+    expect(screen.getByText('Agents')).toBeInTheDocument();
+  });
+
+  it('does NOT wrap a ReactNode breadcrumbs slot in its own nav (no nesting)', () => {
+    render(
+      <PageHeader
+        title="Agent"
+        breadcrumbs={
+          <nav aria-label="Breadcrumb">
+            <a href="/">Home</a>
+          </nav>
+        }
+      />,
+    );
+    // Only the passed nav exists — PageHeader added no second Breadcrumb landmark.
+    expect(screen.getAllByRole('navigation', { name: 'Breadcrumb' })).toHaveLength(1);
   });
 
   it('renders actions', () => {

@@ -1,0 +1,21 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-2);
+}
+.label {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+.required {
+  color: var(--ku-color-danger);
+}
+.description {
+  margin: 0;
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+}
+.root[data-error='true'] .description {
+  color: var(--ku-color-danger-fg, var(--ku-color-danger));
+}

@@ -111,3 +111,46 @@ export type {
   FilterValue,
   FilterState,
 } from './components/DataTable';
+
+// v2 issues #13/#14/#15 — layout/typography primitives, notifications, form layer
+// Layout + typography
+export { Stack } from './components/Stack';
+export type { StackProps, SpaceToken, StackAlign, StackJustify } from './components/Stack';
+export { Inline } from './components/Inline';
+export type { InlineProps, InlineAlign, InlineJustify } from './components/Inline';
+export { Grid } from './components/Grid';
+export type { GridProps } from './components/Grid';
+export { Container } from './components/Container';
+export type { ContainerProps, ContainerSize } from './components/Container';
+export { Text } from './components/Text';
+export type { TextProps, TextSize, TextWeight, TextTone } from './components/Text';
+export { Heading } from './components/Heading';
+export type { HeadingProps, HeadingSize, HeadingWeight } from './components/Heading';
+export { Link } from './components/Link';
+export type { LinkProps, LinkTone, LinkUnderline } from './components/Link';
+// Notifications
+export { Toaster, useToast } from './components/Toaster';
+export type {
+  ToasterProps,
+  ToasterPlacement,
+  UseToastReturn,
+  ToastOptions,
+  ToastRecord,
+  ToastSeverity,
+} from './components/Toaster';
+// Form layer
+export { FormField, useField, useFieldContext } from './components/FormField';
+export type {
+  FormFieldProps,
+  FieldContextValue,
+  UseFieldOptions,
+  UseFieldResult,
+} from './components/FormField';
+export { NumberField } from './components/NumberField';
+export type { NumberFieldProps, NumberFieldSize } from './components/NumberField';
+export { Slider } from './components/Slider';
+export type { SliderProps, SliderSize } from './components/Slider';
+export { TagInput } from './components/TagInput';
+export type { TagInputProps, TagInputSize } from './components/TagInput';
+export { Combobox } from './components/Combobox';
+export type { ComboboxProps, ComboboxOption, ComboboxSize } from './components/Combobox';

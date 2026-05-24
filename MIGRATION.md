@@ -42,6 +42,51 @@ Everything else in v2 is **additive** and needs no migration: new `success`/
 `Select` `clearable` prop, the expanded icon set, and the `dist/styles.css`
 filename (the `@koduhai/design-system/styles.css` import specifier is unchanged).
 
+### 3. v2 follow-up layer (additive — issues #9–#15)
+
+New components and hooks; all additive. Highlights:
+
+- **Layout / typography:** `Stack`, `Inline`, `Grid`, `Container`, `Text`,
+  `Heading` (semantic `level` decoupled from visual `size`), `Link`.
+- **Notifications:** mount a `<Toaster />` once at the app root and call
+  `const { toast } = useToast()` anywhere — no provider needed (the queue lives
+  in a module store). `Snackbar` stays the controlled primitive.
+  ```tsx
+  <Toaster placement="bottom-right" />;
+  const { toast } = useToast();
+  toast.success('Saved'); // or toast({ severity, title, description })
+  ```
+- **Form layer:** `FormField` (+ headless `useField`) for custom controls,
+  `NumberField`, `Slider`, `TagInput`, and `Combobox` (searchable single-select).
+
+A few ergonomics notes:
+
+- **`ConfirmDialog` confirm semantics (#9):** on confirm, `onConfirm()` fires
+  **first**, then `onOpenChange(false)`. So a side effect wired into
+  `onOpenChange` (e.g. "clear the selected row on close") also runs on the
+  confirm path — distinguish confirm vs. dismiss using `onConfirm`, not
+  `onOpenChange`.
+- **`Chip.label` is now `ReactNode` (#9):** richer labels (glyph + text) work
+  directly. When `label` isn't a string and the chip is deletable, pass
+  `deleteLabel` so the delete button keeps a meaningful accessible name
+  (otherwise it falls back to `"Remove"`).
+- **`Dialog` gains `initialFocus` (#11):** a ref or selector for the element to
+  focus on open, overriding the native default (the Close button) — ideal for
+  form dialogs. `ConfirmDialog` defaults initial focus to the confirm button.
+- **`Select` gains `required` (#11):** renders the `*` indicator and sets
+  `aria-required`, matching `TextField`/`Textarea`.
+- **`PageHeader.breadcrumbs` widened (#10):** pass a `BreadcrumbItem[]` and
+  `PageHeader` renders one internal `<Breadcrumbs>` (a single `nav` landmark).
+  A `ReactNode` is now rendered **without** a wrapping `<nav>` (it owns its own
+  landmark), which fixes the nested-duplicate-`nav` a11y issue when passing your
+  own `<Breadcrumbs>`. If you relied on `PageHeader` wrapping a passed node in a
+  `<nav aria-label="Breadcrumb">`, either pass items as an array or add the
+  landmark to your node.
+- **`Link` default underline (#13):** `Link` defaults to `underline="always"`
+  so links in body text are distinguishable without relying on color (WCAG
+  link-in-text-block). Use `underline="hover"`/`"none"` for standalone links
+  (nav, lists).
+
 ---
 
 # Migration Guide: v0.x (MUI) → v1 (custom build)

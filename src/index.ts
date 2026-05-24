@@ -14,8 +14,8 @@ export {
 export type { SlotProps } from './primitives';
 
 // Theme tokens
-export { tokens, themes } from './theme';
-export type { ColorMode, ColorTokenName, Tokens } from './theme';
+export { tokens, themes, density } from './theme';
+export type { ColorMode, ColorTokenName, Tokens, Density } from './theme';
 
 // Utilities
 export { cx } from './utils/cx';
@@ -107,6 +107,8 @@ export type {
   DataTableProps,
   DataColumn,
   ColumnType,
+  ColumnWidths,
+  DataTableState,
   EmptyStateContext,
   FilterKind,
   FilterValue,

@@ -4,6 +4,12 @@ import { useId } from '../../primitives';
 export interface FieldContextValue {
   /** Control id; the label's htmlFor points here. */
   id: string;
+  /**
+   * Label element id. Group controls (radiogroup/group) can't be associated via
+   * the label's `htmlFor` (it only labels labelable elements), so they reference
+   * this with `aria-labelledby` instead.
+   */
+  labelId: string;
   /** Description element id, present only when help/error text is shown. */
   describedById?: string;
   /** Whether the field is in an error state (→ aria-invalid). */

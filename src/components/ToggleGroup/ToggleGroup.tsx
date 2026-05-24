@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useState } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { useControllableState } from '../../primitives';
+import { useOptionalFieldContext } from '../FormField';
 import { cx } from '../../utils/cx';
 import styles from './ToggleGroup.module.css';
 
@@ -57,11 +58,30 @@ export const ToggleGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, ToggleGrou
       disabled = false,
       orientation = 'horizontal',
       className,
+      id,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledby,
+      'aria-describedby': ariaDescribedby,
+      'aria-invalid': ariaInvalid,
       ...props
     },
     ref,
   ) {
     const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+    // Compose with an ancestor <FormField>: defer the group's accessible name
+    // (via aria-labelledby → the field's label), description, invalid, and
+    // required wiring to it. Consumer-passed values always win. A radiogroup/
+    // group can't use the label's htmlFor, hence aria-labelledby. Standalone
+    // usage (no FormField) is unchanged — pass aria-label/aria-labelledby yourself.
+    const field = useOptionalFieldContext();
+    const rootId = id ?? field?.id;
+    // aria-labelledby wins over aria-label per spec, so don't borrow the field's
+    // label when the consumer gave an explicit aria-label — let theirs apply.
+    const labelledby = ariaLabelledby ?? (ariaLabel ? undefined : field?.labelId);
+    const describedby = ariaDescribedby ?? field?.describedById;
+    const invalid = ariaInvalid ?? (field?.invalid ? true : undefined);
+    const requiredAttr = field?.required ? true : undefined;
 
     const [selected, setSelected] = useControllableState<string | string[]>({
       value,
@@ -138,6 +158,12 @@ export const ToggleGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, ToggleGrou
         ref={ref}
         className={cx(styles.root, className)}
         role={type === 'single' ? 'radiogroup' : 'group'}
+        id={rootId}
+        aria-label={ariaLabel}
+        aria-labelledby={labelledby}
+        aria-describedby={describedby}
+        aria-invalid={invalid}
+        aria-required={requiredAttr}
         // aria-orientation is valid on radiogroup but not on a plain group, so
         // only emit it in single-select mode (CSS uses data-orientation anyway).
         aria-orientation={type === 'single' ? orientation : undefined}

@@ -1,0 +1,47 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* A ring in the page background colour visually separates stacked avatars. */
+.avatar {
+  position: relative;
+  box-shadow: 0 0 0 2px var(--ku-color-bg-default);
+}
+.avatar:not(:first-child) {
+  margin-inline-start: -8px;
+}
+.root[data-spacing='tight'] .avatar:not(:first-child) {
+  margin-inline-start: -12px;
+}
+
+.overflow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--ku-radius-full);
+  background-color: var(--ku-color-bg-raised);
+  color: var(--ku-color-text-secondary);
+  font-family: var(--ku-font-family-base);
+  font-weight: var(--ku-font-weight-semibold);
+  user-select: none;
+}
+.overflow[data-shape='square'] {
+  border-radius: var(--ku-radius-md);
+}
+.overflow[data-size='sm'] {
+  width: 32px;
+  height: 32px;
+  font-size: var(--ku-font-size-xs);
+}
+.overflow[data-size='md'] {
+  width: 40px;
+  height: 40px;
+  font-size: var(--ku-font-size-sm);
+}
+.overflow[data-size='lg'] {
+  width: 56px;
+  height: 56px;
+  font-size: var(--ku-font-size-lg);
+}

@@ -1,0 +1,89 @@
+.root,
+.group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--ku-font-family-base);
+  color: var(--ku-color-text-primary);
+}
+
+.root {
+  font-size: var(--ku-font-size-md);
+}
+
+.item {
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-1);
+  /* Depth-based indentation via a logical inset so RTL mirrors correctly.
+     --tree-depth is set inline per row (0-based). */
+  padding-block: var(--ku-space-1);
+  padding-inline-end: var(--ku-space-2);
+  padding-inline-start: calc(var(--ku-space-2) + var(--tree-depth, 0) * var(--ku-space-4));
+  border-radius: var(--ku-radius-sm);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.row:hover {
+  background-color: color-mix(in srgb, var(--ku-color-primary) 8%, transparent);
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: -2px;
+}
+
+.row[data-selected='true'] {
+  background-color: color-mix(in srgb, var(--ku-color-primary) 16%, transparent);
+  color: var(--ku-color-primary);
+  font-weight: var(--ku-font-weight-semibold);
+}
+
+.twisty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 16px;
+  block-size: 16px;
+  flex: none;
+}
+
+.chevron {
+  transition: transform var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+/* Collapsed parent points along the inline-start→end direction; RTL flips via
+   the logical-aware rotation below. */
+.twisty[data-expanded='true'] .chevron {
+  transform: rotate(90deg);
+}
+
+/* In RTL, the resting chevron should point the other way. */
+:dir(rtl) .twisty:not([data-expanded='true']) .chevron {
+  transform: rotate(180deg);
+}
+
+:dir(rtl) .twisty[data-expanded='true'] .chevron {
+  transform: rotate(90deg);
+}
+
+.label {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .chevron {
+    transition: none;
+  }
+}

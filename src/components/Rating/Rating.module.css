@@ -1,0 +1,60 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-1);
+  font-family: var(--ku-font-family-base);
+  line-height: 1;
+}
+
+.star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Outline stars use the muted border color; filled stars override below. */
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  border-radius: var(--ku-radius-sm);
+  transition: color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.star[data-filled='true'] {
+  color: var(--ku-color-warning);
+}
+
+.star:hover {
+  color: var(--ku-color-warning);
+}
+
+.star:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+.root[data-readonly='true'] .star {
+  cursor: default;
+}
+
+.root[data-readonly='true'] .star:hover {
+  color: inherit;
+}
+
+.root[data-readonly='true'] .star[data-filled='true']:hover {
+  color: var(--ku-color-warning);
+}
+
+/* Size drives the SVG font-size (the stars use 1em). */
+.root[data-size='sm'] .star {
+  font-size: var(--ku-font-size-md);
+}
+.root[data-size='md'] .star {
+  font-size: var(--ku-font-size-xl);
+}
+.root[data-size='lg'] .star {
+  font-size: var(--ku-font-size-2xl);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star {
+    transition: none;
+  }
+}

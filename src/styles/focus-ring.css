@@ -1,0 +1,36 @@
+/*
+ * Shared focus-ring utility.
+ *
+ * A reusable, token-driven focus ring so consumers stop hand-rolling
+ * `:focus-visible` outlines. Apply the `ku-focus-ring` class to any custom
+ * interactive element to get the library's standard, WCAG-AA visible focus
+ * indicator:
+ *
+ *   <button class="ku-focus-ring">…</button>
+ *
+ * Two variants:
+ *   - `.ku-focus-ring` shows the ring only on keyboard focus (`:focus-visible`).
+ *     This is the recommended default — it matches native button/input behavior
+ *     and avoids a ring on mouse click.
+ *   - `.ku-focus-ring-always` shows the ring on any `:focus` (keyboard or
+ *     programmatic), for elements that should always advertise focus.
+ *
+ * Ring color is `--ku-color-primary`; width/offset come from
+ * `--ku-focus-ring-width` / `--ku-focus-ring-offset` tokens (with literal
+ * fallbacks so this works even before those tokens are generated).
+ *
+ * This is a global (non-module) stylesheet — like `reset.css`, its selectors are
+ * intentionally unscoped so the `ku-focus-ring` class name is stable for
+ * consumers. There is nothing to import from JS; the build wires this into the
+ * package side-effects/entry.
+ */
+
+.ku-focus-ring:focus-visible {
+  outline: var(--ku-focus-ring-width, 2px) solid var(--ku-color-primary);
+  outline-offset: var(--ku-focus-ring-offset, 2px);
+}
+
+.ku-focus-ring-always:focus {
+  outline: var(--ku-focus-ring-width, 2px) solid var(--ku-color-primary);
+  outline-offset: var(--ku-focus-ring-offset, 2px);
+}

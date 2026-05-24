@@ -1,4 +1,4 @@
-import { forwardRef, useRef } from 'react';
+import { forwardRef, useRef, useState } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { useId, useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
@@ -29,10 +29,30 @@ export interface TabsProps extends Omit<
   onChange?: (value: string) => void;
   /** Layout/keyboard axis. Defaults to 'horizontal'. */
   orientation?: 'horizontal' | 'vertical';
+  /**
+   * Defer rendering an inactive panel's content until it is first activated.
+   * Defaults to `false` (eager — every panel's content is rendered up front).
+   */
+  lazy?: boolean;
+  /**
+   * Once a panel has been shown, keep it mounted (hidden via `hidden`/CSS)
+   * instead of unmounting it when it becomes inactive. Defaults to `false`.
+   */
+  keepMounted?: boolean;
 }
 
 export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(function Tabs(
-  { items, value, defaultValue, onChange, orientation = 'horizontal', className, ...props },
+  {
+    items,
+    value,
+    defaultValue,
+    onChange,
+    orientation = 'horizontal',
+    lazy = false,
+    keepMounted = false,
+    className,
+    ...props
+  },
   ref,
 ) {
   const baseId = useId('tabs');
@@ -45,6 +65,20 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
     defaultValue: defaultValue ?? firstEnabled,
     onChange: undefined,
   });
+
+  // Track which panels have ever been the active panel. Used by `lazy`
+  // (defer first render until shown) and `keepMounted` (stay mounted once
+  // shown). The currently-selected panel is always considered shown.
+  const [shownIds, setShownIds] = useState<Set<string>>(() => new Set(selected ? [selected] : []));
+  if (selected && !shownIds.has(selected)) {
+    setShownIds((prev) => {
+      if (prev.has(selected)) return prev;
+      const next = new Set(prev);
+      next.add(selected);
+      return next;
+    });
+  }
+  const hasBeenShown = (id: string) => id === selected || shownIds.has(id);
 
   const select = (id: string) => {
     setSelected(id);
@@ -140,6 +174,25 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
       </div>
       {items.map((item) => {
         const isSelected = item.id === selected;
+        const shown = hasBeenShown(item.id);
+        // The panel element itself always stays mounted so the trigger's
+        // `aria-controls` target and `tabpanel` role/labelling remain stable;
+        // visibility is driven by `hidden` exactly as before. Only the panel's
+        // *content* is gated by lazy/keepMounted:
+        //   - eager (default): always render content (back-compatible).
+        //   - lazy, never shown: omit content until first activation.
+        //   - lazy, shown but now inactive: drop content unless keepMounted.
+        let renderContent: boolean;
+        if (isSelected) {
+          renderContent = true;
+        } else if (!lazy) {
+          // Eager: content is always present. keepMounted is a no-op here
+          // because nothing is ever unmounted.
+          renderContent = true;
+        } else {
+          // Lazy and inactive: present only if shown before AND kept mounted.
+          renderContent = shown && keepMounted;
+        }
         return (
           <div
             key={item.id}
@@ -150,7 +203,7 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
             hidden={!isSelected}
             tabIndex={0}
           >
-            {item.content}
+            {renderContent ? item.content : null}
           </div>
         );
       })}

@@ -387,6 +387,276 @@ test('uncontrolled high page is clamped and settles without onPageChange errors'
   expect(screen.getByText('1–1 of 1')).toBeInTheDocument();
 });
 
+// ─── Row expansion ────────────────────────────────────────────────────────────
+
+test('renders an expand toggle per row and reveals/hides the detail row', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={columns}
+      data={data}
+      getRowId={(r) => r.id}
+      renderExpanded={(r) => <div>Detail for {r.name}</div>}
+    />,
+  );
+  // Detail content not rendered until expanded.
+  expect(screen.queryByText('Detail for User 1')).not.toBeInTheDocument();
+  const toggle = screen.getByRole('button', { name: 'Expand row 1' });
+  expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await user.click(toggle);
+  expect(screen.getByRole('button', { name: 'Collapse row 1' })).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
+  const detail = screen.getByText('Detail for User 1');
+  expect(detail.closest('tr')).not.toHaveAttribute('hidden');
+});
+
+test('expansion toggle is wired to the detail row via aria-controls', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={columns}
+      data={data}
+      getRowId={(r) => r.id}
+      renderExpanded={(r) => <div>Detail {r.id}</div>}
+    />,
+  );
+  const toggle = screen.getByRole('button', { name: 'Expand row 2' });
+  await user.click(toggle);
+  const controls = toggle.getAttribute('aria-controls');
+  expect(controls).toBeTruthy();
+  expect(document.getElementById(controls!)).toHaveTextContent('Detail 2');
+});
+
+test('controlled expanded state is honored and onExpandedChange fires', async () => {
+  const user = userEvent.setup();
+  const onExpandedChange = vi.fn();
+  function Controlled() {
+    const [ids, setIds] = useState<string[]>(['1']);
+    return (
+      <DataTable
+        columns={columns}
+        data={data}
+        getRowId={(r) => r.id}
+        expandedIds={ids}
+        onExpandedChange={(next) => {
+          onExpandedChange(next);
+          setIds(next);
+        }}
+        renderExpanded={(r) => <div>Detail for {r.name}</div>}
+      />
+    );
+  }
+  render(<Controlled />);
+  // Row 1 starts expanded (controlled).
+  expect(screen.getByText('Detail for User 1').closest('tr')).not.toHaveAttribute('hidden');
+  // Expanding row 2 appends to the set.
+  await user.click(screen.getByRole('button', { name: 'Expand row 2' }));
+  expect(onExpandedChange).toHaveBeenCalledWith(['1', '2']);
+});
+
+test('expandable path still renders custom cell renderers and selection', async () => {
+  const user = userEvent.setup();
+  const onSelectionChange = vi.fn();
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', render: (r) => <b>{r.name.toUpperCase()}</b> },
+        { key: 'age', header: 'Age', type: 'number' },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+      selectedIds={[]}
+      onSelectionChange={onSelectionChange}
+      renderExpanded={(r) => <div>{r.name}</div>}
+    />,
+  );
+  expect(screen.getByText('USER 1')).toBeInTheDocument();
+  await user.click(screen.getByRole('checkbox', { name: 'Select row 1' }));
+  expect(onSelectionChange).toHaveBeenCalledWith(['1']);
+});
+
+test('expandable path supports sorting via header click', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', sortable: true },
+        { key: 'age', header: 'Age', type: 'number', sortable: true },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+      defaultPageSize={25}
+      renderExpanded={(r) => <div>{r.id}</div>}
+    />,
+  );
+  await user.click(screen.getByRole('button', { name: /Age/ }));
+  const firstAsc = screen.getAllByRole('row')[1]!;
+  expect(within(firstAsc).getByText('20')).toBeInTheDocument();
+});
+
+// ─── Column resize ─────────────────────────────────────────────────────────────
+
+test('resizableColumns renders a keyboard-operable resize separator per column', () => {
+  render(<DataTable columns={columns} data={data} getRowId={(r) => r.id} resizableColumns />);
+  const handles = screen.getAllByRole('separator', { name: /Resize .* column/i });
+  expect(handles).toHaveLength(columns.length);
+  expect(handles[0]).toHaveAttribute('tabindex', '0');
+});
+
+test('ArrowRight/ArrowLeft on the resize handle adjusts and persists column width', async () => {
+  const user = userEvent.setup();
+  const onColumnWidthsChange = vi.fn();
+  function Controlled() {
+    const [widths, setWidths] = useState<Record<string, number>>({ name: 120 });
+    return (
+      <DataTable
+        columns={columns}
+        data={data}
+        getRowId={(r) => r.id}
+        resizableColumns
+        resizeStep={20}
+        columnWidths={widths}
+        onColumnWidthsChange={(next) => {
+          onColumnWidthsChange(next);
+          setWidths(next);
+        }}
+      />
+    );
+  }
+  render(<Controlled />);
+  const handle = screen.getByRole('separator', { name: 'Resize Name column' });
+  handle.focus();
+  await user.keyboard('{ArrowRight}');
+  expect(onColumnWidthsChange).toHaveBeenLastCalledWith({ name: 140 });
+  await user.keyboard('{ArrowLeft}');
+  expect(onColumnWidthsChange).toHaveBeenLastCalledWith({ name: 120 });
+});
+
+test('resize width does not drop below the column minWidth', async () => {
+  const user = userEvent.setup();
+  const onColumnWidthsChange = vi.fn();
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', minWidth: 100 },
+        { key: 'age', header: 'Age', type: 'number' },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+      resizableColumns
+      resizeStep={50}
+      defaultColumnWidths={{ name: 110 }}
+      onColumnWidthsChange={onColumnWidthsChange}
+    />,
+  );
+  const handle = screen.getByRole('separator', { name: 'Resize Name column' });
+  handle.focus();
+  await user.keyboard('{ArrowLeft}'); // 110 - 50 = 60, clamped to 100
+  expect(onColumnWidthsChange).toHaveBeenLastCalledWith({ name: 100 });
+});
+
+test('a column with resizable:false gets no handle', () => {
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name' },
+        { key: 'age', header: 'Age', type: 'number', resizable: false },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+      resizableColumns
+    />,
+  );
+  expect(screen.getByRole('separator', { name: 'Resize Name column' })).toBeInTheDocument();
+  expect(screen.queryByRole('separator', { name: 'Resize Age column' })).not.toBeInTheDocument();
+});
+
+// ─── Server-side / manual mode ───────────────────────────────────────────────────
+
+test('onStateChange surfaces sort/filter/search/page state for remote fetching', async () => {
+  const user = userEvent.setup();
+  const onStateChange = vi.fn();
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', sortable: true, filter: 'text' },
+        { key: 'age', header: 'Age', type: 'number' },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+      onStateChange={onStateChange}
+    />,
+  );
+  // Fires on mount with the initial state.
+  expect(onStateChange).toHaveBeenCalledWith(
+    expect.objectContaining({ page: 1, pageSize: 10, sort: [], search: '' }),
+  );
+  onStateChange.mockClear();
+  await user.click(screen.getByRole('button', { name: /Name/ }));
+  expect(onStateChange).toHaveBeenLastCalledWith(
+    expect.objectContaining({ sort: [{ key: 'name', dir: 'asc' }] }),
+  );
+});
+
+test('manual mode bypasses the client pipeline: shows given rows and uses rowCount', () => {
+  // Only 2 rows supplied as the "current page", but rowCount says 57 total.
+  const pageRows: Row[] = [
+    { id: '1', name: 'Server A', age: 40 },
+    { id: '2', name: 'Server B', age: 41 },
+  ];
+  render(
+    <DataTable
+      columns={columns}
+      data={pageRows}
+      getRowId={(r) => r.id}
+      manual
+      rowCount={57}
+      pageSize={2}
+    />,
+  );
+  expect(screen.getByText('Server A')).toBeInTheDocument();
+  expect(screen.getByText('Server B')).toBeInTheDocument();
+  // Range readout reflects the server-provided total, not the 2 local rows.
+  expect(screen.getByText('1–2 of 57')).toBeInTheDocument();
+});
+
+test('manual mode does not re-sort the supplied rows on header click', async () => {
+  const user = userEvent.setup();
+  const onSortChange = vi.fn();
+  const onStateChange = vi.fn();
+  // Rows are intentionally out of age order; manual mode must leave them as-is.
+  const pageRows: Row[] = [
+    { id: '1', name: 'Z', age: 99 },
+    { id: '2', name: 'A', age: 1 },
+  ];
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', sortable: true },
+        { key: 'age', header: 'Age', type: 'number', sortable: true },
+      ]}
+      data={pageRows}
+      getRowId={(r) => r.id}
+      manual
+      rowCount={2}
+      pageSize={2}
+      onSortChange={onSortChange}
+      onStateChange={onStateChange}
+    />,
+  );
+  await user.click(screen.getByRole('button', { name: /Age/ }));
+  // Sort intent is surfaced to the caller…
+  expect(onSortChange).toHaveBeenCalledWith([{ key: 'age', dir: 'asc' }]);
+  expect(onStateChange).toHaveBeenLastCalledWith(
+    expect.objectContaining({ sort: [{ key: 'age', dir: 'asc' }] }),
+  );
+  // …but the rendered order is untouched (caller owns fetching).
+  const firstRow = screen.getAllByRole('row')[1]!;
+  expect(within(firstRow).getByText('99')).toBeInTheDocument();
+});
+
 test('filter, sort, and pagination compose together', async () => {
   const user = userEvent.setup();
   render(

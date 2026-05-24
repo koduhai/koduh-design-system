@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ToggleGroup } from './ToggleGroup';
+import { FormField } from '../FormField';
 
 const ITEMS = [
   { value: 'list', label: 'List' },
@@ -55,5 +56,37 @@ describe('ToggleGroup', () => {
     await userEvent.keyboard('{ArrowRight}');
     expect(screen.getByRole('radio', { name: 'Grid' })).toHaveFocus();
     expect(screen.getByRole('radio', { name: 'Grid' })).toHaveAttribute('aria-checked', 'true');
+  });
+
+  describe('FormField composition (#35)', () => {
+    it('takes its accessible name from the FormField label', () => {
+      render(
+        <FormField label="View mode">
+          <ToggleGroup type="single" items={ITEMS} defaultValue="list" />
+        </FormField>,
+      );
+      // The radiogroup is named by the field's label via aria-labelledby.
+      expect(screen.getByRole('radiogroup', { name: 'View mode' })).toBeInTheDocument();
+    });
+
+    it('reflects the field error and description wiring', () => {
+      render(
+        <FormField label="View mode" error errorText="Pick one">
+          <ToggleGroup type="single" items={ITEMS} defaultValue="list" />
+        </FormField>,
+      );
+      const group = screen.getByRole('radiogroup', { name: 'View mode' });
+      expect(group).toHaveAttribute('aria-invalid', 'true');
+      expect(group).toHaveAccessibleDescription('Pick one');
+    });
+
+    it('lets an explicit aria-label override the field label', () => {
+      render(
+        <FormField label="View mode">
+          <ToggleGroup type="single" aria-label="Layout" items={ITEMS} defaultValue="list" />
+        </FormField>,
+      );
+      expect(screen.getByRole('radiogroup', { name: 'Layout' })).toBeInTheDocument();
+    });
   });
 });

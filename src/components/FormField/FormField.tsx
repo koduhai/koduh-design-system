@@ -36,10 +36,12 @@ export const FormField = /* @__PURE__ */ forwardRef<HTMLDivElement, FormFieldPro
   ) {
     const reactId = useId('field');
     const id = idProp ?? reactId;
+    const labelId = `${id}-label`;
     const descriptionId = `${id}-description`;
     const description = error ? errorText : helperText;
     const ctx: FieldContextValue = {
       id,
+      labelId,
       describedById: description != null ? descriptionId : undefined,
       invalid: error,
       required,
@@ -51,7 +53,7 @@ export const FormField = /* @__PURE__ */ forwardRef<HTMLDivElement, FormFieldPro
         data-error={error ? 'true' : undefined}
         {...props}
       >
-        <label className={styles.label} htmlFor={id}>
+        <label id={labelId} className={styles.label} htmlFor={id}>
           {label}
           {required ? (
             <span className={styles.required} aria-hidden>

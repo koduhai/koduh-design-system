@@ -197,4 +197,14 @@ describe('Select', () => {
     render(<Select label="Fruit" required options={[{ value: 'a', label: 'A' }]} />);
     expect(screen.getByText('*')).toBeInTheDocument();
   });
+
+  it('omits data-density by default and reflects density="compact" on the trigger + listbox', () => {
+    const { rerender } = render(<Select label="Fruit" options={options} />);
+    expect(screen.getByRole('button', { name: /Fruit/ })).not.toHaveAttribute('data-density');
+    rerender(<Select label="Fruit" options={options} density="compact" />);
+    const trigger = screen.getByRole('button', { name: /Fruit/ });
+    expect(trigger).toHaveAttribute('data-density', 'compact');
+    fireEvent.click(trigger);
+    expect(screen.getByRole('listbox')).toHaveAttribute('data-density', 'compact');
+  });
 });

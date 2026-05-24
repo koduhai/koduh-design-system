@@ -52,6 +52,17 @@
   padding: 0 var(--ku-space-4);
 }
 
+/* Compact density tightens min-height + horizontal padding via the
+   --ku-density-* vars, on top of any size. Applies both when `density='compact'`
+   is set on the root AND when a `data-density='compact'` ancestor cascades — the
+   second selector covers inherited density without the prop. The 32px compact
+   floor keeps the field an adequate hit target (WCAG). */
+.root[data-density='compact'] .field,
+[data-density='compact'] .root .field {
+  min-height: var(--ku-density-row-height);
+  padding: 0 var(--ku-density-control-padding-x);
+}
+
 .input {
   flex: 1;
   min-width: 0;

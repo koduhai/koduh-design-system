@@ -66,6 +66,40 @@ export const tokens = {
   easing: {
     standard: 'cubic-bezier(0.2, 0, 0, 1)',
   },
+  // Focus-ring geometry (theme-independent). The ring *color* reuses
+  // `--ku-color-primary`; only width/offset live here.
+  // → --ku-focus-ring-width, --ku-focus-ring-offset
+  focusRing: {
+    width: '2px',
+    offset: '2px',
+  },
+} as const;
+
+// Density control. Theme-independent: density is orthogonal to dark/light, and
+// switches via a `[data-density]` attribute (the analogue of `[data-theme]`),
+// not a token-color swap. `comfortable` is the default emitted on :root; the
+// `compact` set is emitted under `[data-density='compact']`, overriding the same
+// `--ku-density-*` variables. Components read these vars for their internal
+// padding / row-height so a single attribute retightens data-dense surfaces.
+//
+// WCAG note: these tighten *internal* padding and row height only — never the
+// minimum interactive hit-target. Components keep their own min-height/min-width
+// floors so compact stays AA-operable.
+export const density = {
+  comfortable: {
+    controlPaddingY: '8px', // --ku-density-control-padding-y (== space-2)
+    controlPaddingX: '12px', // --ku-density-control-padding-x (== space-3)
+    rowPaddingY: '8px', // --ku-density-row-padding-y (table/menu/listbox row)
+    rowPaddingX: '12px', // --ku-density-row-padding-x
+    rowHeight: '40px', // --ku-density-row-height (control min-height floor)
+  },
+  compact: {
+    controlPaddingY: '4px', // tighter (== space-1)
+    controlPaddingX: '8px', // tighter (== space-2)
+    rowPaddingY: '4px',
+    rowPaddingX: '8px',
+    rowHeight: '32px',
+  },
 } as const;
 
 // Color tokens per theme. Values chosen to meet WCAG AA (verified at the
@@ -93,6 +127,17 @@ export const themes = {
       textPrimary: '#F5F7FA',
       textSecondary: '#A8B2C4',
       textDisabled: '#5C667A',
+      // Categorical chart palette — 8 distinct hues tuned to be bright/saturated
+      // enough to read on the dark bgSurface (#141A2A). Ordered for maximal
+      // separation between adjacent series. → --ku-color-chart-1 … chart-8
+      chart1: '#5B9DFF', // blue
+      chart2: '#4ADE80', // green
+      chart3: '#FBBF24', // amber
+      chart4: '#FF6B6B', // red
+      chart5: '#C084FC', // purple
+      chart6: '#22D3EE', // cyan
+      chart7: '#F472B6', // pink
+      chart8: '#A3E635', // lime
     },
   },
   light: {
@@ -117,6 +162,17 @@ export const themes = {
       textPrimary: '#10141F',
       textSecondary: '#4A5468',
       textDisabled: '#9AA3B5',
+      // Categorical chart palette — 8 distinct hues darkened/saturated to read
+      // on the off-white light bgSurface (#F4F6FA), mirroring the dark hue
+      // order. → --ku-color-chart-1 … chart-8
+      chart1: '#1B5FCC', // blue
+      chart2: '#1B7F3B', // green
+      chart3: '#B45309', // amber
+      chart4: '#C62828', // red
+      chart5: '#7C3AED', // purple
+      chart6: '#0E7490', // cyan
+      chart7: '#BE185D', // pink
+      chart8: '#4D7C0F', // lime
     },
   },
 } as const;
@@ -124,3 +180,4 @@ export const themes = {
 export type ColorMode = keyof typeof themes;
 export type ColorTokenName = keyof (typeof themes)['dark']['color'];
 export type Tokens = typeof tokens;
+export type Density = keyof typeof density;

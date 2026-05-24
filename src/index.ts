@@ -14,8 +14,8 @@ export {
 export type { SlotProps } from './primitives';
 
 // Theme tokens
-export { tokens, themes } from './theme';
-export type { ColorMode, ColorTokenName, Tokens } from './theme';
+export { tokens, themes, density } from './theme';
+export type { ColorMode, ColorTokenName, Tokens, Density } from './theme';
 
 // Utilities
 export { cx } from './utils/cx';
@@ -107,6 +107,8 @@ export type {
   DataTableProps,
   DataColumn,
   ColumnType,
+  ColumnWidths,
+  DataTableState,
   EmptyStateContext,
   FilterKind,
   FilterValue,
@@ -193,3 +195,41 @@ export type {
 } from './components/ToggleGroup';
 export { Drawer } from './components/Drawer';
 export type { DrawerProps, DrawerSide, DrawerSize } from './components/Drawer';
+
+// issues #27/#28/#31/#32 — date input, data-viz, P2 components
+export { Calendar } from './components/Calendar';
+export type { CalendarProps } from './components/Calendar';
+export { DatePicker } from './components/DatePicker';
+export type { DatePickerProps, DatePickerSize } from './components/DatePicker';
+export { Sparkline } from './components/Sparkline';
+export type { SparklineProps, SparklineType } from './components/Sparkline';
+export { Chart } from './components/Chart';
+export type { ChartProps, ChartType, ChartSeries } from './components/Chart';
+export { Kbd } from './components/Kbd';
+export type { KbdProps, KbdSize } from './components/Kbd';
+export { AspectRatio } from './components/AspectRatio';
+export type { AspectRatioProps } from './components/AspectRatio';
+export { Code, CodeBlock } from './components/Code';
+export type { CodeProps, CodeBlockProps } from './components/Code';
+export { Collapsible } from './components/Collapsible';
+export type { CollapsibleProps } from './components/Collapsible';
+export { ScrollArea } from './components/ScrollArea';
+export type { ScrollAreaProps, ScrollAreaOrientation } from './components/ScrollArea';
+export { Rating } from './components/Rating';
+export type { RatingProps, RatingSize } from './components/Rating';
+export { Stepper } from './components/Stepper';
+export type { StepperProps, StepperStep, StepperOrientation, StepState } from './components/Stepper';
+export { Timeline } from './components/Timeline';
+export type { TimelineProps, TimelineItem } from './components/Timeline';
+export { HoverCard } from './components/HoverCard';
+export type { HoverCardProps } from './components/HoverCard';
+export { PinInput } from './components/PinInput';
+export type { PinInputProps, PinInputSize } from './components/PinInput';
+export { FileUpload } from './components/FileUpload';
+export type { FileUploadProps } from './components/FileUpload';
+export { Tree } from './components/Tree';
+export type { TreeProps, TreeNode } from './components/Tree';
+export { Carousel } from './components/Carousel';
+export type { CarouselProps, CarouselItem } from './components/Carousel';
+export { CommandPalette } from './components/CommandPalette';
+export type { CommandPaletteProps, CommandPaletteCommand } from './components/CommandPalette';

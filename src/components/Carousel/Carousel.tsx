@@ -1,0 +1,159 @@
+import { forwardRef } from 'react';
+import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
+import { useControllableState, useId } from '../../primitives';
+import { cx } from '../../utils/cx';
+import { ChevronLeftIcon, ChevronRightIcon } from '../../icons';
+import styles from './Carousel.module.css';
+
+export interface CarouselItem {
+  /** Stable identity for the slide. */
+  id: string;
+  /** Slide body. */
+  content: ReactNode;
+}
+
+export interface CarouselProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'onChange' | 'defaultValue'
+> {
+  /** Slides, in display order. */
+  items: CarouselItem[];
+  /** Initial slide index when uncontrolled. Defaults to 0. */
+  defaultIndex?: number;
+  /** Controlled active slide index. */
+  index?: number;
+  /** Fires with the next active index on navigation. */
+  onIndexChange?: (index: number) => void;
+  /** Wrap around past the first/last slide. Defaults to false. */
+  loop?: boolean;
+  /** Accessible name for the carousel region. */
+  'aria-label'?: string;
+  /** Label for the previous-slide control. Defaults to 'Previous slide'. */
+  prevLabel?: string;
+  /** Label for the next-slide control. Defaults to 'Next slide'. */
+  nextLabel?: string;
+}
+
+/** `ref` forwards to the root region element. */
+export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps>(function Carousel(
+  {
+    items,
+    defaultIndex = 0,
+    index,
+    onIndexChange,
+    loop = false,
+    prevLabel = 'Previous slide',
+    nextLabel = 'Next slide',
+    className,
+    onKeyDown,
+    tabIndex,
+    ...props
+  },
+  ref,
+) {
+  const baseId = useId('carousel');
+  const count = items.length;
+
+  const [active, setActive] = useControllableState<number>({
+    value: index,
+    defaultValue: defaultIndex,
+    onChange: onIndexChange,
+  });
+
+  // Clamp into range so out-of-bounds props/empty lists never crash indexing.
+  const safeActive = count === 0 ? 0 : Math.min(Math.max(active, 0), count - 1);
+
+  const goTo = (next: number) => {
+    if (count === 0) return;
+    let target = next;
+    if (target < 0) target = loop ? count - 1 : 0;
+    else if (target > count - 1) target = loop ? 0 : count - 1;
+    setActive(target);
+  };
+
+  const atStart = safeActive === 0;
+  const atEnd = safeActive === count - 1;
+  const prevDisabled = count === 0 || (!loop && atStart);
+  const nextDisabled = count === 0 || (!loop && atEnd);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(event);
+    if (event.defaultPrevented) return;
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      goTo(safeActive - 1);
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      goTo(safeActive + 1);
+    }
+  };
+
+  const slideId = (i: number) => `${baseId}-slide-${i}`;
+
+  return (
+    <div
+      ref={ref}
+      role="group"
+      aria-roledescription="carousel"
+      className={cx(styles.root, className)}
+      tabIndex={tabIndex ?? 0}
+      onKeyDown={handleKeyDown}
+      {...props}
+    >
+      <div className={styles.viewport}>
+        {items.map((item, i) => (
+          <div
+            key={item.id}
+            id={slideId(i)}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${count}`}
+            className={styles.slide}
+            data-active={i === safeActive ? 'true' : undefined}
+            aria-hidden={i === safeActive ? undefined : 'true'}
+            inert={i === safeActive ? undefined : true}
+          >
+            {item.content}
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.controls}>
+        <button
+          type="button"
+          className={styles.nav}
+          aria-label={prevLabel}
+          disabled={prevDisabled}
+          onClick={() => goTo(safeActive - 1)}
+        >
+          <ChevronLeftIcon aria-hidden />
+        </button>
+
+        <div className={styles.indicators} role="group" aria-label="Slides">
+          {items.map((item, i) => (
+            <button
+              key={item.id}
+              type="button"
+              className={styles.indicator}
+              aria-label={`Go to slide ${i + 1}`}
+              aria-current={i === safeActive ? 'true' : undefined}
+              data-active={i === safeActive ? 'true' : undefined}
+              aria-controls={slideId(i)}
+              onClick={() => goTo(i)}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className={styles.nav}
+          aria-label={nextLabel}
+          disabled={nextDisabled}
+          onClick={() => goTo(safeActive + 1)}
+        >
+          <ChevronRightIcon aria-hidden />
+        </button>
+      </div>
+    </div>
+  );
+});

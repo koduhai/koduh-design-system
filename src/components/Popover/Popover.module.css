@@ -22,39 +22,45 @@
   display: none;
 }
 
+/* All keywords are logical so the declaration is valid and mirrors under
+   dir="rtl" (the #21 goal). Mixing a physical primary keyword (bottom/top/
+   left/right) with a logical span keyword (span-inline-*) makes the whole
+   position-area invalid → the panel falls back to inset:0 (viewport top-left);
+   see issue #34. block-end/block-start replace bottom/top; inline-start/
+   inline-end replace left/right; span-block-* replaces span-bottom/span-top. */
 .panel[data-placement='bottom'] {
-  position-area: bottom;
+  position-area: block-end;
 }
 .panel[data-placement='bottom-start'] {
-  position-area: bottom span-inline-end;
+  position-area: block-end span-inline-end;
 }
 .panel[data-placement='bottom-end'] {
-  position-area: bottom span-inline-start;
+  position-area: block-end span-inline-start;
 }
 .panel[data-placement='top'] {
-  position-area: top;
+  position-area: block-start;
 }
 .panel[data-placement='top-start'] {
-  position-area: top span-inline-end;
+  position-area: block-start span-inline-end;
 }
 .panel[data-placement='top-end'] {
-  position-area: top span-inline-start;
+  position-area: block-start span-inline-start;
 }
 .panel[data-placement='left'] {
-  position-area: left;
+  position-area: inline-start;
 }
 .panel[data-placement='left-start'] {
-  position-area: left span-bottom;
+  position-area: inline-start span-block-end;
 }
 .panel[data-placement='left-end'] {
-  position-area: left span-top;
+  position-area: inline-start span-block-start;
 }
 .panel[data-placement='right'] {
-  position-area: right;
+  position-area: inline-end;
 }
 .panel[data-placement='right-start'] {
-  position-area: right span-bottom;
+  position-area: inline-end span-block-end;
 }
 .panel[data-placement='right-end'] {
-  position-area: right span-top;
+  position-area: inline-end span-block-start;
 }

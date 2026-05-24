@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { useId, useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
@@ -32,6 +32,17 @@ export interface AccordionProps extends Omit<
   multiple?: boolean;
   /** Single-mode: allow closing the open item. Defaults to true. */
   collapsible?: boolean;
+  /**
+   * Defer rendering a collapsed panel's content until it is first expanded.
+   * Defaults to `false` (eager — every panel's content is rendered up front).
+   */
+  lazy?: boolean;
+  /**
+   * Once a panel has been expanded, keep its content mounted (hidden via
+   * `hidden`/CSS) instead of unmounting it when collapsed again. Defaults to
+   * `false`.
+   */
+  keepMounted?: boolean;
 }
 
 function toArray(value: string | string[] | undefined): string[] {
@@ -48,6 +59,8 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
       onChange,
       multiple = false,
       collapsible = true,
+      lazy = false,
+      keepMounted = false,
       className,
       ...props
     },
@@ -63,6 +76,19 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
     });
 
     const expandedIds = toArray(state);
+
+    // Track which panels have ever been expanded. Used by `lazy` (defer first
+    // render until expanded) and `keepMounted` (stay mounted once expanded).
+    // Currently-expanded panels are always considered shown.
+    const [shownIds, setShownIds] = useState<Set<string>>(() => new Set(expandedIds));
+    const unseen = expandedIds.filter((id) => !shownIds.has(id));
+    if (unseen.length > 0) {
+      setShownIds((prev) => {
+        const next = new Set(prev);
+        for (const id of unseen) next.add(id);
+        return next;
+      });
+    }
 
     const toggle = (id: string) => {
       const isOpen = expandedIds.includes(id);
@@ -82,8 +108,25 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
       <div ref={ref} className={cx(styles.root, className)} {...props}>
         {items.map((item, index) => {
           const expanded = expandedIds.includes(item.id);
+          const shown = expanded || shownIds.has(item.id);
           const headerId = `${baseId}-${index}-header`;
           const panelId = `${baseId}-${index}-panel`;
+          // The panel region element always stays mounted so the trigger's
+          // `aria-controls` target and region labelling remain stable;
+          // visibility is driven by `hidden` as before. Only the panel's
+          // *content* is gated by lazy/keepMounted:
+          //   - eager (default): always render content (back-compatible).
+          //   - lazy, never expanded: omit content until first expand.
+          //   - lazy, expanded before but now collapsed: drop content unless
+          //     keepMounted.
+          let renderContent: boolean;
+          if (expanded) {
+            renderContent = true;
+          } else if (!lazy) {
+            renderContent = true;
+          } else {
+            renderContent = shown && keepMounted;
+          }
           return (
             <div
               key={item.id}
@@ -117,7 +160,7 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
                 className={styles.panel}
                 hidden={!expanded}
               >
-                <div className={styles.content}>{item.content}</div>
+                <div className={styles.content}>{renderContent ? item.content : null}</div>
               </div>
             </div>
           );

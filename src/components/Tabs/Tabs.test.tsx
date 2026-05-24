@@ -41,4 +41,40 @@ describe('Tabs', () => {
     expect(onChange).toHaveBeenCalledWith('two');
     expect(screen.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true'); // controlled
   });
+
+  it('eager (default): renders all panel content up front', () => {
+    render(<Tabs items={items} />);
+    // Inactive panels are hidden but their content is present in the DOM.
+    expect(screen.getByText('Panel Two')).toBeInTheDocument();
+    expect(screen.getByText('Panel Three')).toBeInTheDocument();
+  });
+
+  it('lazy: defers inactive panel content until first activation', async () => {
+    render(<Tabs items={items} lazy />);
+    // Active panel content is present; inactive ones are not yet rendered.
+    expect(screen.getByText('Panel One')).toBeInTheDocument();
+    expect(screen.queryByText('Panel Two')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Two' }));
+    expect(screen.getByText('Panel Two')).toBeInTheDocument();
+  });
+
+  it('lazy without keepMounted: content unmounts again after re-hiding', async () => {
+    render(<Tabs items={items} lazy />);
+    await userEvent.click(screen.getByRole('tab', { name: 'Two' }));
+    expect(screen.getByText('Panel Two')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'One' }));
+    expect(screen.queryByText('Panel Two')).not.toBeInTheDocument();
+  });
+
+  it('lazy + keepMounted: keeps content mounted (hidden) after re-hiding', async () => {
+    render(<Tabs items={items} lazy keepMounted />);
+    expect(screen.queryByText('Panel Two')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Two' }));
+    expect(screen.getByText('Panel Two')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'One' }));
+    // Still in the DOM, just hidden via the inactive tabpanel.
+    const panelTwo = screen.getByText('Panel Two');
+    expect(panelTwo).toBeInTheDocument();
+    expect(panelTwo.closest('[role="tabpanel"]')).toHaveAttribute('hidden');
+  });
 });

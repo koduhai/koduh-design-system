@@ -1,0 +1,74 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ku-space-1);
+  text-align: center;
+  font-family: var(--ku-font-family-base);
+  color: var(--ku-color-text-primary);
+  padding: var(--ku-space-6) var(--ku-space-4);
+  border: 2px dashed var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+  background-color: var(--ku-color-bg-default);
+  cursor: pointer;
+  transition:
+    border-color var(--ku-duration-fast) var(--ku-easing-standard),
+    background-color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.root:hover:not([data-disabled='true']) {
+  border-color: var(--ku-color-primary);
+  background-color: color-mix(in srgb, var(--ku-color-primary) 6%, transparent);
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+/* Active drag state: a non-color signal (solid, thicker-feeling border) plus tint. */
+.root[data-dragover='true'] {
+  border-style: solid;
+  border-color: var(--ku-color-primary);
+  background-color: color-mix(in srgb, var(--ku-color-primary) 12%, transparent);
+}
+
+.root[data-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.root[aria-invalid='true'] {
+  border-color: var(--ku-color-danger);
+}
+
+.label {
+  font-size: var(--ku-font-size-md);
+  font-weight: var(--ku-font-weight-medium);
+}
+
+.required {
+  color: var(--ku-color-danger);
+}
+
+.instructions {
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+}
+
+/* Visually-hidden native input — kept in the accessibility tree and focusable
+   targetable via the wrapper's click, but removed from layout. */
+/* display:none (not sr-only clip) so the native input is neither focusable nor
+   in the accessibility tree — the role="button" wrapper is the operable control
+   and opens the picker via .click(). This avoids a nested-interactive violation
+   (focusable input inside a button) while keeping programmatic open working. */
+.input {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+  }
+}

@@ -34,6 +34,12 @@ export const Showcase: Story = {
       <TextField label="With icon" startAdornment={<SearchIcon size={16} />} placeholder="Search" />
       <TextField label="Small" size="sm" placeholder="sm" />
       <TextField label="Large" size="lg" placeholder="lg" />
+      <TextField label="Compact density" density="compact" placeholder="compact" />
     </div>
   ),
+};
+
+/** `density="compact"` tightens the field padding/height for dense forms. */
+export const Compact: Story = {
+  args: { label: 'Compact', density: 'compact', placeholder: 'Tighter field' },
 };

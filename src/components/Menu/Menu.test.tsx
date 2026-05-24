@@ -139,4 +139,20 @@ describe('Menu', () => {
     fireEvent.pointerDown(elsewhere);
     expect(trigger).not.toHaveFocus();
   });
+
+  it('omits data-density by default and reflects density="compact" on the menu list', () => {
+    const items = [
+      { label: 'Edit', onSelect: () => {} },
+      { label: 'Delete', onSelect: () => {} },
+    ];
+    const { rerender } = render(
+      <Menu trigger={<button type="button">Actions</button>} items={items} />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    expect(screen.getByRole('menu')).not.toHaveAttribute('data-density');
+    rerender(
+      <Menu trigger={<button type="button">Actions</button>} items={items} density="compact" />,
+    );
+    expect(screen.getByRole('menu')).toHaveAttribute('data-density', 'compact');
+  });
 });

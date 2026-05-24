@@ -97,4 +97,12 @@ describe('TextField', () => {
     expect(screen.getByText('*')).toBeInTheDocument();
     expect(screen.getByLabelText(/Name/)).toBeRequired();
   });
+
+  it('omits data-density by default and reflects density="compact" on the root', () => {
+    const { container, rerender } = render(<TextField label="Email" />);
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).not.toHaveAttribute('data-density');
+    rerender(<TextField label="Email" density="compact" />);
+    expect(root).toHaveAttribute('data-density', 'compact');
+  });
 });

@@ -72,6 +72,25 @@ const COMPONENTS = [
   { name: 'Stat', storyId: 'components-stat--showcase' },
   { name: 'ToggleGroup', storyId: 'components-togglegroup--showcase' },
   { name: 'Drawer', storyId: 'components-drawer--showcase' },
+  // issues #27/#28/#31/#32
+  { name: 'Calendar', storyId: 'components-calendar--showcase' },
+  { name: 'DatePicker', storyId: 'components-datepicker--showcase' },
+  { name: 'Sparkline', storyId: 'components-sparkline--showcase' },
+  { name: 'Chart', storyId: 'components-chart--showcase' },
+  { name: 'Kbd', storyId: 'components-kbd--showcase' },
+  { name: 'AspectRatio', storyId: 'components-aspectratio--showcase' },
+  { name: 'Code', storyId: 'components-code--showcase' },
+  { name: 'Collapsible', storyId: 'components-collapsible--showcase' },
+  { name: 'ScrollArea', storyId: 'components-scrollarea--showcase' },
+  { name: 'Rating', storyId: 'components-rating--showcase' },
+  { name: 'Stepper', storyId: 'components-stepper--showcase' },
+  { name: 'Timeline', storyId: 'components-timeline--showcase' },
+  { name: 'HoverCard', storyId: 'components-hovercard--showcase' },
+  { name: 'PinInput', storyId: 'components-pininput--showcase' },
+  { name: 'FileUpload', storyId: 'components-fileupload--showcase' },
+  { name: 'Tree', storyId: 'components-tree--showcase' },
+  { name: 'Carousel', storyId: 'components-carousel--showcase' },
+  { name: 'CommandPalette', storyId: 'components-commandpalette--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {
@@ -114,3 +133,23 @@ for (const component of COMPONENTS) {
     });
   }
 }
+
+// Regression guard for #34: an invalid position-area (physical + logical keyword
+// mix) computed to `none`, so the overlay fell back to inset:0 and rendered at
+// the viewport top-left instead of anchored to its trigger. Assert an opened
+// Select's listbox starts at/below its trigger, not pinned to the origin.
+test('open overlay is anchored to its trigger, not the viewport origin (#34)', async ({ page }) => {
+  await gotoStory(page, 'components-select--showcase', 'dark');
+  const trigger = page.locator('#storybook-root button').first();
+  await trigger.click();
+  const listbox = page.locator('[role="listbox"]').first();
+  await listbox.waitFor();
+  const t = await trigger.boundingBox();
+  const l = await listbox.boundingBox();
+  expect(t, 'trigger has a bounding box').not.toBeNull();
+  expect(l, 'listbox has a bounding box').not.toBeNull();
+  if (t && l) {
+    // Broken state: l.y === 0 (pinned to top). Valid bottom placement: l.y ≈ trigger bottom.
+    expect(l.y).toBeGreaterThanOrEqual(t.y - 1);
+  }
+});

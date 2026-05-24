@@ -113,3 +113,226 @@
   text-decoration: underline;
   padding: var(--ku-space-1) var(--ku-space-2);
 }
+
+/* ─── Column resize handle ──────────────────────────────────────────────────── */
+
+.resizableHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-1);
+}
+
+.resizableHeaderContent {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* A thin grabbable divider on the trailing (inline-end) edge of the header.
+   role="separator" + keyboard handlers make it operable without a pointer. */
+.resizeHandle {
+  display: inline-block;
+  width: 0.5rem;
+  align-self: stretch;
+  min-height: 1.25em;
+  margin-inline-start: var(--ku-space-1);
+  cursor: col-resize;
+  border-inline-start: 2px solid var(--ku-color-border);
+  /* keep it touch-friendly without affecting layout much */
+  touch-action: none;
+}
+
+.resizeHandle:hover,
+.resizeHandle:focus-visible {
+  border-inline-start-color: var(--ku-color-primary);
+}
+
+.resizeHandle:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+/* ─── Expandable table ──────────────────────────────────────────────────────── */
+
+.expTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ku-font-family-base);
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-primary);
+}
+
+.expCaption {
+  text-align: start;
+  padding-bottom: var(--ku-space-2);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.expThead {
+  border-bottom: 1px solid var(--ku-color-border);
+}
+
+.expTable[data-sticky='true'] .expThead .expTh {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--ku-color-bg-surface);
+}
+
+.expTh {
+  padding: var(--ku-space-2) var(--ku-space-3);
+  text-align: start;
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-secondary);
+  white-space: nowrap;
+}
+
+.expTh[data-align='center'],
+.expTd[data-align='center'] {
+  text-align: center;
+}
+.expTh[data-align='end'],
+.expTd[data-align='end'] {
+  text-align: end;
+}
+
+.expTh[data-control='true'],
+.expTd[data-control='true'] {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.expSortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.expSortButton:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+.expSortIcon {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--ku-color-text-disabled);
+  opacity: 0.6;
+}
+.expSortIcon[data-dir='asc'] {
+  border-top: 0;
+  border-bottom: 5px solid var(--ku-color-primary);
+  opacity: 1;
+}
+.expSortIcon[data-dir='desc'] {
+  border-bottom: 0;
+  border-top: 5px solid var(--ku-color-primary);
+  opacity: 1;
+}
+
+.expSortPriority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25em;
+  height: 1.25em;
+  margin-inline-start: var(--ku-space-1);
+  padding-inline: 0.25em;
+  border-radius: var(--ku-radius-full);
+  background: var(--ku-color-bg-raised);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-xs);
+  line-height: 1;
+}
+
+.expTr {
+  border-bottom: 1px solid var(--ku-color-border);
+}
+.expTr[data-selected='true'] {
+  background-color: var(--ku-color-bg-raised);
+}
+
+.expTd {
+  padding: var(--ku-space-2) var(--ku-space-3);
+}
+
+.expEmptyCell {
+  padding: var(--ku-space-6) var(--ku-space-3);
+  text-align: center;
+  color: var(--ku-color-text-secondary);
+}
+
+.expSkeleton {
+  display: block;
+  height: 1em;
+  border-radius: var(--ku-radius-sm);
+  background: var(--ku-color-bg-raised);
+}
+
+/* Expand/collapse toggle: a square button with a rotating caret. The caret is
+   decorative; the accessible state lives on aria-expanded. */
+.expandToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ku-color-text-secondary);
+  border-radius: var(--ku-radius-sm);
+  cursor: pointer;
+}
+.expandToggle:hover {
+  background: color-mix(in srgb, var(--ku-color-text-primary) 8%, var(--ku-color-bg-default));
+}
+.expandToggle:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+.expandIcon {
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  /* points toward inline-end (collapsed); flips for RTL via the logical-aware
+     transform below */
+  border-inline-start: 6px solid currentColor;
+  transition: transform var(--ku-duration-fast) var(--ku-easing-standard);
+}
+.expandIcon[data-expanded='true'] {
+  transform: rotate(90deg);
+}
+
+.expDetailRow[data-expanded='true'] {
+  border-bottom: 1px solid var(--ku-color-border);
+}
+
+.expDetailCell {
+  padding: var(--ku-space-3) var(--ku-space-4);
+  background: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-primary);
+}

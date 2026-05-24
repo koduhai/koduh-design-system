@@ -55,6 +55,17 @@ export const Showcase: Story = {
       <Select label="Clearable" options={options} defaultValue="ca" clearable />
       <Select label="Error" options={options} error helperText="Required" />
       <Select label="Disabled" options={options} disabled placeholder="Choose…" />
+      <Select label="Compact" options={options} density="compact" placeholder="Choose…" />
+    </div>
+  ),
+};
+
+/** `density="compact"` tightens the trigger and option padding for dense UIs. */
+export const Compact: Story = {
+  args: { label: 'Country', options, density: 'compact', placeholder: 'Choose…' },
+  render: (args) => (
+    <div style={{ padding: 40 }}>
+      <Select {...args} />
     </div>
   ),
 };

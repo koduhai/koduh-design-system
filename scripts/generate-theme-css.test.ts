@@ -23,4 +23,40 @@ describe('buildThemeCss', () => {
     expect(css).toContain('--ku-color-text-primary:');
     expect(css).toContain('--ku-color-bg-surface:');
   });
+
+  it('hyphenates letter→digit boundaries in single-segment names (chart palette)', () => {
+    expect(css).toContain('--ku-color-chart-1:');
+    expect(css).toContain('--ku-color-chart-8:');
+    // existing numbered scales (separate scaleName-key segments) are unaffected
+    expect(css).toContain('--ku-space-1: 4px;');
+    expect(css).toContain('--ku-font-size-2xl: 32px;');
+    expect(css).toContain('--ku-shadow-1:');
+  });
+
+  it('emits theme-independent focus-ring tokens on :root', () => {
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-focus-ring-width: 2px;/s);
+    expect(css).toContain('--ku-focus-ring-offset: 2px;');
+  });
+
+  it('declares comfortable density vars on :root by default', () => {
+    expect(css).toMatch(
+      /:root\s*\{[^}]*--ku-density-control-padding-y: 8px;[^}]*--ku-density-row-height: 40px;/s,
+    );
+    expect(css).toContain('--ku-density-control-padding-x: 12px;');
+    expect(css).toContain('--ku-density-row-padding-y: 8px;');
+    expect(css).toContain('--ku-density-row-padding-x: 12px;');
+  });
+
+  it('overrides density vars with tighter values under [data-density="compact"]', () => {
+    expect(css).toMatch(
+      /\[data-density='compact'\]\s*\{[^}]*--ku-density-control-padding-y: 4px;[^}]*--ku-density-row-height: 32px;/s,
+    );
+    expect(css).toMatch(
+      /\[data-density='compact'\]\s*\{[^}]*--ku-density-control-padding-x: 8px;/s,
+    );
+  });
+
+  it('emits an explicit [data-density="comfortable"] block so density can be reset under a compact ancestor', () => {
+    expect(css).toMatch(/\[data-density='comfortable'\]\s*\{[^}]*--ku-density-row-height: 40px;/s);
+  });
 });

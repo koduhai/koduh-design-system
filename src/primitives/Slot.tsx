@@ -41,10 +41,21 @@ export const Slot = forwardRef<HTMLElement, SlotProps & { children?: React.React
       return null;
     }
     const child = Children.only(children) as ReactElement<AnyProps> & { ref?: Ref<HTMLElement> };
-    const childRef = (child as { ref?: Ref<HTMLElement> }).ref;
+    // React 19 removed `element.ref`; `ref` is now a regular prop on `child.props`.
+    // Prefer the React 19 location, fall back to the legacy React 18 `child.ref`.
+    const childRef =
+      (child.props as { ref?: Ref<HTMLElement> }).ref ?? (child as { ref?: Ref<HTMLElement> }).ref;
+
+    // mergeProps spreads child.props, which under React 19 carries `ref`. Drop any
+    // stray `ref` from the merged props so cloneElement gets a single, merged ref.
+    const { ref: _ignoredRef, ...mergedProps } = mergeProps(
+      slotProps as AnyProps,
+      child.props,
+    ) as AnyProps & { ref?: Ref<HTMLElement> };
+    void _ignoredRef;
 
     return cloneElement(child, {
-      ...mergeProps(slotProps as AnyProps, child.props),
+      ...mergedProps,
       ref: forwardedRef ? mergeRefs(forwardedRef, childRef) : childRef,
     } as AnyProps);
   },

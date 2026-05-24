@@ -6,7 +6,7 @@ import { useId, composeEventHandlers } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Tooltip.module.css';
 
-export interface TooltipProps {
+export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'content'> {
   /** Tooltip text/content. */
   content: ReactNode;
   /** Anchored placement. Defaults to 'top'. */
@@ -21,12 +21,25 @@ export interface TooltipProps {
 
 /** `ref` forwards to the tooltip panel (the floating element), not the trigger. */
 export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(function Tooltip(
-  { content, placement = 'top', delay = 200, className, children },
+  {
+    content,
+    placement = 'top',
+    delay = 200,
+    className,
+    children,
+    onMouseEnter: panelMouseEnter,
+    onMouseLeave: panelMouseLeave,
+    ...rest
+  },
   ref,
 ) {
   const [open, setOpen] = useState(false);
   const tooltipId = useId('tooltip');
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True while the pointer is over the panel itself. WCAG 1.4.13 (Content on
+  // Hover or Focus): the tooltip must be hoverable, so leaving the trigger
+  // schedules a close that the panel can cancel by being hovered.
+  const overPanel = useRef(false);
 
   const clear = () => {
     if (timer.current) clearTimeout(timer.current);
@@ -38,9 +51,30 @@ export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(
     timer.current = setTimeout(() => setOpen(true), delay);
   };
 
+  // Immediate close (blur / Escape) — no grace period.
   const close = () => {
     clear();
+    overPanel.current = false;
     setOpen(false);
+  };
+
+  // Deferred close used when the pointer leaves the trigger: give the user time
+  // to move onto the panel. If the panel is (or becomes) hovered, stay open.
+  const scheduleClose = () => {
+    clear();
+    timer.current = setTimeout(() => {
+      if (!overPanel.current) setOpen(false);
+    }, delay);
+  };
+
+  const onPanelEnter = () => {
+    overPanel.current = true;
+    clear(); // cancel any pending close
+  };
+
+  const onPanelLeave = () => {
+    overPanel.current = false;
+    scheduleClose();
   };
 
   // Fix 1: Clear pending timer on unmount to avoid setState on an unmounted component.
@@ -54,7 +88,8 @@ export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(
   const trigger = cloneElement(children, {
     'aria-describedby': open ? tooltipId : undefined,
     onMouseEnter: composeEventHandlers(children.props.onMouseEnter, scheduleOpen),
-    onMouseLeave: composeEventHandlers(children.props.onMouseLeave, close),
+    // Deferred close: let the pointer travel onto the (now hoverable) panel.
+    onMouseLeave: composeEventHandlers(children.props.onMouseLeave, scheduleClose),
     onFocus: composeEventHandlers(children.props.onFocus, scheduleOpen),
     onBlur: composeEventHandlers(children.props.onBlur, close),
     onKeyDown: composeEventHandlers(children.props.onKeyDown, (e: KeyboardEvent<HTMLElement>) => {
@@ -73,6 +108,9 @@ export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(
       id={tooltipId}
       trigger={trigger}
       className={cx(styles.tooltip, className)}
+      onMouseEnter={composeEventHandlers(panelMouseEnter, onPanelEnter)}
+      onMouseLeave={composeEventHandlers(panelMouseLeave, onPanelLeave)}
+      {...rest}
     >
       {content}
     </Popover>

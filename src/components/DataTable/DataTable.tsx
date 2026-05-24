@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useMemo } from 'react';
 import type { ForwardedRef, MouseEvent, Ref } from 'react';
 import { Table } from '../Table';
 import type { Column } from '../Table';
@@ -79,21 +79,41 @@ function DataTableInner<Row>(
     onChange: onFiltersChange,
   });
 
+  // Memoize the (potentially expensive) filter→search→sort→paginate pass so it
+  // only recomputes when an actual input changes — not on every keystroke in an
+  // unrelated field or every parent re-render. Output is identical to calling
+  // runPipeline inline; only the recomputation is gated.
   const {
     rows,
     matchingIds,
     total,
     page: safePage,
-  } = runPipeline({
-    data,
-    columns,
-    getRowId,
-    filters: filterState,
-    search: searchState,
-    sort: sortState,
-    page: pageState,
-    pageSize: pageSizeState,
-  });
+  } = useMemo(
+    () =>
+      runPipeline({
+        data,
+        columns,
+        getRowId,
+        filters: filterState,
+        search: searchState,
+        sort: sortState,
+        page: pageState,
+        pageSize: pageSizeState,
+      }),
+    [data, columns, getRowId, filterState, searchState, sortState, pageState, pageSizeState],
+  );
+
+  // Fix 4: when filtering/searching shrinks the result set below the current
+  // page, the view renders the clamped `safePage`, but `pageState` (and any
+  // controlled parent via onPageChange) still holds the stale higher page.
+  // Reconcile them so internal state and the controlled parent converge.
+  // Guarded on inequality to avoid an update loop, and setPage is a no-op write
+  // for controlled mode beyond firing onPageChange — exactly what we want.
+  useEffect(() => {
+    if (safePage !== pageState) {
+      setPage(safePage);
+    }
+  }, [safePage, pageState, setPage]);
 
   const handleSortChange = (key: string, _dir: SortRule['dir'], event?: MouseEvent) => {
     setSort(cycleSort(sortState, key, event?.shiftKey ?? false));

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `@koduhai/design-system` v1 — a from-scratch React component library that deliberately has **zero dependency on MUI, Emotion, or any third-party component/styling library** (it replaces an older MUI-wrapper-based v0.x). Styling is zero-runtime: design tokens compile to CSS custom properties, component styles are CSS Modules. React 18/19 are peer dependencies; there are no runtime dependencies. WCAG AA is a hard requirement.
 
-The full design spec is `docs/superpowers/specs/2026-05-21-custom-design-system-design.md` — read it before non-trivial work. Delivery is phased (§15 of the spec): Phase 0 foundations are done; components ship in Phases 1–4. The `src/index.ts` component exports grow as each component lands.
+The full design spec is `docs/superpowers/specs/2026-05-21-custom-design-system-design.md` — read it before non-trivial work. Delivery is phased (§15 of the spec): Phase 0 foundations are done and components have shipped through Phases 1–9 (32 components, the latest being DataTable). `src/index.ts` is the source of truth for which components are shipped; it grows as each component lands.
 
 ## Commands
 
@@ -34,7 +34,7 @@ npx vitest run -t "renders solid variant"
 Four layers, low → high. Each only depends on layers below it; no component reads another component's internals.
 
 1. **Tokens** (`src/theme/tokens.ts`) — the single source of truth. Theme-independent scales live in `tokens`; color values that differ between dark/light live in `themes`. Components **never** import these values at runtime — they read the generated CSS variables.
-2. **Primitives & utilities** (`src/primitives`, `src/utils`, `src/styles/reset.css`) — the from-scratch infra that replaces what MUI gave implicitly: `Slot`/`asChild`, `mergeRefs`, `composeEventHandlers`, `useId`, `useControllableState`, `VisuallyHidden`, `cx`, and the reset. There is intentionally **no Portal or FocusTrap** — overlay components (Dialog/Snackbar/etc.) are out of scope, which is why the from-scratch build is low-risk.
+2. **Primitives & utilities** (`src/primitives`, `src/utils`, `src/styles/reset.css`) — the from-scratch infra that replaces what MUI gave implicitly: `Slot`/`asChild`, `mergeRefs`, `composeEventHandlers`, `useId`, `useControllableState`, `VisuallyHidden`, `cx`, and the reset. There is intentionally **no Portal or FocusTrap**: overlay components (Dialog/Snackbar/Popover/Menu/Tooltip/Select) are implemented with platform primitives instead — native `<dialog>` + `showModal()` for Dialog, the Popover API for floating layers, and CSS anchor positioning for placement. Caveat: the Popover API and CSS anchor positioning are Chromium-first; Firefox/Safari support lags, so non-anchor browsers fall back to JS positioning.
 3. **Components** (`src/components/<Name>/`) — each is a self-contained folder: `Name.tsx`, `Name.module.css`, `Name.test.tsx`, `Name.stories.tsx`, `index.ts`.
 4. **Provider & entry** (`src/provider`, `src/index.ts`, `src/icons`) — `KoduhThemeProvider` sets `data-theme` on `<html>`, persists to localStorage, exposes `useColorMode()`, and imports the reset. `src/index.ts` is the main entry; `src/theme` and `src/icons` are separate package entry points.
 

@@ -3,6 +3,7 @@ import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
 import { Popover } from '../Popover';
 import type { PopoverPlacement } from '../Popover';
 import { composeEventHandlers, mergeRefs, useId } from '../../primitives';
+import { cx } from '../../utils/cx';
 import styles from './Menu.module.css';
 
 export interface MenuItemConfig {
@@ -18,7 +19,7 @@ export interface MenuSeparator {
 
 export type MenuEntry = MenuItemConfig | MenuSeparator;
 
-export interface MenuProps {
+export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   /** The element that toggles the menu. Rendered via Popover's Slot; Menu wires open/close + ARIA onto it. */
   trigger: ReactElement;
   /** Menu entries — actionable items and separators, in order. */
@@ -34,7 +35,7 @@ function isSeparator(entry: MenuEntry): entry is MenuSeparator {
 
 /** `ref` forwards to the trigger element, not the menu panel. */
 export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function Menu(
-  { trigger, items, placement = 'bottom-start', className },
+  { trigger, items, placement = 'bottom-start', className, ...rest },
   ref,
 ) {
   const [open, setOpen] = useState(false);
@@ -45,6 +46,13 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
   const menuRef = useRef<HTMLUListElement>(null);
   const triggerRef = useRef<HTMLElement>(null);
   const wasOpen = useRef(false);
+  // Only restore focus to the trigger on keyboard-initiated closes (Escape /
+  // selection), never on an outside-pointer dismiss — that would yank focus
+  // away from wherever the user just clicked (WCAG: predictable focus).
+  const restoreFocus = useRef(false);
+  // Which item to highlight when the menu next opens: 'first' (default), 'last'
+  // (ArrowUp from the trigger). The open effect consumes and clears this.
+  const pendingSeed = useRef<'first' | 'last'>('first');
 
   // Indices into `items` that are selectable (not a separator, not disabled).
   const itemIndices = items.reduce<number[]>((acc, entry, i) => {
@@ -55,7 +63,17 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
   const activate = (entry: MenuItemConfig) => {
     if (entry.disabled) return;
     entry.onSelect();
+    restoreFocus.current = true; // keyboard/pointer selection → return focus to trigger
     setOpen(false);
+  };
+
+  // Open from the trigger via keyboard, seeding which item to highlight.
+  // 'first' (ArrowDown/Enter/Space) lands on the first enabled item; 'last'
+  // (ArrowUp) on the last; per the WAI-ARIA menu-button pattern. The open
+  // effect reads `pendingSeed` to set the active index after it opens.
+  const openFrom = (which: 'first' | 'last') => {
+    pendingSeed.current = which;
+    setOpen(true);
   };
 
   // Roving move over the selectable indices, wrapping at both ends.
@@ -99,6 +117,7 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
       }
       case 'Escape':
         event.preventDefault();
+        restoreFocus.current = true; // keyboard close → return focus to trigger
         setOpen(false);
         break;
       default:
@@ -106,23 +125,46 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
     }
   };
 
-  // Focus the menu when it opens (keyboard nav). Active index starts unset (-1)
-  // so the menu has no highlighted item until the user arrows in — the first
-  // ArrowDown then lands on the first enabled item (standard menu behavior).
-  // On close, reset and return focus to the trigger (a11y), unless this is the
-  // initial mount. Mirrors Select's open/close effect.
+  // Focus the menu when it opens (keyboard nav) and seed the active item so
+  // `aria-activedescendant` points at a real item (the first enabled item by
+  // default, the last when opened via ArrowUp) — otherwise nothing is announced.
+  // On close, reset; and return focus to the trigger ONLY for keyboard-initiated
+  // closes (Escape / selection), never an outside-pointer dismiss.
   useEffect(() => {
     if (open) {
       menuRef.current?.focus();
-      setActiveIndex(-1);
+      const seed =
+        pendingSeed.current === 'last' ? itemIndices[itemIndices.length - 1] : itemIndices[0];
+      setActiveIndex(seed ?? -1);
+      pendingSeed.current = 'first';
     } else {
       setActiveIndex(-1);
-      if (wasOpen.current) triggerRef.current?.focus();
+      if (wasOpen.current && restoreFocus.current) triggerRef.current?.focus();
+      restoreFocus.current = false;
     }
     wasOpen.current = open;
     // Intentionally keyed only on `open`: re-seeding on every items change would
     // fight user navigation. Mirrors the Popover/Select open/close effect.
   }, [open]);
+
+  // WAI-ARIA menu-button keyboard: open on ArrowDown/ArrowUp/Enter/Space.
+  // ArrowDown opens to the first enabled item, ArrowUp to the last.
+  const onTriggerKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        openFrom('first');
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        openFrom('last');
+        break;
+      default:
+        break;
+    }
+  };
 
   const typedTrigger = trigger as ReactElement<HTMLAttributes<HTMLElement>>;
   const clonedTrigger = cloneElement(typedTrigger, {
@@ -133,6 +175,7 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
     'aria-expanded': open,
     'aria-controls': open ? menuId : undefined,
     onClick: composeEventHandlers(typedTrigger.props.onClick, () => setOpen((o) => !o)),
+    onKeyDown: composeEventHandlers(typedTrigger.props.onKeyDown, onTriggerKeyDown),
   } as HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
 
   return (
@@ -142,7 +185,8 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
       placement={placement}
       role="presentation"
       trigger={clonedTrigger}
-      className={className}
+      className={cx(styles.root, className)}
+      {...rest}
     >
       <ul
         ref={menuRef}

@@ -4,7 +4,7 @@ Koduh AI's design system, rebuilt from scratch without Material UI. Dark-first
 theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
 set of accessible primitives and icons.
 
-> **Status:** v2.0 — 45 components shipped through Phases 1–9 plus the v2 issue
+> **Status:** v2.2 — 47 components shipped through Phases 1–9 plus the v2 issue
 > follow-ups (`Textarea`, `Progress`, `Pagination`, `Table`, and the `DataTable`
 > orchestrator round out the data/forms phases). v2 is a small breaking release
 > harmonizing the overlay open/close API (`onClose` → `onOpenChange`; see
@@ -22,7 +22,12 @@ set of accessible primitives and icons.
 > primitives (`Stack`, `Inline`, `Grid`, `Container`, `Text`, `Heading`, `Link`),
 > a notification system (`Toaster` + the `useToast()` hook over the Snackbar
 > visuals), and a form layer (`FormField` + the `useField` hook, `NumberField`,
-> `Slider`, `TagInput`, `Combobox`). All ride the token pipeline, primitives, icon
+> `Slider`, `TagInput`, `Combobox`). The v2.2 follow-ups make `FormField` compose
+> directly with the shipped controls (they defer label/aria to an ancestor field),
+> add toast conveniences (`toast.promise`, caller-supplied `id`, per-toast
+> placement), responsive props on `Grid`/`Stack`/`Inline` (`{base, md}` objects +
+> `Grid` track ratios), `Text` escape hatches (`leading`/`mono`/`tabular`/`truncate`),
+> and two new layout primitives (`Box`, `DescriptionList`). All ride the token pipeline, primitives, icon
 > set, and theme provider. Tree-shaking, a full accessibility audit
 > ([`ACCESSIBILITY.md`](./ACCESSIBILITY.md)), and CI visual-regression are in
 > place. See [`CHANGELOG.md`](./CHANGELOG.md). Publishing is maintainer-triggered

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Select } from './Select';
+import { FormField } from '../FormField';
 
 const options = [
   { value: 'a', label: 'Apple' },
@@ -176,5 +177,24 @@ describe('Select', () => {
     render(<Select label="Model" required options={[{ value: 'a', label: 'A' }]} />);
     expect(screen.getByText('*')).toBeInTheDocument();
     expect(screen.getByRole('button')).toHaveAttribute('aria-required', 'true');
+  });
+
+  it('inside FormField: no own label span; trigger id + aria from context', () => {
+    render(
+      <FormField label="Model" required error errorText="Pick one" id="model">
+        <Select options={[{ value: 'a', label: 'A' }]} />
+      </FormField>,
+    );
+    const trigger = screen.getByRole('button');
+    expect(trigger.id).toBe('model');
+    expect(trigger).toHaveAttribute('aria-required', 'true');
+    expect(trigger).toHaveAttribute('aria-invalid', 'true');
+    expect(trigger).toHaveAttribute('aria-describedby', screen.getByText('Pick one').id);
+    expect(screen.getAllByText('Model')).toHaveLength(1);
+  });
+
+  it('standalone: unchanged label + required indicator', () => {
+    render(<Select label="Fruit" required options={[{ value: 'a', label: 'A' }]} />);
+    expect(screen.getByText('*')).toBeInTheDocument();
   });
 });

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { Select } from './Select';
+import { FormField } from '../FormField';
 
 const options = [
   { value: 'us', label: 'United States' },
@@ -19,6 +20,26 @@ export const Default: Story = {
     return (
       <div style={{ padding: 40 }}>
         <Select {...args} value={value} onChange={(v) => setValue(v)} />
+      </div>
+    );
+  },
+};
+
+/**
+ * Wrapped in a `<FormField>`: the field supplies the label, the required
+ * indicator, and the error/aria wiring. Select defers to the context — it omits
+ * its own label span and description and sources `aria-invalid`/`aria-required`/
+ * `aria-describedby` (and the trigger `id`) from the field.
+ */
+export const WithFormField: Story = {
+  args: { label: 'Country', options },
+  render: function WithFormFieldStory() {
+    const [value, setValue] = useState<string>();
+    return (
+      <div style={{ padding: 40, maxWidth: 320 }}>
+        <FormField label="Country" required error errorText="Please pick a country." id="country">
+          <Select options={options} value={value} onChange={(v) => setValue(v)} />
+        </FormField>
       </div>
     );
   },

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `@koduhai/design-system` v1 — a from-scratch React component library that deliberately has **zero dependency on MUI, Emotion, or any third-party component/styling library** (it replaces an older MUI-wrapper-based v0.x). Styling is zero-runtime: design tokens compile to CSS custom properties, component styles are CSS Modules. React 18/19 are peer dependencies; there are no runtime dependencies. WCAG AA is a hard requirement.
 
-The full design spec is `docs/superpowers/specs/2026-05-21-custom-design-system-design.md` — read it before non-trivial work. Delivery is phased (§15 of the spec): Phase 0 foundations are done and components have shipped through Phases 1–9 plus the v2 issue follow-ups (45 components — layout/typography primitives, a `Toaster`/`useToast` notification layer, and a `FormField`-led form layer round out the latest batch). `src/index.ts` is the source of truth for which components are shipped; it grows as each component lands.
+The full design spec is `docs/superpowers/specs/2026-05-21-custom-design-system-design.md` — read it before non-trivial work. Delivery is phased (§15 of the spec): Phase 0 foundations are done and components have shipped through Phases 1–9 plus the v2 issue follow-ups (47 components — layout/typography primitives, a `Toaster`/`useToast` notification layer, and a `FormField`-led form layer round out the latest batch). `src/index.ts` is the source of truth for which components are shipped; it grows as each component lands.
 
 ## Commands
 

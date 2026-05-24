@@ -1,7 +1,9 @@
 import { forwardRef, useRef, useState } from 'react';
-import type { KeyboardEvent, ReactNode, SyntheticEvent } from 'react';
+import type { InputHTMLAttributes, KeyboardEvent, ReactNode, SyntheticEvent } from 'react';
 import { Popover } from '../Popover';
-import { useControllableState, useId, mergeRefs } from '../../primitives';
+import { useOptionalFieldContext } from '../FormField';
+import { CloseIcon } from '../../icons';
+import { composeEventHandlers, useControllableState, useId, mergeRefs } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Combobox.module.css';
 
@@ -16,9 +18,15 @@ export interface ComboboxOption {
   disabled?: boolean;
 }
 
-export interface ComboboxProps {
-  /** Visible label, associated with the input via aria-labelledby. */
-  label: ReactNode;
+export interface ComboboxProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'value' | 'defaultValue' | 'onChange' | 'size'
+> {
+  /**
+   * Visible label, associated with the input via aria-labelledby. Optional when
+   * the control is wrapped in a `<FormField>`, which supplies the label.
+   */
+  label?: ReactNode;
   /** The selectable options, in order. */
   options: ComboboxOption[];
   /** Controlled selected value. */
@@ -43,6 +51,13 @@ export interface ComboboxProps {
   helperText?: ReactNode;
   /** Message shown below the control when `error` is set; replaces helperText. */
   errorText?: ReactNode;
+  /**
+   * Shows a clear affordance when a value is selected. Clearing resets the
+   * value and fires `onChange('', event)` — `''` is the "no selection" signal.
+   */
+  clearable?: boolean;
+  /** Accessible label for the clear button. Defaults to 'Clear selection'. */
+  clearLabel?: string;
   /** Base id for the control; ids for label/listbox/description derive from it. */
   id?: string;
   /** Class applied to the root wrapper. */
@@ -69,18 +84,31 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
       error = false,
       helperText,
       errorText,
+      clearable,
+      clearLabel = 'Clear selection',
       id: idProp,
       className,
+      ...rest
     },
     ref,
   ) {
     const reactId = useId('combobox');
-    const id = idProp ?? reactId;
+    const field = useOptionalFieldContext();
+    // Inside a <FormField>, defer label/required/aria to it; otherwise use own props.
+    const id = field?.id ?? idProp ?? reactId;
+    const invalid = field ? field.invalid : error;
+    const isRequired = field ? field.required : required;
+    const showOwnLabel = !field; // FormField renders the label when present
     const labelId = `${id}-label`;
     const listboxId = `${id}-listbox`;
     const descriptionId = `${id}-description`;
     const optionId = (i: number) => `${id}-opt-${i}`;
     const description = error ? errorText : helperText;
+    const describedBy = field
+      ? field.describedById
+      : description != null
+        ? descriptionId
+        : undefined;
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [selected, setSelected] = useControllableState<string | undefined>({
@@ -103,6 +131,17 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
       onChange?.(opt.value, event);
       setOpen(false);
       setActiveIndex(-1);
+    };
+
+    // Reset to "no selection". Reports '' (not undefined) so the value stays a
+    // string for consumers; refocus the input after clearing.
+    const clear = (event: SyntheticEvent) => {
+      setSelected(undefined);
+      setQuery('');
+      onChange?.('', event);
+      setOpen(false);
+      setActiveIndex(-1);
+      inputRef.current?.focus();
     };
 
     const onInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -135,6 +174,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
 
     const input = (
       <input
+        {...rest}
         ref={mergeRefs(inputRef, ref)}
         id={id}
         role="combobox"
@@ -142,22 +182,22 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
         className={styles.input}
         value={query}
         placeholder={placeholder}
-        required={required}
+        required={isRequired}
         autoComplete="off"
         aria-autocomplete="list"
         aria-expanded={open}
         aria-controls={open ? listboxId : undefined}
         aria-activedescendant={open && activeIndex >= 0 ? optionId(activeIndex) : undefined}
-        aria-labelledby={labelId}
-        aria-invalid={error || undefined}
-        aria-describedby={description != null ? descriptionId : undefined}
+        aria-labelledby={showOwnLabel && label != null ? labelId : undefined}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
         onChange={(e) => {
           setQuery(e.target.value);
           setOpen(true);
           setActiveIndex(-1);
         }}
-        onFocus={() => setOpen(true)}
-        onKeyDown={onInputKeyDown}
+        onFocus={composeEventHandlers(rest.onFocus, () => setOpen(true))}
+        onKeyDown={composeEventHandlers(rest.onKeyDown, onInputKeyDown)}
       />
     );
 
@@ -165,18 +205,20 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
       <div
         className={cx(styles.root, className)}
         data-size={size}
-        data-error={error ? 'true' : undefined}
+        data-error={invalid ? 'true' : undefined}
       >
-        <span id={labelId} className={styles.label}>
-          {label}
-          {required ? (
-            <span className={styles.required} aria-hidden>
-              {' '}
-              *
-            </span>
-          ) : null}
-        </span>
-        <div className={styles.control}>
+        {showOwnLabel && label != null ? (
+          <span id={labelId} className={styles.label}>
+            {label}
+            {isRequired ? (
+              <span className={styles.required} aria-hidden>
+                {' '}
+                *
+              </span>
+            ) : null}
+          </span>
+        ) : null}
+        <div className={styles.control} data-clearable={clearable && selected ? 'true' : undefined}>
           <Popover
             open={open}
             onOpenChange={setOpen}
@@ -184,7 +226,12 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
             role="presentation"
             trigger={input}
           >
-            <ul id={listboxId} role="listbox" className={styles.listbox} aria-labelledby={labelId}>
+            <ul
+              id={listboxId}
+              role="listbox"
+              className={styles.listbox}
+              aria-labelledby={showOwnLabel && label != null ? labelId : undefined}
+            >
               {filtered.length === 0 ? (
                 <li className={styles.noResults} role="presentation">
                   {noResultsText}
@@ -209,8 +256,19 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
               )}
             </ul>
           </Popover>
+          {clearable && selected ? (
+            <button
+              type="button"
+              className={styles.clear}
+              aria-label={clearLabel}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={clear}
+            >
+              <CloseIcon size={16} />
+            </button>
+          ) : null}
         </div>
-        {description != null ? (
+        {showOwnLabel && description != null ? (
           <span
             id={descriptionId}
             className={styles.description}

@@ -123,9 +123,27 @@ export type { GridProps } from './components/Grid';
 export { Container } from './components/Container';
 export type { ContainerProps, ContainerSize } from './components/Container';
 export { Text } from './components/Text';
-export type { TextProps, TextSize, TextWeight, TextTone } from './components/Text';
+export type {
+  TextProps,
+  TextSize,
+  TextWeight,
+  TextTone,
+  TextLeading,
+  TextFamily,
+  TextNumeric,
+  TextTransform,
+} from './components/Text';
 export { Heading } from './components/Heading';
-export type { HeadingProps, HeadingSize, HeadingWeight } from './components/Heading';
+export type {
+  HeadingProps,
+  HeadingSize,
+  HeadingWeight,
+  HeadingLeading,
+} from './components/Heading';
+export { Box } from './components/Box';
+export type { BoxProps } from './components/Box';
+export { DescriptionList } from './components/DescriptionList';
+export type { DescriptionListProps, DescriptionItem } from './components/DescriptionList';
 export { Link } from './components/Link';
 export type { LinkProps, LinkTone, LinkUnderline } from './components/Link';
 // Notifications
@@ -139,7 +157,12 @@ export type {
   ToastSeverity,
 } from './components/Toaster';
 // Form layer
-export { FormField, useField, useFieldContext } from './components/FormField';
+export {
+  FormField,
+  useField,
+  useFieldContext,
+  useOptionalFieldContext,
+} from './components/FormField';
 export type {
   FormFieldProps,
   FieldContextValue,

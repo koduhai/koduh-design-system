@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Textarea } from './Textarea';
+import { FormField } from '../FormField';
 
 describe('Textarea', () => {
   it('associates the label with a textarea element', () => {
@@ -68,5 +69,23 @@ describe('Textarea', () => {
     await userEvent.type(el, 'overflowing content');
     expect(el.style.height).toBe('60px');
     expect(el.style.overflowY).toBe('auto');
+  });
+
+  it('inside FormField: defers label + aria to the field', () => {
+    render(
+      <FormField label="Bio" error errorText="Too long" id="bio">
+        <Textarea />
+      </FormField>,
+    );
+    const ta = screen.getByLabelText('Bio');
+    expect(ta.id).toBe('bio');
+    expect(ta).toHaveAttribute('aria-invalid', 'true');
+    expect(ta).toHaveAttribute('aria-describedby', screen.getByText('Too long').id);
+    expect(screen.getAllByText('Bio')).toHaveLength(1);
+  });
+
+  it('standalone: unchanged', () => {
+    render(<Textarea label="Notes" required />);
+    expect(screen.getByText('*')).toBeInTheDocument();
   });
 });

@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Popover } from '../Popover';
+import { useOptionalFieldContext } from '../FormField';
 import { CloseIcon } from '../../icons';
 import { composeEventHandlers, useControllableState, useId, mergeRefs } from '../../primitives';
 import { cx } from '../../utils/cx';
@@ -36,7 +37,11 @@ export interface SelectProps extends Omit<
   options: SelectOption[];
   /** Text shown when no value is selected. Defaults to 'Select…'. */
   placeholder?: string;
-  /** Visible label, associated with the trigger via aria-labelledby. */
+  /**
+   * Visible label, associated with the trigger via aria-labelledby. Omit it (and
+   * wrap the control in a `<FormField>`) to let the field supply the label and
+   * the error/required/aria wiring instead.
+   */
   label?: ReactNode;
   /** Disables the trigger. */
   disabled?: boolean;
@@ -87,6 +92,8 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   },
   ref,
 ) {
+  // When inside a <FormField>, defer label/required/aria to it; otherwise use own props.
+  const field = useOptionalFieldContext();
   const description = error ? errorText : helperText;
   const [selected, setSelected] = useControllableState<string | undefined>({
     value,
@@ -97,7 +104,16 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const reactId = useId('select');
-  const baseId = id ?? reactId;
+  const baseId = field?.id ?? id ?? reactId;
+  // FormField owns the label/description in-context; Select renders its own only standalone.
+  const showOwnLabel = !field;
+  const describedBy = field
+    ? field.describedById
+    : description != null
+      ? `${baseId}-desc`
+      : undefined;
+  const invalid = field ? field.invalid : error;
+  const isRequired = field ? field.required : required;
   const labelId = `${baseId}-label`;
   const listboxId = `${baseId}-listbox`;
   const optionId = (i: number) => `${baseId}-opt-${i}`;
@@ -254,10 +270,10 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       aria-haspopup="listbox"
       aria-expanded={open}
       aria-controls={open ? listboxId : undefined}
-      aria-labelledby={label ? `${labelId} ${baseId}` : undefined}
-      aria-describedby={description != null ? `${baseId}-desc` : undefined}
-      aria-invalid={error || undefined}
-      aria-required={required || undefined}
+      aria-labelledby={showOwnLabel && label ? `${labelId} ${baseId}` : undefined}
+      aria-describedby={describedBy}
+      aria-invalid={invalid || undefined}
+      aria-required={isRequired || undefined}
       onClick={composeEventHandlers(rest.onClick, () => setOpen((o) => !o))}
       onKeyDown={composeEventHandlers(rest.onKeyDown, onTriggerKeyDown)}
     >
@@ -270,10 +286,10 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
 
   return (
     <div className={cx(styles.root, className)}>
-      {label != null ? (
+      {showOwnLabel && label != null ? (
         <span id={labelId} className={styles.label}>
           {label}
-          {required ? (
+          {isRequired ? (
             <span className={styles.required} aria-hidden>
               {' '}
               *
@@ -294,7 +310,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
             id={listboxId}
             role="listbox"
             tabIndex={-1}
-            aria-labelledby={label ? labelId : undefined}
+            aria-labelledby={showOwnLabel && label ? labelId : undefined}
             aria-activedescendant={activeIndex >= 0 ? optionId(activeIndex) : undefined}
             className={styles.listbox}
             onKeyDown={onListKeyDown}
@@ -322,7 +338,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
           </button>
         ) : null}
       </div>
-      {description != null ? (
+      {showOwnLabel && description != null ? (
         <span
           id={`${baseId}-desc`}
           className={styles.helperText}

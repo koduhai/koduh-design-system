@@ -1,16 +1,27 @@
 import { forwardRef, useRef } from 'react';
-import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
+import type {
+  CSSProperties,
+  HTMLAttributes,
+  KeyboardEvent,
+  PointerEvent,
+  ReactNode,
+  SyntheticEvent,
+} from 'react';
 import { useControllableState, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Slider.module.css';
 
 export type SliderSize = 'sm' | 'md';
 
-export interface SliderProps {
+export interface SliderProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'onChange' | 'defaultValue'
+> {
   label: ReactNode;
   value?: number;
   defaultValue?: number;
-  onChange?: (value: number) => void;
+  /** Fires with the new value and the originating keyboard/pointer event. */
+  onChange?: (value: number, event?: SyntheticEvent) => void;
   min?: number;
   max?: number;
   step?: number;
@@ -18,8 +29,13 @@ export interface SliderProps {
   disabled?: boolean;
   /** Produces aria-valuetext (and any visible value readout). */
   formatValue?: (value: number) => string;
+  /** Hint shown below the track. Hidden when an error is shown. */
+  helperText?: ReactNode;
+  /** Puts the slider in the error state (aria-invalid). */
+  error?: boolean;
+  /** Message shown below the track when `error` is set; replaces helperText. */
+  errorText?: ReactNode;
   id?: string;
-  className?: string;
 }
 
 export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(function Slider(
@@ -34,25 +50,36 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
     size = 'md',
     disabled = false,
     formatValue,
+    helperText,
+    error = false,
+    errorText,
     id: idProp,
     className,
+    onBlur,
+    onFocus,
+    ...rest
   },
   ref,
 ) {
   const reactId = useId('slider');
   const id = idProp ?? reactId;
   const labelId = `${id}-label`;
+  const descriptionId = `${id}-description`;
+  const description = error ? errorText : helperText;
   const trackRef = useRef<HTMLDivElement>(null);
   const [val, setVal] = useControllableState<number>({
     value,
     defaultValue: defaultValue ?? min,
-    onChange,
   });
   const clampSnap = (n: number) => {
     const stepped = Math.round((n - min) / step) * step + min;
     return Math.min(max, Math.max(min, stepped));
   };
-  const set = (n: number) => setVal(clampSnap(n));
+  const set = (n: number, event?: SyntheticEvent) => {
+    const clamped = clampSnap(n);
+    setVal(clamped);
+    onChange?.(clamped, event);
+  };
   const pct = ((val - min) / (max - min)) * 100;
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -82,13 +109,13 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
         return;
     }
     e.preventDefault();
-    set(next);
+    set(next, e);
   };
 
-  const pointerFromClientX = (clientX: number) => {
+  const pointerFromClientX = (clientX: number, event?: SyntheticEvent) => {
     const rect = trackRef.current?.getBoundingClientRect();
     if (!rect) return;
-    set(min + ((clientX - rect.left) / rect.width) * (max - min));
+    set(min + ((clientX - rect.left) / rect.width) * (max - min), event);
   };
 
   return (
@@ -97,6 +124,8 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
       className={cx(styles.root, className)}
       data-size={size}
       data-disabled={disabled ? 'true' : undefined}
+      data-error={error ? 'true' : undefined}
+      {...rest}
     >
       <span id={labelId} className={styles.label}>
         {label}
@@ -105,9 +134,9 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
       <div
         ref={trackRef}
         className={styles.track}
-        onPointerDown={(e) => {
+        onPointerDown={(e: PointerEvent<HTMLDivElement>) => {
           if (!disabled) {
-            pointerFromClientX(e.clientX);
+            pointerFromClientX(e.clientX, e);
           }
         }}
         style={{ ['--slider-pct']: `${pct}%` } as CSSProperties}
@@ -123,9 +152,18 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
           aria-valuenow={val}
           aria-valuetext={formatValue ? formatValue(val) : undefined}
           aria-disabled={disabled || undefined}
+          aria-invalid={error || undefined}
+          aria-describedby={description != null ? descriptionId : undefined}
           onKeyDown={disabled ? undefined : onKeyDown}
+          onBlur={onBlur}
+          onFocus={onFocus}
         />
       </div>
+      {description != null ? (
+        <p id={descriptionId} className={styles.description}>
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 });

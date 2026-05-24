@@ -20,6 +20,8 @@ export const Showcase: Story = {
       <Slider label="Volume" defaultValue={40} />
       <Slider label="Brightness" defaultValue={75} formatValue={(v) => `${v}%`} />
       <Slider label="Disabled level" defaultValue={50} disabled />
+      <Slider label="Threshold" helperText="Drag to set the alert threshold." defaultValue={20} />
+      <Slider label="Budget" defaultValue={90} error errorText="Exceeds the allowed maximum." />
     </div>
   ),
 };

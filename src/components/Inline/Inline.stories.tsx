@@ -48,3 +48,14 @@ export const Showcase: Story = {
     </div>
   ),
 };
+
+/** Gap responds to viewport width: tight on mobile, looser from `md` up. */
+export const ResponsiveGap: Story = {
+  render: () => (
+    <Inline gap={{ base: 1, md: 6 }}>
+      {box('One')}
+      {box('Two')}
+      {box('Three')}
+    </Inline>
+  ),
+};

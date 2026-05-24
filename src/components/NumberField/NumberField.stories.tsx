@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { NumberField } from './NumberField';
+import { FormField } from '../FormField';
 
 const meta = {
   title: 'Components/NumberField',
@@ -26,6 +27,21 @@ export const Showcase: Story = {
       />
       <NumberField label="Invalid count" defaultValue={0} error errorText="Must be at least 1." />
       <NumberField label="Disabled total" defaultValue={42} disabled />
+    </div>
+  ),
+};
+
+/**
+ * Inside a `<FormField>`, NumberField defers its label, required indicator,
+ * and aria wiring to the field — pass no `label` to the control.
+ */
+export const WithFormField: Story = {
+  args: { label: 'Quantity' },
+  render: () => (
+    <div style={{ maxWidth: 320 }}>
+      <FormField label="Quantity" required helperText="How many units to order." id="wff-qty">
+        <NumberField defaultValue={1} min={0} />
+      </FormField>
     </div>
   ),
 };

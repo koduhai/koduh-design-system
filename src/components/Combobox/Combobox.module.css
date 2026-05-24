@@ -13,10 +13,35 @@
   color: var(--ku-color-danger);
 }
 
-/* Wraps the input so the Popover panel anchors to the field. */
+/* Wraps the input so the Popover panel anchors to the field and the clear
+   button can overlay its right edge. */
 .control {
   position: relative;
   display: inline-flex;
+}
+/* Reserve room so the typed text never runs under the clear button. */
+.control[data-clearable='true'] .input {
+  padding-right: 2.25rem;
+}
+.clear {
+  position: absolute;
+  top: 50%;
+  right: var(--ku-space-2);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--ku-radius-full);
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  opacity: 0.8;
+}
+.clear:hover {
+  opacity: 1;
+  color: var(--ku-color-text-primary);
 }
 
 .input {

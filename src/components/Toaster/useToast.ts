@@ -9,6 +9,20 @@ type ToastFn = ((options: ToastOptions) => string) & {
   error: (description: ReactNode, options?: ShortcutOptions) => string;
   warning: (description: ReactNode, options?: ShortcutOptions) => string;
   info: (description: ReactNode, options?: ShortcutOptions) => string;
+  /**
+   * Drive one toast through a promise's lifecycle: shows `loading` immediately,
+   * then swaps to `success`/`error` when the promise settles. Returns the same
+   * promise so callers can keep chaining/awaiting.
+   */
+  promise: <T>(
+    promise: Promise<T>,
+    msgs: {
+      loading: ReactNode;
+      success: ReactNode | ((v: T) => ReactNode);
+      error: ReactNode | ((e: unknown) => ReactNode);
+    },
+    options?: Omit<ToastOptions, 'severity' | 'description'>,
+  ) => Promise<T>;
 };
 
 export interface UseToastReturn {
@@ -31,6 +45,32 @@ export function useToast(): UseToastReturn {
     toast.warning = (description, options) =>
       addToast({ ...options, severity: 'warning', description });
     toast.info = (description, options) => addToast({ ...options, severity: 'info', description });
+    toast.promise = (promise, msgs, options) => {
+      const id = addToast({
+        ...options,
+        severity: 'info',
+        description: msgs.loading,
+        duration: Infinity,
+      });
+      promise.then(
+        (value) =>
+          updateToast(id, {
+            severity: 'success',
+            description:
+              typeof msgs.success === 'function'
+                ? (msgs.success as (v: unknown) => ReactNode)(value)
+                : msgs.success,
+            duration: undefined,
+          }),
+        (err) =>
+          updateToast(id, {
+            severity: 'error',
+            description: typeof msgs.error === 'function' ? msgs.error(err) : msgs.error,
+            duration: undefined,
+          }),
+      );
+      return promise;
+    };
     return { toast, dismiss: dismissToast, update: updateToast };
   }, []);
 }

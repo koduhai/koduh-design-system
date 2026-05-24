@@ -1,0 +1,15 @@
+.root {
+  display: grid;
+  grid-template-columns: var(--dl-term-width, max-content) 1fr;
+  gap: var(--dl-gap, var(--ku-space-3)) var(--ku-space-4);
+  margin: 0;
+}
+.term {
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+  margin: 0;
+}
+.desc {
+  color: var(--ku-color-text-primary);
+  margin: 0;
+}

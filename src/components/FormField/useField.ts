@@ -20,6 +20,15 @@ export function useFieldContext(): FieldContextValue {
   return ctx;
 }
 
+/**
+ * Like {@link useFieldContext}, but returns `null` instead of throwing when there
+ * is no ancestor `<FormField>`. Lets a control opt into FormField composition
+ * (deferring its label/aria to the field) while staying fully usable standalone.
+ */
+export function useOptionalFieldContext(): FieldContextValue | null {
+  return useContext(FieldContext);
+}
+
 export interface UseFieldOptions {
   id?: string;
   required?: boolean;

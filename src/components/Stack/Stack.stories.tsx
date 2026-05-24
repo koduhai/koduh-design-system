@@ -27,6 +27,16 @@ export const Default: Story = {
   ),
 };
 
+export const ResponsiveGap: Story = {
+  render: () => (
+    <Stack gap={{ base: 2, md: 6, lg: 10 }}>
+      <div style={boxStyle}>Gap grows with the viewport</div>
+      <div style={boxStyle}>base=2, md=6, lg=10</div>
+      <div style={boxStyle}>Resize the preview to see it change</div>
+    </Stack>
+  ),
+};
+
 export const Showcase: Story = {
   render: () => (
     <Stack gap={6}>

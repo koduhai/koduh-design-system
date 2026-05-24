@@ -95,4 +95,61 @@ describe('Toaster', () => {
     });
     expect(getSnapshot()[0]!.severity).toBe('error');
   });
+
+  it('caller-supplied id upserts (update in place) instead of stacking', () => {
+    let api: ReturnType<typeof useToast> | null = null;
+    function E() {
+      api = useToast();
+      return null;
+    }
+    render(<E />);
+    act(() => {
+      api!.toast({ id: 'save', description: 'Saving…' });
+    });
+    act(() => {
+      api!.toast({ id: 'save', description: 'Saved', severity: 'success' });
+    });
+    expect(getSnapshot()).toHaveLength(1);
+    expect(getSnapshot()[0]!.description).toBe('Saved');
+    expect(getSnapshot()[0]!.severity).toBe('success');
+  });
+
+  it('toast.promise shows loading then resolves to success', async () => {
+    let api: ReturnType<typeof useToast> | null = null;
+    function E() {
+      api = useToast();
+      return null;
+    }
+    render(<E />);
+    let resolve!: (v: string) => void;
+    const p = new Promise<string>((r) => {
+      resolve = r;
+    });
+    act(() => {
+      api!.toast.promise(p, { loading: 'Loading…', success: (v) => `Got ${v}`, error: 'Failed' });
+    });
+    expect(getSnapshot()[0]!.description).toBe('Loading…');
+    await act(async () => {
+      resolve('X');
+      await p;
+    });
+    expect(getSnapshot()[0]!.severity).toBe('success');
+    expect(getSnapshot()[0]!.description).toBe('Got X');
+  });
+
+  it('Toaster renders a toast with no placement, and matching per-toast placement', () => {
+    render(<Toaster placement="top-center" />);
+    act(() => {
+      addToast({ description: 'unplaced', duration: Infinity });
+    }); // shows everywhere
+    act(() => {
+      addToast({ description: 'topc', placement: 'top-center', duration: Infinity });
+    });
+    act(() => {
+      addToast({ description: 'botr', placement: 'bottom-right', duration: Infinity });
+    });
+    expect(screen.getByText('unplaced')).toBeInTheDocument();
+    expect(screen.getByText('topc')).toBeInTheDocument();
+    expect(screen.queryByText('botr')).toBeNull();
+  });
 });

@@ -1,6 +1,7 @@
 .root {
   margin-inline: auto;
   width: 100%;
+  padding-block: var(--container-py, 0);
 }
 .root[data-size='sm'] {
   max-width: var(--ku-breakpoint-sm);

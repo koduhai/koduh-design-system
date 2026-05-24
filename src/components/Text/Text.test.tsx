@@ -40,4 +40,30 @@ describe('Text', () => {
     expect(screen.getByTestId('t')).toHaveAttribute('data-size', 'md');
     expect(screen.getByTestId('t')).toHaveClass('x');
   });
+  it('applies leading/family/numeric/transform data-attrs', () => {
+    render(
+      <Text leading="relaxed" family="mono" numeric="tabular" transform="uppercase" data-testid="t">
+        x
+      </Text>,
+    );
+    const el = screen.getByTestId('t');
+    expect(el).toHaveAttribute('data-leading', 'relaxed');
+    expect(el).toHaveAttribute('data-family', 'mono');
+    expect(el).toHaveAttribute('data-numeric', 'tabular');
+    expect(el).toHaveAttribute('data-transform', 'uppercase');
+  });
+  it('truncate sets the data-attr; lineClamp sets the custom property', () => {
+    const { rerender } = render(
+      <Text truncate data-testid="t">
+        x
+      </Text>,
+    );
+    expect(screen.getByTestId('t')).toHaveAttribute('data-truncate', '');
+    rerender(
+      <Text lineClamp={3} data-testid="t">
+        x
+      </Text>,
+    );
+    expect(screen.getByTestId('t').style.getPropertyValue('--text-line-clamp')).toBe('3');
+  });
 });

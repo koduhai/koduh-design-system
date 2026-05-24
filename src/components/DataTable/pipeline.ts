@@ -178,13 +178,52 @@ export function cycleSort(current: SortRule[], key: string, additive: boolean): 
   return []; // desc → none
 }
 
-export interface PipelineInput<Row> {
+export interface FilterSortInput<Row> {
   data: Row[];
   columns: DataColumn<Row>[];
   getRowId: (row: Row) => string;
   filters: FilterState;
   search: string;
   sort: SortRule[];
+}
+
+export interface FilterSortResult<Row> {
+  /** The full filtered + searched + sorted row set (every matching row, unpaged). */
+  sorted: Row[];
+  /** Ids of all matching rows (used for select-all across pages). */
+  matchingIds: string[];
+  /** Count of matching rows. */
+  total: number;
+}
+
+/**
+ * The expensive O(n log n) half of the pipeline: filter → search → sort over the
+ * whole dataset. Kept separate from pagination so a page change re-slices the
+ * already-sorted array instead of re-running this pass (see DataTable's two
+ * memos). Output is page-independent.
+ */
+export function filterSortRows<Row>(input: FilterSortInput<Row>): FilterSortResult<Row> {
+  const { data, columns, getRowId, filters, search, sort } = input;
+  const filtered = applyColumnFilters(data, filters, columns);
+  const searched = applyGlobalSearch(filtered, search, columns);
+  const sorted = applySort(searched, sort, columns);
+  return { sorted, matchingIds: sorted.map(getRowId), total: sorted.length };
+}
+
+/**
+ * The cheap half: clamp the page to the available range and slice out the
+ * current window. Keyed only on the sorted set + page + pageSize.
+ */
+export function paginateRows<Row>(
+  sorted: Row[],
+  page: number,
+  pageSize: number,
+): { rows: Row[]; page: number } {
+  const safePage = clampPage(page, sorted.length, pageSize);
+  return { rows: paginate(sorted, safePage, pageSize), page: safePage };
+}
+
+export interface PipelineInput<Row> extends FilterSortInput<Row> {
   page: number;
   pageSize: number;
 }
@@ -196,17 +235,10 @@ export interface PipelineResult<Row> {
   page: number;
 }
 
+/** Composes {@link filterSortRows} + {@link paginateRows} in one call. */
 export function runPipeline<Row>(input: PipelineInput<Row>): PipelineResult<Row> {
-  const { data, columns, getRowId, filters, search, sort, page, pageSize } = input;
-  const filtered = applyColumnFilters(data, filters, columns);
-  const searched = applyGlobalSearch(filtered, search, columns);
-  const sorted = applySort(searched, sort, columns);
-  const total = sorted.length;
-  const safePage = clampPage(page, total, pageSize);
-  return {
-    rows: paginate(sorted, safePage, pageSize),
-    matchingIds: sorted.map(getRowId),
-    total,
-    page: safePage,
-  };
+  const { page, pageSize, ...filterSort } = input;
+  const { sorted, matchingIds, total } = filterSortRows(filterSort);
+  const { rows, page: safePage } = paginateRows(sorted, page, pageSize);
+  return { rows, matchingIds, total, page: safePage };
 }

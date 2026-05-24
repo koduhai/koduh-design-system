@@ -4,6 +4,46 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-05-24
+
+Additive release closing the consumer-app responsiveness, RTL, and DataTable-at-scale
+follow-ups (issues #20/#21/#22). No breaking changes.
+
+### Added
+
+- **`DataTable` `noResults`** slot and a **function form of `empty`** (#20). `empty`
+  now accepts `(ctx: EmptyStateContext) => ReactNode` where `ctx` distinguishes a
+  genuinely empty dataset (`hasData: false`) from a filter/search miss
+  (`isFiltered: true`); `noResults` is a convenience slot for the miss case and
+  takes precedence over `empty` there. `EmptyStateContext` is exported.
+- **`Sidebar` `collapseBelow`** (#22) — opt-in `matchMedia`-driven auto-collapse to
+  the icon rail at/below a viewport width (number → px, or any media width). The
+  toggle still expands; resizing back below the breakpoint re-collapses.
+
+### Changed
+
+- **`DataTable` wraps its table in a horizontal-scroll region** (#22). Wide tables
+  (many columns on a narrow viewport) now scroll internally instead of pushing the
+  page width out. Note: this establishes a scroll container, so a `stickyHeader`
+  needs the wrapper height bounded to stick within it.
+- **`DataTable` `loadingRows` now defaults to the effective `pageSize`** (was 5), so
+  the loading skeleton height matches the loaded page.
+- **`DataTable` filter/search/sort and pagination are now memoized separately** (#20)
+  — a page change re-slices the cached sorted set instead of re-running the
+  O(n log n) pass over every row. Pipeline split into `filterSortRows` +
+  `paginateRows`.
+- **RTL: physical CSS migrated to logical properties** (#21) across `Sidebar`,
+  `Popover` (+ `Menu`/`Select`/`Tooltip`), `Toaster`, `Select`, `Combobox`,
+  `Slider`, `Tabs`, `Accordion`, `Menu`, and `Breadcrumbs`. Borders, padding,
+  insets, `text-align`, and `position-area` span keywords now mirror under
+  `dir="rtl"`; the `Popover` JS fallback and `Slider` pointer/arrow-key handling
+  read direction at runtime. LTR rendering is unchanged.
+
+### Docs
+
+- `DataTable`: documented that `columns` should be stable/memoized for large data,
+  and that pagination — not virtualization — is the scaling strategy.
+
 ## [2.2.0] - 2026-05-24
 
 Additive release closing the v2.1.0 dogfooding follow-ups (issues #17/#18/#19).

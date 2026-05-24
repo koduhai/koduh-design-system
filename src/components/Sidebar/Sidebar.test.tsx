@@ -87,6 +87,32 @@ describe('Sidebar', () => {
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
   });
 
+  it('adds a native title to items only when collapsed (hover discoverability)', () => {
+    const { rerender } = render(<Sidebar items={ITEMS} />);
+    expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute('title');
+    rerender(<Sidebar items={ITEMS} collapsed />);
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('title', 'Home');
+  });
+
+  it('auto-collapses below the collapseBelow breakpoint via matchMedia', () => {
+    const listeners: Array<(e: MediaQueryListEvent) => void> = [];
+    const mql = {
+      matches: true, // viewport is below the breakpoint
+      media: '',
+      onchange: null,
+      addEventListener: (_: string, cb: (e: MediaQueryListEvent) => void) => listeners.push(cb),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    };
+    const spy = vi.spyOn(window, 'matchMedia').mockReturnValue(mql as unknown as MediaQueryList);
+    const { container } = render(<Sidebar items={ITEMS} collapseBelow={768} />);
+    expect(spy).toHaveBeenCalledWith('(max-width: 768px)');
+    expect(container.querySelector('nav')).toHaveAttribute('data-collapsed', 'true');
+    spy.mockRestore();
+  });
+
   it('forwards a ref to the nav element', () => {
     const ref = { current: null as HTMLElement | null };
     render(<Sidebar items={ITEMS} ref={ref} />);

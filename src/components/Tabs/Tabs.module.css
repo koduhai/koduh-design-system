@@ -26,7 +26,7 @@
 
 .root[data-orientation='vertical'] .tablist {
   flex-direction: column;
-  border-right: 1px solid var(--ku-color-border);
+  border-inline-end: 1px solid var(--ku-color-border);
 }
 
 .tab {
@@ -76,16 +76,14 @@
 }
 
 .root[data-orientation='horizontal'] .tab[data-selected='true']::after {
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   bottom: -1px;
   height: 2px;
 }
 
 .root[data-orientation='vertical'] .tab[data-selected='true']::after {
-  top: 0;
-  bottom: 0;
-  right: -1px;
+  inset-block: 0;
+  inset-inline-end: -1px;
   width: 2px;
 }
 

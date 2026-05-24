@@ -8,6 +8,8 @@ import {
   pageCount,
   clampPage,
   runPipeline,
+  filterSortRows,
+  paginateRows,
   cycleSort,
 } from './pipeline';
 import type { DataColumn, FilterState } from './types';
@@ -195,6 +197,45 @@ test('runPipeline clamps an out-of-range page', () => {
 
 test('clampPage returns 1 when there are no rows', () => {
   expect(clampPage(1, 0, 10)).toBe(1);
+});
+
+test('filterSortRows returns the full page-independent sorted set + matching ids', () => {
+  const result = filterSortRows({
+    data,
+    columns,
+    getRowId: (r) => r.id,
+    filters: { age: { min: 26 } }, // keeps Bob(1) + ann(2)
+    search: '',
+    sort: [{ key: 'name', dir: 'asc' }], // ann, Bob
+  });
+  expect(result.total).toBe(2);
+  expect(result.sorted.map((r) => r.id)).toEqual(['2', '1']); // no pagination applied
+  expect(result.matchingIds).toEqual(['2', '1']);
+});
+
+test('paginateRows slices a sorted set and clamps an out-of-range page', () => {
+  const sorted = [...data]; // 3 rows
+  expect(paginateRows(sorted, 1, 2).rows.length).toBe(2);
+  const clamped = paginateRows(sorted, 99, 2);
+  expect(clamped.page).toBe(2); // 3 rows / 2 per page = 2 pages
+  expect(clamped.rows.length).toBe(1);
+});
+
+test('runPipeline equals filterSortRows + paginateRows composed', () => {
+  const fsInput = {
+    data,
+    columns,
+    getRowId: (r: Row) => r.id,
+    filters: {} as FilterState,
+    search: '',
+    sort: [{ key: 'age', dir: 'desc' as const }],
+  };
+  const fs = filterSortRows(fsInput);
+  const paged = paginateRows(fs.sorted, 1, 2);
+  const full = runPipeline({ ...fsInput, page: 1, pageSize: 2 });
+  expect(full.rows.map((r) => r.id)).toEqual(paged.rows.map((r) => r.id));
+  expect(full.total).toBe(fs.total);
+  expect(full.matchingIds).toEqual(fs.matchingIds);
 });
 
 test('applyGlobalSearch returns a copy when no columns are searchable', () => {

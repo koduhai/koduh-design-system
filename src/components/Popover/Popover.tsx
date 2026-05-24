@@ -27,6 +27,7 @@ function computePosition(
   panel: { width: number; height: number },
   placement: PopoverPlacement,
   offset: number,
+  dir: 'ltr' | 'rtl' = 'ltr',
 ): { top: number; left: number } {
   const vw = typeof window !== 'undefined' ? window.innerWidth : 0;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 0;
@@ -53,10 +54,13 @@ function computePosition(
       top = anchor.bottom + offset;
   }
 
-  // Cross-axis alignment.
+  // Cross-axis alignment. On the inline (top/bottom) axis, `start`/`end` are
+  // logical: in RTL the start edge is the anchor's right, so the mapping flips.
   if (side === 'top' || side === 'bottom') {
-    if (align === 'start') left = anchor.left;
-    else if (align === 'end') left = anchor.right - panel.width;
+    const startLeft = dir === 'rtl' ? anchor.right - panel.width : anchor.left;
+    const endLeft = dir === 'rtl' ? anchor.left : anchor.right - panel.width;
+    if (align === 'start') left = startLeft;
+    else if (align === 'end') left = endLeft;
     else left = anchor.left + (anchor.width - panel.width) / 2;
   } else if (side === 'left' || side === 'right') {
     if (align === 'start') top = anchor.top;
@@ -160,12 +164,14 @@ export const Popover = /* @__PURE__ */ forwardRef<HTMLDivElement, PopoverProps>(
       if (!triggerEl || !panelEl) return;
       const anchorRect = triggerEl.getBoundingClientRect();
       const panelRect = panelEl.getBoundingClientRect();
+      const dir = getComputedStyle(panelEl).direction === 'rtl' ? 'rtl' : 'ltr';
       setFallbackPos(
         computePosition(
           anchorRect,
           { width: panelRect.width, height: panelRect.height },
           placement,
           offset,
+          dir,
         ),
       );
     };

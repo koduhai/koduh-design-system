@@ -4,6 +4,13 @@
   gap: var(--ku-space-3);
 }
 
+/* Lets a wide table (many columns on a narrow viewport) scroll horizontally
+   inside its own region instead of pushing the whole page width out. */
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .footer {
   display: flex;
   align-items: center;

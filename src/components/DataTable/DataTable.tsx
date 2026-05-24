@@ -4,7 +4,7 @@ import { Table } from '../Table';
 import type { Column } from '../Table';
 import { useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
-import { runPipeline, cycleSort, pageCount } from './pipeline';
+import { filterSortRows, paginateRows, cycleSort, pageCount } from './pipeline';
 import { Pagination } from '../Pagination';
 import { Select } from '../Select';
 import { TextField } from '../TextField';
@@ -43,6 +43,7 @@ function DataTableInner<Row>(
     loading,
     loadingRows,
     empty,
+    noResults,
     className,
     ...props
   }: DataTableProps<Row>,
@@ -79,28 +80,25 @@ function DataTableInner<Row>(
     onChange: onFiltersChange,
   });
 
-  // Memoize the (potentially expensive) filter→search→sort→paginate pass so it
-  // only recomputes when an actual input changes — not on every keystroke in an
-  // unrelated field or every parent re-render. Output is identical to calling
-  // runPipeline inline; only the recomputation is gated.
-  const {
-    rows,
-    matchingIds,
-    total,
-    page: safePage,
-  } = useMemo(
+  // Split into two memos so a page change re-slices a cached sorted array instead
+  // of re-running the O(n log n) filter→search→sort over every row. The first
+  // memo (the expensive pass) is keyed only on data/columns/filters/search/sort;
+  // the second (a cheap slice) adds page/pageSize.
+  const { sorted, matchingIds, total } = useMemo(
     () =>
-      runPipeline({
+      filterSortRows({
         data,
         columns,
         getRowId,
         filters: filterState,
         search: searchState,
         sort: sortState,
-        page: pageState,
-        pageSize: pageSizeState,
       }),
-    [data, columns, getRowId, filterState, searchState, sortState, pageState, pageSizeState],
+    [data, columns, getRowId, filterState, searchState, sortState],
+  );
+  const { rows, page: safePage } = useMemo(
+    () => paginateRows(sorted, pageState, pageSizeState),
+    [sorted, pageState, pageSizeState],
   );
 
   // Fix 4: when filtering/searching shrinks the result set below the current
@@ -142,6 +140,19 @@ function DataTableInner<Row>(
 
   // DataColumn carries extra fields; Table only needs the base Column shape.
   const tableColumns = columns as Column<Row>[];
+
+  // Resolve the empty slot Table renders when there are zero rows. When `total`
+  // is 0 but `data` has rows, the dataset was filtered/searched to nothing —
+  // distinct from a genuinely empty dataset. `noResults` wins for that filter
+  // miss; a function `empty` receives the same distinction as context.
+  const hasData = data.length > 0;
+  const isFiltered = hasData && total === 0;
+  const emptyContent =
+    isFiltered && noResults != null
+      ? noResults
+      : typeof empty === 'function'
+        ? empty({ hasData, isFiltered })
+        : empty;
 
   return (
     <div ref={ref} className={cx(styles.root, className)} {...props}>
@@ -185,22 +196,28 @@ function DataTableInner<Row>(
           ))}
         </div>
       ) : null}
-      <Table
-        columns={tableColumns}
-        data={rows}
-        getRowId={getRowId}
-        caption={caption}
-        captionVisible={captionVisible}
-        stickyHeader={stickyHeader}
-        loading={loading}
-        loadingRows={loadingRows}
-        empty={empty}
-        sort={sortState}
-        onSortChange={handleSortChange}
-        selectedIds={selected}
-        selectAllIds={matchingIds}
-        onSelectionChange={setSelected}
-      />
+      {/* Horizontal-scroll container: wide tables (many columns on a narrow
+          viewport) scroll internally instead of overflowing the page. Note this
+          establishes a scroll container, so a sticky header needs the wrapper
+          height bounded (e.g. max-height) to stick within it. */}
+      <div className={styles.tableWrap}>
+        <Table
+          columns={tableColumns}
+          data={rows}
+          getRowId={getRowId}
+          caption={caption}
+          captionVisible={captionVisible}
+          stickyHeader={stickyHeader}
+          loading={loading}
+          loadingRows={loadingRows ?? pageSizeState}
+          empty={emptyContent}
+          sort={sortState}
+          onSortChange={handleSortChange}
+          selectedIds={selected}
+          selectAllIds={matchingIds}
+          onSelectionChange={setSelected}
+        />
+      </div>
       <div className={styles.footer}>
         <Select
           className={styles.pageSize}

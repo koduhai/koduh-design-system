@@ -29,6 +29,17 @@ npx vitest run src/components/Button/Button.test.tsx
 npx vitest run -t "renders solid variant"
 ```
 
+## Workflows (slash commands)
+
+Two recurring maintainer flows are encoded as slash commands in `.claude/commands/`:
+
+- **`/ship-issue <n>`** — take issue #n end-to-end: triage → implement (superpowers + parallel
+  subagents for build work) → feature branch → PR → release → close the issue → file follow-ups.
+  Full steps in `.claude/commands/ship-issue.md`.
+- **`/audit-components [name]`** — sweep components for naming/convention consistency (tone/size
+  vocab, `data-*` variant styling, prop conventions, overlay API, exports, folder shape, token
+  usage, a11y/RTL). Reports first; edits only on approval. See `.claude/commands/audit-components.md`.
+
 ## Architecture
 
 Four layers, low → high. Each only depends on layers below it; no component reads another component's internals.
@@ -68,3 +79,16 @@ Three layers, all expected to pass before merge: Vitest + Testing Library for be
 - `tsup.config.ts` uses `loader: { '.css': 'local-css' }`: `*.module.css` class selectors get hashed + a JS name map (so `import styles from './X.module.css'` works), while element/pseudo selectors in `reset.css` stay global and unscoped.
 - `clean: false` is deliberate — `build:tokens` writes `dist/theme.css` before tsup runs, and cleaning would delete it.
 - `sideEffects` in package.json lists only CSS so JS tree-shakes while bundlers keep the styles.
+
+## Release & CI gotchas
+
+- **`main` is branch-protected.** All changes — including releases — land via a PR, never a direct
+  push. A release is: a `chore/release-X.Y.Z` PR bumping `package.json`/`package-lock.json` +
+  `CHANGELOG.md`, then a `vX.Y.Z` GitHub Release, which triggers `release.yml` (full gate + publish
+  to GitHub Packages). `package.json` can already hold an unreleased version a prior batch bumped.
+- **Visual e2e baselines are Linux-runner-specific.** The committed `*-chromium-linux.png`
+  snapshots are generated on the `ubuntu-24.04` runner via the `update-baselines` workflow
+  (`gh workflow run update-baselines.yml --ref <branch>`); a local Windows/Docker render won't
+  match. Never commit locally-generated baseline PNGs.
+- **`GITHUB_TOKEN` pushes don't trigger workflows.** When the baseline bot commits to a PR branch,
+  CI won't re-run — close/reopen the PR to re-trigger it.

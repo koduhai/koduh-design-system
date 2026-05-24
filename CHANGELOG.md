@@ -4,6 +4,47 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-05-24
+
+Large additive release working the full open-issue backlog in one batch: two
+dogfooding bug fixes plus 18 new components, density modes, and DataTable
+scaling features (issues #27/#28/#29/#30/#31/#32/#34/#35). No breaking changes.
+
+### Fixed
+
+- **Overlay placement (#34):** `Popover`/`Menu`/`Select`/`Tooltip` `bottom-*`/`top-*`
+  placements rendered at the viewport top-left in anchor-positioning browsers — the
+  #21 migration left `position-area` mixing physical (`bottom`/`top`) and logical
+  (`span-inline-*`) keywords, voiding the declaration. All `position-area` keywords
+  are now logical (`block-end`/`inline-start`/`span-block-*`), which both fixes the
+  placement and makes `left-*`/`right-*` mirror under `dir="rtl"`. Added an e2e guard
+  that an open overlay anchors to its trigger.
+- **`ToggleGroup` × `FormField` (#35):** `ToggleGroup` now actually composes with
+  `FormField` — it reads `useOptionalFieldContext()` and wires `aria-labelledby`
+  (to the field's label), `aria-describedby`, `aria-invalid`, and `aria-required`
+  (explicit `aria-label`/`aria-labelledby` still win). `FormField` now exposes a label
+  id for group controls that can't use `htmlFor`.
+
+### Added
+
+- **Date input (#27):** `Calendar` (month grid, full keyboard nav, `min`/`max`,
+  `Intl`-formatted) and `DatePicker` (input + popover calendar, `FormField`-composing).
+- **Data-viz (#28):** `Sparkline` (line/area/bar) and a minimal `Chart` (line/bar),
+  plus a categorical chart palette in tokens (`--ku-color-chart-1`…`-8`, per-theme).
+- **P2 components (#32):** `Kbd`, `AspectRatio`, `Code`/`CodeBlock`, `Collapsible`,
+  `ScrollArea`, `Rating`, `Stepper`, `Timeline`, `HoverCard`, `PinInput`, `FileUpload`,
+  `Tree`, `Carousel`, `CommandPalette` — each axe-clean in both themes with keyboard a11y.
+- **Density modes (#29):** a `comfortable` (default) / `compact` mechanism via
+  `--ku-density-*` tokens and a `data-density` attribute, with a `density` prop on
+  `Table`, `TextField`, `Select`, and `Menu`. Exported `density` map + `Density` type.
+- **Tabs/Accordion `lazy` + `keepMounted` (#31):** opt-in deferred/persistent panel
+  content (default eager, back-compatible). Plus a shared focus-ring utility
+  (`.ku-focus-ring`) and `--ku-focus-ring-width`/`-offset` tokens.
+- **DataTable at scale, round 2 (#30):** opt-in **row expansion** (`renderExpanded` +
+  controllable expanded state), **column resize** (keyboard + pointer, controllable
+  widths), and a **server-side data hook** (`manual` + `onStateChange`). Exported
+  `ColumnWidths` and `DataTableState`. (Virtualization remains deferred — see follow-up.)
+
 ## [2.4.0] - 2026-05-24
 
 Additive release closing four P1 component gaps from the consumer-app gap analysis

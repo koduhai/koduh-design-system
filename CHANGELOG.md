@@ -4,6 +4,56 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-05-24
+
+Additive release with three new component layers plus ergonomics/a11y fixes, all
+surfaced while dogfooding the published package (issues #9–#15).
+
+### Added
+
+- **Layout & typography primitives** (#13): `Stack`, `Inline` (flex with token
+  `gap`/`align`/`justify`/`wrap`), `Grid` (`columns` or `minItemWidth` auto-fit),
+  `Container` (max-width + padding), `Text` (`size`/`weight`/`tone`/`as`),
+  `Heading` (semantic `level` decoupled from visual `size`), and `Link`
+  (`tone`/`underline`/`asChild`).
+- **Notification system** (#14): `useToast()` + `<Toaster>` layered over the
+  Snackbar visuals. A module-singleton store means `useToast()` works anywhere
+  without a provider; `<Toaster>` mounts once and manages a FIFO queue (`max`
+  visible), per-severity `aria-live`, and pause-on-hover. `Snackbar` stays the
+  controlled primitive.
+- **Form layer** (#15): `FormField` (+ headless `useField`) standardizes
+  label/required/error wiring for custom controls; new inputs `NumberField`
+  (steppers + min/max/step), `Slider` (WAI-ARIA slider), `TagInput` (token input
+  rendering `Chip`s), and `Combobox` (searchable single-select).
+- **`Dialog` `initialFocus`** (#11): a ref or selector for the element to focus on
+  open, overriding the native default (the Close button). `ConfirmDialog` defaults
+  initial focus to the confirm button.
+- **`Select` `required`** (#11): renders the `*` indicator and sets
+  `aria-required`, matching `TextField`/`Textarea`.
+
+### Changed
+
+- **`Chip.label` widened to `ReactNode`** (#9): richer labels (glyph + text). When
+  `label` isn't a string and the chip is deletable, pass `deleteLabel`
+  (otherwise the delete button's accessible name falls back to `"Remove"`).
+- **`PageHeader.breadcrumbs` accepts `BreadcrumbItem[]`** (#10): an array renders a
+  single internal `<Breadcrumbs>` (one `nav` landmark). A `ReactNode` is now
+  rendered **without** a wrapping `<nav>` so it owns its own landmark — fixing the
+  nested duplicate-`nav` a11y issue when passing your own `<Breadcrumbs>`.
+- **`Link` defaults to `underline="always"`** (#13): links in body text stay
+  distinguishable without relying on color (WCAG link-in-text-block). Use
+  `underline="hover"`/`"none"` for standalone links (nav, lists).
+
+### Notes
+
+- **`ConfirmDialog` confirm semantics** (#9): `onConfirm()` fires before
+  `onOpenChange(false)`, so side effects wired into `onOpenChange` also run on the
+  confirm path — distinguish confirm vs. dismiss via `onConfirm`. (Documented in
+  [`MIGRATION.md`](./MIGRATION.md).)
+- **Deferred** (tracked in #12): DatePicker/Calendar and FileUpload/Dropzone get
+  their own spec; multi-select Combobox and the remaining P2 components are still
+  pending.
+
 ## [2.0.0] - 2026-05-23
 
 A breaking release that harmonizes cross-component API vocabulary and adds DX

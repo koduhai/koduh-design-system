@@ -138,7 +138,9 @@ export const ToggleGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, ToggleGrou
         ref={ref}
         className={cx(styles.root, className)}
         role={type === 'single' ? 'radiogroup' : 'group'}
-        aria-orientation={orientation}
+        // aria-orientation is valid on radiogroup but not on a plain group, so
+        // only emit it in single-select mode (CSS uses data-orientation anyway).
+        aria-orientation={type === 'single' ? orientation : undefined}
         data-size={size}
         data-tone={tone}
         data-orientation={orientation}

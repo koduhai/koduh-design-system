@@ -44,4 +44,38 @@ describe('Accordion', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Section B' }));
     expect(onChange).toHaveBeenLastCalledWith(['a', 'b']);
   });
+
+  it('eager (default): renders all panel content up front', () => {
+    render(<Accordion items={items} />);
+    // Collapsed panels are hidden but their content is present in the DOM.
+    expect(screen.getByText('Body A')).toBeInTheDocument();
+    expect(screen.getByText('Body B')).toBeInTheDocument();
+  });
+
+  it('lazy: defers collapsed panel content until first expansion', async () => {
+    render(<Accordion items={items} lazy />);
+    expect(screen.queryByText('Body A')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Section A' }));
+    expect(screen.getByText('Body A')).toBeInTheDocument();
+  });
+
+  it('lazy without keepMounted: content unmounts again after collapse', async () => {
+    render(<Accordion items={items} lazy defaultValue="a" />);
+    expect(screen.getByText('Body A')).toBeInTheDocument();
+    // Single mode is collapsible by default — clicking the open item closes it.
+    await userEvent.click(screen.getByRole('button', { name: 'Section A' }));
+    expect(screen.queryByText('Body A')).not.toBeInTheDocument();
+  });
+
+  it('lazy + keepMounted: keeps content mounted (hidden) after collapse', async () => {
+    render(<Accordion items={items} lazy keepMounted />);
+    expect(screen.queryByText('Body A')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Section A' }));
+    expect(screen.getByText('Body A')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Section A' }));
+    // Still in the DOM, just hidden via the collapsed region.
+    const bodyA = screen.getByText('Body A');
+    expect(bodyA).toBeInTheDocument();
+    expect(bodyA.closest('[role="region"]')).toHaveAttribute('hidden');
+  });
 });

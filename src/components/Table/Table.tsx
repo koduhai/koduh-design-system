@@ -6,6 +6,14 @@ import { VisuallyHidden } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Table.module.css';
 
+/**
+ * Density of a data-dense surface. Mirrors the `[data-density]` token mechanism
+ * (`--ku-density-*` vars). `comfortable` is the default; `compact` tightens
+ * internal padding / row height (never the interactive hit-target). The same
+ * literal is used by TextField/Select/Menu.
+ */
+export type Density = 'comfortable' | 'compact';
+
 export type SortDirection = 'asc' | 'desc';
 export interface SortRule {
   key: string;
@@ -72,6 +80,12 @@ export interface TableProps<Row> extends Omit<HTMLAttributes<HTMLTableElement>, 
   empty?: ReactNode;
   /** Sticky header for scroll-in-container. */
   stickyHeader?: boolean;
+  /**
+   * Row/cell density. `compact` tightens cell padding via the `--ku-density-*`
+   * vars. Omit to inherit a `data-density` set on an ancestor (defaults to
+   * comfortable). Setting it explicitly sets `data-density` on the table.
+   */
+  density?: Density;
 }
 
 function TableInner<Row>(
@@ -92,6 +106,7 @@ function TableInner<Row>(
     loadingRows = 5,
     empty,
     stickyHeader = false,
+    density,
     className,
     ...props
   }: TableProps<Row>,
@@ -145,6 +160,7 @@ function TableInner<Row>(
       ref={ref}
       className={cx(styles.root, className)}
       data-sticky={stickyHeader ? 'true' : undefined}
+      data-density={density}
       {...props}
     >
       {caption != null ? (

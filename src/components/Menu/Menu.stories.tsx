@@ -26,8 +26,19 @@ export const Showcase: Story = {
   args: { trigger: <Button>Actions</Button>, items },
   parameters: { layout: 'fullscreen' },
   render: () => (
-    <div style={{ padding: 40 }}>
+    <div style={{ display: 'flex', gap: 32, padding: 40 }}>
       <Menu trigger={<Button>Open actions menu</Button>} items={items} />
+      <Menu trigger={<Button>Compact menu</Button>} items={items} density="compact" />
+    </div>
+  ),
+};
+
+/** `density="compact"` tightens the menu item padding for dense action lists. */
+export const Compact: Story = {
+  args: { trigger: <Button>Actions</Button>, items, density: 'compact' },
+  render: (args) => (
+    <div style={{ padding: 40 }}>
+      <Menu {...args} />
     </div>
   ),
 };

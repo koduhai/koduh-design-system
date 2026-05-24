@@ -7,6 +7,13 @@ import styles from './TextField.module.css';
 
 export type TextFieldSize = 'sm' | 'md' | 'lg';
 
+/**
+ * Field density. Mirrors the `[data-density]` token mechanism (`--ku-density-*`
+ * vars). `comfortable` is the default; `compact` tightens the field's internal
+ * padding without dropping the hit-target floor. Same literal as Table/Select/Menu.
+ */
+export type Density = 'comfortable' | 'compact';
+
 export interface TextFieldProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   'size' | 'value' | 'defaultValue' | 'onChange'
@@ -27,6 +34,12 @@ export interface TextFieldProps extends Omit<
   errorText?: ReactNode;
   /** Defaults to 'md'. */
   size?: TextFieldSize;
+  /**
+   * Field density. `compact` tightens the field's vertical/horizontal padding
+   * via the `--ku-density-*` vars. Omit to inherit a `data-density` set on an
+   * ancestor (defaults to comfortable); set explicitly to set `data-density`.
+   */
+  density?: Density;
   /** Content rendered inside the field, before the input (decorative). */
   startAdornment?: ReactNode;
   /** Content rendered inside the field, after the input (decorative). */
@@ -44,6 +57,7 @@ export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldP
       error = false,
       errorText,
       size = 'md',
+      density,
       startAdornment,
       endAdornment,
       required,
@@ -78,6 +92,7 @@ export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldP
       <div
         className={cx(styles.root, className)}
         data-size={size}
+        data-density={density}
         data-error={invalid ? 'true' : undefined}
       >
         {showOwnLabel ? (

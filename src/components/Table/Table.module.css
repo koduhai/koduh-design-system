@@ -25,7 +25,7 @@
 }
 
 .th {
-  padding: var(--ku-space-2) var(--ku-space-3);
+  padding: var(--ku-density-row-padding-y) var(--ku-density-row-padding-x);
   text-align: start;
   font-weight: var(--ku-font-weight-medium);
   color: var(--ku-color-text-secondary);
@@ -94,7 +94,7 @@
 }
 
 .td {
-  padding: var(--ku-space-2) var(--ku-space-3);
+  padding: var(--ku-density-row-padding-y) var(--ku-density-row-padding-x);
 }
 
 .emptyCell {

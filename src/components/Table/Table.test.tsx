@@ -202,3 +202,10 @@ test('selectAllIds targets that id set instead of the rendered page', async () =
   await user.click(screen.getByRole('checkbox', { name: /select all/i }));
   expect(onSelectionChange).toHaveBeenCalledWith(['1', '2', '3']);
 });
+
+test('omits data-density by default and reflects density="compact"', () => {
+  const { rerender } = render(<Table {...base} caption="Users" />);
+  expect(screen.getByRole('table')).not.toHaveAttribute('data-density');
+  rerender(<Table {...base} caption="Users" density="compact" />);
+  expect(screen.getByRole('table')).toHaveAttribute('data-density', 'compact');
+});

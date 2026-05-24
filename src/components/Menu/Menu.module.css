@@ -14,7 +14,7 @@
   align-items: center;
   gap: var(--ku-space-2);
   width: 100%;
-  padding: var(--ku-space-2) var(--ku-space-3);
+  padding: var(--ku-density-row-padding-y) var(--ku-density-row-padding-x);
   border: none;
   background: none;
   border-radius: var(--ku-radius-sm);

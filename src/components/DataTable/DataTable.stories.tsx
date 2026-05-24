@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { DataTable } from './DataTable';
-import type { DataColumn } from './types';
+import type { DataColumn, DataTableState } from './types';
 
 interface Person {
   id: string;
@@ -77,5 +78,84 @@ export const EmptyVsNoResults: Story = {
     empty: ({ isFiltered }) =>
       isFiltered ? 'No matches — try clearing your filters.' : 'No team members yet.',
     noResults: 'No matches — try clearing your filters.',
+  },
+};
+
+// Each row gets an expand toggle revealing a detail panel that spans every
+// column. Expanded state is uncontrolled here (see `expandedIds` for control).
+export const Expandable: Story = {
+  args: {
+    columns,
+    data: people,
+    getRowId: (r: Person) => r.id,
+    caption: 'Team members (expandable)',
+    defaultExpandedIds: ['1'],
+    renderExpanded: (r: Person) => (
+      <dl
+        style={{ margin: 0, display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.25rem 1rem' }}
+      >
+        <dt style={{ fontWeight: 600 }}>Name</dt>
+        <dd style={{ margin: 0 }}>{r.name}</dd>
+        <dt style={{ fontWeight: 600 }}>Role</dt>
+        <dd style={{ margin: 0 }}>{r.role}</dd>
+        <dt style={{ fontWeight: 600 }}>Joined</dt>
+        <dd style={{ margin: 0 }}>{r.joined}</dd>
+      </dl>
+    ),
+  },
+};
+
+// Opt-in resizable columns: each header carries a keyboard-operable separator
+// (ArrowLeft/ArrowRight). The `joined` column opts out via `resizable: false`.
+export const ResizableColumns: Story = {
+  args: {
+    columns: columns.map((c) => (c.key === 'joined' ? { ...c, resizable: false } : c)),
+    data: people,
+    getRowId: (r: Person) => r.id,
+    caption: 'Resizable columns',
+    resizableColumns: true,
+    defaultColumnWidths: { name: 220, role: 120 },
+  },
+};
+
+// Server-side / manual mode: the parent owns sort/filter/pagination via
+// `onStateChange` and supplies the already-processed page + `rowCount`.
+export const ServerSide: Story = {
+  args: { columns, data: people, getRowId: (r: Person) => r.id },
+  render: () => {
+    const ServerSideDemo = () => {
+      const all = people;
+      const [tableState, setTableState] = useState<DataTableState>({
+        sort: [],
+        filters: {},
+        search: '',
+        page: 1,
+        pageSize: 10,
+      });
+      // Emulate a backend: sort + slice here instead of inside the table.
+      const sorted = [...all].sort((a, b) => {
+        const rule = tableState.sort[0];
+        if (!rule) return 0;
+        const av = a[rule.key as keyof Person];
+        const bv = b[rule.key as keyof Person];
+        const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+        return rule.dir === 'desc' ? -cmp : cmp;
+      });
+      const start = (tableState.page - 1) * tableState.pageSize;
+      const pageRows = sorted.slice(start, start + tableState.pageSize);
+      return (
+        <DataTable
+          columns={columns.map((c) => ({ ...c, filter: undefined }))}
+          data={pageRows}
+          getRowId={(r) => r.id}
+          caption="Server-side data (manual)"
+          manual
+          rowCount={all.length}
+          searchable={false}
+          onStateChange={setTableState}
+        />
+      );
+    };
+    return <ServerSideDemo />;
   },
 };

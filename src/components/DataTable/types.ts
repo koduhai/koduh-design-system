@@ -36,6 +36,32 @@ export interface DataColumn<Row> extends Column<Row> {
   filterOptions?: { label: string; value: string }[];
   /** Include this column in global search. Defaults to `type === 'text'`. */
   searchable?: boolean;
+  /**
+   * When `resizableColumns` is enabled on the table, opt this column out of
+   * resizing by setting `false`. Defaults to resizable. No effect unless the
+   * table-level `resizableColumns` flag is on.
+   */
+  resizable?: boolean;
+  /**
+   * Lower bound (px) applied while resizing this column. Defaults to 48px.
+   * Only consulted when the column is resizable.
+   */
+  minWidth?: number;
+}
+
+/** Per-column pixel widths, keyed by column `key`. Used by column resizing. */
+export type ColumnWidths = Record<string, number>;
+
+/**
+ * Snapshot of the table's sort/filter/pagination state, surfaced via
+ * `onStateChange` so callers can drive server-side (remote) data fetching.
+ */
+export interface DataTableState {
+  sort: SortRule[];
+  filters: FilterState;
+  search: string;
+  page: number;
+  pageSize: number;
 }
 
 export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
@@ -101,4 +127,53 @@ export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>
    * falls back to `empty`.
    */
   noResults?: ReactNode;
+
+  // ─── Row expansion ──────────────────────────────────────────────────────────
+  /**
+   * When set, each row gets an expand/collapse toggle and an expanded detail row
+   * (spanning every column) rendering the returned content. Enabling this opts
+   * the table into the expandable render path.
+   */
+  renderExpanded?: (row: Row) => ReactNode;
+  /** Controlled set of expanded row ids. */
+  expandedIds?: string[];
+  /** Initial expanded row ids for the uncontrolled case. */
+  defaultExpandedIds?: string[];
+  /** Fires with the next expanded id set when a toggle is activated. */
+  onExpandedChange?: (ids: string[]) => void;
+
+  // ─── Column resize ──────────────────────────────────────────────────────────
+  /**
+   * Opt-in: render a keyboard-accessible resize handle on resizable column
+   * headers and apply per-column widths. Individual columns can opt out via
+   * `DataColumn.resizable === false`.
+   */
+  resizableColumns?: boolean;
+  /** Controlled per-column pixel widths (keyed by column `key`). */
+  columnWidths?: ColumnWidths;
+  /** Initial per-column pixel widths for the uncontrolled case. */
+  defaultColumnWidths?: ColumnWidths;
+  /** Fires with the next width map whenever a column is resized. */
+  onColumnWidthsChange?: (widths: ColumnWidths) => void;
+  /** Pixels each ArrowLeft/ArrowRight press adjusts a column width by. Default 16. */
+  resizeStep?: number;
+
+  // ─── Server-side / manual mode ───────────────────────────────────────────────
+  /**
+   * Surfaces the current sort/filter/search/pagination state so callers can
+   * drive remote fetching. Fires after the relevant state settles.
+   */
+  onStateChange?: (state: DataTableState) => void;
+  /**
+   * When true, bypasses the internal client-side filter/sort/paginate pipeline:
+   * `data` is assumed already processed (the current page's rows) and `rowCount`
+   * supplies the unpaged total used for the range readout and pagination. The
+   * client-side path remains the default.
+   */
+  manual?: boolean;
+  /**
+   * Total matching row count across all pages. Required for correct pagination
+   * and the range readout when `manual` is true; ignored otherwise.
+   */
+  rowCount?: number;
 }

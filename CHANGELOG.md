@@ -4,6 +4,49 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-05-24
+
+Additive release closing the v2.1.0 dogfooding follow-ups (issues #17/#18/#19).
+No breaking changes.
+
+### Added
+
+- **`FormField` composes with the shipped controls** (#17). `TextField`,
+  `Textarea`, `Select`, `NumberField`, `Combobox`, and `TagInput` detect an
+  ancestor `<FormField>` (via the new exported `useOptionalFieldContext()`) and
+  defer their label / required `*` / `aria-*` to it — one correctly-associated
+  label, correct `htmlFor`. Standalone usage is unchanged.
+- **`Combobox` `clearable`** (+ `clearLabel`); `Combobox`/`TagInput`/`Slider` now
+  extend their focusable element's HTML attributes, so `onBlur`/`onFocus`/`name`/
+  `data-*` reach it.
+- **`Slider`** gains `error`/`helperText`/`errorText`.
+- **Toast** (#18): `toast.promise(p, { loading, success, error })`; caller-supplied
+  stable `id` on `ToastOptions` (re-using an id updates the toast in place);
+  per-toast `placement` + support for multiple `<Toaster>`s.
+- **Responsive layout props** (#19) on `Grid`/`Stack`/`Inline`:
+  `columns={{ base: 1, md: 2 }}`, `gap={{ base: 3, md: 5 }}`, and `Grid`
+  `columns={[1.1, 1]}` track ratios — zero-runtime via a per-breakpoint
+  CSS-custom-property cascade.
+- **`Text`/`Heading` `leading`**; **`Text`** `family`/`numeric`/`transform`/
+  `truncate`/`lineClamp`; **`Stack`/`Inline`** `align="baseline"` + `as`;
+  **`Container`** `py`.
+- **`Box`** — curated layout escape hatch (`padding`/`px`/`py`/`grow`/`shrink`/
+  `minWidth`/`width`/`as`/`asChild`). **`DescriptionList`** — `<dl>` key-value
+  primitive. (47 components total.)
+
+### Changed
+
+- `Slider.onChange` → `(value, event?)` and `TagInput.onChange` → `(tags, event?)`
+  (additive second arg; existing single-arg consumers unaffected).
+- `label` is now optional on `TextField`/`Textarea`/`NumberField` (supply it, or
+  wrap the control in a `<FormField>`).
+
+### Notes
+
+- `NumberField.onChange` reports `null` when the field is empty (documented).
+- Deferred (tracked in #12): the `useForm` validation-orchestration engine,
+  DatePicker, FileUpload, multi-select Combobox.
+
 ## [2.1.0] - 2026-05-24
 
 Additive release with three new component layers plus ergonomics/a11y fixes, all

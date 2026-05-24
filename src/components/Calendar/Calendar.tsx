@@ -204,6 +204,17 @@ export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps
   const leadingBlanks = Array.from({ length: firstWeekday }, (_, i) => i);
   const dayNumbers = Array.from({ length: total }, (_, i) => i + 1);
 
+  // ARIA grid requires grid > row > gridcell, so chunk the cells into weeks of
+  // 7 (padding the last week with trailing blanks) and wrap each in role="row".
+  type Cell = { type: 'blank'; key: string } | { type: 'day'; day: number };
+  const cells: Cell[] = [
+    ...leadingBlanks.map((i): Cell => ({ type: 'blank', key: `lead-${i}` })),
+    ...dayNumbers.map((day): Cell => ({ type: 'day', day })),
+  ];
+  while (cells.length % 7 !== 0) cells.push({ type: 'blank', key: `trail-${cells.length}` });
+  const weeks: Cell[][] = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
   return (
     <div ref={ref} className={cx(styles.root, className)} {...props}>
       <div className={styles.header}>
@@ -237,39 +248,46 @@ export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps
           ))}
         </div>
         <div role="rowgroup" className={styles.days}>
-          {leadingBlanks.map((i) => (
-            <span key={`blank-${i}`} role="gridcell" aria-hidden className={styles.blank} />
+          {weeks.map((week, wi) => (
+            <div role="row" key={`week-${wi}`} className={styles.week}>
+              {week.map((cell) => {
+                if (cell.type === 'blank') {
+                  return (
+                    <span key={cell.key} role="gridcell" aria-hidden className={styles.blank} />
+                  );
+                }
+                const { day } = cell;
+                const date = new Date(viewYear, viewMonth, day);
+                const isSelected = selected ? isSameDay(date, selected) : false;
+                const isToday = isSameDay(date, today);
+                const disabled = !inRange(date, min, max);
+                return (
+                  <button
+                    key={day}
+                    ref={attachDayRef(day)}
+                    type="button"
+                    role="gridcell"
+                    className={styles.day}
+                    aria-selected={isSelected}
+                    aria-current={isToday ? 'date' : undefined}
+                    aria-label={new Intl.DateTimeFormat(locale, {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    }).format(date)}
+                    data-selected={isSelected ? 'true' : undefined}
+                    data-today={isToday ? 'true' : undefined}
+                    tabIndex={day === focusDay ? 0 : -1}
+                    disabled={disabled}
+                    onClick={() => choose(day)}
+                    onKeyDown={(event) => handleKeyDown(event, day)}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
           ))}
-          {dayNumbers.map((day) => {
-            const date = new Date(viewYear, viewMonth, day);
-            const isSelected = selected ? isSameDay(date, selected) : false;
-            const isToday = isSameDay(date, today);
-            const disabled = !inRange(date, min, max);
-            return (
-              <button
-                key={day}
-                ref={attachDayRef(day)}
-                type="button"
-                role="gridcell"
-                className={styles.day}
-                aria-selected={isSelected}
-                aria-current={isToday ? 'date' : undefined}
-                aria-label={new Intl.DateTimeFormat(locale, {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                }).format(date)}
-                data-selected={isSelected ? 'true' : undefined}
-                data-today={isToday ? 'true' : undefined}
-                tabIndex={day === focusDay ? 0 : -1}
-                disabled={disabled}
-                onClick={() => choose(day)}
-                onKeyDown={(event) => handleKeyDown(event, day)}
-              >
-                {day}
-              </button>
-            );
-          })}
         </div>
       </div>
     </div>

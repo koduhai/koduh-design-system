@@ -65,6 +65,8 @@ const COMPONENTS = [
   // button-click openFloating helper doesn't apply; the closed combobox input
   // is fully accessible on its own. Listbox a11y is covered by unit tests.
   { name: 'Combobox', storyId: 'components-combobox--showcase' },
+  { name: 'Box', storyId: 'components-box--showcase' },
+  { name: 'DescriptionList', storyId: 'components-descriptionlist--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

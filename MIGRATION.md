@@ -1,3 +1,36 @@
+# What's new in v2.2 (additive — issues #17/#18/#19)
+
+All additive; no migration required. Highlights:
+
+- **`FormField` now composes with the shipped controls** (#17). `TextField`,
+  `Textarea`, `Select`, `NumberField`, `Combobox`, and `TagInput` detect an
+  ancestor `<FormField>` and defer their label / required `*` / `aria-*` to it —
+  so `<FormField label="Email" error errorText="…"><TextField/></FormField>`
+  renders one correctly-associated label. Standalone usage is unchanged. `label`
+  is now optional on `TextField`/`Textarea`/`NumberField` (supply it, or wrap in a
+  `FormField`). A non-throwing `useOptionalFieldContext()` is exported for custom
+  controls.
+- **Combobox `clearable`** + open prop interface (`onBlur`/`onFocus`/`name`/`data-*`
+  reach the input); **TagInput** open interface + `onChange(tags, event?)`;
+  **Slider** open interface + `onChange(value, event?)` + `error`/`helperText`/
+  `errorText`. `NumberField.onChange` still reports `null` when the field is empty
+  (documented).
+- **Toast** (#18): `toast.promise(p, { loading, success, error })`; caller-supplied
+  stable `id` on `ToastOptions` (re-using an id **updates** that toast in place —
+  enables "Saving… → Saved" and dedupe); per-toast `placement` + multiple
+  `<Toaster>`s (an unplaced toast still shows in any Toaster). Tip: when migrating
+  from Snackbar, alias the hook to avoid a local-state name clash:
+  `const { toast: showToast } = useToast()`.
+- **Layout/typography** (#19): responsive props on `Grid`/`Stack`/`Inline`
+  (`columns={{ base: 1, md: 2 }}`, `gap={{ base: 3, md: 5 }}`, `Grid`
+  `columns={[1.1, 1]}` track ratios); `Text`/`Heading` `leading`; `Text`
+  `family`/`numeric`/`transform`/`truncate`/`lineClamp`; `Stack`/`Inline`
+  `align="baseline"` + `as`; `Container` `py`; and two new components — **`Box`**
+  (curated layout escape hatch: `padding`/`px`/`py`/`grow`/`shrink`/`minWidth`/`width`)
+  and **`DescriptionList`** (`<dl>` key-value primitive).
+
+---
+
 # Migration Guide: v1 → v2
 
 v2 is a small breaking release (the rest of v2 is additive). It harmonizes the

@@ -1,0 +1,82 @@
+.root {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--ku-font-family-base);
+}
+
+/* Marker column width + the gap to the body; used to position the line. */
+.item {
+  --tl-marker: var(--ku-space-6);
+  display: grid;
+  grid-template-columns: var(--tl-marker) 1fr;
+  column-gap: var(--ku-space-3);
+  position: relative;
+}
+.item:not(:last-child) {
+  padding-block-end: var(--ku-space-5);
+}
+
+/* The vertical line runs through the centre of the marker column. Logical
+   inset-inline-start keeps it on the correct side under RTL. */
+.item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  inset-block-start: var(--tl-marker);
+  inset-block-end: 0;
+  inset-inline-start: calc(var(--tl-marker) / 2 - 1px);
+  inline-size: 2px;
+  background-color: var(--ku-color-border);
+}
+
+.marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--tl-marker);
+  block-size: var(--tl-marker);
+  border-radius: var(--ku-radius-full);
+  background-color: var(--ku-color-bg-surface);
+  border: 2px solid var(--ku-color-border);
+  color: var(--ku-color-primary);
+  /* Sit above the connecting line. */
+  position: relative;
+  z-index: 1;
+}
+.icon {
+  display: inline-flex;
+  font-size: var(--ku-font-size-sm);
+  line-height: 1;
+}
+.dot {
+  inline-size: var(--ku-space-2);
+  block-size: var(--ku-space-2);
+  border-radius: var(--ku-radius-full);
+  background-color: var(--ku-color-primary);
+}
+
+.body {
+  min-width: 0;
+  padding-block-start: var(--ku-space-1);
+}
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ku-space-2);
+}
+.title {
+  font-size: var(--ku-font-size-md);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+.time {
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+}
+.content {
+  margin-block-start: var(--ku-space-1);
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+  line-height: var(--ku-line-height-base);
+}

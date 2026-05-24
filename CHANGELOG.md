@@ -4,6 +4,38 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-05-24
+
+Additive release closing four P1 component gaps from the consumer-app gap analysis
+(issue #12). No breaking changes.
+
+### Added
+
+- **`AvatarGroup`** (#12) — stacked, overlapping avatars with a `+N` overflow chip.
+  `max` caps the visible count; `total` overrides the overflow count for
+  server-truncated lists; `size`/`shape` propagate to every child and the chip;
+  `spacing` (`'tight' | 'normal'`) tunes the overlap. Built on `Avatar`; overlap uses
+  logical margins so it mirrors under `dir="rtl"`.
+- **`Stat`** (#12) — dashboard metric block (`label`, `value`, optional `delta`,
+  `trend`, `icon`, `helpText`). `trend` (`'up' | 'down' | 'neutral'`) drives the delta
+  colour **and** a direction arrow plus visually-hidden direction text, so the change
+  is never signalled by colour alone; the value renders with tabular numerals. Ships
+  without card chrome so it composes into `Card`.
+- **`ToggleGroup`** (#12) — segmented single/multi-select control driven by an `items`
+  array. `type="single"` is a `radiogroup` of `radio`s; `type="multiple"` is a `group`
+  of `aria-pressed` toggle buttons. Roving focus (arrow keys / Home / End, skipping
+  disabled items), shared tone vocabulary (`primary | neutral | success | warning |
+  danger`), `size`, and `orientation`. Composes with `FormField`.
+- **`Drawer`** (#12) — edge slide-in panel built on the native `<dialog>` +
+  `showModal()` machinery (reusing `Dialog`'s focus-trap, backdrop, and Esc handling),
+  with the same `open` / `onOpenChange` overlay API. `side` is logical
+  (`'start' | 'end' | 'top' | 'bottom'`, default `'end'`) so it flips correctly under
+  `dir="rtl"`; `size`, `dismissable`, `initialFocus`, and `footer` mirror `Dialog`. The
+  slide-in honours `prefers-reduced-motion`.
+
+All four export their public prop types from `src/index.ts`, ship axe-clean Storybook
+stories in both themes, and carry Vitest behaviour tests.
+
 ## [2.3.0] - 2026-05-24
 
 Additive release closing the consumer-app responsiveness, RTL, and DataTable-at-scale

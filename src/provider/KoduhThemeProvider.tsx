@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { ColorMode } from '../theme/tokens';
 import { ColorModeContext } from './useColorMode';
 import '../styles/reset.css';
+import '../styles/focus-ring.css';
 
 export interface KoduhThemeProviderProps {
   children: ReactNode;

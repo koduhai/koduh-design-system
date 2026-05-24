@@ -193,3 +193,25 @@ export type {
 } from './components/ToggleGroup';
 export { Drawer } from './components/Drawer';
 export type { DrawerProps, DrawerSide, DrawerSize } from './components/Drawer';
+
+// issues #27/#28/#31/#32 — date input, data-viz, P2 components
+export { Calendar } from './components/Calendar';
+export type { CalendarProps } from './components/Calendar';
+export { DatePicker } from './components/DatePicker';
+export type { DatePickerProps, DatePickerSize } from './components/DatePicker';
+export { Sparkline } from './components/Sparkline';
+export type { SparklineProps, SparklineType } from './components/Sparkline';
+export { Chart } from './components/Chart';
+export type { ChartProps, ChartType, ChartSeries } from './components/Chart';
+export { Kbd } from './components/Kbd';
+export type { KbdProps, KbdSize } from './components/Kbd';
+export { AspectRatio } from './components/AspectRatio';
+export type { AspectRatioProps } from './components/AspectRatio';
+export { Code, CodeBlock } from './components/Code';
+export type { CodeProps, CodeBlockProps } from './components/Code';
+export { Collapsible } from './components/Collapsible';
+export type { CollapsibleProps } from './components/Collapsible';
+export { ScrollArea } from './components/ScrollArea';
+export type { ScrollAreaProps, ScrollAreaOrientation } from './components/ScrollArea';
+export { Rating } from './components/Rating';
+export type { RatingProps, RatingSize } from './components/Rating';

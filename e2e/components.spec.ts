@@ -72,6 +72,17 @@ const COMPONENTS = [
   { name: 'Stat', storyId: 'components-stat--showcase' },
   { name: 'ToggleGroup', storyId: 'components-togglegroup--showcase' },
   { name: 'Drawer', storyId: 'components-drawer--showcase' },
+  // issues #27/#28/#31/#32
+  { name: 'Calendar', storyId: 'components-calendar--showcase' },
+  { name: 'DatePicker', storyId: 'components-datepicker--showcase' },
+  { name: 'Sparkline', storyId: 'components-sparkline--showcase' },
+  { name: 'Chart', storyId: 'components-chart--showcase' },
+  { name: 'Kbd', storyId: 'components-kbd--showcase' },
+  { name: 'AspectRatio', storyId: 'components-aspectratio--showcase' },
+  { name: 'Code', storyId: 'components-code--showcase' },
+  { name: 'Collapsible', storyId: 'components-collapsible--showcase' },
+  { name: 'ScrollArea', storyId: 'components-scrollarea--showcase' },
+  { name: 'Rating', storyId: 'components-rating--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

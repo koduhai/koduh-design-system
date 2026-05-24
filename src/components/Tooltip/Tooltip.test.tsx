@@ -66,4 +66,63 @@ describe('Tooltip', () => {
     act(() => fireEvent.keyDown(trigger, { key: 'Escape' }));
     expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'false');
   });
+
+  it('stays open when the pointer moves from the trigger onto the panel (WCAG 1.4.13)', () => {
+    render(
+      <Tooltip content="Hoverable" delay={100}>
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    const trigger = screen.getByRole('button');
+    act(() => {
+      fireEvent.mouseEnter(trigger);
+      vi.advanceTimersByTime(100);
+    });
+    const tip = screen.getByRole('tooltip');
+    expect(tip).toHaveAttribute('data-open', 'true');
+
+    // Pointer leaves the trigger (schedules a deferred close) then lands on the
+    // panel before the delay elapses → the close is cancelled, stays open.
+    act(() => {
+      fireEvent.mouseLeave(trigger);
+      fireEvent.mouseEnter(tip);
+      vi.advanceTimersByTime(100);
+    });
+    expect(tip).toHaveAttribute('data-open', 'true');
+  });
+
+  it('closes after leaving the panel without re-entering', () => {
+    render(
+      <Tooltip content="Hoverable" delay={100}>
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    const trigger = screen.getByRole('button');
+    act(() => {
+      fireEvent.mouseEnter(trigger);
+      vi.advanceTimersByTime(100);
+    });
+    const tip = screen.getByRole('tooltip');
+    act(() => {
+      fireEvent.mouseLeave(trigger);
+      fireEvent.mouseEnter(tip);
+      vi.advanceTimersByTime(100);
+    });
+    expect(tip).toHaveAttribute('data-open', 'true');
+    // Now leave the panel and let the deferred close fire.
+    act(() => {
+      fireEvent.mouseLeave(tip);
+      vi.advanceTimersByTime(100);
+    });
+    expect(tip).toHaveAttribute('data-open', 'false');
+  });
+
+  it('forwards arbitrary DOM props (data-*) to the tooltip panel', () => {
+    render(
+      <Tooltip content="Hi" delay={0} data-testid="tip-panel">
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    expect(screen.getByTestId('tip-panel')).toBeInTheDocument();
+  });
 });

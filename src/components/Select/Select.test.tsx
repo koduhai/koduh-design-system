@@ -82,4 +82,69 @@ describe('Select', () => {
     render(<Select id="country" label="Country" options={options} />);
     expect(screen.getByRole('button', { name: /Country/ })).toHaveAttribute('id', 'country');
   });
+
+  it.each([['ArrowDown'], ['Enter'], [' ']])(
+    'opens the listbox via %s on the trigger with the first enabled option active',
+    (key) => {
+      render(<Select label="Fruit" options={options} />);
+      const trigger = screen.getByRole('button', { name: /Fruit/ });
+      fireEvent.keyDown(trigger, { key });
+      const listbox = screen.getByRole('listbox');
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      // First enabled option is "Apple".
+      expect(listbox).toHaveAttribute(
+        'aria-activedescendant',
+        screen.getByRole('option', { name: 'Apple' }).id,
+      );
+    },
+  );
+
+  it('opens via ArrowUp on the trigger with the last enabled option active', () => {
+    render(<Select label="Fruit" options={options} />);
+    const trigger = screen.getByRole('button', { name: /Fruit/ });
+    fireEvent.keyDown(trigger, { key: 'ArrowUp' });
+    const listbox = screen.getByRole('listbox');
+    // Cherry is disabled, so the last enabled option is "Banana".
+    expect(listbox).toHaveAttribute(
+      'aria-activedescendant',
+      screen.getByRole('option', { name: 'Banana' }).id,
+    );
+  });
+
+  it('keyboard-opens seeded to the selected option when one is set', () => {
+    render(<Select label="Fruit" options={options} defaultValue="b" />);
+    const trigger = screen.getByRole('button', { name: /Fruit/ });
+    fireEvent.keyDown(trigger, { key: 'ArrowDown' });
+    const listbox = screen.getByRole('listbox');
+    expect(listbox).toHaveAttribute(
+      'aria-activedescendant',
+      screen.getByRole('option', { name: 'Banana' }).id,
+    );
+  });
+
+  it('forwards arbitrary DOM props (name, data-*, onBlur) to the trigger', () => {
+    const onBlur = vi.fn();
+    render(
+      <Select label="Fruit" options={options} name="fruit" data-testid="sel" onBlur={onBlur} />,
+    );
+    const trigger = screen.getByTestId('sel');
+    expect(trigger).toHaveAttribute('name', 'fruit');
+    fireEvent.blur(trigger);
+    expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
+  it('does NOT restore focus to the trigger on outside-pointer dismiss', () => {
+    render(
+      <div>
+        <button type="button">elsewhere</button>
+        <Select label="Fruit" options={options} />
+      </div>,
+    );
+    const trigger = screen.getByRole('button', { name: /Fruit/ });
+    const elsewhere = screen.getByRole('button', { name: 'elsewhere' });
+    fireEvent.click(trigger);
+    elsewhere.focus();
+    fireEvent.pointerDown(elsewhere);
+    expect(trigger).not.toHaveFocus();
+  });
 });

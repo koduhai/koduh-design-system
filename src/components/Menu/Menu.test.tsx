@@ -56,11 +56,27 @@ describe('Menu', () => {
     expect(onDelete).not.toHaveBeenCalled();
   });
 
-  it('moves active item with ArrowDown and activates with Enter', () => {
+  it('seeds the first enabled item active on open and activates it with Enter', () => {
     const { onSelect } = setup();
     fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
     const menu = screen.getByRole('menu');
-    fireEvent.keyDown(menu, { key: 'ArrowDown' }); // first enabled item: Edit
+    // On open the first enabled item (Edit) is active and announced.
+    const editItem = screen.getByRole('menuitem', { name: 'Edit' });
+    expect(menu).toHaveAttribute('aria-activedescendant', editItem.id);
+    fireEvent.keyDown(menu, { key: 'Enter' }); // activates the seeded Edit item
+    expect(onSelect).toHaveBeenCalledTimes(1);
+  });
+
+  it('moves active item with ArrowDown then back with ArrowUp', () => {
+    const { onSelect } = setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    const menu = screen.getByRole('menu');
+    fireEvent.keyDown(menu, { key: 'ArrowDown' }); // Edit -> Duplicate
+    expect(menu).toHaveAttribute(
+      'aria-activedescendant',
+      screen.getByRole('menuitem', { name: 'Duplicate' }).id,
+    );
+    fireEvent.keyDown(menu, { key: 'ArrowUp' }); // back to Edit
     fireEvent.keyDown(menu, { key: 'Enter' });
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
@@ -71,5 +87,56 @@ describe('Menu', () => {
     fireEvent.click(trigger);
     fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' });
     expect(trigger).toHaveFocus();
+  });
+
+  it('opens via ArrowDown on the trigger with the first item active', () => {
+    setup();
+    const trigger = screen.getByRole('button', { name: 'Actions' });
+    fireEvent.keyDown(trigger, { key: 'ArrowDown' });
+    const menu = screen.getByRole('menu');
+    expect(menu).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(menu).toHaveAttribute(
+      'aria-activedescendant',
+      screen.getByRole('menuitem', { name: 'Edit' }).id,
+    );
+  });
+
+  it('opens via ArrowUp on the trigger with the last enabled item active', () => {
+    setup();
+    const trigger = screen.getByRole('button', { name: 'Actions' });
+    fireEvent.keyDown(trigger, { key: 'ArrowUp' });
+    const menu = screen.getByRole('menu');
+    // Last enabled item is "Duplicate" (Delete is disabled, separator skipped).
+    expect(menu).toHaveAttribute(
+      'aria-activedescendant',
+      screen.getByRole('menuitem', { name: 'Duplicate' }).id,
+    );
+  });
+
+  it.each([['Enter'], [' ']])('opens via %s on the trigger', (key) => {
+    setup();
+    const trigger = screen.getByRole('button', { name: 'Actions' });
+    fireEvent.keyDown(trigger, { key });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('does NOT restore focus to the trigger on outside-pointer dismiss', () => {
+    render(
+      <div>
+        <button type="button">elsewhere</button>
+        <Menu
+          trigger={<button type="button">Actions</button>}
+          items={[{ label: 'Edit', onSelect: () => {} }]}
+        />
+      </div>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Actions' });
+    const elsewhere = screen.getByRole('button', { name: 'elsewhere' });
+    fireEvent.click(trigger);
+    elsewhere.focus();
+    // Outside pointerdown closes the menu but must not yank focus back to trigger.
+    fireEvent.pointerDown(elsewhere);
+    expect(trigger).not.toHaveFocus();
   });
 });

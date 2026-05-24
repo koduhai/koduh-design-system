@@ -1,3 +1,8 @@
+/* Root class merged onto the Popover panel so consumers' className composes
+   with the scoped module class (parity with the other components). */
+.root {
+  min-width: 10rem;
+}
 .menu {
   list-style: none;
   margin: 0;

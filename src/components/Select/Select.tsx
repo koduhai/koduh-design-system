@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Popover } from '../Popover';
-import { useControllableState, useId, mergeRefs } from '../../primitives';
+import { composeEventHandlers, useControllableState, useId, mergeRefs } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Select.module.css';
 
@@ -16,7 +16,11 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps {
+export interface SelectProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  // These collide with the component's own typed props; redeclared below.
+  'value' | 'defaultValue' | 'onChange' | 'type' | 'className' | 'id'
+> {
   /** Controlled selected value. */
   value?: string;
   /** Initial selected value when uncontrolled. */
@@ -65,6 +69,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     size = 'md',
     className,
     id,
+    ...rest
   },
   ref,
 ) {
@@ -84,6 +89,9 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   const optionId = (i: number) => `${baseId}-opt-${i}`;
   const listRef = useRef<HTMLUListElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  // Restore focus to the trigger only on keyboard-initiated closes (Escape /
+  // selection), never on outside-pointer dismiss (don't yank focus away).
+  const restoreFocus = useRef(false);
 
   const selectedOption = options.find((o) => o.value === selected);
 
@@ -91,6 +99,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     if (opt.disabled) return;
     setSelected(opt.value);
     onChange?.(opt.value, event);
+    restoreFocus.current = true; // selection → return focus to the trigger
     setOpen(false);
   };
 
@@ -138,6 +147,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       }
       case 'Escape':
         event.preventDefault();
+        restoreFocus.current = true; // keyboard close → return focus to the trigger
         setOpen(false);
         break;
       default:
@@ -145,7 +155,32 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     }
   };
 
+  // Open the listbox from the trigger via keyboard (WAI-ARIA listbox pattern).
+  // ArrowDown/ArrowUp/Enter/Space all open; once open, the open effect seeds the
+  // active option to the selected one (or first enabled), and onListKeyDown takes
+  // over navigation. ArrowUp seeds to the last enabled option when nothing is set.
+  const onTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (open) return; // when open, the listbox handles keys
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'ArrowUp':
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        openWith.current = event.key === 'ArrowUp' ? 'last' : 'first';
+        setOpen(true);
+        break;
+      default:
+        break;
+    }
+  };
+
   const wasOpen = useRef(false);
+  // How the listbox was opened, controlling the seeded active option:
+  // 'pointer' (default — seed the selected option, else nothing, preserving the
+  // click-open behavior), 'first' (keyboard ArrowDown/Enter/Space), or 'last'
+  // (keyboard ArrowUp). The open effect reads and resets this.
+  const openWith = useRef<'pointer' | 'first' | 'last'>('pointer');
 
   // Focus the listbox when it opens (keyboard nav); seed the active index to the
   // currently selected option so arrow keys start from a sensible place.
@@ -154,11 +189,28 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   useEffect(() => {
     if (open) {
       listRef.current?.focus();
-      const sel = options.findIndex((o) => o.value === selected && !o.disabled);
-      setActiveIndex(sel);
+      // Prefer the selected option; otherwise seed first/last enabled based on
+      // how the listbox was opened (ArrowUp → last, anything else → first).
+      let seed = options.findIndex((o) => o.value === selected && !o.disabled);
+      // No selection: keyboard-open seeds first/last enabled; pointer-open
+      // leaves it unset (-1) so the first ArrowDown lands on the first option,
+      // preserving the original click-then-arrow behavior.
+      if (seed < 0 && openWith.current === 'last') {
+        for (let i = options.length - 1; i >= 0; i--) {
+          if (!options[i]?.disabled) {
+            seed = i;
+            break;
+          }
+        }
+      } else if (seed < 0 && openWith.current === 'first') {
+        seed = options.findIndex((o) => !o.disabled);
+      }
+      setActiveIndex(seed);
+      openWith.current = 'pointer';
     } else {
       setActiveIndex(-1);
-      if (wasOpen.current) triggerRef.current?.focus();
+      if (wasOpen.current && restoreFocus.current) triggerRef.current?.focus();
+      restoreFocus.current = false;
     }
     wasOpen.current = open;
     // Intentionally keyed only on `open`: re-seeding on every options/selected
@@ -167,6 +219,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
 
   const trigger = (
     <button
+      {...rest}
       ref={mergeRefs(triggerRef, ref)}
       type="button"
       id={baseId}
@@ -179,7 +232,8 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       aria-labelledby={label ? `${labelId} ${baseId}` : undefined}
       aria-describedby={description != null ? `${baseId}-desc` : undefined}
       aria-invalid={error || undefined}
-      onClick={() => setOpen((o) => !o)}
+      onClick={composeEventHandlers(rest.onClick, () => setOpen((o) => !o))}
+      onKeyDown={composeEventHandlers(rest.onKeyDown, onTriggerKeyDown)}
     >
       <span className={selectedOption ? undefined : styles.placeholder}>
         {selectedOption ? selectedOption.label : placeholder}

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useState } from 'react';
 import { Popover } from './Popover';
@@ -76,5 +76,46 @@ describe('Popover', () => {
     render(<Harness defaultOpen onOpenChange={onOpenChange} />);
     fireEvent.pointerDown(screen.getByTestId('outside'));
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  describe('JS positioning fallback (no CSS anchor support)', () => {
+    let addSpy: ReturnType<typeof vi.spyOn>;
+    let removeSpy: ReturnType<typeof vi.spyOn>;
+    let priorSupports: typeof CSS.supports | undefined;
+
+    beforeEach(() => {
+      // jsdom doesn't implement CSS.supports; stub it to force the
+      // "anchor positioning unsupported" branch.
+      priorSupports = (CSS as { supports?: typeof CSS.supports }).supports;
+      (CSS as { supports: (p: string, v?: string) => boolean }).supports = () => false;
+      addSpy = vi.spyOn(window, 'addEventListener');
+      removeSpy = vi.spyOn(window, 'removeEventListener');
+    });
+
+    afterEach(() => {
+      if (priorSupports) (CSS as { supports?: typeof CSS.supports }).supports = priorSupports;
+      else delete (CSS as { supports?: typeof CSS.supports }).supports;
+      addSpy.mockRestore();
+      removeSpy.mockRestore();
+    });
+
+    it('writes inline position:fixed + top/left on the panel when open', () => {
+      render(<Harness defaultOpen />);
+      const panel = screen.getByRole('dialog');
+      expect(panel.style.position).toBe('fixed');
+      // jsdom reports 0×0 rects, so coordinates are clamped to the 8px inset.
+      expect(panel.style.top).not.toBe('');
+      expect(panel.style.left).not.toBe('');
+    });
+
+    it('attaches scroll/resize listeners while open and removes them on unmount', () => {
+      const { unmount } = render(<Harness defaultOpen />);
+      expect(addSpy).toHaveBeenCalledWith('scroll', expect.any(Function), true);
+      expect(addSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+
+      unmount();
+      expect(removeSpy).toHaveBeenCalledWith('scroll', expect.any(Function), true);
+      expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+    });
   });
 });

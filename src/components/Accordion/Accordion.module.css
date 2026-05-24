@@ -29,7 +29,7 @@
   background-color: transparent;
   border: none;
   cursor: pointer;
-  text-align: left;
+  text-align: start;
   font-family: inherit;
   font-size: var(--ku-font-size-md);
   font-weight: var(--ku-font-weight-semibold);

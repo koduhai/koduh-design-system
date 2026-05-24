@@ -40,6 +40,58 @@ test('renders the empty slot when data is empty', () => {
   expect(screen.getByText('Nothing here')).toBeInTheDocument();
 });
 
+test('renders noResults (not empty) when a non-empty dataset is filtered to zero rows', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={[{ key: 'name', header: 'Name', filter: 'text' }]}
+      data={data}
+      getRowId={(r) => r.id}
+      empty={<span>Nothing here yet</span>}
+      noResults={<span>No matches — clear your filters</span>}
+    />,
+  );
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'zzz no such row');
+  expect(screen.getByText('No matches — clear your filters')).toBeInTheDocument();
+  expect(screen.queryByText('Nothing here yet')).not.toBeInTheDocument();
+});
+
+test('function empty receives hasData/isFiltered context for the two empty cases', async () => {
+  const user = userEvent.setup();
+  const renderEmpty = ({ hasData, isFiltered }: { hasData: boolean; isFiltered: boolean }) => (
+    <span>{isFiltered ? 'filtered-empty' : hasData ? 'has-data' : 'no-data'}</span>
+  );
+  // Truly empty dataset → no-data.
+  const { rerender } = render(
+    <DataTable
+      columns={[{ key: 'name', header: 'Name', filter: 'text' }]}
+      data={[]}
+      getRowId={(r: Row) => r.id}
+      empty={renderEmpty}
+    />,
+  );
+  expect(screen.getByText('no-data')).toBeInTheDocument();
+  // Non-empty dataset filtered to nothing → filtered-empty.
+  rerender(
+    <DataTable
+      columns={[{ key: 'name', header: 'Name', filter: 'text' }]}
+      data={data}
+      getRowId={(r) => r.id}
+      empty={renderEmpty}
+    />,
+  );
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'zzz');
+  expect(screen.getByText('filtered-empty')).toBeInTheDocument();
+});
+
+test('loadingRows defaults to the effective pageSize', () => {
+  const { container } = render(
+    <DataTable columns={columns} data={data} getRowId={(r) => r.id} loading defaultPageSize={25} />,
+  );
+  // One header row + 25 skeleton body rows.
+  expect(container.querySelectorAll('tbody tr')).toHaveLength(25);
+});
+
 test('clicking a sortable header sorts ascending then descending', async () => {
   const user = userEvent.setup();
   render(

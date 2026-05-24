@@ -21,12 +21,12 @@
 }
 /* Reserve room so the typed text never runs under the clear button. */
 .control[data-clearable='true'] .input {
-  padding-right: 2.25rem;
+  padding-inline-end: 2.25rem;
 }
 .clear {
   position: absolute;
   top: 50%;
-  right: var(--ku-space-2);
+  inset-inline-end: var(--ku-space-2);
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;

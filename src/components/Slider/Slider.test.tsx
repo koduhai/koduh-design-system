@@ -23,6 +23,23 @@ describe('Slider', () => {
     expect(onChange).toHaveBeenLastCalledWith(0, expect.anything());
   });
 
+  it('swaps horizontal arrow direction under RTL', async () => {
+    const realGCS = window.getComputedStyle.bind(window);
+    const spy = vi
+      .spyOn(window, 'getComputedStyle')
+      .mockImplementation(
+        (el: Element) => ({ ...realGCS(el), direction: 'rtl' }) as CSSStyleDeclaration,
+      );
+    const onChange = vi.fn();
+    render(<Slider label="V" defaultValue={3} min={0} max={5} step={1} onChange={onChange} />);
+    screen.getByRole('slider').focus();
+    await userEvent.keyboard('{ArrowRight}'); // RTL: right decreases
+    expect(onChange).toHaveBeenLastCalledWith(2, expect.anything());
+    await userEvent.keyboard('{ArrowLeft}{ArrowLeft}'); // RTL: left increases
+    expect(onChange).toHaveBeenLastCalledWith(4, expect.anything());
+    spy.mockRestore();
+  });
+
   it('Home/End jump to min/max', async () => {
     const onChange = vi.fn();
     render(<Slider label="V" defaultValue={5} min={0} max={10} onChange={onChange} />);

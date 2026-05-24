@@ -15,6 +15,14 @@ export type FilterValue =
 
 export type FilterState = Record<string, FilterValue>;
 
+/** Context passed to a function `empty` slot so copy can match the empty case. */
+export interface EmptyStateContext {
+  /** True when `data` contains rows — so an empty result is a filter/search miss. */
+  hasData: boolean;
+  /** True when a non-empty dataset was filtered/searched down to zero rows. */
+  isFiltered: boolean;
+}
+
 export interface DataColumn<Row> extends Column<Row> {
   /** Drives the default comparator and the filter control. Default 'text'. */
   type?: ColumnType;
@@ -31,6 +39,11 @@ export interface DataColumn<Row> extends Column<Row> {
 }
 
 export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+  /**
+   * Column definitions. The filter/search/sort pipeline is memoized on `columns`
+   * identity, so for large datasets pass a stable (hoisted or `useMemo`-d) array
+   * — an inline `columns={[...]}` literal re-runs the whole pass every render.
+   */
   columns: DataColumn<Row>[];
   data: Row[];
   getRowId: (row: Row) => string;
@@ -42,6 +55,12 @@ export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>
   page?: number;
   defaultPage?: number;
   onPageChange?: (page: number) => void;
+  /**
+   * Rows per page. Pagination is the scaling strategy — only the current page is
+   * rendered, so a 600-row dataset stays cheap. There is no row virtualization;
+   * a single-scroll table of every row means setting `pageSize` to the full
+   * count, which renders every row. Prefer a bounded `pageSize` for large data.
+   */
   pageSize?: number;
   defaultPageSize?: number;
   onPageSizeChange?: (pageSize: number) => void;
@@ -64,6 +83,22 @@ export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>
   captionVisible?: boolean;
   stickyHeader?: boolean;
   loading?: boolean;
+  /**
+   * Number of skeleton rows shown while `loading`. Defaults to the effective
+   * `pageSize` so the loading height matches the loaded page (no layout jump).
+   */
   loadingRows?: number;
-  empty?: ReactNode;
+  /**
+   * Shown when there are no rows to display. Pass a render function to tailor the
+   * message to the case: `hasData` is false for a genuinely empty dataset, and
+   * true (with `isFiltered`) when filters/search removed every row.
+   */
+  empty?: ReactNode | ((ctx: EmptyStateContext) => ReactNode);
+  /**
+   * Convenience slot shown specifically when a non-empty dataset is filtered or
+   * searched down to zero rows (e.g. "No matches — clear your filters"). Takes
+   * precedence over `empty` in that case; the truly-empty-dataset case still
+   * falls back to `empty`.
+   */
+  noResults?: ReactNode;
 }

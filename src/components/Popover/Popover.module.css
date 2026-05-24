@@ -26,19 +26,19 @@
   position-area: bottom;
 }
 .panel[data-placement='bottom-start'] {
-  position-area: bottom span-right;
+  position-area: bottom span-inline-end;
 }
 .panel[data-placement='bottom-end'] {
-  position-area: bottom span-left;
+  position-area: bottom span-inline-start;
 }
 .panel[data-placement='top'] {
   position-area: top;
 }
 .panel[data-placement='top-start'] {
-  position-area: top span-right;
+  position-area: top span-inline-end;
 }
 .panel[data-placement='top-end'] {
-  position-area: top span-left;
+  position-area: top span-inline-start;
 }
 .panel[data-placement='left'] {
   position-area: left;

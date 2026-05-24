@@ -47,12 +47,12 @@
 }
 /* Reserve room so the selected label never runs under the clear + chevron. */
 .trigger[data-clearable='true'] {
-  padding-right: 2.5rem;
+  padding-inline-end: 2.5rem;
 }
 .clear {
   position: absolute;
   top: 50%;
-  right: 1.75rem;
+  inset-inline-end: 1.75rem;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;

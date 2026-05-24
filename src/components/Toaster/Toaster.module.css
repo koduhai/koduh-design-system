@@ -51,7 +51,7 @@
   background: var(--ku-color-bg-surface);
   color: var(--ku-color-text-primary);
   box-shadow: var(--ku-shadow-3);
-  border-left: 3px solid var(--toast-accent);
+  border-inline-start: 3px solid var(--toast-accent);
 }
 .item[data-severity='info'] {
   --toast-accent: var(--ku-color-info);

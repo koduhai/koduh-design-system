@@ -62,6 +62,20 @@ export const Empty: Story = {
     columns,
     data: [],
     getRowId: (r: Person) => r.id,
-    empty: 'No team members match your filters.',
+    empty: 'No team members yet.',
+  },
+};
+
+// `empty` distinguishes a genuinely empty dataset from a filter/search miss:
+// pass a function to vary the copy, or use the `noResults` slot for the miss.
+export const EmptyVsNoResults: Story = {
+  args: {
+    columns,
+    data: people,
+    getRowId: (r: Person) => r.id,
+    defaultSearch: 'no-such-person',
+    empty: ({ isFiltered }) =>
+      isFiltered ? 'No matches — try clearing your filters.' : 'No team members yet.',
+    noResults: 'No matches — try clearing your filters.',
   },
 };

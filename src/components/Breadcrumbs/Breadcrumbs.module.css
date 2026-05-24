@@ -52,7 +52,11 @@
   user-select: none;
 }
 
-/* The vendored chevron points down; rotate it to point right (LTR trail). */
+/* The vendored chevron points down; rotate it to point along the reading
+   direction — right in LTR, left in RTL (no logical equivalent for transform). */
 .chevron {
   transform: rotate(-90deg);
+}
+:global([dir='rtl']) .chevron {
+  transform: rotate(90deg);
 }

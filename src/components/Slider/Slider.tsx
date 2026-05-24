@@ -82,14 +82,26 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
   };
   const pct = ((val - min) / (max - min)) * 100;
 
+  const isRtl = () =>
+    typeof window !== 'undefined' && trackRef.current
+      ? getComputedStyle(trackRef.current).direction === 'rtl'
+      : false;
+
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    // In RTL the track increases toward the left, so the horizontal arrows swap
+    // (vertical arrows and Home/End are unaffected). Matches the WAI-ARIA pattern.
+    const rtl = isRtl();
     let next: number;
     switch (e.key) {
       case 'ArrowRight':
+        next = rtl ? val - step : val + step;
+        break;
       case 'ArrowUp':
         next = val + step;
         break;
       case 'ArrowLeft':
+        next = rtl ? val + step : val - step;
+        break;
       case 'ArrowDown':
         next = val - step;
         break;
@@ -115,7 +127,11 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
   const pointerFromClientX = (clientX: number, event?: SyntheticEvent) => {
     const rect = trackRef.current?.getBoundingClientRect();
     if (!rect) return;
-    set(min + ((clientX - rect.left) / rect.width) * (max - min), event);
+    // RTL: the start (max-distance) edge is the right, so measure from rect.right.
+    const fraction = isRtl()
+      ? (rect.right - clientX) / rect.width
+      : (clientX - rect.left) / rect.width;
+    set(min + fraction * (max - min), event);
   };
 
   return (

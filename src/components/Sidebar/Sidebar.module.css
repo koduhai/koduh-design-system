@@ -4,7 +4,7 @@
   width: var(--ku-sidebar-width, 240px);
   height: 100%;
   background-color: var(--ku-color-bg-surface);
-  border-right: 1px solid var(--ku-color-border);
+  border-inline-end: 1px solid var(--ku-color-border);
   color: var(--ku-color-text-primary);
   font-family: var(--ku-font-family-base);
   transition: width var(--ku-duration-base) var(--ku-easing-standard);
@@ -93,6 +93,11 @@
   color: var(--ku-color-text-primary);
   font-weight: var(--ku-font-weight-medium);
   box-shadow: inset 3px 0 0 var(--ku-color-primary);
+}
+/* box-shadow has no logical longhand; mirror the inset accent to the inline-end
+   (visual right) edge under RTL so it stays on the reading-start side. */
+:global([dir='rtl']) .link[data-active='true'] {
+  box-shadow: inset -3px 0 0 var(--ku-color-primary);
 }
 .link:disabled {
   opacity: 0.5;

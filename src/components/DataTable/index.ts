@@ -3,6 +3,7 @@ export type {
   DataTableProps,
   DataColumn,
   ColumnType,
+  EmptyStateContext,
   FilterKind,
   FilterValue,
   FilterState,

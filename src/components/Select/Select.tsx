@@ -9,6 +9,14 @@ import styles from './Select.module.css';
 
 export type SelectSize = 'sm' | 'md' | 'lg';
 
+/**
+ * Control density. Mirrors the `[data-density]` token mechanism
+ * (`--ku-density-*` vars). `comfortable` is the default; `compact` tightens the
+ * trigger and option padding without dropping the hit-target floor. Same literal
+ * as Table/TextField/Menu.
+ */
+export type Density = 'comfortable' | 'compact';
+
 export interface SelectOption {
   /** Value submitted/compared when this option is chosen. */
   value: string;
@@ -56,6 +64,12 @@ export interface SelectProps extends Omit<
   /** Defaults to 'md'. */
   size?: SelectSize;
   /**
+   * Control density. `compact` tightens the trigger and option padding via the
+   * `--ku-density-*` vars. Omit to inherit a `data-density` ancestor (defaults
+   * to comfortable); set explicitly to set `data-density` on the root + listbox.
+   */
+  density?: Density;
+  /**
    * Shows a clear affordance when a value is selected. Clearing resets the
    * value and fires `onChange('', event)` — `''` is the "no selection" signal,
    * so consumers no longer need a synthetic empty `{ label, value: '' }` option.
@@ -84,6 +98,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     helperText,
     errorText,
     size = 'md',
+    density,
     clearable,
     clearLabel = 'Clear selection',
     className,
@@ -265,6 +280,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       id={baseId}
       className={styles.trigger}
       data-size={size}
+      data-density={density}
       data-clearable={clearable && selectedOption ? 'true' : undefined}
       disabled={disabled}
       aria-haspopup="listbox"
@@ -309,6 +325,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
             ref={listRef}
             id={listboxId}
             role="listbox"
+            data-density={density}
             tabIndex={-1}
             aria-labelledby={showOwnLabel && label ? labelId : undefined}
             aria-activedescendant={activeIndex >= 0 ? optionId(activeIndex) : undefined}

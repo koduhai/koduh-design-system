@@ -6,6 +6,13 @@ import { composeEventHandlers, mergeRefs, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Menu.module.css';
 
+/**
+ * Menu density. Mirrors the `[data-density]` token mechanism (`--ku-density-*`
+ * vars). `comfortable` is the default; `compact` tightens item padding without
+ * dropping the hit-target floor. Same literal as Table/TextField/Select.
+ */
+export type Density = 'comfortable' | 'compact';
+
 export interface MenuItemConfig {
   label: ReactNode;
   onSelect: () => void;
@@ -26,6 +33,12 @@ export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, 'childre
   items: MenuEntry[];
   /** Anchored placement of the menu panel. Defaults to 'bottom-start'. */
   placement?: PopoverPlacement;
+  /**
+   * Menu density. `compact` tightens item padding via the `--ku-density-*` vars.
+   * Omit to inherit a `data-density` ancestor (defaults to comfortable); set
+   * explicitly to set `data-density` on the menu list.
+   */
+  density?: Density;
   className?: string;
 }
 
@@ -35,7 +48,7 @@ function isSeparator(entry: MenuEntry): entry is MenuSeparator {
 
 /** `ref` forwards to the trigger element, not the menu panel. */
 export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function Menu(
-  { trigger, items, placement = 'bottom-start', className, ...rest },
+  { trigger, items, placement = 'bottom-start', density, className, ...rest },
   ref,
 ) {
   const [open, setOpen] = useState(false);
@@ -192,6 +205,7 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
         ref={menuRef}
         id={menuId}
         role="menu"
+        data-density={density}
         tabIndex={-1}
         aria-activedescendant={activeIndex >= 0 ? itemId(activeIndex) : undefined}
         onKeyDown={onMenuKeyDown}

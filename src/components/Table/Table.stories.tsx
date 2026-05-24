@@ -79,6 +79,26 @@ export const Showcase: Story = {
         empty={<EmptyState title="No members yet" />}
       />
       <Table columns={columns} data={users} getRowId={(u) => u.id} loading loadingRows={3} />
+      <Table
+        columns={columns}
+        data={users}
+        getRowId={(u) => u.id}
+        caption="Compact density"
+        captionVisible
+        density="compact"
+      />
     </div>
   ),
+};
+
+/** Compact density tightens cell padding for data-dense tables. */
+export const Compact: Story = {
+  args: {
+    columns,
+    data: users,
+    getRowId: (u: User) => u.id,
+    caption: 'Team members',
+    captionVisible: true,
+    density: 'compact',
+  },
 };

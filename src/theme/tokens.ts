@@ -75,6 +75,33 @@ export const tokens = {
   },
 } as const;
 
+// Density control. Theme-independent: density is orthogonal to dark/light, and
+// switches via a `[data-density]` attribute (the analogue of `[data-theme]`),
+// not a token-color swap. `comfortable` is the default emitted on :root; the
+// `compact` set is emitted under `[data-density='compact']`, overriding the same
+// `--ku-density-*` variables. Components read these vars for their internal
+// padding / row-height so a single attribute retightens data-dense surfaces.
+//
+// WCAG note: these tighten *internal* padding and row height only — never the
+// minimum interactive hit-target. Components keep their own min-height/min-width
+// floors so compact stays AA-operable.
+export const density = {
+  comfortable: {
+    controlPaddingY: '8px', // --ku-density-control-padding-y (== space-2)
+    controlPaddingX: '12px', // --ku-density-control-padding-x (== space-3)
+    rowPaddingY: '8px', // --ku-density-row-padding-y (table/menu/listbox row)
+    rowPaddingX: '12px', // --ku-density-row-padding-x
+    rowHeight: '40px', // --ku-density-row-height (control min-height floor)
+  },
+  compact: {
+    controlPaddingY: '4px', // tighter (== space-1)
+    controlPaddingX: '8px', // tighter (== space-2)
+    rowPaddingY: '4px',
+    rowPaddingX: '8px',
+    rowHeight: '32px',
+  },
+} as const;
+
 // Color tokens per theme. Values chosen to meet WCAG AA (verified at the
 // component level via axe-core e2e tests).
 export const themes = {
@@ -153,3 +180,4 @@ export const themes = {
 export type ColorMode = keyof typeof themes;
 export type ColorTokenName = keyof (typeof themes)['dark']['color'];
 export type Tokens = typeof tokens;
+export type Density = keyof typeof density;

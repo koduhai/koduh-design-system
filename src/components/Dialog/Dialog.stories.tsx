@@ -13,7 +13,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { open: true, onClose: () => {} },
+  args: { open: true, onOpenChange: () => {} },
   render: () => {
     function Demo() {
       const [open, setOpen] = useState(true);
@@ -22,7 +22,7 @@ export const Default: Story = {
           <Button onClick={() => setOpen(true)}>Open dialog</Button>
           <Dialog
             open={open}
-            onClose={() => setOpen(false)}
+            onOpenChange={() => setOpen(false)}
             title="Edit profile"
             footer={
               <>
@@ -43,12 +43,12 @@ export const Default: Story = {
 };
 
 export const Showcase: Story = {
-  args: { open: true, onClose: () => {} },
+  args: { open: true, onOpenChange: () => {} },
   render: () => (
     <div style={{ minHeight: 480 }}>
       <Dialog
         open
-        onClose={() => {}}
+        onOpenChange={() => {}}
         title="Edit profile"
         footer={
           <>
@@ -63,7 +63,7 @@ export const Showcase: Story = {
       </Dialog>
       <ConfirmDialog
         open
-        onClose={() => {}}
+        onOpenChange={() => {}}
         onConfirm={() => {}}
         title="Delete item?"
         description="This action cannot be undone."

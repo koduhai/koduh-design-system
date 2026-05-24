@@ -6,9 +6,9 @@ import styles from './Dialog.module.css';
 export interface ConfirmDialogProps {
   /** Controls whether the dialog is visible. */
   open: boolean;
-  /** Called when the dialog requests to be closed (cancel or backdrop). */
-  onClose: () => void;
-  /** Called when the user presses the confirm button; `onClose` is also called. */
+  /** Called with `false` when the dialog requests to close (cancel, Esc, backdrop). */
+  onOpenChange: (open: boolean) => void;
+  /** Called when the user presses confirm; `onOpenChange(false)` is also called. */
   onConfirm: () => void;
   /** Dialog heading. */
   title: ReactNode;
@@ -24,7 +24,7 @@ export interface ConfirmDialogProps {
 
 export function ConfirmDialog({
   open,
-  onClose,
+  onOpenChange,
   onConfirm,
   title,
   description,
@@ -34,18 +34,18 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const handleConfirm = () => {
     onConfirm();
-    onClose();
+    onOpenChange(false);
   };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onOpenChange={onOpenChange}
       title={title}
       size="sm"
       footer={
         <>
-          <Button variant="ghost" tone="neutral" onClick={onClose}>
+          <Button variant="ghost" tone="neutral" onClick={() => onOpenChange(false)}>
             {cancelLabel}
           </Button>
           <Button variant="solid" tone={tone} onClick={handleConfirm}>

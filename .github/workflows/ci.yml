@@ -37,6 +37,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Guard against release/docs drift: the built export surface must match
+      # src/index.ts, and CLAUDE.md's component count must be accurate (issue #6).
+      - name: Verify export surface + docs
+        run: npm run verify:exports
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 

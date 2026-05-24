@@ -1,6 +1,6 @@
 {
   "name": "@koduhai/design-system",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Koduh AI Design System — custom-built, MUI-free",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -21,7 +21,7 @@
       "import": "./dist/icons/index.mjs",
       "require": "./dist/icons/index.js"
     },
-    "./styles.css": "./dist/index.css",
+    "./styles.css": "./dist/styles.css",
     "./theme.css": "./dist/theme.css"
   },
   "sideEffects": [
@@ -43,6 +43,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "verify:bundle": "tsx scripts/verify-bundle.ts",
+    "verify:exports": "tsx scripts/verify-exports.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

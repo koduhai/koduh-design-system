@@ -31,6 +31,7 @@ export const Showcase: Story = {
     <div style={{ display: 'flex', gap: 32, padding: 40 }}>
       <Select label="Default" options={options} placeholder="Choose…" />
       <Select label="Selected" options={options} defaultValue="ca" />
+      <Select label="Clearable" options={options} defaultValue="ca" clearable />
       <Select label="Error" options={options} error helperText="Required" />
       <Select label="Disabled" options={options} disabled placeholder="Choose…" />
     </div>

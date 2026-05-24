@@ -10,8 +10,12 @@ export type DialogSize = 'sm' | 'md' | 'lg';
 export interface DialogProps extends Omit<HTMLAttributes<HTMLDialogElement>, 'title'> {
   /** Whether the dialog is shown modally. */
   open: boolean;
-  /** Called when the dialog requests to close (close button, Esc, backdrop). */
-  onClose: () => void;
+  /**
+   * Called with the requested next open state. The dialog only ever requests to
+   * close (close button, Esc, backdrop), so this fires with `false`. Named to
+   * match Popover/Select for a consistent overlay API.
+   */
+  onOpenChange: (open: boolean) => void;
   /** Heading rendered in the dialog header and used as its accessible name. */
   title?: ReactNode;
   /** Max-width preset. Defaults to 'md'. */
@@ -24,11 +28,22 @@ export interface DialogProps extends Omit<HTMLAttributes<HTMLDialogElement>, 'ti
 }
 
 export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>(function Dialog(
-  { open, onClose, title, size = 'md', dismissable = true, footer, children, className, ...props },
+  {
+    open,
+    onOpenChange,
+    title,
+    size = 'md',
+    dismissable = true,
+    footer,
+    children,
+    className,
+    ...props
+  },
   forwardedRef,
 ) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId('dialog-title');
+  const close = useCallback(() => onOpenChange(false), [onOpenChange]);
 
   // Sync the React `open` prop to native showModal()/close(), guarding both
   // directions so we never hit InvalidStateError ("already open").
@@ -46,13 +61,13 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    const handleClose = () => onClose();
+    const handleClose = () => close();
     const handleCancel = (event: Event) => {
       if (!dismissable) {
         event.preventDefault();
         return;
       }
-      // Native cancel is followed by close, which already calls onClose.
+      // Native cancel is followed by close, which already calls onOpenChange.
     };
     dialog.addEventListener('close', handleClose);
     dialog.addEventListener('cancel', handleCancel);
@@ -60,15 +75,15 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
       dialog.removeEventListener('close', handleClose);
       dialog.removeEventListener('cancel', handleCancel);
     };
-  }, [onClose, dismissable]);
+  }, [close, dismissable]);
 
   const handleBackdropClick = useCallback(
     (event: React.MouseEvent<HTMLDialogElement>) => {
       if (dismissable && event.target === dialogRef.current) {
-        onClose();
+        close();
       }
     },
-    [dismissable, onClose],
+    [dismissable, close],
   );
 
   return (
@@ -91,7 +106,7 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
               <span />
             )}
             {dismissable ? (
-              <button type="button" className={styles.close} aria-label="Close" onClick={onClose}>
+              <button type="button" className={styles.close} aria-label="Close" onClick={close}>
                 <CloseIcon aria-hidden />
               </button>
             ) : null}

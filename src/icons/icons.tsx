@@ -45,3 +45,83 @@ export const UserIcon = /* @__PURE__ */ createIcon(
   'UserIcon',
   <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10m0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5" />,
 );
+
+// --- App-nav set ------------------------------------------------------------
+// Common shell icons (sidebar/topbar). Anything beyond this: use createIcon.
+
+export const HomeIcon = /* @__PURE__ */ createIcon(
+  'HomeIcon',
+  <path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z" />,
+);
+
+export const DashboardIcon = /* @__PURE__ */ createIcon(
+  'DashboardIcon',
+  <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z" />,
+);
+
+export const ListIcon = /* @__PURE__ */ createIcon(
+  'ListIcon',
+  <path d="M8 5h13v2H8zM8 11h13v2H8zM8 17h13v2H8zM3 5h2v2H3zM3 11h2v2H3zM3 17h2v2H3z" />,
+);
+
+export const ActivityIcon = /* @__PURE__ */ createIcon(
+  'ActivityIcon',
+  <path
+    d="M3 12h4l3-7 4 14 3-7h4"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />,
+);
+
+export const ChartIcon = /* @__PURE__ */ createIcon(
+  'ChartIcon',
+  <path d="M4 13h4v7H4zm6-6h4v13h-4zm6 3h4v10h-4z" />,
+);
+
+export const BotIcon = /* @__PURE__ */ createIcon(
+  'BotIcon',
+  <path d="M12 2a1 1 0 0 1 1 1v1h2a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h2V3a1 1 0 0 1 1-1M9.5 10a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9 16h6v1.5H9z" />,
+);
+
+export const SettingsIcon = /* @__PURE__ */ createIcon(
+  'SettingsIcon',
+  <path d="M19.14 12.94a7.5 7.5 0 0 0 0-1.88l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7 7 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.27 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.5 7.5 0 0 0 0 1.88l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.42.34.68.22l2.39-.96c.49.38 1.03.7 1.62.94l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.26.12.54.02.68-.22l1.92-3.32a.5.5 0 0 0-.12-.64zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7" />,
+);
+
+export const BellIcon = /* @__PURE__ */ createIcon(
+  'BellIcon',
+  <path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2m6-6V11a6 6 0 0 0-4-5.65V4a2 2 0 0 0-4 0v1.35A6 6 0 0 0 6 11v5l-2 2v1h16v-1z" />,
+);
+
+export const PlusIcon = /* @__PURE__ */ createIcon(
+  'PlusIcon',
+  <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z" />,
+);
+
+export const ChevronRightIcon = /* @__PURE__ */ createIcon(
+  'ChevronRightIcon',
+  <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />,
+);
+
+export const ChevronLeftIcon = /* @__PURE__ */ createIcon(
+  'ChevronLeftIcon',
+  <path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z" />,
+);
+
+export const ChevronUpIcon = /* @__PURE__ */ createIcon(
+  'ChevronUpIcon',
+  <path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6z" />,
+);
+
+export const MoreVerticalIcon = /* @__PURE__ */ createIcon(
+  'MoreVerticalIcon',
+  <path d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4m0 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4" />,
+);
+
+export const LogOutIcon = /* @__PURE__ */ createIcon(
+  'LogOutIcon',
+  <path d="M16 17v-3H9v-2h7V9l5 4zM14 2a2 2 0 0 1 2 2v2h-2V4H5v16h9v-2h2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />,
+);

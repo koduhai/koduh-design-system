@@ -53,6 +53,9 @@ Look at `src/components/Button/` as the reference implementation. The establishe
 - **`forwardRef` + spread remaining DOM props** to the root so `aria-*`, `data-*`, `onClick`, `id`, etc. pass through. Props are explicit and typed — no opaque passthrough to a hidden vendor component.
 - **`asChild`** (via the `Slot` primitive) for polymorphism instead of an `as`/`component` prop — lets `Button` render as `<a>`, a router `<Link>`, etc., merging className/handlers/refs.
 - **Controlled/uncontrolled symmetry** via `useControllableState` for stateful components.
+- **Tone vocabulary is shared:** tonal components (`Button`, `Chip`, `Progress`) use the same `tone` set — `primary | neutral | success | warning | danger` — so it's predictable across the library.
+- **Overlays share an open/close API:** components with an `open` prop (`Dialog`, `ConfirmDialog`, `Snackbar`, `Popover`, `Select`) report close via `onOpenChange(open: boolean)` and take body content as `children`. (`Alert` has no `open` prop, so it keeps a fire-and-forget `onClose`.)
+- **Collection controls** are array-driven (`options`/`items`/`entries`) when the component owns item markup + a11y wiring (`Select`, `Tabs`, `Menu`), and `children`-based when each item is a standalone control the consumer composes (`RadioGroup` → `<Radio>`). See `docs/component_guidelines.md` §8.
 - Every public prop type is exported from `index.ts` and re-exported from `src/index.ts`.
 - Icons accept any `ReactNode` — components never force the in-house icon set on consumers. The vendored set lives in `src/icons` and is built with the `createIcon` factory.
 

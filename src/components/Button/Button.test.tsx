@@ -29,6 +29,11 @@ describe('Button', () => {
     expect(btn).toHaveAttribute('data-size', 'lg');
   });
 
+  it.each(['success', 'warning'] as const)('supports the %s tone', (tone) => {
+    render(<Button tone={tone}>X</Button>);
+    expect(screen.getByRole('button')).toHaveAttribute('data-tone', tone);
+  });
+
   it('fires onClick, but not when disabled', async () => {
     const onClick = vi.fn();
     const { rerender } = render(<Button onClick={onClick}>Go</Button>);

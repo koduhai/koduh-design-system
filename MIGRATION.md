@@ -1,3 +1,49 @@
+# Migration Guide: v1 → v2
+
+v2 is a small breaking release (the rest of v2 is additive). It harmonizes the
+overlay open/close API across components. Two mechanical changes:
+
+### 1. Overlay `onClose` → `onOpenChange(open)`
+
+`Dialog`, `ConfirmDialog`, and `Snackbar` now report closing through
+`onOpenChange(open: boolean)` (matching `Popover` and `Select`) instead of
+`onClose()`. The callback fires with `false` when the overlay requests to close,
+so a `useState` setter can be passed directly.
+
+```tsx
+// v1
+<Dialog open={open} onClose={() => setOpen(false)} title="Edit">…</Dialog>
+<Snackbar open={open} onClose={() => setOpen(false)} message="Saved" />
+<ConfirmDialog open={open} onClose={close} onConfirm={remove} title="Delete?" />
+
+// v2
+<Dialog open={open} onOpenChange={setOpen} title="Edit">…</Dialog>
+<Snackbar open={open} onOpenChange={setOpen}>Saved</Snackbar>
+<ConfirmDialog open={open} onOpenChange={setOpen} onConfirm={remove} title="Delete?" />
+```
+
+> **`Alert` is unchanged.** It has no `open` prop — it's a fire-and-forget inline
+> dismiss — so it still uses `onClose`.
+
+### 2. `Snackbar` message → `children`
+
+`Snackbar`'s `message` prop is gone; pass the content as `children` (matching
+`Dialog`):
+
+```tsx
+// v1
+<Snackbar open onClose={close} message="Changes saved" />
+// v2
+<Snackbar open onOpenChange={close}>Changes saved</Snackbar>
+```
+
+Everything else in v2 is **additive** and needs no migration: new `success`/
+`warning` tones on `Chip`/`Button`, `--ku-color-*-fg` status text tokens, the
+`Select` `clearable` prop, the expanded icon set, and the `dist/styles.css`
+filename (the `@koduhai/design-system/styles.css` import specifier is unchanged).
+
+---
+
 # Migration Guide: v0.x (MUI) → v1 (custom build)
 
 This is a **clean-break major version**. `@koduhai/design-system` v1 is a

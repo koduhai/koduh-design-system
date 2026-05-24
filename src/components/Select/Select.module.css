@@ -37,6 +37,35 @@
 .placeholder {
   color: var(--ku-color-text-secondary);
 }
+/* Wraps just the trigger so the clear button can overlay its right edge. */
+.control {
+  position: relative;
+  display: inline-flex;
+}
+/* Reserve room so the selected label never runs under the clear + chevron. */
+.trigger[data-clearable='true'] {
+  padding-right: 2.5rem;
+}
+.clear {
+  position: absolute;
+  top: 50%;
+  right: 1.75rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--ku-radius-full);
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  opacity: 0.8;
+}
+.clear:hover {
+  opacity: 1;
+  color: var(--ku-color-text-primary);
+}
 .listbox {
   list-style: none;
   margin: 0;

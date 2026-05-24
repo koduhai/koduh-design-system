@@ -79,6 +79,13 @@ export const themes = {
       success: '#4ADE80',
       warning: '#FBBF24',
       info: '#5B9DFF',
+      // Foreground variants tuned for AA text contrast on bg surfaces (the
+      // *fill* colors above are bright enough on dark surfaces to double as
+      // text, so fg == fill here; verified in contrast.test.ts).
+      successFg: '#4ADE80',
+      warningFg: '#FBBF24',
+      dangerFg: '#FF6B6B',
+      infoFg: '#5B9DFF',
       bgDefault: '#0A0E1A',
       bgSurface: '#141A2A',
       bgRaised: '#1C2438',
@@ -96,6 +103,13 @@ export const themes = {
       success: '#1B7F3B',
       warning: '#9A6700',
       info: '#1B5FCC',
+      // Foreground variants: darker than the fill colors so colored status text
+      // clears AA on the off-white bgSurface (the worst light-theme case).
+      // Verified in contrast.test.ts.
+      successFg: '#147A37',
+      warningFg: '#7A4F00',
+      dangerFg: '#BE2626',
+      infoFg: '#1B5FCC',
       bgDefault: '#FFFFFF',
       bgSurface: '#F4F6FA',
       bgRaised: '#FFFFFF',

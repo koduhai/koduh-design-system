@@ -133,6 +133,30 @@ describe('Select', () => {
     expect(onBlur).toHaveBeenCalledTimes(1);
   });
 
+  it('clearable: renders a clear button that resets the value and reports an empty string', () => {
+    const onChange = vi.fn();
+    render(
+      <Select label="Fruit" options={options} defaultValue="a" clearable onChange={onChange} />,
+    );
+    expect(screen.getByRole('button', { name: /Fruit/ })).toHaveTextContent('Apple');
+    fireEvent.click(screen.getByRole('button', { name: /clear/i }));
+    expect(onChange).toHaveBeenCalledWith('', expect.anything());
+    const trigger = screen.getByRole('button', { name: /Fruit/ });
+    // Reverts to the placeholder, and clicking clear must not open the listbox.
+    expect(trigger).toHaveTextContent('Select');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('clearable: no clear button is shown while nothing is selected', () => {
+    render(<Select label="Fruit" options={options} clearable />);
+    expect(screen.queryByRole('button', { name: /clear/i })).toBeNull();
+  });
+
+  it('does not render a clear button without the clearable prop', () => {
+    render(<Select label="Fruit" options={options} defaultValue="a" />);
+    expect(screen.queryByRole('button', { name: /clear/i })).toBeNull();
+  });
+
   it('does NOT restore focus to the trigger on outside-pointer dismiss', () => {
     render(
       <div>

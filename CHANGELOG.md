@@ -4,9 +4,53 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2026-05-23
 
-### Components
+A breaking release that harmonizes cross-component API vocabulary and adds DX
+conveniences surfaced while dogfooding the published package (issues #4–#7).
+
+### Breaking
+
+- **Overlay close callback renamed `onClose` → `onOpenChange(open: boolean)`** on
+  `Dialog`, `ConfirmDialog`, and `Snackbar`, matching `Popover`/`Select`. It fires
+  with `false` when the overlay requests to close. `Alert` is unchanged — it has no
+  `open` prop, so it keeps a fire-and-forget `onClose`. (#7)
+- **`Snackbar` takes its message as `children`** now, not a `message` prop,
+  matching `Dialog`. (#7)
+
+See [`MIGRATION.md`](./MIGRATION.md#migration-guide-v1--v2) for the mechanical upgrade.
+
+### Added
+
+- **Tone vocabulary aligned across tonal components.** `Chip` and `Button` gain
+  `success` and `warning` tones, so `Button`/`Chip`/`Progress` now share
+  `primary | neutral | success | warning | danger`. (#5)
+- **Contrast-tested status foreground tokens**
+  `--ku-color-{success,warning,danger,info}-fg`, tuned and unit-tested for WCAG AA
+  text contrast against the bg surfaces in both themes (the existing `--ku-color-*`
+  status colors are fill colors). (#7)
+- **`Select` `clearable` prop** (+ `clearLabel`): shows a clear affordance when a
+  value is selected and resets it via `onChange('')`, removing the need for a
+  synthetic empty option. (#7)
+- **App-nav icons:** `HomeIcon`, `DashboardIcon`, `ListIcon`, `ActivityIcon`,
+  `ChartIcon`, `BotIcon`, `SettingsIcon`, `BellIcon`, `PlusIcon`,
+  `MoreVerticalIcon`, `LogOutIcon`, plus `ChevronUpIcon`/`ChevronLeftIcon`/
+  `ChevronRightIcon` — and a prominent `createIcon` Storybook example. (#4)
+
+### Changed
+
+- The CSS bundle is now also emitted as **`dist/styles.css`** to match the public
+  `@koduhai/design-system/styles.css` import specifier (it previously aliased
+  `dist/index.css`). (#7)
+- **Release/docs drift guard** (`npm run verify:exports`, wired into CI and the
+  release workflow): fails the build when the built `dist/index.d.ts` export
+  surface diverges from `src/index.ts`, or when CLAUDE.md's component count is
+  wrong — so a tag can't be cut missing components, as v1.0.0 was (published
+  without `DataTable`). (#6)
+
+## [1.1.0] - 2026-05-23
+
+### Added
 
 - **`DataTable`** — a client-side, stateful wrapper around `Table` adding multi-column
   sort (shift-click), pagination with page-size control, row selection across pages

@@ -18,6 +18,8 @@ export const Showcase: Story = {
       <Chip label="Solid" tone="primary" />
       <Chip label="Neutral" />
       <Chip label="Outline" variant="outline" />
+      <Chip label="Success" tone="success" />
+      <Chip label="Warning" tone="warning" />
       <Chip label="Danger" tone="danger" />
       <Chip label="Clickable" onClick={() => {}} tone="primary" />
       <Chip label="Apple" onDelete={() => {}} />

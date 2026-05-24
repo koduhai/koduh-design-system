@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Popover } from '../Popover';
+import { CloseIcon } from '../../icons';
 import { composeEventHandlers, useControllableState, useId, mergeRefs } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Select.module.css';
@@ -47,6 +48,14 @@ export interface SelectProps extends Omit<
   errorText?: ReactNode;
   /** Defaults to 'md'. */
   size?: SelectSize;
+  /**
+   * Shows a clear affordance when a value is selected. Clearing resets the
+   * value and fires `onChange('', event)` — `''` is the "no selection" signal,
+   * so consumers no longer need a synthetic empty `{ label, value: '' }` option.
+   */
+  clearable?: boolean;
+  /** Accessible label for the clear button. Defaults to 'Clear selection'. */
+  clearLabel?: string;
   /** Class applied to the root wrapper. */
   className?: string;
   /** Base id for the control; ids for the label/listbox/description derive from it. */
@@ -67,6 +76,8 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     helperText,
     errorText,
     size = 'md',
+    clearable,
+    clearLabel = 'Clear selection',
     className,
     id,
     ...rest
@@ -101,6 +112,16 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     onChange?.(opt.value, event);
     restoreFocus.current = true; // selection → return focus to the trigger
     setOpen(false);
+  };
+
+  // Reset to "no selection". Reports '' (not undefined) so the value stays a
+  // string for consumers; stopPropagation keeps the trigger's toggle from
+  // firing, and focus returns to the trigger (the clear button is leaving).
+  const clear = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setSelected(undefined);
+    onChange?.('', event);
+    triggerRef.current?.focus();
   };
 
   const moveActive = (delta: number) => {
@@ -225,6 +246,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       id={baseId}
       className={styles.trigger}
       data-size={size}
+      data-clearable={clearable && selectedOption ? 'true' : undefined}
       disabled={disabled}
       aria-haspopup="listbox"
       aria-expanded={open}
@@ -249,40 +271,47 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
           {label}
         </span>
       ) : null}
-      <Popover
-        open={open}
-        onOpenChange={setOpen}
-        placement="bottom-start"
-        role="presentation"
-        trigger={trigger}
-      >
-        <ul
-          ref={listRef}
-          id={listboxId}
-          role="listbox"
-          tabIndex={-1}
-          aria-labelledby={label ? labelId : undefined}
-          aria-activedescendant={activeIndex >= 0 ? optionId(activeIndex) : undefined}
-          className={styles.listbox}
-          onKeyDown={onListKeyDown}
+      <div className={styles.control}>
+        <Popover
+          open={open}
+          onOpenChange={setOpen}
+          placement="bottom-start"
+          role="presentation"
+          trigger={trigger}
         >
-          {options.map((opt, i) => (
-            <li
-              key={opt.value}
-              id={optionId(i)}
-              role="option"
-              aria-selected={opt.value === selected}
-              aria-disabled={opt.disabled || undefined}
-              data-active={i === activeIndex ? 'true' : undefined}
-              className={styles.option}
-              onClick={(e) => choose(opt, e)}
-              onMouseEnter={() => !opt.disabled && setActiveIndex(i)}
-            >
-              {opt.label}
-            </li>
-          ))}
-        </ul>
-      </Popover>
+          <ul
+            ref={listRef}
+            id={listboxId}
+            role="listbox"
+            tabIndex={-1}
+            aria-labelledby={label ? labelId : undefined}
+            aria-activedescendant={activeIndex >= 0 ? optionId(activeIndex) : undefined}
+            className={styles.listbox}
+            onKeyDown={onListKeyDown}
+          >
+            {options.map((opt, i) => (
+              <li
+                key={opt.value}
+                id={optionId(i)}
+                role="option"
+                aria-selected={opt.value === selected}
+                aria-disabled={opt.disabled || undefined}
+                data-active={i === activeIndex ? 'true' : undefined}
+                className={styles.option}
+                onClick={(e) => choose(opt, e)}
+                onMouseEnter={() => !opt.disabled && setActiveIndex(i)}
+              >
+                {opt.label}
+              </li>
+            ))}
+          </ul>
+        </Popover>
+        {clearable && selectedOption ? (
+          <button type="button" className={styles.clear} aria-label={clearLabel} onClick={clear}>
+            <CloseIcon size={16} />
+          </button>
+        ) : null}
+      </div>
       {description != null ? (
         <span
           id={`${baseId}-desc`}

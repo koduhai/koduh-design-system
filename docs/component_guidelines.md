@@ -268,19 +268,47 @@ A component may compose another (e.g. `LoadingButton` renders `Button`, adding
 `VisuallyHidden` for the loading announcement). It still does **not** reach into
 that component's internals — it only uses the public props.
 
+### 8. Collection controls: array-driven vs `children`
+
+Components that render a collection split by **what each item needs**, not by
+preference:
+
+- **Array-driven** (`options` / `items` / `entries` props) when items are plain
+  data the component fully owns the markup for: `Select` (`options`), `Tabs`
+  (`items`), `Menu` (`entries`), `Breadcrumbs` (`items`). The component controls
+  roles, ids, `aria-activedescendant`, and keyboard navigation across the set, so
+  data-in keeps consumers out of the a11y wiring.
+- **`children`** when each item is itself an interactive, individually-labelable
+  control the consumer composes and may need a ref to: `RadioGroup` wraps
+  `<Radio>` children (each is a real focusable `<input>` with its own label).
+
+Rule of thumb: if correct ARIA depends on the component orchestrating the whole
+set, take an array; if each item is a standalone control the consumer owns, take
+`children`.
+
+### 9. Consistent overlay open/close API
+
+Components with an `open` prop (`Dialog`, `ConfirmDialog`, `Snackbar`, `Popover`,
+`Select`) report close/visibility through **`onOpenChange(open: boolean)`** —
+called with `false` when the overlay requests to close. (`Alert` is **not** in
+this group: it has no `open` prop and is a fire-and-forget inline dismiss, so it
+keeps `onClose`.) Overlay body content is passed as `children`, not a `message`
+prop.
+
 ---
 
 ## Clean-Break API Vocabulary
 
 The API is designed for clarity, not MUI compatibility:
 
-| Concept          | Use this                              | Not this (MUI-era)                       |
-| ---------------- | ------------------------------------- | ---------------------------------------- |
-| Visual style     | `variant`: `solid`/`outline`/`ghost`  | `variant`: `contained`/`outlined`/`text` |
-| Semantic color   | `tone`: `primary`/`neutral`/`danger`  | `color`: `primary`/`secondary`/`error`   |
-| Polymorphism     | `asChild` (Slot)                      | `component` / `as`                       |
-| Stateful value   | `value` + `defaultValue` + `onChange` | scattered controlled-only props          |
-| Styling override | `className` + tokens / CSS Modules    | `sx` prop                                |
+| Concept          | Use this                                                 | Not this (MUI-era)                       |
+| ---------------- | -------------------------------------------------------- | ---------------------------------------- |
+| Visual style     | `variant`: `solid`/`outline`/`ghost`                     | `variant`: `contained`/`outlined`/`text` |
+| Semantic color   | `tone`: `primary`/`neutral`/`success`/`warning`/`danger` | `color`: `primary`/`secondary`/`error`   |
+| Overlay close    | `onOpenChange(open)` (with an `open` prop)               | `onClose()` everywhere                   |
+| Polymorphism     | `asChild` (Slot)                                         | `component` / `as`                       |
+| Stateful value   | `value` + `defaultValue` + `onChange`                    | scattered controlled-only props          |
+| Styling override | `className` + tokens / CSS Modules                       | `sx` prop                                |
 
 Every API difference from the MUI version is recorded in `MIGRATION.md`.
 

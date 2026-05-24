@@ -4,8 +4,12 @@ Koduh AI's design system, rebuilt from scratch without Material UI. Dark-first
 theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
 set of accessible primitives and icons.
 
-> **Status:** v1.0 shipped; Phases 5 (Tier 1), 6 (overlays), and 7 (floating)
-> landed. The original 12 components (`Button`, `LoadingButton`, `Chip`,
+> **Status:** v2.0 — 32 components shipped through Phases 1–9 (`Textarea`,
+> `Progress`, `Pagination`, `Table`, and the `DataTable` orchestrator round out
+> the data/forms phases). v2 is a small breaking release harmonizing the overlay
+> open/close API (`onClose` → `onOpenChange`; see [`MIGRATION.md`](./MIGRATION.md));
+> the rest is additive (aligned `tone` vocabulary, status text tokens, `Select`
+> `clearable`, an expanded icon set). The original 12 components (`Button`, `LoadingButton`, `Chip`,
 > `Avatar`, `StatusBadge`, `Alert`, `TextField`, `Card`, `EmptyState`,
 > `PageHeader`, `AppBar`, `Sidebar`) are joined by the Phase 5 set (`Checkbox`,
 > `Radio`/`RadioGroup`, `Switch`, `Spinner`, `Skeleton`, `Divider`, `Accordion`,

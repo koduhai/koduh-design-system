@@ -17,6 +17,14 @@
   --chip-main: var(--ku-color-bg-raised);
   --chip-contrast: var(--ku-color-text-primary);
 }
+.root[data-tone='success'] {
+  --chip-main: var(--ku-color-success);
+  --chip-contrast: var(--ku-color-bg-default);
+}
+.root[data-tone='warning'] {
+  --chip-main: var(--ku-color-warning);
+  --chip-contrast: var(--ku-color-bg-default);
+}
 .root[data-tone='danger'] {
   --chip-main: var(--ku-color-danger);
   --chip-contrast: var(--ku-color-bg-default);

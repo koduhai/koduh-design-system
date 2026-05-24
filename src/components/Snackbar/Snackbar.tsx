@@ -11,12 +11,15 @@ export type SnackbarPlacement = 'bottom-center' | 'bottom-left' | 'bottom-right'
 export interface SnackbarProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role'> {
   /** Controls visibility. */
   open: boolean;
-  /** Called when the snackbar requests to close (close button or auto-hide). */
-  onClose: () => void;
+  /**
+   * Called with `false` when the snackbar requests to close (close button,
+   * auto-hide, or Esc). Named to match Popover/Dialog for a consistent API.
+   */
+  onOpenChange: (open: boolean) => void;
   /** Semantic severity. Drives color, icon, and ARIA role. Defaults to 'info'. */
   severity?: SnackbarSeverity;
   /** The message content. */
-  message: ReactNode;
+  children: ReactNode;
   /** Optional action element, e.g. an "Undo" button. */
   action?: ReactNode;
   /** Auto-dismiss after N ms. 0/undefined disables auto-hide. */
@@ -35,9 +38,9 @@ const severityIcons: Record<SnackbarSeverity, ReactNode> = {
 export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps>(function Snackbar(
   {
     open,
-    onClose,
+    onOpenChange,
     severity = 'info',
-    message,
+    children,
     action,
     autoHideDuration,
     placement = 'bottom-center',
@@ -50,15 +53,15 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
   const innerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Keep the latest onClose in a ref so the auto-hide timer doesn't restart on
-  // every parent re-render. onClose is almost always an inline arrow, so making
-  // the timer effect depend on it would clear+restart the timeout each render —
-  // and if the parent re-renders within each autoHideDuration window, the
-  // snackbar would never auto-dismiss.
-  const onCloseRef = useRef(onClose);
+  // Keep the latest onOpenChange in a ref so the auto-hide timer doesn't restart
+  // on every parent re-render. onOpenChange is almost always an inline arrow, so
+  // making the timer effect depend on it would clear+restart the timeout each
+  // render — and if the parent re-renders within each autoHideDuration window,
+  // the snackbar would never auto-dismiss.
+  const onCloseRef = useRef(onOpenChange);
   useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
+    onCloseRef.current = onOpenChange;
+  }, [onOpenChange]);
 
   // Sync `open` to the native Popover API (top-layer). The `popover` attribute
   // is applied imperatively only where the API is supported, so that in
@@ -107,7 +110,7 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
     clearTimer();
     if (open && autoHideDuration && autoHideDuration > 0) {
       timerRef.current = setTimeout(() => {
-        onCloseRef.current();
+        onCloseRef.current(false);
       }, autoHideDuration);
     }
   }, [open, autoHideDuration, clearTimer]);
@@ -124,7 +127,7 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
     (event: KeyboardEvent<HTMLDivElement>) => {
       onKeyDown?.(event);
       if (event.key === 'Escape') {
-        onCloseRef.current();
+        onCloseRef.current(false);
       }
     },
     [onKeyDown],
@@ -149,9 +152,14 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
       <span className={styles.icon} aria-hidden>
         {severityIcons[severity]}
       </span>
-      <div className={styles.message}>{message}</div>
+      <div className={styles.message}>{children}</div>
       {action ? <div className={styles.action}>{action}</div> : null}
-      <button type="button" className={styles.close} aria-label="Close" onClick={onClose}>
+      <button
+        type="button"
+        className={styles.close}
+        aria-label="Close"
+        onClick={() => onOpenChange(false)}
+      >
         <CloseIcon size={18} />
       </button>
     </div>

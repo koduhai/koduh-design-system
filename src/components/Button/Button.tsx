@@ -5,7 +5,7 @@ import { cx } from '../../utils/cx';
 import styles from './Button.module.css';
 
 export type ButtonVariant = 'solid' | 'outline' | 'ghost';
-export type ButtonTone = 'primary' | 'neutral' | 'danger';
+export type ButtonTone = 'primary' | 'neutral' | 'success' | 'warning' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

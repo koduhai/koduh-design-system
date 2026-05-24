@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsup';
+import { copyFileSync, existsSync } from 'node:fs';
 
 /**
  * loader: { '.css': 'local-css' } applies to ALL CSS files processed by
@@ -19,4 +20,12 @@ export default defineConfig({
   treeshake: true,
   external: ['react', 'react-dom', 'react/jsx-runtime'],
   loader: { '.css': 'local-css' },
+  // The bundled CSS lands at dist/index.css (named after the index entry), but
+  // the public import specifier is `@koduhai/design-system/styles.css`. Emit a
+  // matching dist/styles.css so the on-disk filename matches the specifier.
+  async onSuccess() {
+    if (existsSync('dist/index.css')) {
+      copyFileSync('dist/index.css', 'dist/styles.css');
+    }
+  },
 });

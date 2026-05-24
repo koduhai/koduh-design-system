@@ -24,6 +24,8 @@ export const Showcase: Story = {
         Ghost
       </Button>
       <Button tone="neutral">Neutral</Button>
+      <Button tone="success">Success</Button>
+      <Button tone="warning">Warning</Button>
       <Button tone="danger">Danger</Button>
       <Button size="sm">Small</Button>
       <Button size="lg">Large</Button>

@@ -43,11 +43,21 @@ src/icons/
 
 ### Current set
 
-`CloseIcon`, `ChevronDownIcon`, `CheckIcon`, `InfoIcon`, `WarningIcon`,
-`ErrorIcon`, `MenuIcon`, `SearchIcon`, `UserIcon`.
+UI/component icons:
+`CloseIcon`, `ChevronDownIcon`, `ChevronUpIcon`, `ChevronLeftIcon`,
+`ChevronRightIcon`, `CheckIcon`, `InfoIcon`, `WarningIcon`, `ErrorIcon`,
+`MenuIcon`, `SearchIcon`, `UserIcon`.
+
+App-nav icons (for building a typical app shell — sidebar/topbar — without
+hand-rolling inline SVG):
+`HomeIcon`, `DashboardIcon`, `ListIcon`, `ActivityIcon`, `ChartIcon`,
+`BotIcon`, `SettingsIcon`, `BellIcon`, `PlusIcon`, `MoreVerticalIcon`,
+`LogOutIcon`.
 
 All export with the `{Name}Icon` suffix so they never collide with component or
-local variable names.
+local variable names. The set is intentionally small — anything beyond it is a
+one-liner with [`createIcon`](#the-createicon-factory) (see the
+`createIcon (extend the set)` story under **Foundations/Icons**).
 
 ---
 

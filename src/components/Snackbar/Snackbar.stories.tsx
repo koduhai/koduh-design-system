@@ -12,13 +12,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { open: true, onClose: () => {}, message: 'Changes saved', severity: 'success' },
+  args: { open: true, onOpenChange: () => {}, severity: 'success', children: 'Changes saved' },
   render: function DefaultStory(args) {
     const [open, setOpen] = useState(true);
     return (
       <div style={{ minHeight: 160 }}>
         <Button onClick={() => setOpen(true)}>Show snackbar</Button>
-        <Snackbar {...args} open={open} onClose={() => setOpen(false)} />
+        <Snackbar {...args} open={open} onOpenChange={() => setOpen(false)} />
       </div>
     );
   },
@@ -28,7 +28,7 @@ export const Default: Story = {
 // axe/visual capture them. Inline positioning overrides the fixed placement so
 // all four are visible simultaneously in the story canvas.
 export const Showcase: Story = {
-  args: { open: true, onClose: () => {}, message: 'Message' },
+  args: { open: true, onOpenChange: () => {}, children: 'Message' },
   parameters: { layout: 'fullscreen' },
   render: () => (
     <div
@@ -44,9 +44,8 @@ export const Showcase: Story = {
         <Snackbar
           key={severity}
           open
-          onClose={() => {}}
+          onOpenChange={() => {}}
           severity={severity}
-          message={`This is a ${severity} message.`}
           action={
             severity === 'error' ? (
               <Button size="sm" variant="ghost" tone="neutral">
@@ -55,7 +54,9 @@ export const Showcase: Story = {
             ) : undefined
           }
           style={{ position: 'static', transform: 'none', maxWidth: 'none' }}
-        />
+        >
+          {`This is a ${severity} message.`}
+        </Snackbar>
       ))}
     </div>
   ),

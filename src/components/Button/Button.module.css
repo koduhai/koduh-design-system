@@ -30,6 +30,14 @@
   --btn-main: var(--ku-color-text-primary);
   --btn-contrast: var(--ku-color-bg-default);
 }
+.root[data-tone='success'] {
+  --btn-main: var(--ku-color-success);
+  --btn-contrast: var(--ku-color-bg-default);
+}
+.root[data-tone='warning'] {
+  --btn-main: var(--ku-color-warning);
+  --btn-contrast: var(--ku-color-bg-default);
+}
 .root[data-tone='danger'] {
   --btn-main: var(--ku-color-danger);
   --btn-contrast: var(--ku-color-bg-default);

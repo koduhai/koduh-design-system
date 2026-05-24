@@ -1,0 +1,142 @@
+.root {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--ku-font-family-base);
+}
+
+.root[data-orientation='horizontal'] {
+  flex-direction: row;
+  align-items: flex-start;
+}
+.root[data-orientation='vertical'] {
+  flex-direction: column;
+}
+
+/* Each step is a flex container so the connector can stretch alongside it. */
+.step {
+  display: flex;
+  position: relative;
+  min-width: 0;
+}
+.root[data-orientation='horizontal'] .step {
+  flex: 1 1 0;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.root[data-orientation='vertical'] .step {
+  flex-direction: column;
+}
+
+/* The clickable / static wrapper holding the indicator + text. */
+.trigger,
+.content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ku-space-3);
+  min-width: 0;
+}
+.trigger {
+  appearance: none;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: var(--ku-space-1);
+  margin-inline: calc(var(--ku-space-1) * -1);
+  margin-block-start: calc(var(--ku-space-1) * -1);
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  border-radius: var(--ku-radius-md);
+}
+.content {
+  padding-block-start: 0;
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+.trigger:hover .label {
+  color: var(--ku-color-primary);
+}
+
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  inline-size: var(--ku-space-8);
+  block-size: var(--ku-space-8);
+  border-radius: var(--ku-radius-full);
+  border: 2px solid var(--ku-color-border);
+  background-color: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-semibold);
+  line-height: 1;
+}
+.number {
+  display: inline-flex;
+}
+
+.step[data-state='complete'] .indicator {
+  border-color: var(--ku-color-primary);
+  background-color: var(--ku-color-primary);
+  color: var(--ku-color-primary-contrast);
+}
+.step[data-state='active'] .indicator {
+  border-color: var(--ku-color-primary);
+  color: var(--ku-color-primary);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+  min-width: 0;
+  padding-block-start: var(--ku-space-1);
+}
+.label {
+  font-size: var(--ku-font-size-md);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-secondary);
+  transition: color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+.description {
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+}
+
+.step[data-state='complete'] .label,
+.step[data-state='active'] .label {
+  color: var(--ku-color-text-primary);
+}
+.step[data-state='upcoming'] .label,
+.step[data-state='upcoming'] .description {
+  color: var(--ku-color-text-disabled);
+}
+
+/* Connector line between steps. Uses logical properties so it mirrors in RTL. */
+.connector {
+  flex: 1 1 auto;
+  align-self: center;
+  background-color: var(--ku-color-border);
+}
+.root[data-orientation='horizontal'] .connector {
+  block-size: 2px;
+  margin-inline: var(--ku-space-2);
+  margin-block-start: var(--ku-space-4);
+}
+.root[data-orientation='vertical'] .connector {
+  inline-size: 2px;
+  min-block-size: var(--ku-space-6);
+  /* Align under the centre of the indicator (logical inline-start side). */
+  margin-inline-start: var(--ku-space-4);
+  margin-block: var(--ku-space-1);
+}
+
+.step[data-state='complete'] .connector {
+  background-color: var(--ku-color-primary);
+}

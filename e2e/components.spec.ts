@@ -67,6 +67,11 @@ const COMPONENTS = [
   { name: 'Combobox', storyId: 'components-combobox--showcase' },
   { name: 'Box', storyId: 'components-box--showcase' },
   { name: 'DescriptionList', storyId: 'components-descriptionlist--showcase' },
+  // issue #12
+  { name: 'AvatarGroup', storyId: 'components-avatargroup--showcase' },
+  { name: 'Stat', storyId: 'components-stat--showcase' },
+  { name: 'ToggleGroup', storyId: 'components-togglegroup--showcase' },
+  { name: 'Drawer', storyId: 'components-drawer--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

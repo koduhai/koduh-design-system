@@ -178,3 +178,18 @@ export { TagInput } from './components/TagInput';
 export type { TagInputProps, TagInputSize } from './components/TagInput';
 export { Combobox } from './components/Combobox';
 export type { ComboboxProps, ComboboxOption, ComboboxSize } from './components/Combobox';
+
+// issue #12 — AvatarGroup, Stat, ToggleGroup, Drawer
+export { AvatarGroup } from './components/AvatarGroup';
+export type { AvatarGroupProps } from './components/AvatarGroup';
+export { Stat } from './components/Stat';
+export type { StatProps, StatTrend } from './components/Stat';
+export { ToggleGroup } from './components/ToggleGroup';
+export type {
+  ToggleGroupProps,
+  ToggleGroupItem,
+  ToggleGroupSize,
+  ToggleGroupTone,
+} from './components/ToggleGroup';
+export { Drawer } from './components/Drawer';
+export type { DrawerProps, DrawerSide, DrawerSize } from './components/Drawer';

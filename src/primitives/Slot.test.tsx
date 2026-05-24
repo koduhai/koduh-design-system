@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -29,6 +30,24 @@ describe('Slot', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Go' }));
     expect(childClick).toHaveBeenCalledTimes(1);
     expect(slotClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves the child's own ref alongside the Slot's forwarded ref", () => {
+    const slotRef = createRef<HTMLAnchorElement>();
+    const childRef = createRef<HTMLAnchorElement>();
+    render(
+      <Slot ref={slotRef}>
+        <a ref={childRef} href="/contact">
+          Contact
+        </a>
+      </Slot>,
+    );
+    const link = screen.getByRole('link', { name: 'Contact' });
+    // Both refs must point at the same underlying DOM node — the child's own
+    // ref must not be silently dropped (React 19 moved `ref` to `child.props.ref`).
+    expect(childRef.current).toBe(link);
+    expect(slotRef.current).toBe(link);
+    expect(childRef.current).toBe(slotRef.current);
   });
 
   it('renders nothing when child is not a valid element', () => {

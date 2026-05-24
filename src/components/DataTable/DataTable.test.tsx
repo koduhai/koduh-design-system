@@ -247,6 +247,94 @@ test('controlled sort: clicking a header fires onSortChange and respects the con
   expect(within(firstRow).getByText('20')).toBeInTheDocument();
 });
 
+test('controlled page settles on the clamped page when a filter shrinks results', async () => {
+  const user = userEvent.setup();
+  const onPageChange = vi.fn();
+  function Controlled() {
+    const [page, setPage] = useState(2); // start on page 2 (12 rows / size 10 = 2 pages)
+    return (
+      <DataTable
+        columns={[
+          { key: 'name', header: 'Name', filter: 'text' },
+          { key: 'age', header: 'Age', type: 'number' },
+        ]}
+        data={data}
+        getRowId={(r) => r.id}
+        page={page}
+        onPageChange={(p) => {
+          onPageChange(p);
+          setPage(p);
+        }}
+      />
+    );
+  }
+  render(<Controlled />);
+  // On page 2 we see User 11/12.
+  expect(screen.getByText('User 11')).toBeInTheDocument();
+  // Typing a filter that matches a single row collapses results to 1 page.
+  // handleFilterChange already resets to page 1; even if it didn't, the
+  // reconciliation effect must converge the controlled parent onto the clamp.
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'User 5');
+  // onPageChange fired with the clamped page (1) and the view shows the match.
+  expect(onPageChange).toHaveBeenCalledWith(1);
+  expect(screen.getByText('User 5')).toBeInTheDocument();
+  expect(screen.getByText('1–1 of 1')).toBeInTheDocument();
+});
+
+test('controlled page reconciles via effect when data shrinks (no filter reset path)', async () => {
+  const user = userEvent.setup();
+  const onPageChange = vi.fn();
+  function Controlled() {
+    const [rows, setRows] = useState(data); // 12 rows → 2 pages at size 10
+    const [page, setPage] = useState(2);
+    return (
+      <>
+        <button type="button" onClick={() => setRows(data.slice(0, 3))}>
+          shrink
+        </button>
+        <DataTable
+          columns={columns}
+          data={rows}
+          getRowId={(r) => r.id}
+          page={page}
+          onPageChange={(p) => {
+            onPageChange(p);
+            setPage(p);
+          }}
+        />
+      </>
+    );
+  }
+  render(<Controlled />);
+  expect(screen.getByText('User 11')).toBeInTheDocument(); // on page 2
+  // Shrinking data to 3 rows leaves only 1 page. There is NO setPage(1) call on
+  // this path — only the reconciliation effect can converge the controlled page.
+  await user.click(screen.getByRole('button', { name: 'shrink' }));
+  expect(onPageChange).toHaveBeenCalledWith(1);
+  expect(screen.getByText('1–3 of 3')).toBeInTheDocument();
+  expect(screen.getByText('User 1')).toBeInTheDocument();
+});
+
+test('uncontrolled high page is clamped and settles without onPageChange errors', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', filter: 'text' },
+        { key: 'age', header: 'Age', type: 'number' },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+    />,
+  );
+  await user.click(screen.getByRole('button', { name: 'Go to page 2' }));
+  expect(screen.getByText('User 11')).toBeInTheDocument();
+  // Filter down to a single row while on page 2.
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'User 5');
+  expect(screen.getByText('User 5')).toBeInTheDocument();
+  expect(screen.getByText('1–1 of 1')).toBeInTheDocument();
+});
+
 test('filter, sort, and pagination compose together', async () => {
   const user = userEvent.setup();
   render(

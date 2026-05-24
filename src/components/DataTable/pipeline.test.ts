@@ -225,6 +225,108 @@ test('single-sort click on a new column replaces the rules', () => {
   ]);
 });
 
+// ─── Null / missing-value sorting (Fix 1) ─────────────────────────────────────
+
+interface NullableRow {
+  id: string;
+  name: string | null | undefined;
+  age: number | null;
+  joined: string | null;
+}
+
+test('number sort places null/undefined/NaN last for asc AND desc, reals ordered', () => {
+  const rows: NullableRow[] = [
+    { id: 'a', name: 'a', age: 30, joined: null },
+    { id: 'b', name: 'b', age: null, joined: null },
+    { id: 'c', name: 'c', age: 10, joined: null },
+    { id: 'd', name: 'd', age: NaN, joined: null }, // non-numeric / NaN
+  ];
+  const cols: DataColumn<NullableRow>[] = [{ key: 'age', header: 'Age', type: 'number' }];
+
+  const asc = applySort(rows, [{ key: 'age', dir: 'asc' }], cols);
+  // reals ascending (10, 30) first, then the two missing — in stable input order (b before d)
+  expect(asc.map((r) => r.id)).toEqual(['c', 'a', 'b', 'd']);
+
+  const desc = applySort(rows, [{ key: 'age', dir: 'desc' }], cols);
+  // reals descending (30, 10) first, nulls STILL last (not flipped to front)
+  expect(desc.map((r) => r.id)).toEqual(['a', 'c', 'b', 'd']);
+});
+
+test('text sort places null/undefined/empty-string last, not as the words "null"/"undefined"', () => {
+  const rows: NullableRow[] = [
+    { id: 'a', name: 'banana', age: 0, joined: null },
+    { id: 'b', name: null, age: 0, joined: null },
+    { id: 'c', name: 'apple', age: 0, joined: null },
+    { id: 'd', name: '', age: 0, joined: null }, // empty/whitespace counts as missing
+    { id: 'e', name: undefined, age: 0, joined: null },
+  ];
+  const cols: DataColumn<NullableRow>[] = [{ key: 'name', header: 'Name', type: 'text' }];
+
+  const asc = applySort(rows, [{ key: 'name', dir: 'asc' }], cols);
+  // apple, banana, then the three missing in stable order (b, d, e)
+  expect(asc.map((r) => r.id)).toEqual(['c', 'a', 'b', 'd', 'e']);
+
+  const desc = applySort(rows, [{ key: 'name', dir: 'desc' }], cols);
+  // banana, apple, then missing STILL last
+  expect(desc.map((r) => r.id)).toEqual(['a', 'c', 'b', 'd', 'e']);
+});
+
+test('date sort places null and invalid dates last for asc AND desc', () => {
+  const rows: NullableRow[] = [
+    { id: 'a', name: 'a', age: 0, joined: '2021-06-01' },
+    { id: 'b', name: 'b', age: 0, joined: null },
+    { id: 'c', name: 'c', age: 0, joined: '2020-01-15' },
+    { id: 'd', name: 'd', age: 0, joined: 'not-a-date' }, // invalid → NaN time
+  ];
+  const cols: DataColumn<NullableRow>[] = [{ key: 'joined', header: 'Joined', type: 'date' }];
+
+  const asc = applySort(rows, [{ key: 'joined', dir: 'asc' }], cols);
+  expect(asc.map((r) => r.id)).toEqual(['c', 'a', 'b', 'd']);
+
+  const desc = applySort(rows, [{ key: 'joined', dir: 'desc' }], cols);
+  expect(desc.map((r) => r.id)).toEqual(['a', 'c', 'b', 'd']);
+});
+
+test('mixed missing-with-real values keep real values correctly ordered and stable', () => {
+  const rows: NullableRow[] = [
+    { id: '1', name: 'x', age: 5, joined: null },
+    { id: '2', name: 'y', age: null, joined: null },
+    { id: '3', name: 'z', age: 5, joined: null }, // tie with id 1 on age
+    { id: '4', name: 'w', age: 1, joined: null },
+  ];
+  const cols: DataColumn<NullableRow>[] = [{ key: 'age', header: 'Age', type: 'number' }];
+  const asc = applySort(rows, [{ key: 'age', dir: 'asc' }], cols);
+  // 1 → 4(age1), 1(age5), 3(age5 stable after 1), then 2(null) last
+  expect(asc.map((r) => r.id)).toEqual(['4', '1', '3', '2']);
+});
+
+// ─── Inclusive date-range upper bound (Fix 2) ─────────────────────────────────
+
+test('date-range `to` bound is inclusive of same-day datetime rows', () => {
+  interface DTRow {
+    id: string;
+    at: string;
+  }
+  const dtData: DTRow[] = [
+    { id: '1', at: '2020-12-31T15:30:00Z' }, // same day as `to`, but after midnight
+    { id: '2', at: '2020-12-30T00:00:00Z' },
+    { id: '3', at: '2021-01-01T00:00:00Z' }, // next day, must be excluded
+  ];
+  const dtCols: DataColumn<DTRow>[] = [
+    { key: 'at', header: 'At', type: 'date', filter: 'date-range' },
+  ];
+  // Before the fix, row 1 (midday on the `to` date) was wrongly excluded.
+  expect(applyColumnFilters(dtData, { at: { to: '2020-12-31' } }, dtCols).map((r) => r.id)).toEqual(
+    ['1', '2'],
+  );
+});
+
+test('date-range `from` lower bound semantics are unchanged (start-of-day inclusive)', () => {
+  expect(
+    applyColumnFilters(data, { joined: { from: '2021-06-01' } }, columns).map((r) => r.id),
+  ).toEqual(['1', '3']); // 2021-06-01 itself included, 2022-03-30 included, 2020-01-15 excluded
+});
+
 test('shift-click appends, toggles, then removes a rule without touching others', () => {
   const a = cycleSort([{ key: 'age', dir: 'asc' }], 'name', true);
   expect(a).toEqual([

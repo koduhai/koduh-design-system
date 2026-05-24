@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useEffect, useRef } from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { InfoIcon, CheckIcon, WarningIcon, ErrorIcon, CloseIcon } from '../../icons';
 import { mergeRefs } from '../../primitives';
 import { cx } from '../../utils/cx';
@@ -42,12 +42,23 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
     autoHideDuration,
     placement = 'bottom-center',
     className,
+    onKeyDown,
     ...props
   },
   ref,
 ) {
   const innerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Keep the latest onClose in a ref so the auto-hide timer doesn't restart on
+  // every parent re-render. onClose is almost always an inline arrow, so making
+  // the timer effect depend on it would clear+restart the timeout each render —
+  // and if the parent re-renders within each autoHideDuration window, the
+  // snackbar would never auto-dismiss.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   // Sync `open` to the native Popover API (top-layer). The `popover` attribute
   // is applied imperatively only where the API is supported, so that in
@@ -96,10 +107,10 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
     clearTimer();
     if (open && autoHideDuration && autoHideDuration > 0) {
       timerRef.current = setTimeout(() => {
-        onClose();
+        onCloseRef.current();
       }, autoHideDuration);
     }
-  }, [open, autoHideDuration, onClose, clearTimer]);
+  }, [open, autoHideDuration, clearTimer]);
 
   // Auto-hide: start the timer when open with a positive duration; clear on
   // close/unmount.
@@ -107,6 +118,17 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
     startTimer();
     return clearTimer;
   }, [startTimer, clearTimer]);
+
+  // Escape dismisses the snackbar when focus is within it.
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDown?.(event);
+      if (event.key === 'Escape') {
+        onCloseRef.current();
+      }
+    },
+    [onKeyDown],
+  );
 
   return (
     <div
@@ -121,6 +143,7 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
       onMouseLeave={startTimer}
       onFocus={clearTimer}
       onBlur={startTimer}
+      onKeyDown={handleKeyDown}
       {...props}
     >
       <span className={styles.icon} aria-hidden>

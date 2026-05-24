@@ -2,7 +2,20 @@ import type { ReactNode } from 'react';
 
 export type ToastSeverity = 'info' | 'success' | 'warning' | 'error';
 
+export type ToastPlacement =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right';
+
 export interface ToastOptions {
+  /**
+   * Caller-supplied stable id. Re-using the same id upserts the existing toast
+   * (update in place) instead of stacking a new one. Omit for an auto id.
+   */
+  id?: string;
   /** Drives color, icon, and ARIA politeness. Defaults to 'info'. */
   severity?: ToastSeverity;
   title?: ReactNode;
@@ -11,6 +24,11 @@ export interface ToastOptions {
   duration?: number;
   /** Optional action element (e.g. an Undo button). */
   action?: ReactNode;
+  /**
+   * Pin this toast to a specific `<Toaster>` placement. When omitted, the toast
+   * renders in any mounted Toaster (backward compatible).
+   */
+  placement?: ToastPlacement;
 }
 
 export interface ToastRecord extends ToastOptions {
@@ -37,8 +55,14 @@ export function getSnapshot(): ToastRecord[] {
 }
 
 export function addToast(options: ToastOptions): string {
-  const id = `toast-${++counter}`;
-  toasts = [...toasts, { ...options, id, severity: options.severity ?? 'info' }];
+  const id = options.id ?? `toast-${++counter}`;
+  if (toasts.some((t) => t.id === id)) {
+    toasts = toasts.map((t) =>
+      t.id === id ? { ...t, ...options, id, severity: options.severity ?? t.severity } : t,
+    );
+  } else {
+    toasts = [...toasts, { ...options, id, severity: options.severity ?? 'info' }];
+  }
   emit();
   return id;
 }

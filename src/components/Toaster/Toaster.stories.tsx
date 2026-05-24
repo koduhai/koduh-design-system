@@ -96,3 +96,75 @@ export const Playground: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => <PlaygroundDemo />,
 };
+
+// Drives a single toast through a promise's lifecycle: loading → success/error.
+// Note: `const { toast } = useToast()` collides with the `toast` you may have
+// imported from elsewhere (or a local variable named `toast`). If that bites
+// you, alias the destructure — `const { toast: showToast } = useToast()` — and
+// call `showToast.promise(...)`.
+function PromiseDemo() {
+  const { toast } = useToast();
+  useEffect(() => {
+    __resetToasts();
+    return () => {
+      __resetToasts();
+    };
+  }, []);
+  const run = (ok: boolean) =>
+    toast.promise(
+      // `globalThis.Promise` because this story is named `Promise`, which shadows
+      // the global constructor inside this module.
+      new globalThis.Promise<string>((resolve, reject) =>
+        setTimeout(() => (ok ? resolve('report.pdf') : reject(new Error('network'))), 1500),
+      ),
+      {
+        loading: 'Uploading…',
+        success: (name) => `Uploaded ${name}`,
+        error: (err) => `Upload failed: ${(err as Error).message}`,
+      },
+    );
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, padding: 24 }}>
+      <Button onClick={() => run(true)}>Upload (resolves)</Button>
+      <Button tone="danger" onClick={() => run(false)}>
+        Upload (rejects)
+      </Button>
+      <Toaster placement="bottom-right" />
+    </div>
+  );
+}
+
+export const Promise: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => <PromiseDemo />,
+};
+
+// Re-using the same caller-supplied `id` upserts the existing toast in place
+// instead of stacking a new one — handy for progress/status that updates.
+function DedupeByIdDemo() {
+  const { toast } = useToast();
+  useEffect(() => {
+    __resetToasts();
+    return () => {
+      __resetToasts();
+    };
+  }, []);
+  const save = () => {
+    toast({ id: 'save', description: 'Saving…' });
+    setTimeout(
+      () => toast({ id: 'save', severity: 'success', description: 'Saved', duration: 2000 }),
+      1200,
+    );
+  };
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, padding: 24 }}>
+      <Button onClick={save}>Save (upserts one toast)</Button>
+      <Toaster placement="bottom-right" />
+    </div>
+  );
+}
+
+export const DedupeById: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => <DedupeByIdDemo />,
+};

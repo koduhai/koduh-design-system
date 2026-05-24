@@ -4,13 +4,8 @@ import { subscribe, getSnapshot, dismissToast } from './store';
 import { ToastItem } from './ToastItem';
 import styles from './Toaster.module.css';
 
-export type ToasterPlacement =
-  | 'top-left'
-  | 'top-center'
-  | 'top-right'
-  | 'bottom-left'
-  | 'bottom-center'
-  | 'bottom-right';
+export type { ToastPlacement as ToasterPlacement } from './store';
+import type { ToastPlacement as ToasterPlacement } from './store';
 
 export interface ToasterProps {
   /** Where the stack anchors. Defaults to 'bottom-right'. */
@@ -22,10 +17,13 @@ export interface ToasterProps {
 }
 
 export function Toaster({ placement = 'bottom-right', max = 3, gap = 3 }: ToasterProps) {
-  const toasts = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-  if (toasts.length === 0) return null;
+  const all = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  // An unplaced toast renders in any Toaster (backward compatible); a placed one
+  // only renders in the matching Toaster.
+  const mine = all.filter((t) => t.placement == null || t.placement === placement);
+  if (mine.length === 0) return null;
   // Top placements show newest at top; bottom placements show newest at bottom.
-  const visible = toasts.slice(0, max);
+  const visible = mine.slice(0, max);
   const ordered = placement.startsWith('top') ? [...visible].reverse() : visible;
   return (
     <div

@@ -48,3 +48,11 @@
   opacity: 0.5;
   pointer-events: none;
 }
+.description {
+  margin: 0;
+  font-size: var(--ku-font-size-xs);
+  color: var(--ku-color-text-secondary);
+}
+.root[data-error='true'] .description {
+  color: var(--ku-color-danger);
+}

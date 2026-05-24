@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TextField } from './TextField';
+import { FormField } from '../FormField';
 
 describe('TextField', () => {
   it('associates the label with the input via htmlFor/id', () => {
@@ -73,5 +74,27 @@ describe('TextField', () => {
     const ref = { current: null as HTMLInputElement | null };
     render(<TextField label="X" ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+
+  it('inside FormField: no own label, htmlFor targets the input, aria from context', () => {
+    render(
+      <FormField label="Email" required error errorText="Bad" id="email">
+        <TextField />
+      </FormField>,
+    );
+    // Exactly one label, associated with the input.
+    const input = screen.getByLabelText(/Email/);
+    expect(input.id).toBe('email');
+    expect(input).toBeRequired();
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('aria-describedby', screen.getByText('Bad').id);
+    // The control did not render a second "Email" label.
+    expect(screen.getAllByText('Email')).toHaveLength(1);
+  });
+
+  it('standalone: unchanged — renders its own label and required', () => {
+    render(<TextField label="Name" required />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Name/)).toBeRequired();
   });
 });

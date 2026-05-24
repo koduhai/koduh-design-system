@@ -2,6 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Combobox } from './Combobox';
+import { FormField } from '../FormField';
+
+const opts = [
+  { value: 'us', label: 'United States' },
+  { value: 'uk', label: 'United Kingdom' },
+];
 
 const options = [
   { value: 'us', label: 'United States' },
@@ -51,5 +57,35 @@ describe('Combobox', () => {
     const input = screen.getByRole('combobox', { name: /Country/ });
     expect(input).toBeRequired();
     expect(input).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('inside FormField: combobox input id + aria from context, single label', () => {
+    render(
+      <FormField label="Country" required error errorText="Required" id="cty">
+        <Combobox options={opts} />
+      </FormField>,
+    );
+    const input = screen.getByRole('combobox');
+    expect(input.id).toBe('cty');
+    expect(input).toBeRequired();
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getAllByText('Country')).toHaveLength(1);
+  });
+
+  it('forwards onBlur/name to the input (open interface)', async () => {
+    const onBlur = vi.fn();
+    render(<Combobox label="C" options={opts} name="country" onBlur={onBlur} />);
+    const input = screen.getByRole('combobox');
+    expect(input).toHaveAttribute('name', 'country');
+    input.focus();
+    input.blur();
+    expect(onBlur).toHaveBeenCalled();
+  });
+
+  it('clearable: shows a clear button that resets the value', async () => {
+    const onChange = vi.fn();
+    render(<Combobox label="C" options={opts} clearable defaultValue="us" onChange={onChange} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
+    expect(onChange).toHaveBeenLastCalledWith('', expect.anything());
   });
 });

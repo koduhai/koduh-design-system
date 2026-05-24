@@ -18,9 +18,9 @@ describe('Slider', () => {
     const slider = screen.getByRole('slider');
     slider.focus();
     await userEvent.keyboard('{ArrowRight}');
-    expect(onChange).toHaveBeenLastCalledWith(1);
+    expect(onChange).toHaveBeenLastCalledWith(1, expect.anything());
     await userEvent.keyboard('{ArrowLeft}{ArrowLeft}'); // clamps at 0
-    expect(onChange).toHaveBeenLastCalledWith(0);
+    expect(onChange).toHaveBeenLastCalledWith(0, expect.anything());
   });
 
   it('Home/End jump to min/max', async () => {
@@ -28,13 +28,36 @@ describe('Slider', () => {
     render(<Slider label="V" defaultValue={5} min={0} max={10} onChange={onChange} />);
     screen.getByRole('slider').focus();
     await userEvent.keyboard('{End}');
-    expect(onChange).toHaveBeenLastCalledWith(10);
+    expect(onChange).toHaveBeenLastCalledWith(10, expect.anything());
     await userEvent.keyboard('{Home}');
-    expect(onChange).toHaveBeenLastCalledWith(0);
+    expect(onChange).toHaveBeenLastCalledWith(0, expect.anything());
   });
 
   it('uses aria-valuetext from formatValue', () => {
     render(<Slider label="V" defaultValue={50} formatValue={(v) => `${v}%`} />);
     expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '50%');
+  });
+
+  it('onChange receives (value, event?) on keyboard change', async () => {
+    const onChange = vi.fn();
+    render(<Slider label="V" defaultValue={0} min={0} max={5} onChange={onChange} />);
+    screen.getByRole('slider').focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(onChange).toHaveBeenLastCalledWith(1, expect.anything());
+  });
+
+  it('renders error + errorText below the track and marks the thumb invalid', () => {
+    render(<Slider label="V" error errorText="Out of range" />);
+    expect(screen.getByText('Out of range')).toBeInTheDocument();
+    expect(screen.getByRole('slider')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('forwards onBlur to the thumb', () => {
+    const onBlur = vi.fn();
+    render(<Slider label="V" onBlur={onBlur} />);
+    const thumb = screen.getByRole('slider');
+    thumb.focus();
+    thumb.blur();
+    expect(onBlur).toHaveBeenCalled();
   });
 });

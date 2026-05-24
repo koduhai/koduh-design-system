@@ -1,6 +1,7 @@
 import { forwardRef, useLayoutEffect, useRef } from 'react';
 import type { ChangeEvent, ReactNode, TextareaHTMLAttributes } from 'react';
 import { mergeRefs, useId, useControllableState } from '../../primitives';
+import { useOptionalFieldContext } from '../FormField';
 import { cx } from '../../utils/cx';
 import styles from './Textarea.module.css';
 
@@ -10,8 +11,11 @@ export interface TextareaProps extends Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
   'size' | 'value' | 'defaultValue' | 'onChange'
 > {
-  /** Visible label, associated with the textarea via htmlFor/id. */
-  label: ReactNode;
+  /**
+   * Visible label, associated with the textarea via htmlFor/id.
+   * Provide `label`, or wrap the control in a `<FormField>` which supplies it.
+   */
+  label?: ReactNode;
   /** Controlled value. */
   value?: string;
   /** Initial value when uncontrolled. */
@@ -57,8 +61,13 @@ export const Textarea = /* @__PURE__ */ forwardRef<HTMLTextAreaElement, Textarea
     ref,
   ) {
     const reactId = useId('textarea');
-    const id = idProp ?? reactId;
+    const field = useOptionalFieldContext();
+    // When inside a <FormField>, defer label/required/aria to it; otherwise use own props.
+    const id = field?.id ?? idProp ?? reactId;
     const descriptionId = `${id}-description`;
+    const invalid = field ? field.invalid : error;
+    const isRequired = field ? field.required : required;
+    const showOwnLabel = !field; // FormField renders the label when present
     const innerRef = useRef<HTMLTextAreaElement>(null);
 
     const [state, setState] = useControllableState<string>({
@@ -68,6 +77,11 @@ export const Textarea = /* @__PURE__ */ forwardRef<HTMLTextAreaElement, Textarea
     });
 
     const description = error ? errorText : helperText;
+    const describedBy = field
+      ? field.describedById
+      : description != null
+        ? descriptionId
+        : undefined;
 
     useLayoutEffect(() => {
       const el = innerRef.current;
@@ -92,17 +106,19 @@ export const Textarea = /* @__PURE__ */ forwardRef<HTMLTextAreaElement, Textarea
       <div
         className={cx(styles.root, className)}
         data-size={size}
-        data-error={error ? 'true' : undefined}
+        data-error={invalid ? 'true' : undefined}
       >
-        <label className={styles.label} htmlFor={id}>
-          {label}
-          {required ? (
-            <span className={styles.required} aria-hidden>
-              {' '}
-              *
-            </span>
-          ) : null}
-        </label>
+        {showOwnLabel && label != null ? (
+          <label className={styles.label} htmlFor={id}>
+            {label}
+            {isRequired ? (
+              <span className={styles.required} aria-hidden>
+                {' '}
+                *
+              </span>
+            ) : null}
+          </label>
+        ) : null}
         <textarea
           ref={mergeRefs(innerRef, ref)}
           id={id}
@@ -110,16 +126,16 @@ export const Textarea = /* @__PURE__ */ forwardRef<HTMLTextAreaElement, Textarea
           value={state}
           rows={autoResize ? minRows : rows}
           style={autoResize ? { resize: 'none' } : undefined}
-          required={required}
-          aria-invalid={error || undefined}
-          aria-describedby={description ? descriptionId : undefined}
+          required={isRequired}
+          aria-invalid={invalid || undefined}
+          aria-describedby={describedBy}
           onChange={(event) => {
             setState(event.target.value);
             onChange?.(event.target.value, event);
           }}
           {...props}
         />
-        {description ? (
+        {showOwnLabel && description ? (
           <p id={descriptionId} className={styles.description}>
             {description}
           </p>

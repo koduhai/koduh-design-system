@@ -2,6 +2,7 @@ import { forwardRef, useState } from 'react';
 import type { InputHTMLAttributes, ReactNode, SyntheticEvent } from 'react';
 import { useId } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useOptionalFieldContext } from '../FormField';
 import styles from './NumberField.module.css';
 
 export type NumberFieldSize = 'sm' | 'md' | 'lg';
@@ -10,13 +11,16 @@ export interface NumberFieldProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   'value' | 'defaultValue' | 'onChange' | 'type' | 'size'
 > {
-  /** Visible label, associated with the input via htmlFor/id. */
-  label: ReactNode;
+  /**
+   * Visible label, associated with the input via htmlFor/id. Provide `label`,
+   * or wrap the control in a `<FormField>` which supplies it.
+   */
+  label?: ReactNode;
   /** Controlled value. */
   value?: number;
   /** Initial value when uncontrolled. */
   defaultValue?: number;
-  /** Fires with the parsed value (or null when empty) and the originating event. */
+  /** Fires with the parsed value, or `null` when the field is empty. */
   onChange?: (value: number | null, event?: SyntheticEvent) => void;
   min?: number;
   max?: number;
@@ -62,9 +66,19 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
     ref,
   ) {
     const reactId = useId('numberfield');
-    const id = idProp ?? reactId;
+    const field = useOptionalFieldContext();
+    // When inside a <FormField>, defer label/required/aria to it; otherwise use own props.
+    const id = field?.id ?? idProp ?? reactId;
     const descriptionId = `${id}-description`;
     const description = error ? errorText : helperText;
+    const describedBy = field
+      ? field.describedById
+      : description != null
+        ? descriptionId
+        : undefined;
+    const invalid = field ? field.invalid : error;
+    const isRequired = field ? field.required : required;
+    const showOwnLabel = !field; // FormField renders the label when present
 
     const isControlled = value !== undefined;
     const [text, setText] = useState<string>(defaultValue != null ? String(defaultValue) : '');
@@ -92,17 +106,19 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
       <div
         className={cx(styles.root, className)}
         data-size={size}
-        data-error={error ? 'true' : undefined}
+        data-error={invalid ? 'true' : undefined}
       >
-        <label className={styles.label} htmlFor={id}>
-          {label}
-          {required ? (
-            <span className={styles.required} aria-hidden>
-              {' '}
-              *
-            </span>
-          ) : null}
-        </label>
+        {showOwnLabel && label != null ? (
+          <label className={styles.label} htmlFor={id}>
+            {label}
+            {isRequired ? (
+              <span className={styles.required} aria-hidden>
+                {' '}
+                *
+              </span>
+            ) : null}
+          </label>
+        ) : null}
         <div className={styles.field}>
           <button
             type="button"
@@ -124,10 +140,10 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
             min={min}
             max={max}
             step={step}
-            required={required}
+            required={isRequired}
             disabled={disabled}
-            aria-invalid={error || undefined}
-            aria-describedby={description != null ? descriptionId : undefined}
+            aria-invalid={invalid || undefined}
+            aria-describedby={describedBy}
             onChange={(e) => commit(e.target.value, e)}
             onKeyDown={(e) => {
               if (e.key === 'ArrowUp') {
@@ -151,7 +167,7 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
             +
           </button>
         </div>
-        {description != null ? (
+        {showOwnLabel && description != null ? (
           <p id={descriptionId} className={styles.description}>
             {description}
           </p>

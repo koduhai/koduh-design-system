@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NumberField } from './NumberField';
+import { FormField } from '../FormField';
 
 describe('NumberField', () => {
   it('renders a labelled spinbutton-ish numeric input', () => {
@@ -47,5 +48,26 @@ describe('NumberField', () => {
     expect(input).toBeRequired();
     expect(input).toHaveAttribute('aria-invalid', 'true');
     expect(input).toHaveAttribute('aria-describedby', screen.getByText('Bad').id);
+  });
+
+  it('inside FormField: no own label, input id + aria from context', () => {
+    render(
+      <FormField label="Quantity" required error errorText="Bad" id="qty">
+        <NumberField />
+      </FormField>,
+    );
+    const input = screen.getByLabelText(/Quantity/);
+    expect(input.id).toBe('qty');
+    expect(input).toBeRequired();
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('aria-describedby', screen.getByText('Bad').id);
+    // The control did not render a second "Quantity" label.
+    expect(screen.getAllByText('Quantity')).toHaveLength(1);
+  });
+
+  it('standalone: unchanged — renders its own label and required', () => {
+    render(<NumberField label="Qty" required />);
+    expect(screen.getByText('*')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Qty/)).toBeRequired();
   });
 });

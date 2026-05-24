@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TextField } from './TextField';
+import { FormField } from '../FormField';
 import { SearchIcon } from '../../icons';
 
 const meta = {
@@ -11,6 +12,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = { args: { label: 'Email', placeholder: 'you@example.com' } };
+
+/** When wrapped in a `<FormField>`, the field supplies the label, required marker, and aria wiring; `<TextField>` defers to it. */
+export const WithFormField: Story = {
+  args: { label: 'Email' },
+  render: () => (
+    <FormField label="Email" required helperText="We never share your email." id="ff-email">
+      <TextField placeholder="you@example.com" />
+    </FormField>
+  ),
+};
 
 export const Showcase: Story = {
   args: { label: 'Default' },

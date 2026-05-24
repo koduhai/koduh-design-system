@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { Combobox } from './Combobox';
+import { FormField } from '../FormField';
 
 const options = [
   { value: 'us', label: 'United States' },
@@ -25,6 +26,29 @@ export const Default: Story = {
       </div>
     );
   },
+};
+
+export const Clearable: Story = {
+  args: { label: 'Country', options, clearable: true },
+  render: function ClearableStory(args) {
+    const [value, setValue] = useState<string>('us');
+    return (
+      <div style={{ padding: 40 }}>
+        <Combobox {...args} value={value} onChange={(v) => setValue(v)} />
+      </div>
+    );
+  },
+};
+
+export const WithFormField: Story = {
+  args: { label: 'Country', options },
+  render: () => (
+    <div style={{ padding: 40 }}>
+      <FormField label="Country" required helperText="Start typing to search" id="cb-country">
+        <Combobox options={options} placeholder="Search…" />
+      </FormField>
+    </div>
+  ),
 };
 
 export const Showcase: Story = {

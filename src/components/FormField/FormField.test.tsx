@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { FormField } from './FormField';
-import { useFieldContext, useField } from './useField';
+import { useFieldContext, useField, useOptionalFieldContext } from './useField';
 
 function CustomInput() {
   const { id, describedById, invalid, required } = useFieldContext();
@@ -71,5 +71,31 @@ describe('useField (headless)', () => {
     expect(result!.controlProps['aria-invalid']).toBe(true);
     expect(result!.controlProps.required).toBe(true);
     expect(result!.controlProps['aria-describedby']).toBe('f1-description');
+  });
+});
+
+describe('useOptionalFieldContext', () => {
+  it('returns null outside a FormField', () => {
+    let result: ReturnType<typeof useOptionalFieldContext> | 'unset' = 'unset';
+    function Probe() {
+      result = useOptionalFieldContext();
+      return null;
+    }
+    render(<Probe />);
+    expect(result).toBeNull();
+  });
+
+  it('returns the context inside a FormField', () => {
+    let capturedId: string | undefined;
+    function Probe() {
+      capturedId = useOptionalFieldContext()?.id;
+      return <input />;
+    }
+    render(
+      <FormField label="X" id="f1">
+        <Probe />
+      </FormField>,
+    );
+    expect(capturedId).toBe('f1');
   });
 });

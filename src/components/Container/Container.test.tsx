@@ -29,4 +29,14 @@ describe('Container', () => {
     expect(el.tagName).toBe('MAIN');
     expect(el).toHaveClass('x');
   });
+  it('py sets the vertical-padding custom property', () => {
+    render(
+      <Container py={8} data-testid="c">
+        x
+      </Container>,
+    );
+    expect(screen.getByTestId('c').style.getPropertyValue('--container-py')).toBe(
+      'var(--ku-space-8)',
+    );
+  });
 });

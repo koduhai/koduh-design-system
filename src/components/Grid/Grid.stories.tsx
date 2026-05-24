@@ -43,3 +43,26 @@ export const Showcase: Story = {
     </div>
   ),
 };
+
+export const Responsive: Story = {
+  render: () => (
+    <section aria-label="Responsive grid: 1 column on mobile, 2 at md, 3 at lg">
+      <Grid columns={{ base: 1, md: 2, lg: 3 }} gap={{ base: 2, md: 4 }}>
+        {Array.from({ length: 6 }, (_, i) => (
+          <Box key={i}>Cell {i + 1}</Box>
+        ))}
+      </Grid>
+    </section>
+  ),
+};
+
+export const Ratio: Story = {
+  render: () => (
+    <section aria-label="Grid with a 2:1 track ratio (sidebar layout)">
+      <Grid columns={[2, 1]} gap={4}>
+        <Box>Main (2fr)</Box>
+        <Box>Aside (1fr)</Box>
+      </Grid>
+    </section>
+  ),
+};

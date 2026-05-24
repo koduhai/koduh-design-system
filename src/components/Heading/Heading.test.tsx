@@ -32,4 +32,18 @@ describe('Heading', () => {
     expect(el).toHaveClass('x');
     expect(el).toHaveAttribute('id', 'pg');
   });
+  it('applies the leading data-attr (default tight)', () => {
+    const { rerender } = render(
+      <Heading level={2} data-testid="h">
+        T
+      </Heading>,
+    );
+    expect(screen.getByTestId('h')).toHaveAttribute('data-leading', 'tight');
+    rerender(
+      <Heading level={2} leading="relaxed" data-testid="h">
+        T
+      </Heading>,
+    );
+    expect(screen.getByTestId('h')).toHaveAttribute('data-leading', 'relaxed');
+  });
 });

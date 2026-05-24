@@ -37,3 +37,38 @@
 .root[data-tone='secondary'] {
   color: var(--ku-color-text-secondary);
 }
+.root[data-leading='tight'] {
+  line-height: var(--ku-line-height-tight);
+}
+.root[data-leading='normal'] {
+  line-height: var(--ku-line-height-base);
+}
+.root[data-leading='relaxed'] {
+  line-height: var(--ku-line-height-relaxed);
+}
+.root[data-family='mono'] {
+  font-family: var(--ku-font-family-mono);
+}
+.root[data-numeric='tabular'] {
+  font-variant-numeric: tabular-nums;
+}
+.root[data-transform='uppercase'] {
+  text-transform: uppercase;
+}
+.root[data-transform='lowercase'] {
+  text-transform: lowercase;
+}
+.root[data-transform='capitalize'] {
+  text-transform: capitalize;
+}
+.root[data-truncate] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.root[data-line-clamp] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--text-line-clamp);
+  overflow: hidden;
+}

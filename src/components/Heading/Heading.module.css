@@ -1,9 +1,17 @@
 .root {
   margin: 0;
   font-family: var(--ku-font-family-base);
-  line-height: var(--ku-line-height-tight);
   color: var(--ku-color-text-primary);
   font-weight: var(--ku-font-weight-semibold);
+}
+.root[data-leading='tight'] {
+  line-height: var(--ku-line-height-tight);
+}
+.root[data-leading='normal'] {
+  line-height: var(--ku-line-height-base);
+}
+.root[data-leading='relaxed'] {
+  line-height: var(--ku-line-height-relaxed);
 }
 .root[data-size='sm'] {
   font-size: var(--ku-font-size-sm);

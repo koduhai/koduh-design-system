@@ -7,6 +7,7 @@ import styles from './Heading.module.css';
 export type { HeadingLevel };
 export type HeadingSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type HeadingWeight = 'regular' | 'medium' | 'semibold' | 'bold';
+export type HeadingLeading = 'tight' | 'normal' | 'relaxed';
 
 const defaultSizeForLevel: Record<HeadingLevel, HeadingSize> = {
   1: '2xl',
@@ -23,15 +24,18 @@ export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   /** Visual size; defaults from `level`. */
   size?: HeadingSize;
   weight?: HeadingWeight;
+  /** Line height. Defaults to `'tight'`. */
+  leading?: HeadingLeading;
 }
 
 export const Heading = /* @__PURE__ */ forwardRef<HTMLHeadingElement, HeadingProps>(
-  function Heading({ level, size, weight, className, ...props }, ref) {
+  function Heading({ level, size, weight, leading = 'tight', className, ...props }, ref) {
     return createElement(`h${level}`, {
       ref,
       className: cx(styles.root, className),
       'data-size': size ?? defaultSizeForLevel[level],
       'data-weight': weight,
+      'data-leading': leading,
       ...props,
     });
   },

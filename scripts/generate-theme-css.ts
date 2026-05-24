@@ -3,7 +3,13 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tokens, themes } from '../src/theme/tokens';
 
-const camelToKebab = (s: string) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+const camelToKebab = (s: string) =>
+  s
+    // camelCase boundary: lower/digit → Upper (bgDefault → bg-default)
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    // letter → digit boundary: keeps numbered scales readable (chart1 → chart-1)
+    .replace(/([a-zA-Z])([0-9])/g, '$1-$2')
+    .toLowerCase();
 
 function scaleVars(): string {
   const lines: string[] = [];

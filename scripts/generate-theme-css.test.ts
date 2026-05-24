@@ -23,4 +23,18 @@ describe('buildThemeCss', () => {
     expect(css).toContain('--ku-color-text-primary:');
     expect(css).toContain('--ku-color-bg-surface:');
   });
+
+  it('hyphenates letter→digit boundaries in single-segment names (chart palette)', () => {
+    expect(css).toContain('--ku-color-chart-1:');
+    expect(css).toContain('--ku-color-chart-8:');
+    // existing numbered scales (separate scaleName-key segments) are unaffected
+    expect(css).toContain('--ku-space-1: 4px;');
+    expect(css).toContain('--ku-font-size-2xl: 32px;');
+    expect(css).toContain('--ku-shadow-1:');
+  });
+
+  it('emits theme-independent focus-ring tokens on :root', () => {
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-focus-ring-width: 2px;/s);
+    expect(css).toContain('--ku-focus-ring-offset: 2px;');
+  });
 });

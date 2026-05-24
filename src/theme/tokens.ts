@@ -66,6 +66,13 @@ export const tokens = {
   easing: {
     standard: 'cubic-bezier(0.2, 0, 0, 1)',
   },
+  // Focus-ring geometry (theme-independent). The ring *color* reuses
+  // `--ku-color-primary`; only width/offset live here.
+  // → --ku-focus-ring-width, --ku-focus-ring-offset
+  focusRing: {
+    width: '2px',
+    offset: '2px',
+  },
 } as const;
 
 // Color tokens per theme. Values chosen to meet WCAG AA (verified at the
@@ -93,6 +100,17 @@ export const themes = {
       textPrimary: '#F5F7FA',
       textSecondary: '#A8B2C4',
       textDisabled: '#5C667A',
+      // Categorical chart palette — 8 distinct hues tuned to be bright/saturated
+      // enough to read on the dark bgSurface (#141A2A). Ordered for maximal
+      // separation between adjacent series. → --ku-color-chart-1 … chart-8
+      chart1: '#5B9DFF', // blue
+      chart2: '#4ADE80', // green
+      chart3: '#FBBF24', // amber
+      chart4: '#FF6B6B', // red
+      chart5: '#C084FC', // purple
+      chart6: '#22D3EE', // cyan
+      chart7: '#F472B6', // pink
+      chart8: '#A3E635', // lime
     },
   },
   light: {
@@ -117,6 +135,17 @@ export const themes = {
       textPrimary: '#10141F',
       textSecondary: '#4A5468',
       textDisabled: '#9AA3B5',
+      // Categorical chart palette — 8 distinct hues darkened/saturated to read
+      // on the off-white light bgSurface (#F4F6FA), mirroring the dark hue
+      // order. → --ku-color-chart-1 … chart-8
+      chart1: '#1B5FCC', // blue
+      chart2: '#1B7F3B', // green
+      chart3: '#B45309', // amber
+      chart4: '#C62828', // red
+      chart5: '#7C3AED', // purple
+      chart6: '#0E7490', // cyan
+      chart7: '#BE185D', // pink
+      chart8: '#4D7C0F', // lime
     },
   },
 } as const;

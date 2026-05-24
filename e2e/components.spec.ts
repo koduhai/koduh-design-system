@@ -83,6 +83,14 @@ const COMPONENTS = [
   { name: 'Collapsible', storyId: 'components-collapsible--showcase' },
   { name: 'ScrollArea', storyId: 'components-scrollarea--showcase' },
   { name: 'Rating', storyId: 'components-rating--showcase' },
+  { name: 'Stepper', storyId: 'components-stepper--showcase' },
+  { name: 'Timeline', storyId: 'components-timeline--showcase' },
+  { name: 'HoverCard', storyId: 'components-hovercard--showcase' },
+  { name: 'PinInput', storyId: 'components-pininput--showcase' },
+  { name: 'FileUpload', storyId: 'components-fileupload--showcase' },
+  { name: 'Tree', storyId: 'components-tree--showcase' },
+  { name: 'Carousel', storyId: 'components-carousel--showcase' },
+  { name: 'CommandPalette', storyId: 'components-commandpalette--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

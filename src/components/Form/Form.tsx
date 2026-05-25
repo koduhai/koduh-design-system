@@ -5,7 +5,8 @@ import { FormContext } from './FormContext';
 import type { FormApi, FormValues, FormErrors } from './useForm';
 import styles from './Form.module.css';
 
-export interface FormProps extends Omit<FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> {
+export interface FormProps
+  extends Omit<FormHTMLAttributes<HTMLFormElement>, 'onSubmit' | 'onInvalid'> {
   /** The form instance from useForm(). */
   form: FormApi;
   /** Called with validated values on a successful submit. */

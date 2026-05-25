@@ -53,7 +53,7 @@ describe('useForm', () => {
     const onInvalid = vi.fn();
     const resolver = vi.fn(async (values: Record<string, unknown>) => ({
       values,
-      errors: values.name ? {} : { name: 'Required' },
+      errors: (values.name ? {} : { name: 'Required' }) as Record<string, string>,
     }));
     const { result } = renderHook(() => useForm({ resolver }));
     await act(async () => {
@@ -85,7 +85,7 @@ describe('useForm', () => {
   it('mode onChange validates on each setValue', async () => {
     const resolver = vi.fn(async (v: Record<string, unknown>) => ({
       values: v,
-      errors: (v.a as number) > 0 ? {} : { a: 'positive' },
+      errors: ((v.a as number) > 0 ? {} : { a: 'positive' }) as Record<string, string>,
     }));
     const { result } = renderHook(() => useForm({ mode: 'onChange', resolver }));
     await act(async () => { result.current.setValue('a', -1); });

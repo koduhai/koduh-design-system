@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Textarea } from './Textarea';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
 
 describe('Textarea', () => {
   it('associates the label with a textarea element', () => {
@@ -87,5 +89,23 @@ describe('Textarea', () => {
   it('standalone: unchanged', () => {
     render(<Textarea label="Notes" required />);
     expect(screen.getByText('*')).toBeInTheDocument();
+  });
+});
+
+describe('Textarea bound to a Form', () => {
+  it('reads its value from the form and writes changes back', () => {
+    function Wrap() {
+      const form = useForm({ defaultValues: { bio: 'hi' } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="bio" label="Bio"><Textarea /></FormField>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    const el = screen.getByLabelText('Bio') as HTMLTextAreaElement;
+    expect(el.value).toBe('hi');
+    fireEvent.change(el, { target: { value: 'bye' } });
+    expect(el.value).toBe('bye');
   });
 });

@@ -1,5 +1,5 @@
 import { forwardRef, useRef } from 'react';
-import type { ClipboardEvent, HTMLAttributes, KeyboardEvent, ChangeEvent } from 'react';
+import type { ClipboardEvent, FocusEvent, HTMLAttributes, KeyboardEvent, ChangeEvent } from 'react';
 import { useControllableState, useId } from '../../primitives';
 import { useOptionalFieldContext } from '../FormField';
 import { cx } from '../../utils/cx';
@@ -9,7 +9,7 @@ export type PinInputSize = 'sm' | 'md' | 'lg';
 
 export interface PinInputProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'defaultValue' | 'children'
+  'onChange' | 'defaultValue' | 'children' | 'onBlur'
 > {
   /** Number of cells. Defaults to 6. */
   length?: number;
@@ -30,6 +30,8 @@ export interface PinInputProps extends Omit<
   size?: PinInputSize;
   /** Accessible name for the group (when not inside a <FormField>). */
   'aria-label'?: string;
+  /** Called when any cell loses focus. */
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
 }
 
 const isNumberChar = (c: string) => c >= '0' && c <= '9';
@@ -41,6 +43,7 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
     value,
     defaultValue,
     onChange,
+    onBlur,
     onComplete,
     type = 'number',
     mask = false,
@@ -66,14 +69,17 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
     defaultValue: defaultValue ?? '',
   });
 
+  const bound = value === undefined ? field?.binding : undefined;
+  const currentVal = bound ? ((bound.value as string) ?? '') : val;
+
   // Char array, fixed to `length`, padded with empty strings.
-  const chars = Array.from({ length }, (_, i) => val[i] ?? '');
+  const chars = Array.from({ length }, (_, i) => currentVal[i] ?? '');
 
   const accept = (c: string) => (type === 'number' ? isNumberChar(c) : c.length === 1);
 
   const commit = (next: string) => {
     const trimmed = next.slice(0, length);
-    setVal(trimmed);
+    if (bound) bound.onChange(trimmed); else setVal(trimmed);
     onChange?.(trimmed);
     if (trimmed.length === length) onComplete?.(trimmed);
   };
@@ -191,6 +197,7 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={(e) => handlePaste(i, e)}
           onFocus={(e) => e.target.select()}
+          onBlur={(e) => { bound?.onBlur(); onBlur?.(e); }}
         />
       ))}
     </div>

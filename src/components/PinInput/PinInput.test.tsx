@@ -3,6 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { useState } from 'react';
 import { PinInput } from './PinInput';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
+import { useFormField } from '../Form/useFormField';
 
 const cells = () => screen.getAllByRole('textbox') as HTMLInputElement[];
 
@@ -146,5 +149,33 @@ describe('PinInput', () => {
   it('forwards arbitrary DOM props to the group', () => {
     render(<PinInput length={4} aria-label="Code" data-testid="pin" />);
     expect(screen.getByTestId('pin')).toBeInTheDocument();
+  });
+});
+
+describe('PinInput bound to a Form', () => {
+  it('reads its value from the form and writes changes back', () => {
+    function Probe() {
+      const field = useFormField('code');
+      return <span data-testid="probe">{String(field.value)}</span>;
+    }
+    function Wrap() {
+      const form = useForm({ defaultValues: { code: '12' } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="code" label="Code">
+            <PinInput length={4} type="number" />
+          </FormField>
+          <Probe />
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    // The default value '12' should populate the first two cells.
+    const allCells = screen.getAllByRole('textbox') as HTMLInputElement[];
+    expect(allCells[0]!.value).toBe('1');
+    expect(allCells[1]!.value).toBe('2');
+    // Type a digit into the third cell — form value should update.
+    fireEvent.change(allCells[2]!, { target: { value: '3' } });
+    expect(screen.getByTestId('probe').textContent).toBe('123');
   });
 });

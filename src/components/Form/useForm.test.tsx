@@ -91,4 +91,35 @@ describe('useForm', () => {
     await act(async () => { result.current.setValue('a', -1); });
     await waitFor(() => expect(result.current.getFieldState('a').error).toBe('positive'));
   });
+
+  it('reset clears the field-state identity cache (no stale reference)', () => {
+    const { result } = renderHook(() => useForm({ defaultValues: { a: 1 } }));
+    act(() => {
+      result.current.setValue('a', 1); // dirty with same-as-default value
+      result.current.setError('a', 'oops');
+    });
+    const before = result.current.getFieldState('a');
+    act(() => result.current.reset());
+    const after = result.current.getFieldState('a');
+    expect(after).not.toBe(before); // fresh object, not stale cache
+    expect(after.error).toBeUndefined();
+    expect(after.value).toBe(1);
+  });
+
+  it('handleSubmit ignores a concurrent submit while already submitting', async () => {
+    let resolve!: () => void;
+    const onValid = vi.fn(
+      () => new Promise<void>((r) => { resolve = () => r(); }),
+    );
+    const { result } = renderHook(() => useForm({ defaultValues: { a: 1 } }));
+    const submit = result.current.handleSubmit(onValid);
+    await act(async () => {
+      void submit();            // first submit — hangs in onValid
+      await Promise.resolve();
+      void submit();            // second submit — should be ignored
+      await Promise.resolve();
+      resolve();                // let the first finish
+    });
+    expect(onValid).toHaveBeenCalledTimes(1);
+  });
 });

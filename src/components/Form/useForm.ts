@@ -174,7 +174,7 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
     },
     setError(name, message) {
       const errors = { ...state.errors };
-      if (message) errors[name] = message;
+      if (message !== undefined) errors[name] = message;
       else delete errors[name];
       setState({ errors });
     },
@@ -194,6 +194,7 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
         isSubmitting: false,
         submitCount: 0,
       };
+      fieldCache.clear();
       emit();
     },
     register(name, fieldRules) {
@@ -218,6 +219,7 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
     },
     handleSubmit(onValid, onInvalid) {
       return async (event) => {
+        if (state.isSubmitting) return;
         event?.preventDefault?.();
         const allTouched: Record<string, boolean> = { ...state.touched };
         for (const n of registered) allTouched[n] = true;

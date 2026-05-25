@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import { FormField } from './FormField';
 import { useFieldContext, useField, useOptionalFieldContext } from './useField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
 
 function CustomInput() {
   const { id, describedById, invalid, required } = useFieldContext();
@@ -97,5 +100,75 @@ describe('useOptionalFieldContext', () => {
       </FormField>,
     );
     expect(capturedId).toBe('f1');
+  });
+});
+
+describe('FormField bound to a Form', () => {
+  function BindingProbe() {
+    const ctx = useOptionalFieldContext();
+    return (
+      <input
+        aria-label="probe"
+        value={String(ctx?.binding?.value ?? '')}
+        onChange={(e) => ctx?.binding?.onChange(e.target.value, e)}
+      />
+    );
+  }
+
+  it('provides a binding carrying the form value and pushes changes back', () => {
+    function Wrap() {
+      const form = useForm({ defaultValues: { city: 'Paris' } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="city" label="City">
+            <BindingProbe />
+          </FormField>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByLabelText('probe') as HTMLInputElement;
+    expect(input.value).toBe('Paris');
+    fireEvent.change(input, { target: { value: 'Lyon' } });
+    expect(input.value).toBe('Lyon');
+  });
+
+  it('renders the form error as the description after a failed submit', async () => {
+    function Wrap() {
+      const form = useForm({
+        resolver: async (v) =>
+        v.city
+          ? { values: v, errors: {} as Record<string, string> }
+          : { values: v, errors: { city: 'Required' } },
+      });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="city" label="City">
+            <BindingProbe />
+          </FormField>
+          <button type="submit">Go</button>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    fireEvent.click(screen.getByText('Go'));
+    expect(await screen.findByText('Required')).toBeInTheDocument();
+  });
+
+  it('a bound `required` FormField validates on submit (no resolver)', async () => {
+    function Wrap() {
+      const form = useForm();
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="city" label="City" required>
+            <BindingProbe />
+          </FormField>
+          <button type="submit">Go</button>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    fireEvent.click(screen.getByText('Go'));
+    expect(await screen.findByText('This field is required')).toBeInTheDocument();
   });
 });

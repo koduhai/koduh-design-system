@@ -53,6 +53,7 @@ export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldP
       value,
       defaultValue,
       onChange,
+      onBlur,
       helperText,
       error = false,
       errorText,
@@ -88,6 +89,9 @@ export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldP
       onChange: undefined,
     });
 
+    const bound = value === undefined ? field?.binding : undefined;
+    const currentValue = bound ? ((bound.value as string) ?? '') : state;
+
     return (
       <div
         className={cx(styles.root, className)}
@@ -116,14 +120,16 @@ export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldP
             ref={ref}
             id={id}
             className={styles.input}
-            value={state}
+            value={currentValue}
             required={isRequired}
             aria-invalid={invalid || undefined}
             aria-describedby={describedBy}
             onChange={(event) => {
-              setState(event.target.value);
-              onChange?.(event.target.value, event);
+              const next = event.target.value;
+              if (bound) bound.onChange(next, event); else setState(next);
+              onChange?.(next, event);
             }}
+            onBlur={(e) => { bound?.onBlur(); onBlur?.(e); }}
             {...props}
           />
           {endAdornment ? (

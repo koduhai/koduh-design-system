@@ -91,6 +91,8 @@ const COMPONENTS = [
   { name: 'Tree', storyId: 'components-tree--showcase' },
   { name: 'Carousel', storyId: 'components-carousel--showcase' },
   { name: 'CommandPalette', storyId: 'components-commandpalette--showcase' },
+  // issue #38 — Form orchestration layer
+  { name: 'Form', storyId: 'components-form--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

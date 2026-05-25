@@ -78,20 +78,22 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
       value,
       defaultValue: defaultValue ?? [],
     });
+    const bound = value === undefined ? field?.binding : undefined;
+    const currentValue = bound ? (bound.value as string[]) : tags;
     const [draft, setDraft] = useState('');
 
     const addTag = (raw: string, event?: SyntheticEvent) => {
       const t = raw.trim();
       if (!t) return;
-      if (!allowDuplicates && tags.includes(t)) return;
-      if (max != null && tags.length >= max) return;
-      const next = [...tags, t];
-      setTags(next);
+      if (!allowDuplicates && currentValue.includes(t)) return;
+      if (max != null && currentValue.length >= max) return;
+      const next = [...currentValue, t];
+      if (bound) bound.onChange(next, event); else setTags(next);
       onChange?.(next, event);
     };
     const removeAt = (i: number, event?: SyntheticEvent) => {
-      const next = tags.filter((_, idx) => idx !== i);
-      setTags(next);
+      const next = currentValue.filter((_, idx) => idx !== i);
+      if (bound) bound.onChange(next, event); else setTags(next);
       onChange?.(next, event);
     };
 
@@ -131,7 +133,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
           </label>
         ) : null}
         <div className={styles.field}>
-          {tags.map((tag, i) => (
+          {currentValue.map((tag, i) => (
             <Chip key={`${tag}-${i}`} label={tag} size="sm" onDelete={() => removeAt(i)} />
           ))}
           <input
@@ -141,7 +143,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
             className={styles.input}
             value={draft}
             placeholder={placeholder}
-            required={isRequired && tags.length === 0}
+            required={isRequired && currentValue.length === 0}
             aria-invalid={invalid || undefined}
             aria-describedby={describedBy}
             onChange={(e) => setDraft(e.target.value)}

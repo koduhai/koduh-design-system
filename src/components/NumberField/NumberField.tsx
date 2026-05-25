@@ -50,6 +50,7 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
       value,
       defaultValue,
       onChange,
+      onBlur,
       min,
       max,
       step = 1,
@@ -82,7 +83,15 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
 
     const isControlled = value !== undefined;
     const [text, setText] = useState<string>(defaultValue != null ? String(defaultValue) : '');
-    const display = isControlled ? (value == null ? '' : String(value)) : text;
+
+    // Binding: when no explicit value prop is passed and a form binding exists, use form as source.
+    const bound = value === undefined ? field?.binding : undefined;
+    const boundNumeric = bound ? (bound.value as number | null) : undefined;
+    const display = bound
+      ? (boundNumeric == null ? '' : String(boundNumeric))
+      : isControlled
+        ? (value == null ? '' : String(value))
+        : text;
 
     const clamp = (n: number) => {
       let r = n;
@@ -91,8 +100,15 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
       return r;
     };
     const commit = (next: string, event?: SyntheticEvent) => {
-      if (!isControlled) setText(next);
-      onChange?.(parse(next), event);
+      const parsed = parse(next);
+      if (bound) {
+        bound.onChange(parsed, event);
+      } else {
+        if (!isControlled) setText(next);
+        onChange?.(parsed, event);
+        return;
+      }
+      onChange?.(parsed, event);
     };
     const adjust = (delta: number, event: SyntheticEvent) => {
       const n = clamp((parse(display) ?? 0) + delta);
@@ -145,6 +161,7 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
             aria-invalid={invalid || undefined}
             aria-describedby={describedBy}
             onChange={(e) => commit(e.target.value, e)}
+            onBlur={(e) => { bound?.onBlur(); onBlur?.(e); }}
             onKeyDown={(e) => {
               if (e.key === 'ArrowUp') {
                 e.preventDefault();

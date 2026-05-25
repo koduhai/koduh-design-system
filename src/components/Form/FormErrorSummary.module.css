@@ -1,0 +1,18 @@
+.root {
+  border: 1px solid var(--ku-color-border-default);
+  border-radius: var(--ku-radius-md);
+  padding: var(--ku-space-3) var(--ku-space-4);
+  margin-block-end: var(--ku-space-4);
+  color: var(--ku-color-fg-default);
+}
+.heading {
+  margin: 0 0 var(--ku-space-2);
+  font-weight: var(--ku-font-weight-semibold);
+}
+.list {
+  margin: 0;
+  padding-inline-start: var(--ku-space-5);
+}
+.link {
+  color: inherit;
+}

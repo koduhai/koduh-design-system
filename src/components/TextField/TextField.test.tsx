@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TextField } from './TextField';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
 
 describe('TextField', () => {
   it('associates the label with the input via htmlFor/id', () => {
@@ -104,5 +106,23 @@ describe('TextField', () => {
     expect(root).not.toHaveAttribute('data-density');
     rerender(<TextField label="Email" density="compact" />);
     expect(root).toHaveAttribute('data-density', 'compact');
+  });
+});
+
+describe('TextField bound to a Form', () => {
+  it('reads its value from the form and writes changes back', () => {
+    function Wrap() {
+      const form = useForm({ defaultValues: { email: 'a@b.com' } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="email" label="Email"><TextField /></FormField>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByLabelText('Email') as HTMLInputElement;
+    expect(input.value).toBe('a@b.com');
+    fireEvent.change(input, { target: { value: 'c@d.com' } });
+    expect(input.value).toBe('c@d.com');
   });
 });

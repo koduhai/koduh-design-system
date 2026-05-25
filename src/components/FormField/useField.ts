@@ -1,6 +1,13 @@
 import { createContext, useContext } from 'react';
 import { useId } from '../../primitives';
 
+export interface FieldBinding {
+  name: string;
+  value: unknown;
+  onChange: (value: unknown, event?: unknown) => void;
+  onBlur: () => void;
+}
+
 export interface FieldContextValue {
   /** Control id; the label's htmlFor points here. */
   id: string;
@@ -15,6 +22,8 @@ export interface FieldContextValue {
   /** Whether the field is in an error state (→ aria-invalid). */
   invalid: boolean;
   required: boolean;
+  /** Present when the field is bound to a <Form>; carries form value + handlers. */
+  binding?: FieldBinding;
 }
 
 export const FieldContext = createContext<FieldContextValue | null>(null);

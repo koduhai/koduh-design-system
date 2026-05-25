@@ -3,6 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NumberField } from './NumberField';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
+import { useFormField } from '../Form/useFormField';
 
 describe('NumberField', () => {
   it('renders a labelled spinbutton-ish numeric input', () => {
@@ -69,5 +72,29 @@ describe('NumberField', () => {
     render(<NumberField label="Qty" required />);
     expect(screen.getByText('*')).toBeInTheDocument();
     expect(screen.getByLabelText(/Qty/)).toBeRequired();
+  });
+});
+
+describe('NumberField bound to a Form', () => {
+  it('reads its value from the form and writes changes back', async () => {
+    function Probe() {
+      const field = useFormField('qty');
+      return <span data-testid="probe">{String(field.value)}</span>;
+    }
+    function Wrap() {
+      const form = useForm({ defaultValues: { qty: 5 } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="qty" label="Qty"><NumberField /></FormField>
+          <Probe />
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByLabelText(/Qty/) as HTMLInputElement;
+    expect(input.value).toBe('5');
+    await userEvent.clear(input);
+    await userEvent.type(input, '7');
+    expect(screen.getByTestId('probe').textContent).toBe('7');
   });
 });

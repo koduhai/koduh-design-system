@@ -168,6 +168,7 @@ export {
 } from './components/FormField';
 export type {
   FormFieldProps,
+  FieldBinding,
   FieldContextValue,
   UseFieldOptions,
   UseFieldResult,
@@ -233,3 +234,33 @@ export { Carousel } from './components/Carousel';
 export type { CarouselProps, CarouselItem } from './components/Carousel';
 export { CommandPalette } from './components/CommandPalette';
 export type { CommandPaletteProps, CommandPaletteCommand } from './components/CommandPalette';
+
+// Form orchestration (#38)
+export {
+  Form,
+  useForm,
+  useFormContext,
+  useOptionalFormContext,
+  useFormField,
+  useFieldArray,
+  FormErrorSummary,
+  standardSchemaResolver,
+} from './components/Form';
+export type {
+  FormProps,
+  FormApi,
+  UseFormOptions,
+  FieldRules,
+  FieldState,
+  FormState,
+  ValidationMode,
+  FormValues,
+  FormErrors,
+  UseFormFieldResult,
+  UseFieldArrayResult,
+  FieldArrayItem,
+  FormErrorSummaryProps,
+  Resolver,
+  ResolverResult,
+  StandardSchemaV1,
+} from './components/Form';

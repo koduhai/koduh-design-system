@@ -3,6 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Combobox } from './Combobox';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
+import { useFormField } from '../Form/useFormField';
 
 const opts = [
   { value: 'us', label: 'United States' },
@@ -87,5 +90,35 @@ describe('Combobox', () => {
     render(<Combobox label="C" options={opts} clearable defaultValue="us" onChange={onChange} />);
     await userEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
     expect(onChange).toHaveBeenLastCalledWith('', expect.anything());
+  });
+
+  describe('Combobox bound to a Form', () => {
+    it('reads value from the form and writes selections back', async () => {
+      function Probe() {
+        const f = useFormField('field');
+        return <span data-testid="v">{JSON.stringify(f.value ?? null)}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { field: 'us' } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="field" label="L">
+              <Combobox options={opts} />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      // bound default: input shows 'United States'
+      expect(screen.getByRole('combobox')).toHaveValue('United States');
+      // click the United Kingdom option
+      const input = screen.getByRole('combobox');
+      await userEvent.clear(input);
+      await userEvent.type(input, 'united');
+      await userEvent.click(screen.getByText('United Kingdom'));
+      // form value updated
+      expect(screen.getByTestId('v')).toHaveTextContent('"uk"');
+    });
   });
 });

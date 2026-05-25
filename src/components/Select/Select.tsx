@@ -115,6 +115,8 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     defaultValue,
     onChange: undefined,
   });
+  const bound = value === undefined ? field?.binding : undefined;
+  const currentValue = bound ? (bound.value as string | undefined) : selected;
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
@@ -138,11 +140,11 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   // selection), never on outside-pointer dismiss (don't yank focus away).
   const restoreFocus = useRef(false);
 
-  const selectedOption = options.find((o) => o.value === selected);
+  const selectedOption = options.find((o) => o.value === currentValue);
 
   const choose = (opt: SelectOption, event: React.SyntheticEvent) => {
     if (opt.disabled) return;
-    setSelected(opt.value);
+    if (bound) bound.onChange(opt.value, event); else setSelected(opt.value);
     onChange?.(opt.value, event);
     restoreFocus.current = true; // selection → return focus to the trigger
     setOpen(false);
@@ -153,7 +155,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   // firing, and focus returns to the trigger (the clear button is leaving).
   const clear = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    setSelected(undefined);
+    if (bound) bound.onChange('', event); else setSelected(undefined);
     onChange?.('', event);
     triggerRef.current?.focus();
   };
@@ -246,7 +248,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       listRef.current?.focus();
       // Prefer the selected option; otherwise seed first/last enabled based on
       // how the listbox was opened (ArrowUp → last, anything else → first).
-      let seed = options.findIndex((o) => o.value === selected && !o.disabled);
+      let seed = options.findIndex((o) => o.value === currentValue && !o.disabled);
       // No selection: keyboard-open seeds first/last enabled; pointer-open
       // leaves it unset (-1) so the first ArrowDown lands on the first option,
       // preserving the original click-then-arrow behavior.
@@ -337,7 +339,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
                 key={opt.value}
                 id={optionId(i)}
                 role="option"
-                aria-selected={opt.value === selected}
+                aria-selected={opt.value === currentValue}
                 aria-disabled={opt.disabled || undefined}
                 data-active={i === activeIndex ? 'true' : undefined}
                 className={styles.option}

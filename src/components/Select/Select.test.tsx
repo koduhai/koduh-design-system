@@ -2,6 +2,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Select } from './Select';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
+import { useFormField } from '../Form/useFormField';
 
 const options = [
   { value: 'a', label: 'Apple' },
@@ -196,6 +199,34 @@ describe('Select', () => {
   it('standalone: unchanged label + required indicator', () => {
     render(<Select label="Fruit" required options={[{ value: 'a', label: 'A' }]} />);
     expect(screen.getByText('*')).toBeInTheDocument();
+  });
+
+  describe('Select bound to a Form', () => {
+    it('reads value from the form and writes selections back', () => {
+      function Probe() {
+        const f = useFormField('field');
+        return <span data-testid="v">{JSON.stringify(f.value ?? null)}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { field: 'a' } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="field" label="L">
+              <Select options={options} />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      // bound default: trigger shows 'Apple'
+      expect(screen.getByRole('button', { name: /L/ })).toHaveTextContent('Apple');
+      // open and pick Banana
+      fireEvent.click(screen.getByRole('button', { name: /L/ }));
+      fireEvent.click(screen.getByRole('option', { name: 'Banana' }));
+      // form value updated
+      expect(screen.getByTestId('v')).toHaveTextContent('"b"');
+    });
   });
 
   it('omits data-density by default and reflects density="compact" on the trigger + listbox', () => {

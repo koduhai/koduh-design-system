@@ -3,6 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TagInput } from './TagInput';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
+import { useFormField } from '../Form/useFormField';
 
 describe('TagInput', () => {
   it('adds a tag on Enter and renders it as a removable chip', async () => {
@@ -60,6 +63,34 @@ describe('TagInput', () => {
     expect(input.id).toBe('tags');
     expect(input).toBeRequired();
     expect(screen.getAllByText('Tags')).toHaveLength(1);
+  });
+
+  describe('TagInput bound to a Form', () => {
+    it('reads value from the form and writes tag additions back', async () => {
+      function Probe() {
+        const f = useFormField('field');
+        return <span data-testid="v">{JSON.stringify(f.value ?? null)}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { field: ['existing'] } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="field" label="Tags">
+              <TagInput />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      // bound default: 'existing' chip is rendered
+      expect(screen.getByText('existing')).toBeInTheDocument();
+      // add a new tag
+      const input = screen.getByLabelText(/Tags/);
+      await userEvent.type(input, 'newone{Enter}');
+      // form value updated to include the new tag
+      expect(screen.getByTestId('v')).toHaveTextContent('["existing","newone"]');
+    });
   });
 
   it('onChange receives (tags, event) and forwards onBlur/name to the input', async () => {

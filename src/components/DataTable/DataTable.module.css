@@ -235,8 +235,8 @@
 .expSortIcon {
   width: 0;
   height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
+  border-inline-start: 4px solid transparent;
+  border-inline-end: 4px solid transparent;
   border-top: 5px solid var(--ku-color-text-disabled);
   opacity: 0.6;
 }

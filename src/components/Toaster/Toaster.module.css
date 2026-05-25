@@ -8,12 +8,12 @@
   pointer-events: none;
 }
 .region[data-placement='bottom-right'] {
-  right: var(--ku-space-6);
+  inset-inline-end: var(--ku-space-6);
   bottom: var(--ku-space-6);
   align-items: flex-end;
 }
 .region[data-placement='bottom-left'] {
-  left: var(--ku-space-6);
+  inset-inline-start: var(--ku-space-6);
   bottom: var(--ku-space-6);
   align-items: flex-start;
 }
@@ -24,12 +24,12 @@
   align-items: center;
 }
 .region[data-placement='top-right'] {
-  right: var(--ku-space-6);
+  inset-inline-end: var(--ku-space-6);
   top: var(--ku-space-6);
   align-items: flex-end;
 }
 .region[data-placement='top-left'] {
-  left: var(--ku-space-6);
+  inset-inline-start: var(--ku-space-6);
   top: var(--ku-space-6);
   align-items: flex-start;
 }

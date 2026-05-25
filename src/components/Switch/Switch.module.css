@@ -69,10 +69,13 @@
 .root[data-size='sm'] .thumb {
   width: 14px;
   height: 14px;
-  left: 2px;
+  inset-inline-start: 2px;
 }
 .root[data-size='sm'][data-checked='true'] .thumb {
   transform: translateX(14px);
+}
+:dir(rtl) .root[data-size='sm'][data-checked='true'] .thumb {
+  transform: translateX(-14px);
 }
 .root[data-size='sm'] .label {
   font-size: var(--ku-font-size-sm);
@@ -86,10 +89,13 @@
 .root[data-size='md'] .thumb {
   width: 18px;
   height: 18px;
-  left: 2px;
+  inset-inline-start: 2px;
 }
 .root[data-size='md'][data-checked='true'] .thumb {
   transform: translateX(18px);
+}
+:dir(rtl) .root[data-size='md'][data-checked='true'] .thumb {
+  transform: translateX(-18px);
 }
 
 .root[data-size='lg'] .track {
@@ -100,10 +106,13 @@
 .root[data-size='lg'] .thumb {
   width: 22px;
   height: 22px;
-  left: 3px;
+  inset-inline-start: 3px;
 }
 .root[data-size='lg'][data-checked='true'] .thumb {
   transform: translateX(24px);
+}
+:dir(rtl) .root[data-size='lg'][data-checked='true'] .thumb {
+  transform: translateX(-24px);
 }
 .root[data-size='lg'] .label {
   font-size: var(--ku-font-size-lg);

@@ -88,18 +88,20 @@ export const ToggleGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, ToggleGrou
       defaultValue: defaultValue ?? (type === 'multiple' ? [] : ''),
       onChange: undefined,
     });
+    const bound = value === undefined ? field?.binding : undefined;
+    const currentValue = bound ? (bound.value as string | string[]) : selected;
 
     const isSelected = (val: string): boolean =>
-      type === 'multiple' ? (selected as string[]).includes(val) : selected === val;
+      type === 'multiple' ? (currentValue as string[]).includes(val) : currentValue === val;
 
     const toggle = (val: string) => {
       if (type === 'multiple') {
-        const current = selected as string[];
+        const current = currentValue as string[];
         const next = current.includes(val) ? current.filter((v) => v !== val) : [...current, val];
-        setSelected(next);
+        if (bound) bound.onChange(next); else setSelected(next);
         onChange?.(next);
       } else {
-        setSelected(val);
+        if (bound) bound.onChange(val); else setSelected(val);
         onChange?.(val);
       }
     };

@@ -3,6 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ToggleGroup } from './ToggleGroup';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
+import { useFormField } from '../Form/useFormField';
 
 const ITEMS = [
   { value: 'list', label: 'List' },
@@ -56,6 +59,58 @@ describe('ToggleGroup', () => {
     await userEvent.keyboard('{ArrowRight}');
     expect(screen.getByRole('radio', { name: 'Grid' })).toHaveFocus();
     expect(screen.getByRole('radio', { name: 'Grid' })).toHaveAttribute('aria-checked', 'true');
+  });
+
+  describe('ToggleGroup bound to a Form', () => {
+    it('single: reads value from the form and writes selection back', async () => {
+      function Probe() {
+        const f = useFormField('field');
+        return <span data-testid="v">{JSON.stringify(f.value ?? null)}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { field: 'list' } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="field" label="View">
+              <ToggleGroup type="single" items={ITEMS} />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      // bound default: 'list' item is checked
+      expect(screen.getByRole('radio', { name: 'List' })).toHaveAttribute('aria-checked', 'true');
+      // click Grid
+      await userEvent.click(screen.getByRole('radio', { name: 'Grid' }));
+      // form value updated
+      expect(screen.getByTestId('v')).toHaveTextContent('"grid"');
+    });
+
+    it('multiple: reads value from the form and writes selection back', async () => {
+      function Probe() {
+        const f = useFormField('field');
+        return <span data-testid="v">{JSON.stringify(f.value ?? null)}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { field: ['list'] } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="field" label="View">
+              <ToggleGroup type="multiple" items={ITEMS} />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      // bound default: 'list' item is pressed
+      expect(screen.getByRole('button', { name: 'List' })).toHaveAttribute('aria-pressed', 'true');
+      // click Grid to add it
+      await userEvent.click(screen.getByRole('button', { name: 'Grid' }));
+      // form value updated
+      expect(screen.getByTestId('v')).toHaveTextContent('["list","grid"]');
+    });
   });
 
   describe('FormField composition (#35)', () => {

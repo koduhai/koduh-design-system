@@ -1,7 +1,7 @@
 # Component Guidelines
 
 > **Document Owner:** Founder
-> **Last Updated:** May 22, 2026
+> **Last Updated:** May 25, 2026
 > **Status:** Living Document
 
 ---
@@ -35,29 +35,17 @@ pattern, look there first; the conventions below are all demonstrated by it.
 
 ## Component Set
 
-The full scope is **12 components** (see spec §7). Delivery is phased; this guide
-documents the **current** state.
+The library has grown well past its original scope; **`src/index.ts` is the
+authoritative list** of what's shipped (69 components as of v2.5.0), spanning
+actions, forms, overlays, navigation, feedback, layout/typography, data display,
+data-viz, and date inputs. `Button` remains the **reference implementation** for
+the patterns below. (Earlier revisions of this doc listed a 12-component scope and
+flagged `Dialog`/`Snackbar`/`DataTable` as "removed" — that is obsolete; all three
+shipped, built on platform primitives rather than portals/focus-traps.)
 
-### Shipped (Phase 0 + Phase 1)
-
-| Component       | Purpose                   | Key props (clean-break API)                                                                                                          |
-| --------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `Button`        | Primary action trigger    | `variant` (`solid`/`outline`/`ghost`), `tone` (`primary`/`neutral`/`danger`), `size`, `asChild`, `startIcon`, `endIcon`, `fullWidth` |
-| `LoadingButton` | Button with loading state | All `Button` props + `loading`, `loadingText`                                                                                        |
-| `Chip`          | Compact label / tag       | `label`, `variant` (`solid`/`outline`), `tone`, `size`, `onClick`, `onDelete`, `icon`                                                |
-| `Avatar`        | User avatar               | `src`, `alt`, `name` (initials fallback), `size` (`sm`/`md`/`lg`), `shape`                                                           |
-| `StatusBadge`   | Semantic status indicator | `status` (`active`/`inactive`/`pending`/`error`), `label`, `variant`                                                                 |
-| `Alert`         | Inline feedback banner    | `severity` (`info`/`success`/`warning`/`error`), `title`, `dismissable`, `onClose`, `icon`                                           |
-
-### Planned (Phases 2–4)
-
-`TextField`, `Card`, `EmptyState`, `PageHeader` (Phase 2); `AppBar`, `Sidebar`
-(Phase 3). Exact prop names are finalized when each is built; see the spec's §7
-table for intent. These are **not** yet available — do not consume them.
-
-> **Removed in v1:** `Dialog`, `ConfirmDialog`, `Snackbar`, `DataTable`. They
-> require portals/focus-traps/timing logic that are out of scope. Consumers stay
-> on the v0.x package for those.
+`Button`'s own API for reference: `variant` (`solid`/`outline`/`ghost`),
+`tone` (the shared `primary`/`neutral`/`success`/`warning`/`danger` set), `size`
+(`sm`/`md`/`lg`), `asChild`, `startIcon`, `endIcon`, `fullWidth`.
 
 ---
 
@@ -92,7 +80,7 @@ import { cx } from '../../utils/cx';
 import styles from './Button.module.css';
 
 export type ButtonVariant = 'solid' | 'outline' | 'ghost';
-export type ButtonTone = 'primary' | 'neutral' | 'danger';
+export type ButtonTone = 'primary' | 'neutral' | 'success' | 'warning' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

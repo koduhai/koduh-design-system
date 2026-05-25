@@ -252,7 +252,7 @@ export const Popover = /* @__PURE__ */ forwardRef<HTMLDivElement, PopoverProps>(
         data-placement={placement}
         data-open={isOpen ? 'true' : 'false'}
         style={panelStyle}
-        className={cx(styles.panel, className)}
+        className={cx(styles.root, className)}
         {...props}
       >
         {children}

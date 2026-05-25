@@ -116,7 +116,9 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
       defaultValue,
       onChange: undefined,
     });
-    const selectedOption = options.find((o) => o.value === selected);
+    const bound = value === undefined ? field?.binding : undefined;
+    const currentValue = bound ? (bound.value as string | undefined) : selected;
+    const selectedOption = options.find((o) => o.value === currentValue);
     const [query, setQuery] = useState<string>(selectedOption?.label ?? '');
     const [open, setOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
@@ -126,7 +128,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
 
     const choose = (opt: ComboboxOption, event: SyntheticEvent) => {
       if (opt.disabled) return;
-      setSelected(opt.value);
+      if (bound) bound.onChange(opt.value, event); else setSelected(opt.value);
       setQuery(opt.label);
       onChange?.(opt.value, event);
       setOpen(false);
@@ -136,7 +138,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
     // Reset to "no selection". Reports '' (not undefined) so the value stays a
     // string for consumers; refocus the input after clearing.
     const clear = (event: SyntheticEvent) => {
-      setSelected(undefined);
+      if (bound) bound.onChange('', event); else setSelected(undefined);
       setQuery('');
       onChange?.('', event);
       setOpen(false);
@@ -218,7 +220,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
             ) : null}
           </span>
         ) : null}
-        <div className={styles.control} data-clearable={clearable && selected ? 'true' : undefined}>
+        <div className={styles.control} data-clearable={clearable && currentValue ? 'true' : undefined}>
           <Popover
             open={open}
             onOpenChange={setOpen}
@@ -242,7 +244,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
                     key={opt.value}
                     id={optionId(i)}
                     role="option"
-                    aria-selected={opt.value === selected}
+                    aria-selected={opt.value === currentValue}
                     aria-disabled={opt.disabled || undefined}
                     data-active={i === activeIndex ? 'true' : undefined}
                     className={styles.option}
@@ -256,7 +258,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
               )}
             </ul>
           </Popover>
-          {clearable && selected ? (
+          {clearable && currentValue ? (
             <button
               type="button"
               className={styles.clear}

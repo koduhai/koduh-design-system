@@ -1,6 +1,6 @@
 {
   "name": "@koduhai/design-system",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "Koduh AI Design System — custom-built, MUI-free",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

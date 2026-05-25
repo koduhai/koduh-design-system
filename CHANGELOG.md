@@ -4,6 +4,37 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-05-25
+
+Additive release adding a form **orchestration** layer on top of the existing
+`FormField`/`useField` field layer (issue #38). No breaking changes — standalone
+field usage is unchanged.
+
+### Added
+
+- **`useForm` + `<Form>`** — a headless form store (values, errors, touched/dirty,
+  `isSubmitting`, `submitCount`) with immutable updates. Field state is subscribed
+  per-field via `useSyncExternalStore`, so a keystroke re-renders only that field.
+  `<Form form={api}>` renders a native `<form>` and wires submit
+  (`onValid`/`onInvalid`); `handleSubmit` validates, focuses the first invalid field,
+  and guards against concurrent double-submit.
+- **Validation** — a pluggable `resolver` (sync or async) plus per-field rules;
+  resolver errors win on conflict. `standardSchemaResolver(schema)` adapts any
+  [Standard Schema](https://standardschema.dev) validator (zod/valibot/arktype) with
+  **no hard dependency** (zero-runtime-deps policy preserved).
+- **`useFormField(name, rules?)`** — subscribes to one field's slice (value, error,
+  touched, dirty) with `onChange`/`onBlur`/`setValue` handlers.
+- **`useFieldArray(name)`** — stable-keyed `fields` plus `append`/`prepend`/`insert`/
+  `remove`/`move`/`replace` for repeating field groups.
+- **`<FormErrorSummary>`** — accessible (`role="alert"`, labelled) summary listing
+  invalid fields; each entry focuses its field on activate. Renders nothing when valid.
+- **Name-aware `FormField`** — `<FormField name="…">` inside a `<Form>` auto-wires
+  value/onChange/onBlur into the wrapped input via a new optional `binding` on
+  `FieldContext`; a bound `required` field validates on submit. Consumed additively by
+  9 inputs (`TextField`, `Textarea`, `NumberField`, `PinInput`, `Select`, `Combobox`,
+  `TagInput`, `DatePicker`, `ToggleGroup`) — an explicit `value` prop still wins, and
+  standalone behavior is unchanged.
+
 ## [2.5.1] - 2026-05-25
 
 Patch from a full component-consistency audit. No API changes.

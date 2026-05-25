@@ -85,6 +85,8 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
 
     const reactId = useId('datepicker');
     const field = useOptionalFieldContext();
+    const bound = value === undefined ? field?.binding : undefined;
+    const currentValue = bound ? (bound.value as Date | undefined) : selected;
     // Inside a <FormField>, defer label/required/aria to it; otherwise use own props.
     const baseId = field?.id ?? id ?? reactId;
     const showOwnLabel = !field;
@@ -96,17 +98,17 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
 
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const formatted = selected
+    const formatted = currentValue
       ? new Intl.DateTimeFormat(locale, {
           day: 'numeric',
           month: 'long',
           year: 'numeric',
-        }).format(selected)
+        }).format(currentValue)
       : '';
 
     const choose = (date: Date) => {
       const day = startOfDay(date);
-      setSelected(day);
+      if (bound) bound.onChange(day); else setSelected(day);
       onChange?.(day);
       setOpen(false);
       inputRef.current?.focus();
@@ -166,7 +168,7 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
           trigger={trigger}
         >
           <div id={calendarId} className={styles.popover}>
-            <Calendar value={selected} onChange={choose} min={min} max={max} locale={locale} />
+            <Calendar value={currentValue} onChange={choose} min={min} max={max} locale={locale} />
           </div>
         </Popover>
       </div>

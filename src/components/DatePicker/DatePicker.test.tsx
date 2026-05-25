@@ -3,6 +3,9 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DatePicker } from './DatePicker';
 import { FormField } from '../FormField';
+import { Form } from '../Form/Form';
+import { useForm } from '../Form/useForm';
+import { useFormField } from '../Form/useFormField';
 
 const JUNE_2026 = new Date(2026, 5, 15);
 
@@ -111,6 +114,47 @@ describe('DatePicker', () => {
     const input = screen.getByLabelText(/Event date/);
     expect(input).toBeRequired();
     expect(input).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  describe('DatePicker bound to a Form', () => {
+    it('reads value from the form and writes day selection back', async () => {
+      const BOUND_DATE = new Date(2026, 5, 15); // June 15 2026
+      function Probe() {
+        const f = useFormField('field');
+        const d = f.value instanceof Date ? f.value.getDate() : null;
+        return <span data-testid="v">{d}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { field: BOUND_DATE } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="field" label="Date">
+              <DatePicker />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      // bound default shows in the input
+      const input = screen.getByLabelText(/Date/);
+      expect(input).toHaveValue(
+        new Intl.DateTimeFormat(undefined, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(BOUND_DATE),
+      );
+      // open calendar and select day 20
+      await userEvent.click(screen.getByLabelText('Open calendar'));
+      const grid = screen.getByRole('grid');
+      const day20 = within(grid)
+        .getAllByRole('gridcell')
+        .find((el) => el.tagName === 'BUTTON' && el.textContent === '20')!;
+      await userEvent.click(day20);
+      // form value updated
+      expect(screen.getByTestId('v')).toHaveTextContent('20');
+    });
   });
 
   it('inside FormField: no own label, input id + aria from context', () => {

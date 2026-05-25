@@ -1,4 +1,4 @@
-.card {
+.root {
   /* Richer than a tooltip: room for arbitrary content. */
   padding: var(--ku-space-3) var(--ku-space-4);
   max-inline-size: 20rem;
@@ -12,7 +12,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .root {
     transition: none;
   }
 }

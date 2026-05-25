@@ -121,7 +121,7 @@ export const HoverCard = /* @__PURE__ */ forwardRef<HTMLDivElement, HoverCardPro
         placement={placement}
         id={cardId}
         trigger={triggerEl}
-        className={cx(styles.card, className)}
+        className={cx(styles.root, className)}
         onMouseEnter={composeEventHandlers(panelMouseEnter, onPanelEnter)}
         onMouseLeave={composeEventHandlers(panelMouseLeave, onPanelLeave)}
         {...rest}

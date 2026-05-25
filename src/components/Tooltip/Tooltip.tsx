@@ -107,7 +107,7 @@ export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(
       role="tooltip"
       id={tooltipId}
       trigger={trigger}
-      className={cx(styles.tooltip, className)}
+      className={cx(styles.root, className)}
       onMouseEnter={composeEventHandlers(panelMouseEnter, onPanelEnter)}
       onMouseLeave={composeEventHandlers(panelMouseLeave, onPanelLeave)}
       {...rest}

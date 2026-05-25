@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Form } from './Form';
-import { useForm } from './useForm';
+import { useForm, createFormStore } from './useForm';
 import { useFieldArray } from './useFieldArray';
 import { standardSchemaResolver } from './resolver';
 import type { StandardSchemaV1 } from './resolver';
@@ -16,6 +16,10 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
+
+// Stable placeholder form instance used only to satisfy the args type requirement
+// for stories whose render function creates its own form via useForm().
+const _placeholderForm = createFormStore();
 
 // ---------------------------------------------------------------------------
 // Schema helpers
@@ -40,6 +44,7 @@ const requireFields = (names: string[]): StandardSchemaV1 => ({
 // ---------------------------------------------------------------------------
 
 export const Login: Story = {
+  args: { form: _placeholderForm },
   render: function LoginStory() {
     const form = useForm({ resolver: standardSchemaResolver(requireFields(['email', 'password'])) });
     return (
@@ -67,6 +72,7 @@ export const Login: Story = {
 // ---------------------------------------------------------------------------
 
 export const WithErrorSummary: Story = {
+  args: { form: _placeholderForm },
   render: function WithErrorSummaryStory() {
     const form = useForm({ resolver: standardSchemaResolver(requireFields(['email', 'password'])) });
     return (
@@ -117,7 +123,7 @@ function FieldArrayForm() {
         ))}
         <Button
           type="button"
-          variant="outlined"
+          variant="outline"
           tone="primary"
           onClick={() => append({ name: '' })}
         >
@@ -132,6 +138,7 @@ function FieldArrayForm() {
 }
 
 export const FieldArray: Story = {
+  args: { form: _placeholderForm },
   render: function FieldArrayStory() {
     return (
       <div style={{ maxWidth: 480, padding: 40 }}>
@@ -166,6 +173,7 @@ function ShowcaseLoginForm() {
 }
 
 export const Showcase: Story = {
+  args: { form: _placeholderForm },
   parameters: { layout: 'fullscreen' },
   render: function ShowcaseStory() {
     return (

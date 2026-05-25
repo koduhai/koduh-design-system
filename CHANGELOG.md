@@ -4,6 +4,28 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2026-05-25
+
+Patch from a full component-consistency audit. No API changes.
+
+### Fixed
+
+- **RTL: residual physical CSS converted to logical properties** so the affected
+  components mirror correctly under `dir="rtl"` (the #21 migration missed these):
+  `Switch` thumb position + checked-state travel (via `inset-inline-start` and a
+  `:dir(rtl)` translate flip), `Checkbox` input overlay, `Toaster` edge placements
+  (`left`/`right` → `inset-inline-start`/`inset-inline-end`), and the `Table` /
+  `DataTable` sort-icon borders. LTR rendering is unchanged.
+
+### Internal
+
+- Root-element CSS-module classes renamed to `root` in `Tooltip`, `HoverCard`, and
+  `Popover` for naming uniformity (hashed module-local classes — no consumer impact;
+  `Popover`'s `position-area` placement values are untouched).
+- Documented the intentional convention exceptions (`Toaster`, `Code`,
+  `LoadingButton`, `Text`'s typographic tone axis) and refreshed
+  `docs/component_guidelines.md`.
+
 ## [2.5.0] - 2026-05-24
 
 Large additive release working the full open-issue backlog in one batch: two

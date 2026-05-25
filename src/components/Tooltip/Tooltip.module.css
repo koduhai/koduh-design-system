@@ -1,4 +1,4 @@
-.tooltip {
+.root {
   padding: var(--ku-space-1) var(--ku-space-2);
   font-size: var(--ku-font-size-sm);
   line-height: var(--ku-line-height-tight);
@@ -10,7 +10,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tooltip {
+  .root {
     transition: none;
   }
 }

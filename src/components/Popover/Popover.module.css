@@ -2,7 +2,7 @@
   anchor-name: var(--ku-anchor-name);
 }
 
-.panel {
+.root {
   position: fixed;
   position-anchor: var(--ku-anchor-name);
   position-try-fallbacks: flip-block, flip-inline;
@@ -18,7 +18,7 @@
   padding: 0;
 }
 
-.panel[data-open='false'] {
+.root[data-open='false'] {
   display: none;
 }
 
@@ -28,39 +28,39 @@
    position-area invalid → the panel falls back to inset:0 (viewport top-left);
    see issue #34. block-end/block-start replace bottom/top; inline-start/
    inline-end replace left/right; span-block-* replaces span-bottom/span-top. */
-.panel[data-placement='bottom'] {
+.root[data-placement='bottom'] {
   position-area: block-end;
 }
-.panel[data-placement='bottom-start'] {
+.root[data-placement='bottom-start'] {
   position-area: block-end span-inline-end;
 }
-.panel[data-placement='bottom-end'] {
+.root[data-placement='bottom-end'] {
   position-area: block-end span-inline-start;
 }
-.panel[data-placement='top'] {
+.root[data-placement='top'] {
   position-area: block-start;
 }
-.panel[data-placement='top-start'] {
+.root[data-placement='top-start'] {
   position-area: block-start span-inline-end;
 }
-.panel[data-placement='top-end'] {
+.root[data-placement='top-end'] {
   position-area: block-start span-inline-start;
 }
-.panel[data-placement='left'] {
+.root[data-placement='left'] {
   position-area: inline-start;
 }
-.panel[data-placement='left-start'] {
+.root[data-placement='left-start'] {
   position-area: inline-start span-block-end;
 }
-.panel[data-placement='left-end'] {
+.root[data-placement='left-end'] {
   position-area: inline-start span-block-start;
 }
-.panel[data-placement='right'] {
+.root[data-placement='right'] {
   position-area: inline-end;
 }
-.panel[data-placement='right-start'] {
+.root[data-placement='right-start'] {
   position-area: inline-end span-block-end;
 }
-.panel[data-placement='right-end'] {
+.root[data-placement='right-end'] {
   position-area: inline-end span-block-start;
 }

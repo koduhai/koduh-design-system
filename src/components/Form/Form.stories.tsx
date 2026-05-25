@@ -102,38 +102,41 @@ export const WithErrorSummary: Story = {
 
 function FieldArrayForm() {
   const form = useForm();
-  const { fields, append, remove } = useFieldArray<{ name: string }>('contacts');
   return (
     <Form form={form} onValid={(values) => console.log('Contacts submitted', values)}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {fields.map((field, i) => (
-          <div key={field.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-            <FormField name={`contacts.${i}.name`} label={`Contact ${i + 1}`}>
-              <TextField placeholder="Full name" />
-            </FormField>
-            <Button
-              type="button"
-              variant="ghost"
-              tone="danger"
-              onClick={() => remove(i)}
-            >
-              Remove
-            </Button>
-          </div>
-        ))}
-        <Button
-          type="button"
-          variant="outline"
-          tone="primary"
-          onClick={() => append({ name: '' })}
-        >
-          Add contact
-        </Button>
-        <Button type="submit" variant="solid" tone="primary">
-          Save contacts
-        </Button>
-      </div>
+      {/* useFieldArray must run inside <Form> — split into a child so the
+          FormContext provider is mounted before the hook reads it. */}
+      <Contacts />
     </Form>
+  );
+}
+
+function Contacts() {
+  const { fields, append, remove } = useFieldArray<{ name: string }>('contacts');
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {fields.map((field, i) => (
+        <div key={field.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+          <FormField name={`contacts.${i}.name`} label={`Contact ${i + 1}`}>
+            <TextField placeholder="Full name" />
+          </FormField>
+          <Button type="button" variant="ghost" tone="danger" onClick={() => remove(i)}>
+            Remove
+          </Button>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        tone="primary"
+        onClick={() => append({ name: '' })}
+      >
+        Add contact
+      </Button>
+      <Button type="submit" variant="solid" tone="primary">
+        Save contacts
+      </Button>
+    </div>
   );
 }
 

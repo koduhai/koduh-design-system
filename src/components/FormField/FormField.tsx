@@ -138,7 +138,10 @@ const BoundFormField = forwardRef<HTMLDivElement, FormFieldProps & { name: strin
     const id = idProp ?? reactId;
     const labelId = `${id}-label`;
     const descriptionId = `${id}-description`;
-    const field = useFormField(name);
+    // Forward `required` as a field-level rule so a bound `<FormField required>`
+    // actually validates (not just the visual asterisk). A resolver error for the
+    // same field still wins (resolver merges last in the store).
+    const field = useFormField(name, required ? { required: true } : undefined);
     const formError = field.error;
     const hasError = Boolean(formError);
     const description = hasError ? formError : helperText;

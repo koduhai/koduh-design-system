@@ -154,4 +154,21 @@ describe('FormField bound to a Form', () => {
     fireEvent.click(screen.getByText('Go'));
     expect(await screen.findByText('Required')).toBeInTheDocument();
   });
+
+  it('a bound `required` FormField validates on submit (no resolver)', async () => {
+    function Wrap() {
+      const form = useForm();
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="city" label="City" required>
+            <BindingProbe />
+          </FormField>
+          <button type="submit">Go</button>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    fireEvent.click(screen.getByText('Go'));
+    expect(await screen.findByText('This field is required')).toBeInTheDocument();
+  });
 });

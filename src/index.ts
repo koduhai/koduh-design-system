@@ -40,6 +40,8 @@ export { Alert } from './components/Alert';
 export type { AlertProps, AlertSeverity } from './components/Alert';
 export { TextField } from './components/TextField';
 export type { TextFieldProps, TextFieldSize } from './components/TextField';
+export { PasswordInput } from './components/PasswordInput';
+export type { PasswordInputProps, PasswordInputSize } from './components/PasswordInput';
 export { Card } from './components/Card';
 export type { CardProps, CardVariant, CardPadding } from './components/Card';
 export { EmptyState } from './components/EmptyState';

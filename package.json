@@ -21,6 +21,11 @@
       "import": "./dist/icons/index.mjs",
       "require": "./dist/icons/index.js"
     },
+    "./tailwind-preset": {
+      "types": "./dist/tailwind-preset/index.d.ts",
+      "import": "./dist/tailwind-preset/index.mjs",
+      "require": "./dist/tailwind-preset/index.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./theme.css": "./dist/theme.css"
   },

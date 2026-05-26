@@ -16,7 +16,17 @@ describe('buildThemeCss', () => {
   });
 
   it('declares light theme overrides under [data-theme="light"]', () => {
-    expect(css).toMatch(/\[data-theme="light"\]\s*\{[^}]*--ku-color-bg-default: #FFFFFF;/s);
+    expect(css).toMatch(/\[data-theme="light"\][^{]*\{[^}]*--ku-color-bg-default: #FFFFFF;/s);
+  });
+
+  it('also honors the .dark / .light class strategy (Tailwind darkMode:"class")', () => {
+    // Dark overrides apply under a `.dark` class, sharing the data-theme rule.
+    expect(css).toMatch(/\[data-theme="dark"\][^{]*\.dark\s*\{[^}]*--ku-color-bg-default: #0A0E1A;/s);
+    // Light overrides apply under a `.light` class so a class-strategy app can
+    // reach the light palette without relying on the dark-by-default :root.
+    expect(css).toMatch(
+      /\[data-theme="light"\][^{]*\.light\s*\{[^}]*--ku-color-bg-default: #FFFFFF;/s,
+    );
   });
 
   it('converts camelCase token names to kebab-case variables', () => {

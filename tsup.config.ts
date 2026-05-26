@@ -12,7 +12,12 @@ import { copyFileSync, existsSync } from 'node:fs';
  *   original → scoped names, so `import styles from './X.module.css'` works.
  */
 export default defineConfig({
-  entry: ['src/index.ts', 'src/theme/index.ts', 'src/icons/index.ts'],
+  entry: [
+    'src/index.ts',
+    'src/theme/index.ts',
+    'src/icons/index.ts',
+    'src/tailwind-preset/index.ts',
+  ],
   format: ['cjs', 'esm'],
   dts: true,
   clean: false,

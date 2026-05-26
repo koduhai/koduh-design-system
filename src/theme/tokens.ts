@@ -66,6 +66,22 @@ export const tokens = {
   easing: {
     standard: 'cubic-bezier(0.2, 0, 0, 1)',
   },
+  // Fixed brand tint ramp (theme-independent — same in dark and light, like a
+  // Tailwind brand scale). `brand-600` is the DS light `primary` (#1B5FCC); the
+  // semantic `primary` token stays theme-adaptive, so brand ≠ primary by design.
+  // → --ku-brand-50 … --ku-brand-900
+  brand: {
+    50: '#EFF4FE',
+    100: '#DCE8FC',
+    200: '#BBD0F9',
+    300: '#8FB0F4',
+    400: '#5C89EC',
+    500: '#3468E0',
+    600: '#1B5FCC',
+    700: '#1A4DA6',
+    800: '#173E82',
+    900: '#142F61',
+  },
   // Focus-ring geometry (theme-independent). The ring *color* reuses
   // `--ku-color-primary`; only width/offset live here.
   // → --ku-focus-ring-width, --ku-focus-ring-offset

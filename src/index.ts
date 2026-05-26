@@ -216,6 +216,8 @@ export { Code, CodeBlock } from './components/Code';
 export type { CodeProps, CodeBlockProps } from './components/Code';
 export { Collapsible } from './components/Collapsible';
 export type { CollapsibleProps } from './components/Collapsible';
+export { CountUp } from './components/CountUp';
+export type { CountUpProps } from './components/CountUp';
 export { ScrollArea } from './components/ScrollArea';
 export type { ScrollAreaProps, ScrollAreaOrientation } from './components/ScrollArea';
 export { Rating } from './components/Rating';

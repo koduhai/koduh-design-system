@@ -50,6 +50,7 @@ export const PasswordInput = /* @__PURE__ */ forwardRef<HTMLInputElement, Passwo
       size = 'md',
       density,
       required,
+      disabled,
       className,
       id: idProp,
       ...props
@@ -87,7 +88,7 @@ export const PasswordInput = /* @__PURE__ */ forwardRef<HTMLInputElement, Passwo
         data-density={density}
         data-error={invalid ? 'true' : undefined}
       >
-        {showOwnLabel ? (
+        {showOwnLabel && label != null ? (
           <label className={styles.label} htmlFor={id}>
             {label}
             {isRequired ? (
@@ -106,6 +107,7 @@ export const PasswordInput = /* @__PURE__ */ forwardRef<HTMLInputElement, Passwo
             type={visible ? 'text' : 'password'}
             value={currentValue}
             required={isRequired}
+            disabled={disabled}
             aria-invalid={invalid || undefined}
             aria-describedby={describedBy}
             onChange={(event) => {
@@ -125,7 +127,7 @@ export const PasswordInput = /* @__PURE__ */ forwardRef<HTMLInputElement, Passwo
             className={styles.toggle}
             aria-label={visible ? 'Hide password' : 'Show password'}
             aria-pressed={visible}
-            tabIndex={-1}
+            disabled={disabled}
             onClick={() => setVisible((v) => !v)}
           >
             {visible ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}

@@ -18,6 +18,7 @@ export const Showcase: Story = {
       <PasswordInput label="Password" defaultValue="hunter2" helperText="At least 8 characters." />
       <PasswordInput label="New password" />
       <PasswordInput label="Confirm" error errorText="Passwords don't match." defaultValue="x" />
+      <PasswordInput label="Disabled" defaultValue="hunter2" disabled />
     </div>
   ),
 };

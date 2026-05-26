@@ -1,2 +1,2 @@
 export { PasswordInput } from './PasswordInput';
-export type { PasswordInputProps, PasswordInputSize } from './PasswordInput';
+export type { PasswordInputProps, PasswordInputSize, Density } from './PasswordInput';

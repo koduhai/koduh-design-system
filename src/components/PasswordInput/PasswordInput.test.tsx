@@ -46,4 +46,10 @@ describe('PasswordInput', () => {
     const { container } = render(<PasswordInput label="Password" className="custom" />);
     expect(container.firstChild).toHaveClass('custom');
   });
+
+  it('disables both the input and the toggle when disabled', () => {
+    render(<PasswordInput label="Password" disabled />);
+    expect(screen.getByLabelText('Password')).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Show password' })).toBeDisabled();
+  });
 });

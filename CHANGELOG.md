@@ -4,6 +4,34 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-05-26
+
+Additive release making the design system adoptable by Tailwind CSS consumers
+(e.g. koduh-mail-web) and filling the gaps a like-for-like comparison revealed.
+No breaking changes. See `docs/tailwind-consumer-compatibility.md`.
+
+### Added
+
+- **Class-based theming** — the generated `dist/theme.css` now applies its
+  dark/light overrides under a `.dark` / `.light` class in addition to the
+  `[data-theme]` attribute, so apps using Tailwind's `darkMode: 'class'` get the
+  design tokens automatically. `:root` stays dark-by-default; a class-strategy app
+  whose light state is "no class" toggles `.light` explicitly.
+- **`@koduhai/design-system/tailwind-preset`** — a new entry point mapping the
+  semantic color tokens (and the brand ramp) onto Tailwind's `theme.extend.colors`
+  as `var(--ku-*)` variables (e.g. `bg-primary`, `text-fg-muted`, `bg-surface`,
+  `bg-chart-1`, `bg-brand-600`). Colors + fontFamily only — it deliberately does
+  not map spacing/radius/fontSize, so it never clobbers Tailwind's built-in scales.
+- **Brand tint ramp** — a fixed, theme-independent 10-step ramp
+  (`--ku-brand-50 … --ku-brand-900`, anchored on the light `primary` `#1B5FCC`),
+  exposed via the preset as `bg-brand-*` / `text-brand-*`.
+- **`PasswordInput`** — a labelled password field with an accessible, keyboard-
+  reachable show/hide toggle (`aria-pressed` / `aria-label`), error/helper text,
+  density, and `FormField` integration.
+- **`CountUp`** — an animated number that counts up to a target value with an
+  ease-out curve, honoring `prefers-reduced-motion` (renders the final value
+  instantly); supports `decimals` and a custom `format`.
+
 ## [2.6.0] - 2026-05-25
 
 Additive release adding a form **orchestration** layer on top of the existing

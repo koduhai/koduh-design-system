@@ -60,14 +60,18 @@ Semantics: `brand` is the **fixed ramp** (same in dark and light, like Tailwind)
 
 ### 2. `PasswordInput` component
 
-A thin wrapper over `TextField` adding a trailing show/hide toggle. Folder `src/components/PasswordInput/` with the standard five files; exported (component + props type) from `index.ts` and re-exported from `src/index.ts`.
+A **standalone field component modeled on `NumberField`** (NOT a thin wrapper over `TextField`). Rationale: `TextField`'s `endAdornment` is rendered inside an `aria-hidden` span (decorative only), so an interactive toggle placed there would be invisible to keyboard/screen-reader users — failing the AA bar. The codebase precedent for interactive in-field controls is `NumberField`, which owns its field shell and renders real `<button>`s as siblings of the input inside the `.field` flex row (naturally centred, in the a11y tree). `PasswordInput` follows that pattern exactly. This duplicates the field shell the same way `NumberField` already does; refactoring a shared shell is out of scope.
+
+Folder `src/components/PasswordInput/` with the standard five files; exported (component + props type) from `index.ts` and re-exported from `src/index.ts`. Public behaviour is unchanged from the original intent: a labelled password field with an accessible show/hide toggle.
 
 Behavior:
-- Internally renders `TextField` with `type` switching `password` ↔ `text` from internal `visible` state (uncontrolled; defaults hidden).
-- Trailing adornment is a real `<button type="button">` with an eye / eye-off icon (from `src/icons`), `aria-label` ("Show password" / "Hide password") that updates with state, and `aria-pressed`. Keyboard-operable, AA focus ring via the shared focus-ring token, reduced-motion safe.
-- `forwardRef` to the underlying input; `className` forwarded to the field root; remaining `TextField` props pass through (label, error, helperText, etc.). Toggle does not steal focus from the field on click.
+- Mirrors `TextField`'s prop surface (label, value/defaultValue/onChange string API, helperText, error/errorText, size, density, required, FormField context integration, `forwardRef` to the input, `className` to the root, DOM prop passthrough). `type` is fixed-managed: `password` when hidden, `text` when shown.
+- Internal `visible` state (uncontrolled; defaults hidden). A trailing real `<button type="button">` inside the `.field` row renders `EyeIcon` (when hidden, "show") / `EyeOffIcon` (when shown, "hide"), with `aria-label` that updates with state ("Show password" / "Hide password") and `aria-pressed={visible}`. AA focus ring via the shared focus-ring token; reduced-motion safe; the icon is `aria-hidden`.
+- The toggle uses `tabIndex={-1}` to match `NumberField`'s stepper convention (reachable via the button itself, not inserted into the field's tab sequence) — revisit only if it conflicts with the axe pass.
 
-**Tests:** toggling flips input `type` and the button's `aria-label`/`aria-pressed`; ref points at the input; className passthrough. a11y story (dark + light) → axe clean.
+**New icons:** add `EyeIcon` and `EyeOffIcon` to `src/icons/icons.tsx` via the `createIcon` factory; export from `src/icons/index.ts`.
+
+**Tests:** toggling flips input `type` and the button's `aria-label`/`aria-pressed`; ref points at the input; className passthrough; value typing works (controlled + uncontrolled). a11y story (dark + light) → axe clean.
 
 ### 3. `CountUp` component
 

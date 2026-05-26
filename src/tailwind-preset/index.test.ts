@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import koduhaiPreset, { koduhaiPreset as named } from './index';
-import { themes } from '../theme/tokens';
+import { themes, tokens } from '../theme/tokens';
 
 describe('koduhaiPreset (Tailwind)', () => {
   const colors = koduhaiPreset.theme.extend.colors;
@@ -35,6 +35,12 @@ describe('koduhaiPreset (Tailwind)', () => {
   it('maps the font families to --ku-font-family-* variables', () => {
     expect(koduhaiPreset.theme.extend.fontFamily.sans).toBe('var(--ku-font-family-base)');
     expect(koduhaiPreset.theme.extend.fontFamily.mono).toBe('var(--ku-font-family-mono)');
+  });
+
+  it('maps the brand ramp to --ku-brand-* utilities, derived from tokens', () => {
+    expect(Object.keys(colors.brand)).toHaveLength(Object.keys(tokens.brand).length);
+    expect(colors.brand['600']).toBe('var(--ku-brand-600)');
+    expect(colors.brand['50']).toBe('var(--ku-brand-50)');
   });
 
   it('does NOT override Tailwind built-in scales (spacing/radius/fontSize)', () => {

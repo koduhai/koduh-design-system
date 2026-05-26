@@ -25,7 +25,7 @@
  * raised, fg/fg-muted/fg-disabled) to avoid awkward `bg-bg-*` / `text-text-*`
  * utility names.
  */
-import { themes } from '../theme/tokens';
+import { themes, tokens } from '../theme/tokens';
 
 /** `var(--ku-color-<name>)` for a kebab-cased token name. */
 const color = (name: string) => `var(--ku-color-${name})`;
@@ -39,6 +39,12 @@ const chart: Record<string, string> = Object.fromEntries(
       const n = key.slice('chart'.length);
       return [n, color(`chart-${n}`)];
     }),
+);
+
+// Fixed brand ramp → bg-brand-600, text-brand-700, … (var(--ku-brand-N), so it
+// matches a Tailwind brand scale's mental model). Derived from tokens so it can't drift.
+const brand: Record<string, string> = Object.fromEntries(
+  Object.keys(tokens.brand).map((step) => [step, `var(--ku-brand-${step})`]),
 );
 
 export const koduhaiPreset = {
@@ -65,6 +71,8 @@ export const koduhaiPreset = {
         },
         // Data-viz categorical palette: bg-chart-1 … border-chart-8.
         chart,
+        // Fixed brand tint ramp: bg-brand-50 … bg-brand-900.
+        brand,
       },
       fontFamily: {
         sans: 'var(--ku-font-family-base)',

@@ -69,4 +69,13 @@ describe('buildThemeCss', () => {
   it('emits an explicit [data-density="comfortable"] block so density can be reset under a compact ancestor', () => {
     expect(css).toMatch(/\[data-density='comfortable'\]\s*\{[^}]*--ku-density-row-height: 40px;/s);
   });
+
+  it('emits a fixed, theme-independent brand ramp on :root', () => {
+    // Anchor step equals the DS light primary; ramp is the same in dark + light.
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-brand-600: #1B5FCC;/s);
+    expect(css).toContain('--ku-brand-50: #EFF4FE;');
+    expect(css).toContain('--ku-brand-900: #142F61;');
+    // It must NOT be duplicated into the theme override blocks (it's not a theme color).
+    expect(css).not.toMatch(/\[data-theme="dark"\][^{]*\{[^}]*--ku-brand-600/s);
+  });
 });

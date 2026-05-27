@@ -1,0 +1,195 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-3);
+  inline-size: 240px;
+  /* Local checkerboard used behind translucent previews/alpha (gradient, not a token). */
+  --cp-checker: repeating-conic-gradient(
+      var(--ku-color-bg-surface) 0% 25%,
+      var(--ku-color-bg-default) 0% 50%
+    )
+    50% / 12px 12px;
+}
+
+.label {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+
+/* ---- Saturation / brightness square ---- */
+.sv {
+  position: relative;
+  inline-size: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--ku-radius-md);
+  cursor: crosshair;
+  touch-action: none;
+  /* white → hue (left→right saturation), black overlay (top→bottom brightness). */
+  background:
+    linear-gradient(to bottom, transparent, #000),
+    linear-gradient(to right, #fff, var(--cp-hue, #f00));
+  border: 1px solid var(--ku-color-border-default);
+}
+.sv:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+.svHandle {
+  position: absolute;
+  inset-inline-start: var(--cp-sv-x, 0%);
+  inset-block-start: var(--cp-sv-y, 0%);
+  inline-size: 14px;
+  block-size: 14px;
+  margin-inline-start: -7px;
+  margin-block-start: -7px;
+  border-radius: var(--ku-radius-full);
+  background: var(--cp-color, transparent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35);
+  pointer-events: none;
+}
+
+/* ---- Horizontal bar sliders (hue, alpha) ---- */
+.hue,
+.alpha {
+  position: relative;
+  block-size: 12px;
+  border-radius: var(--ku-radius-full);
+  cursor: pointer;
+  touch-action: none;
+}
+.hue:focus-visible,
+.alpha:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+.hue {
+  background: linear-gradient(
+    to right,
+    #f00 0%,
+    #ff0 17%,
+    #0f0 33%,
+    #0ff 50%,
+    #00f 67%,
+    #f0f 83%,
+    #f00 100%
+  );
+}
+/* In RTL the gradient direction is mirrored so hue 0 stays at the start edge. */
+:global([dir='rtl']) .hue {
+  background: linear-gradient(
+    to left,
+    #f00 0%,
+    #ff0 17%,
+    #0f0 33%,
+    #0ff 50%,
+    #00f 67%,
+    #f0f 83%,
+    #f00 100%
+  );
+}
+
+.alpha {
+  background: var(--cp-checker);
+}
+.alphaTrack {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* opaque current color → transparent, left→right (mirrors under RTL). */
+  background: linear-gradient(to right, transparent, var(--cp-color, #000));
+}
+:global([dir='rtl']) .alphaTrack {
+  background: linear-gradient(to left, transparent, var(--cp-color, #000));
+}
+
+.barHandle {
+  position: absolute;
+  inset-block-start: 50%;
+  inline-size: 14px;
+  block-size: 14px;
+  margin-inline-start: -7px;
+  border-radius: var(--ku-radius-full);
+  background: #fff;
+  border: 1px solid rgb(0 0 0 / 0.35);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.hueHandle {
+  inset-inline-start: var(--cp-hue-pos, 0%);
+}
+.alphaTrack .barHandle {
+  inset-inline-start: var(--cp-alpha-pos, 0%);
+}
+
+/* ---- Preview + hex input ---- */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+}
+.preview {
+  inline-size: 32px;
+  block-size: 32px;
+  flex: none;
+  border-radius: var(--ku-radius-sm);
+  border: 1px solid var(--ku-color-border-default);
+  /* checkerboard shows through translucent colors */
+  background-image: var(--cp-checker);
+}
+.hexField {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  flex: 1;
+}
+.hexLabel {
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+}
+.hexInput {
+  flex: 1;
+  min-inline-size: 0;
+  font-family: var(--ku-font-family-mono, monospace);
+  font-size: var(--ku-font-size-sm);
+  padding-block: var(--ku-space-1);
+  padding-inline: var(--ku-space-2);
+  color: var(--ku-color-text-primary);
+  background: var(--ku-color-bg-default);
+  border: 1px solid var(--ku-color-border-default);
+  border-radius: var(--ku-radius-sm);
+}
+.hexInput:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 1px;
+}
+
+/* ---- Swatches ---- */
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ku-space-2);
+}
+.swatch {
+  inline-size: 22px;
+  block-size: 22px;
+  padding: 0;
+  border-radius: var(--ku-radius-sm);
+  border: 1px solid var(--ku-color-border-default);
+  cursor: pointer;
+}
+.swatch:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+.swatch[aria-pressed='true'] {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 1px;
+}
+
+.root[data-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}

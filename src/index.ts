@@ -246,6 +246,8 @@ export { Carousel } from './components/Carousel';
 export type { CarouselProps, CarouselItem } from './components/Carousel';
 export { CommandPalette } from './components/CommandPalette';
 export type { CommandPaletteProps, CommandPaletteCommand } from './components/CommandPalette';
+export { ColorPicker } from './components/ColorPicker';
+export type { ColorPickerProps } from './components/ColorPicker';
 
 // Form orchestration (#38)
 export {

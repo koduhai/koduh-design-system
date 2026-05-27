@@ -31,3 +31,38 @@ export const Showcase: Story = {
     </div>
   ),
 };
+
+/**
+ * Header / Body / Footer slots. Use `padding="none"` on the outer Card so each
+ * slot owns its own padding; Header gets a bottom divider and Footer a top one.
+ */
+export const Slots: Story = {
+  render: () => (
+    <Card variant="elevated" padding="none" style={{ maxWidth: 360 }}>
+      <Card.Header>
+        <strong>Card title</strong>
+      </Card.Header>
+      <Card.Body>
+        Body content sits in the padded region between the header and footer dividers.
+      </Card.Body>
+      <Card.Footer
+        style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}
+      >
+        <button type="button">Cancel</button>
+        <button type="button">Save</button>
+      </Card.Footer>
+    </Card>
+  ),
+};
+
+/** Header + Body only — the bordered-header / padded-body pattern the consumer uses. */
+export const HeaderAndBody: Story = {
+  render: () => (
+    <Card variant="outline" padding="none" style={{ maxWidth: 360 }}>
+      <Card.Header>
+        <strong>Settings</strong>
+      </Card.Header>
+      <Card.Body>Configure your preferences here.</Card.Body>
+    </Card>
+  ),
+};

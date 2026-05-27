@@ -247,6 +247,10 @@ export type { CarouselProps, CarouselItem } from './components/Carousel';
 export { CommandPalette } from './components/CommandPalette';
 export type { CommandPaletteProps, CommandPaletteCommand } from './components/CommandPalette';
 
+// issue #43 — component round-out
+export { ButtonGroup } from './components/ButtonGroup';
+export type { ButtonGroupProps, ButtonGroupOrientation } from './components/ButtonGroup';
+
 // Form orchestration (#38)
 export {
   Form,

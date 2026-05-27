@@ -21,7 +21,9 @@ describe('buildThemeCss', () => {
 
   it('also honors the .dark / .light class strategy (Tailwind darkMode:"class")', () => {
     // Dark overrides apply under a `.dark` class, sharing the data-theme rule.
-    expect(css).toMatch(/\[data-theme="dark"\][^{]*\.dark\s*\{[^}]*--ku-color-bg-default: #0A0E1A;/s);
+    expect(css).toMatch(
+      /\[data-theme="dark"\][^{]*\.dark\s*\{[^}]*--ku-color-bg-default: #0A0E1A;/s,
+    );
     // Light overrides apply under a `.light` class so a class-strategy app can
     // reach the light palette without relying on the dark-by-default :root.
     expect(css).toMatch(
@@ -77,5 +79,14 @@ describe('buildThemeCss', () => {
     expect(css).toContain('--ku-brand-900: #142F61;');
     // It must NOT be duplicated into the theme override blocks (it's not a theme color).
     expect(css).not.toMatch(/\[data-theme="dark"\][^{]*\{[^}]*--ku-brand-600/s);
+  });
+
+  it('emits back-compat aliases for renamed v1 colour tokens on :root (#47)', () => {
+    // Aliases delegate to the replacement via var(), so they resolve per theme.
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-bg-subtle: var\(--ku-color-bg-surface\);/s);
+    expect(css).toContain('--ku-color-border-default: var(--ku-color-border);');
+    expect(css).toContain('--ku-color-fg-default: var(--ku-color-text-primary);');
+    // Aliases are theme-independent — not duplicated into the override blocks.
+    expect(css).not.toMatch(/\[data-theme="dark"\][^{]*\{[^}]*--ku-color-bg-subtle/s);
   });
 });

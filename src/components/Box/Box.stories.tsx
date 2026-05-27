@@ -14,7 +14,7 @@ const surface: CSSProperties = {
   background: 'var(--ku-color-bg-surface)',
   borderRadius: 'var(--ku-radius-md)',
   color: 'var(--ku-color-text-primary)',
-  border: '1px solid var(--ku-color-border-default)',
+  border: '1px solid var(--ku-color-border)',
 };
 
 const rowStyle: CSSProperties = {

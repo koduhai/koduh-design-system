@@ -1,7 +1,23 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Slider } from './Slider';
+
+// jsdom reports zero-size rects; give the track a deterministic 100px geometry
+// so clientX maps cleanly to a value (x=0 → min, x=100 → max for a 0–100 range).
+function mockTrackRect(track: HTMLElement) {
+  vi.spyOn(track, 'getBoundingClientRect').mockReturnValue({
+    left: 0,
+    right: 100,
+    width: 100,
+    top: 0,
+    bottom: 6,
+    height: 6,
+    x: 0,
+    y: 0,
+    toJSON: () => ({}),
+  } as DOMRect);
+}
 
 describe('Slider', () => {
   it('renders a slider with aria value attributes and a visible label', () => {
@@ -67,6 +83,48 @@ describe('Slider', () => {
     render(<Slider label="V" error errorText="Out of range" />);
     expect(screen.getByText('Out of range')).toBeInTheDocument();
     expect(screen.getByRole('slider')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('click-to-set jumps to the pointer position', () => {
+    const onChange = vi.fn();
+    render(<Slider label="V" defaultValue={0} min={0} max={100} step={1} onChange={onChange} />);
+    const track = screen.getByRole('slider').parentElement as HTMLElement;
+    mockTrackRect(track);
+    fireEvent.pointerDown(track, { clientX: 25, pointerId: 1 });
+    expect(onChange).toHaveBeenLastCalledWith(25, expect.anything());
+  });
+
+  it('drags the thumb, tracking pointer moves until release', () => {
+    const onChange = vi.fn();
+    render(<Slider label="V" defaultValue={0} min={0} max={100} step={1} onChange={onChange} />);
+    const thumb = screen.getByRole('slider');
+    const track = thumb.parentElement as HTMLElement;
+    mockTrackRect(track);
+
+    fireEvent.pointerDown(track, { clientX: 20, pointerId: 1 });
+    expect(onChange).toHaveBeenLastCalledWith(20, expect.anything());
+    // Pointer-down focuses the thumb so keyboard control follows the grab.
+    expect(thumb).toHaveFocus();
+
+    fireEvent.pointerMove(track, { clientX: 50, pointerId: 1 });
+    expect(onChange).toHaveBeenLastCalledWith(50, expect.anything());
+    fireEvent.pointerMove(track, { clientX: 80, pointerId: 1 });
+    expect(onChange).toHaveBeenLastCalledWith(80, expect.anything());
+
+    fireEvent.pointerUp(track, { clientX: 80, pointerId: 1 });
+    // After release, further moves no longer update the value.
+    fireEvent.pointerMove(track, { clientX: 10, pointerId: 1 });
+    expect(onChange).toHaveBeenLastCalledWith(80, expect.anything());
+  });
+
+  it('does not drag when disabled', () => {
+    const onChange = vi.fn();
+    render(<Slider label="V" defaultValue={40} min={0} max={100} disabled onChange={onChange} />);
+    const track = screen.getByRole('slider').parentElement as HTMLElement;
+    mockTrackRect(track);
+    fireEvent.pointerDown(track, { clientX: 20, pointerId: 1 });
+    fireEvent.pointerMove(track, { clientX: 80, pointerId: 1 });
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it('forwards onBlur to the thumb', () => {

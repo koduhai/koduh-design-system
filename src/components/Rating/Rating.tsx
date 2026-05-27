@@ -2,6 +2,7 @@ import { forwardRef, useRef } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { useId, useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useOptionalFieldContext } from '../FormField';
 import styles from './Rating.module.css';
 
 export type RatingSize = 'sm' | 'md' | 'lg';
@@ -68,17 +69,24 @@ export const Rating = /* @__PURE__ */ forwardRef<HTMLDivElement, RatingProps>(fu
   ref,
 ) {
   const baseId = useId('rating');
+  const field = useOptionalFieldContext();
   const starRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  const [selected, setSelected] = useControllableState<number>({
+  const [state, setState] = useControllableState<number>({
     value,
     defaultValue: defaultValue ?? 0,
     onChange: undefined,
   });
 
+  // Bind to an enclosing <Form> only when the consumer didn't pass a controlled
+  // `value`. Rating value semantics = number.
+  const bound = value === undefined ? field?.binding : undefined;
+  const selected = bound ? Number(bound.value ?? 0) : state;
+
   const select = (next: number) => {
     if (readOnly) return;
-    setSelected(next);
+    if (bound) bound.onChange(next);
+    else setState(next);
     onChange?.(next);
   };
 
@@ -121,9 +129,12 @@ export const Rating = /* @__PURE__ */ forwardRef<HTMLDivElement, RatingProps>(fu
   return (
     <div
       ref={ref}
+      id={field?.id}
       className={cx(styles.root, className)}
       role="radiogroup"
-      aria-label={ariaLabel}
+      aria-label={field ? undefined : ariaLabel}
+      aria-labelledby={field?.labelId}
+      aria-invalid={field?.invalid || undefined}
       aria-readonly={readOnly || undefined}
       data-size={size}
       data-readonly={readOnly ? 'true' : undefined}

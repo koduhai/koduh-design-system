@@ -15,7 +15,7 @@ export type { SlotProps } from './primitives';
 
 // Theme tokens
 export { tokens, themes, density } from './theme';
-export type { ColorMode, ColorTokenName, Tokens, Density } from './theme';
+export type { ColorMode, ColorScheme, ColorTokenName, Tokens, Density } from './theme';
 
 // Utilities
 export { cx } from './utils/cx';
@@ -42,8 +42,16 @@ export { TextField } from './components/TextField';
 export type { TextFieldProps, TextFieldSize } from './components/TextField';
 export { PasswordInput } from './components/PasswordInput';
 export type { PasswordInputProps, PasswordInputSize } from './components/PasswordInput';
-export { Card } from './components/Card';
-export type { CardProps, CardVariant, CardPadding } from './components/Card';
+export { Card, CardHeader, CardBody, CardFooter } from './components/Card';
+export type {
+  CardProps,
+  CardVariant,
+  CardPadding,
+  CardSlotProps,
+  CardHeaderProps,
+  CardBodyProps,
+  CardFooterProps,
+} from './components/Card';
 export { EmptyState } from './components/EmptyState';
 export type { EmptyStateProps, HeadingLevel } from './components/EmptyState';
 export { PageHeader } from './components/PageHeader';

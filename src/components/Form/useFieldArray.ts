@@ -1,4 +1,4 @@
-import { useRef, useSyncExternalStore } from 'react';
+import { useMemo, useRef, useSyncExternalStore } from 'react';
 import { get } from './path';
 import { useFormContext } from './FormContext';
 
@@ -28,7 +28,6 @@ export function useFieldArray<T = Record<string, unknown>>(
   name: string,
 ): UseFieldArrayResult<T> {
   const api = useFormContext();
-  const idsRef = useRef<string[]>([]);
 
   const values = useSyncExternalStore(
     api.subscribe,
@@ -36,53 +35,77 @@ export function useFieldArray<T = Record<string, unknown>>(
     () => (get(api.getValues(), name) as T[] | undefined) ?? EMPTY,
   );
 
-  while (idsRef.current.length < values.length) idsRef.current.push(nextId());
-  if (idsRef.current.length > values.length) {
-    idsRef.current = idsRef.current.slice(0, values.length);
-  }
+  // The mutators (append/insert/…) own the id list: they write the exact ids
+  // alongside the new values via `pendingIdsRef`. Render-time reconciliation is a
+  // *fallback* for value changes that didn't flow through a mutator (reset,
+  // programmatic setValue): it preserves existing ids by index and mints only for
+  // the trailing surplus. Keeping the ref mutation inside `useMemo` (idempotent on
+  // the same `values`) avoids burning ids under StrictMode's double render.
+  const idsRef = useRef<string[]>([]);
+  const pendingIdsRef = useRef<string[] | null>(null);
 
-  const fields = values.map((v, i) => ({ ...(v as object), id: idsRef.current[i]! })) as Array<
+  const ids = useMemo<string[]>(() => {
+    if (pendingIdsRef.current) {
+      const taken = pendingIdsRef.current;
+      pendingIdsRef.current = null;
+      idsRef.current = taken;
+      return taken;
+    }
+    const prev = idsRef.current;
+    if (prev.length === values.length) return prev;
+    const next = prev.slice(0, values.length);
+    while (next.length < values.length) next.push(nextId());
+    idsRef.current = next;
+    return next;
+    // Reconcile whenever the array length changes; mutators set pendingIdsRef so
+    // an identical length from a mutator still picks up the explicit ids above.
+  }, [values]);
+
+  const fields = values.map((v, i) => ({ ...(v as object), id: ids[i]! })) as Array<
     T & FieldArrayItem
   >;
 
   const write = (next: T[], nextIds: string[]) => {
-    idsRef.current = nextIds;
+    pendingIdsRef.current = nextIds;
     api.setValue(name, next);
   };
 
   return {
     fields,
     append(value) {
-      write([...values, value], [...idsRef.current, nextId()]);
+      write([...values, value], [...ids, nextId()]);
     },
     prepend(value) {
-      write([value, ...values], [nextId(), ...idsRef.current]);
+      write([value, ...values], [nextId(), ...ids]);
     },
     insert(index, value) {
       const next = values.slice();
       next.splice(index, 0, value);
-      const ids = idsRef.current.slice();
-      ids.splice(index, 0, nextId());
-      write(next, ids);
+      const nextIds = ids.slice();
+      nextIds.splice(index, 0, nextId());
+      write(next, nextIds);
     },
     remove(index) {
       const next = values.slice();
       next.splice(index, 1);
-      const ids = idsRef.current.slice();
-      ids.splice(index, 1);
-      write(next, ids);
+      const nextIds = ids.slice();
+      nextIds.splice(index, 1);
+      write(next, nextIds);
     },
     move(from, to) {
       const next = values.slice();
       const [item] = next.splice(from, 1);
       next.splice(to, 0, item as T);
-      const ids = idsRef.current.slice();
-      const [movedId] = ids.splice(from, 1);
-      ids.splice(to, 0, movedId!);
-      write(next, ids);
+      const nextIds = ids.slice();
+      const [movedId] = nextIds.splice(from, 1);
+      nextIds.splice(to, 0, movedId!);
+      write(next, nextIds);
     },
     replace(nextValues) {
-      write(nextValues, nextValues.map(() => nextId()));
+      write(
+        nextValues,
+        nextValues.map(() => nextId()),
+      );
     },
   };
 }

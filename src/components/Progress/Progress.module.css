@@ -55,6 +55,12 @@
 .track[data-tone='danger'] {
   --progress-fill: var(--ku-color-danger);
 }
+.track[data-tone='info'] {
+  --progress-fill: var(--ku-color-info);
+}
+.track[data-tone='accent'] {
+  --progress-fill: var(--ku-color-accent);
+}
 
 .bar {
   height: 100%;

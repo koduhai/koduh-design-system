@@ -129,6 +129,7 @@ export const themes = {
       success: '#4ADE80',
       warning: '#FBBF24',
       info: '#5B9DFF',
+      accent: '#C084FC',
       // Foreground variants tuned for AA text contrast on bg surfaces (the
       // *fill* colors above are bright enough on dark surfaces to double as
       // text, so fg == fill here; verified in contrast.test.ts).
@@ -136,6 +137,7 @@ export const themes = {
       warningFg: '#FBBF24',
       dangerFg: '#FF6B6B',
       infoFg: '#5B9DFF',
+      accentFg: '#C084FC',
       bgDefault: '#0A0E1A',
       bgSurface: '#141A2A',
       bgRaised: '#1C2438',
@@ -164,6 +166,7 @@ export const themes = {
       success: '#1B7F3B',
       warning: '#9A6700',
       info: '#1B5FCC',
+      accent: '#7C3AED',
       // Foreground variants: darker than the fill colors so colored status text
       // clears AA on the off-white bgSurface (the worst light-theme case).
       // Verified in contrast.test.ts.
@@ -171,6 +174,7 @@ export const themes = {
       warningFg: '#7A4F00',
       dangerFg: '#BE2626',
       infoFg: '#1B5FCC',
+      accentFg: '#7C3AED',
       bgDefault: '#FFFFFF',
       bgSurface: '#F4F6FA',
       bgRaised: '#FFFFFF',
@@ -193,7 +197,14 @@ export const themes = {
   },
 } as const;
 
+/** A concrete, resolved color theme. Always maps to a real token set. */
 export type ColorMode = keyof typeof themes;
+/**
+ * A user-facing color preference. Adds `'system'` to the resolved {@link ColorMode}
+ * set; `'system'` follows the OS `prefers-color-scheme` and resolves to a concrete
+ * {@link ColorMode} at runtime.
+ */
+export type ColorScheme = ColorMode | 'system';
 export type ColorTokenName = keyof (typeof themes)['dark']['color'];
 export type Tokens = typeof tokens;
 export type Density = keyof typeof density;

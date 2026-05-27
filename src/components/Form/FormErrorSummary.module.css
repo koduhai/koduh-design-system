@@ -1,9 +1,13 @@
 .root {
-  border: 1px solid var(--ku-color-border-default);
+  border: 1px solid var(--ku-color-border);
   border-radius: var(--ku-radius-md);
   padding: var(--ku-space-3) var(--ku-space-4);
   margin-block-end: var(--ku-space-4);
-  color: var(--ku-color-fg-default);
+  color: var(--ku-color-text-primary);
+}
+.root:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
 }
 .heading {
   margin: 0 0 var(--ku-space-2);
@@ -14,5 +18,8 @@
   padding-inline-start: var(--ku-space-5);
 }
 .link {
+  color: inherit;
+}
+.text {
   color: inherit;
 }

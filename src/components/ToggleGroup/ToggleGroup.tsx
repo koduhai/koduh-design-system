@@ -6,7 +6,14 @@ import { cx } from '../../utils/cx';
 import styles from './ToggleGroup.module.css';
 
 export type ToggleGroupSize = 'sm' | 'md' | 'lg';
-export type ToggleGroupTone = 'primary' | 'neutral' | 'success' | 'warning' | 'danger';
+export type ToggleGroupTone =
+  | 'primary'
+  | 'neutral'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'accent';
 
 export interface ToggleGroupItem {
   /** Stable identity; the controlled/uncontrolled value. */
@@ -98,10 +105,12 @@ export const ToggleGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, ToggleGrou
       if (type === 'multiple') {
         const current = currentValue as string[];
         const next = current.includes(val) ? current.filter((v) => v !== val) : [...current, val];
-        if (bound) bound.onChange(next); else setSelected(next);
+        if (bound) bound.onChange(next);
+        else setSelected(next);
         onChange?.(next);
       } else {
-        if (bound) bound.onChange(val); else setSelected(val);
+        if (bound) bound.onChange(val);
+        else setSelected(val);
         onChange?.(val);
       }
     };

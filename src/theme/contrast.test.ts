@@ -26,7 +26,7 @@ const modes: ColorMode[] = ['dark', 'light'];
 // The lightest (dark theme) / least-contrasting (light theme) surfaces a status
 // element can sit on — the worst case for each theme.
 const surfaces = ['bgDefault', 'bgSurface', 'bgRaised'] as const;
-const fgTokens = ['successFg', 'warningFg', 'dangerFg', 'infoFg'] as const;
+const fgTokens = ['successFg', 'warningFg', 'dangerFg', 'infoFg', 'accentFg'] as const;
 
 describe('status foreground tokens meet WCAG AA as text', () => {
   for (const mode of modes) {
@@ -44,7 +44,7 @@ describe('status foreground tokens meet WCAG AA as text', () => {
 describe('solid tonal fills are AA against their contrast text', () => {
   // Chip/Button solid variants render <tone> as the fill with bgDefault as text.
   for (const mode of modes) {
-    for (const tone of ['success', 'warning', 'danger'] as const) {
+    for (const tone of ['success', 'warning', 'danger', 'info', 'accent'] as const) {
       it(`${mode}: ${tone} fill + bgDefault text >= ${AA_NORMAL}:1`, () => {
         const color = themes[mode].color;
         expect(contrast(color[tone], color.bgDefault)).toBeGreaterThanOrEqual(AA_NORMAL);

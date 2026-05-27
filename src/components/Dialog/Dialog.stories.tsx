@@ -73,3 +73,38 @@ export const Showcase: Story = {
     </div>
   ),
 };
+
+/**
+ * Managed async confirm: `confirmLoading` keeps the dialog open with a spinner
+ * on the confirm button (blocking re-confirm and dismissal) until the consumer
+ * closes it once the work resolves. Also shows the `warning` tone.
+ */
+export const AsyncConfirm: Story = {
+  args: { open: true, onOpenChange: () => {} },
+  render: () => {
+    const [open, setOpen] = useState(true);
+    const [pending, setPending] = useState(false);
+    return (
+      <div style={{ minHeight: 320 }}>
+        {!open ? <Button onClick={() => setOpen(true)}>Reopen</Button> : null}
+        <ConfirmDialog
+          open={open}
+          onOpenChange={setOpen}
+          tone="warning"
+          title="Archive conversation?"
+          description="It will move to your archive. You can restore it later."
+          confirmLabel="Archive"
+          confirmLoading={pending}
+          loadingText="Archiving…"
+          onConfirm={() => {
+            setPending(true);
+            window.setTimeout(() => {
+              setPending(false);
+              setOpen(false);
+            }, 1200);
+          }}
+        />
+      </div>
+    );
+  },
+};

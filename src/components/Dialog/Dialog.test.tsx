@@ -133,4 +133,52 @@ describe('ConfirmDialog', () => {
     );
     await waitFor(() => expect(screen.getByRole('button', { name: 'Yes' })).toHaveFocus());
   });
+
+  it('supports a warning tone on the confirm button', () => {
+    render(
+      <ConfirmDialog open onOpenChange={() => {}} onConfirm={() => {}} title="T" tone="warning" />,
+    );
+    expect(screen.getByRole('button', { name: 'Confirm' })).toHaveAttribute('data-tone', 'warning');
+  });
+
+  it('when confirmLoading is provided, confirm does NOT auto-close (consumer owns closing)', async () => {
+    const onConfirm = vi.fn();
+    const onOpenChange = vi.fn();
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={onOpenChange}
+        onConfirm={onConfirm}
+        title="Delete?"
+        confirmLoading={false}
+      />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+    expect(onConfirm).toHaveBeenCalledOnce();
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('while confirmLoading, the confirm button is busy/disabled and dismissal is blocked', async () => {
+    const onOpenChange = vi.fn();
+    const onConfirm = vi.fn();
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={onOpenChange}
+        onConfirm={onConfirm}
+        title="Deleting"
+        confirmLoading
+        loadingText="Deleting…"
+      />,
+    );
+    const confirm = screen.getByRole('button', { name: /Confirm/ });
+    expect(confirm).toBeDisabled();
+    expect(confirm).toHaveAttribute('aria-busy', 'true');
+    // Re-confirm is blocked while pending.
+    await userEvent.click(confirm);
+    expect(onConfirm).not.toHaveBeenCalled();
+    // Cancel is disabled and cannot dismiss mid-flight.
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
 });

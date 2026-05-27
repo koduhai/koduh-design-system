@@ -1,0 +1,45 @@
+.root {
+  display: inline-flex;
+}
+
+.root[data-orientation='horizontal'] {
+  flex-direction: row;
+}
+
+.root[data-orientation='vertical'] {
+  flex-direction: column;
+}
+
+/* Lift the hovered/focused segment so its full border outlines it, beating the
+   -1px overlap of its neighbour. */
+.root > :hover,
+.root > :focus-visible,
+.root > :focus-within {
+  z-index: 1;
+}
+
+/* --- Horizontal: collapse the inline-leading side of every non-first child and
+   the inline-trailing side of every non-last child; pull them together with a
+   logical negative inline margin so borders coincide. Logical props flip in RTL. */
+.root[data-orientation='horizontal'] > :not(:first-child) {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  margin-inline-start: -1px;
+}
+
+.root[data-orientation='horizontal'] > :not(:last-child) {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+/* --- Vertical: same idea on the block axis. */
+.root[data-orientation='vertical'] > :not(:first-child) {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+  margin-block-start: -1px;
+}
+
+.root[data-orientation='vertical'] > :not(:last-child) {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}

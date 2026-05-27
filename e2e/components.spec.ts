@@ -93,6 +93,14 @@ const COMPONENTS = [
   { name: 'CommandPalette', storyId: 'components-commandpalette--showcase' },
   // issue #38 — Form orchestration layer
   { name: 'Form', storyId: 'components-form--showcase' },
+  // issue #43 — component round-out
+  { name: 'Banner', storyId: 'components-banner--showcase' },
+  { name: 'ButtonGroup', storyId: 'components-buttongroup--showcase' },
+  { name: 'SplitButton', storyId: 'components-splitbutton--showcase' },
+  { name: 'Meter', storyId: 'components-meter--showcase' },
+  { name: 'NotificationBadge', storyId: 'components-notificationbadge--showcase' },
+  { name: 'Popconfirm', storyId: 'components-popconfirm--showcase' },
+  { name: 'ColorPicker', storyId: 'components-colorpicker--showcase' },
 ] as const;
 
 function storyUrl(storyId: string, theme: string): string {

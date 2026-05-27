@@ -38,6 +38,8 @@ export type {
 } from './components/StatusBadge';
 export { Alert } from './components/Alert';
 export type { AlertProps, AlertSeverity } from './components/Alert';
+export { Banner } from './components/Banner';
+export type { BannerProps, BannerSeverity } from './components/Banner';
 export { TextField } from './components/TextField';
 export type { TextFieldProps, TextFieldSize } from './components/TextField';
 export { PasswordInput } from './components/PasswordInput';
@@ -96,12 +98,16 @@ export { Select } from './components/Select';
 export type { SelectProps, SelectOption, SelectSize } from './components/Select';
 export { Menu } from './components/Menu';
 export type { MenuProps, MenuEntry, MenuItemConfig, MenuSeparator } from './components/Menu';
+export { Popconfirm } from './components/Popconfirm';
+export type { PopconfirmProps } from './components/Popconfirm';
 
 // Phase 8 — data & forms
 export { Textarea } from './components/Textarea';
 export type { TextareaProps, TextareaSize } from './components/Textarea';
 export { Progress } from './components/Progress';
 export type { ProgressProps, ProgressSize, ProgressTone } from './components/Progress';
+export { Meter } from './components/Meter';
+export type { MeterProps, MeterSize } from './components/Meter';
 export { Pagination, getPaginationRange } from './components/Pagination';
 export type {
   PaginationProps,
@@ -169,6 +175,11 @@ export type {
   ToastRecord,
   ToastSeverity,
 } from './components/Toaster';
+export { NotificationBadge } from './components/NotificationBadge';
+export type {
+  NotificationBadgeProps,
+  NotificationBadgePlacement,
+} from './components/NotificationBadge';
 // Form layer
 export {
   FormField,
@@ -246,6 +257,14 @@ export { Carousel } from './components/Carousel';
 export type { CarouselProps, CarouselItem } from './components/Carousel';
 export { CommandPalette } from './components/CommandPalette';
 export type { CommandPaletteProps, CommandPaletteCommand } from './components/CommandPalette';
+export { ColorPicker } from './components/ColorPicker';
+export type { ColorPickerProps } from './components/ColorPicker';
+
+// issue #43 — component round-out
+export { ButtonGroup } from './components/ButtonGroup';
+export type { ButtonGroupProps, ButtonGroupOrientation } from './components/ButtonGroup';
+export { SplitButton } from './components/SplitButton';
+export type { SplitButtonProps } from './components/SplitButton';
 
 // Form orchestration (#38)
 export {

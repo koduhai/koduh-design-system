@@ -70,12 +70,47 @@ so a `useState` setter can be passed directly.
 <Snackbar open onOpenChange={close}>Changes saved</Snackbar>
 ```
 
+### 3. Renamed colour tokens (silent CSS breakage)
+
+v2 harmonized the colour-token names. Because consuming CSS references a custom
+property **with no fallback** — `border: 1px solid var(--ku-color-border-default)`
+— a renamed token makes the whole declaration invalid and it silently renders as
+nothing (transparent borders, missing panel backgrounds): no error, no warning.
+
+| v1 token                    | v2 token                  |
+| --------------------------- | ------------------------- |
+| `--ku-color-bg-subtle`      | `--ku-color-bg-surface`   |
+| `--ku-color-border-default` | `--ku-color-border`       |
+| `--ku-color-fg-default`     | `--ku-color-text-primary` |
+
+```css
+/* before (v1) */
+.panel {
+  background: var(--ku-color-bg-subtle);
+  border: 1px solid var(--ku-color-border-default);
+  color: var(--ku-color-fg-default);
+}
+/* after (v2) */
+.panel {
+  background: var(--ku-color-bg-surface);
+  border: 1px solid var(--ku-color-border);
+  color: var(--ku-color-text-primary);
+}
+```
+
+> **Back-compat aliases ship in `theme.css`.** The old names are now
+> emitted as deprecated aliases that delegate to the replacement
+> (`--ku-color-border-default: var(--ku-color-border)`), so existing consumer
+> CSS keeps working without an immediate sweep. They are **deprecated and will
+> be removed in the next major** — migrate to the replacement tokens above. Tip:
+> `grep -rE 'ku-color-(bg-subtle|border-default|fg-default)'` to find references.
+
 Everything else in v2 is **additive** and needs no migration: new `success`/
 `warning` tones on `Chip`/`Button`, `--ku-color-*-fg` status text tokens, the
 `Select` `clearable` prop, the expanded icon set, and the `dist/styles.css`
 filename (the `@koduhai/design-system/styles.css` import specifier is unchanged).
 
-### 3. v2 follow-up layer (additive — issues #9–#15)
+### 4. v2 follow-up layer (additive — issues #9–#15)
 
 New components and hooks; all additive. Highlights:
 

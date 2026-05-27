@@ -104,6 +104,8 @@ export { Textarea } from './components/Textarea';
 export type { TextareaProps, TextareaSize } from './components/Textarea';
 export { Progress } from './components/Progress';
 export type { ProgressProps, ProgressSize, ProgressTone } from './components/Progress';
+export { Meter } from './components/Meter';
+export type { MeterProps, MeterSize } from './components/Meter';
 export { Pagination, getPaginationRange } from './components/Pagination';
 export type {
   PaginationProps,

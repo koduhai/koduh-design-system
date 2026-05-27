@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useRef, useState } from 'react';
 import type { InputHTMLAttributes, ReactNode, SyntheticEvent } from 'react';
 import { useId } from '../../primitives';
 import { cx } from '../../utils/cx';
@@ -82,16 +82,40 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
     const showOwnLabel = !field; // FormField renders the label when present
 
     const isControlled = value !== undefined;
-    const [text, setText] = useState<string>(defaultValue != null ? String(defaultValue) : '');
-
     // Binding: when no explicit value prop is passed and a form binding exists, use form as source.
     const bound = value === undefined ? field?.binding : undefined;
     const boundNumeric = bound ? (bound.value as number | null) : undefined;
-    const display = bound
-      ? (boundNumeric == null ? '' : String(boundNumeric))
-      : isControlled
-        ? (value == null ? '' : String(value))
-        : text;
+
+    // The external (bound or controlled) numeric source of truth, or `undefined`
+    // when the field is uncontrolled and owns its own state.
+    const externalNumeric = bound ? boundNumeric : isControlled ? value : undefined;
+
+    // Raw-text buffer. It carries the exact characters the user typed so an
+    // intermediate value like `1.` (or `1.50`) survives a render instead of being
+    // snapped back to `String(parse(text))`. It syncs FROM the external value when
+    // that value changes out of band (e.g. reset/programmatic set) but is NOT
+    // overwritten while the user is editing a value that already parses to it.
+    const [text, setText] = useState<string>(
+      externalNumeric != null
+        ? String(externalNumeric)
+        : defaultValue != null
+          ? String(defaultValue)
+          : '',
+    );
+    // Track the last external value we synced from so we only re-seed the buffer
+    // when the external value actually changes (not on every render).
+    const lastExternalRef = useRef<number | null | undefined>(externalNumeric);
+    if (externalNumeric !== undefined && externalNumeric !== lastExternalRef.current) {
+      lastExternalRef.current = externalNumeric;
+      // Re-seed only when the external value no longer matches what the buffer
+      // parses to, so an in-flight edit ('1.') isn't clobbered by its own echo.
+      const buffered = parse(text);
+      if (buffered !== externalNumeric) {
+        setText(externalNumeric == null ? '' : String(externalNumeric));
+      }
+    }
+
+    const display = text;
 
     const clamp = (n: number) => {
       let r = n;
@@ -101,13 +125,11 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
     };
     const commit = (next: string, event?: SyntheticEvent) => {
       const parsed = parse(next);
-      if (bound) {
-        bound.onChange(parsed, event);
-      } else {
-        if (!isControlled) setText(next);
-        onChange?.(parsed, event);
-        return;
-      }
+      // Always keep the raw buffer in sync so intermediate text (e.g. '1.') shows
+      // through; the parsed number is what we report upstream.
+      setText(next);
+      lastExternalRef.current = parsed;
+      if (bound) bound.onChange(parsed, event);
       onChange?.(parsed, event);
     };
     const adjust = (delta: number, event: SyntheticEvent) => {

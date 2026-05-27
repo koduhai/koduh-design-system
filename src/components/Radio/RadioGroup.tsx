@@ -2,6 +2,7 @@ import { forwardRef, useMemo } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { useId, useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useOptionalFieldContext } from '../FormField';
 import { RadioGroupContext } from './Radio';
 import type { RadioGroupContextValue } from './Radio';
 import styles from './Radio.module.css';
@@ -41,7 +42,8 @@ export const RadioGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, RadioGroupP
   ) {
     const reactName = useId('radio-group');
     const name = nameProp ?? reactName;
-    const labelId = useId('radio-group-label');
+    const ownLabelId = useId('radio-group-label');
+    const field = useOptionalFieldContext();
 
     const [state, setState] = useControllableState<string | undefined>({
       value,
@@ -49,30 +51,42 @@ export const RadioGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, RadioGroupP
       onChange: undefined,
     });
 
+    // Bind to an enclosing <Form> only when the consumer didn't pass a controlled
+    // `value`. RadioGroup value semantics = the selected radio value (string).
+    const bound = value === undefined ? field?.binding : undefined;
+    const currentValue = bound ? (bound.value as string | undefined) : state;
+    // Inside a <FormField>, defer the group label/id to it; otherwise own them.
+    const showOwnLabel = !field;
+    const labelId = field ? field.labelId : ownLabelId;
+    const groupId = field?.id;
+
     const ctx = useMemo<RadioGroupContextValue>(
       () => ({
         name,
-        value: state,
+        value: currentValue,
         onChange: (next, event) => {
-          setState(next);
+          if (bound) bound.onChange(next, event);
+          else setState(next);
           onChange?.(next, event);
         },
       }),
-      [name, state, setState, onChange],
+      [name, currentValue, bound, setState, onChange],
     );
 
     return (
       <RadioGroupContext.Provider value={ctx}>
         <div
           ref={ref}
+          id={groupId}
           role="radiogroup"
           aria-orientation={orientation}
-          aria-labelledby={label ? labelId : undefined}
+          aria-labelledby={field ? labelId : label ? labelId : undefined}
+          aria-invalid={field?.invalid || undefined}
           className={cx(styles.group, className)}
           data-orientation={orientation}
           {...props}
         >
-          {label != null ? (
+          {showOwnLabel && label != null ? (
             <span id={labelId} className={styles.groupLabel}>
               {label}
             </span>

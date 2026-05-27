@@ -38,6 +38,8 @@ export type {
 } from './components/StatusBadge';
 export { Alert } from './components/Alert';
 export type { AlertProps, AlertSeverity } from './components/Alert';
+export { Banner } from './components/Banner';
+export type { BannerProps, BannerSeverity } from './components/Banner';
 export { TextField } from './components/TextField';
 export type { TextFieldProps, TextFieldSize } from './components/TextField';
 export { PasswordInput } from './components/PasswordInput';

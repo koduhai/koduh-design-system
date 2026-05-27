@@ -5,7 +5,7 @@ import { cx } from '../../utils/cx';
 import styles from './Chip.module.css';
 
 export type ChipVariant = 'solid' | 'outline';
-export type ChipTone = 'primary' | 'neutral' | 'success' | 'warning' | 'danger';
+export type ChipTone = 'primary' | 'neutral' | 'success' | 'warning' | 'danger' | 'info' | 'accent';
 export type ChipSize = 'sm' | 'md';
 
 export interface ChipProps extends Omit<HTMLAttributes<HTMLElement>, 'children' | 'onClick'> {

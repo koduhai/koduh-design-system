@@ -29,6 +29,14 @@
   --chip-main: var(--ku-color-danger);
   --chip-contrast: var(--ku-color-bg-default);
 }
+.root[data-tone='info'] {
+  --chip-main: var(--ku-color-info);
+  --chip-contrast: var(--ku-color-bg-default);
+}
+.root[data-tone='accent'] {
+  --chip-main: var(--ku-color-accent);
+  --chip-contrast: var(--ku-color-bg-default);
+}
 
 .root[data-variant='solid'] {
   background-color: var(--chip-main);

@@ -84,7 +84,7 @@ describe('Chip', () => {
     expect(el).toHaveAttribute('data-size', 'sm');
   });
 
-  it.each(['success', 'warning'] as const)('supports the %s tone', (tone) => {
+  it.each(['success', 'warning', 'info', 'accent'] as const)('supports the %s tone', (tone) => {
     render(<Chip label="X" tone={tone} />);
     expect(screen.getByText('X').closest('[data-tone]')).toHaveAttribute('data-tone', tone);
   });

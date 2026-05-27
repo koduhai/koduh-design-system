@@ -31,6 +31,14 @@
   --tg-main: var(--ku-color-danger);
   --tg-contrast: var(--ku-color-primary-contrast);
 }
+.root[data-tone='info'] {
+  --tg-main: var(--ku-color-info);
+  --tg-contrast: var(--ku-color-primary-contrast);
+}
+.root[data-tone='accent'] {
+  --tg-main: var(--ku-color-accent);
+  --tg-contrast: var(--ku-color-primary-contrast);
+}
 
 .item {
   display: inline-flex;

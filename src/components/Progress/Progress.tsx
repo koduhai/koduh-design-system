@@ -5,7 +5,14 @@ import { cx } from '../../utils/cx';
 import styles from './Progress.module.css';
 
 export type ProgressSize = 'sm' | 'md' | 'lg';
-export type ProgressTone = 'primary' | 'neutral' | 'success' | 'warning' | 'danger';
+export type ProgressTone =
+  | 'primary'
+  | 'neutral'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'accent';
 
 export interface ProgressProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role'> {
   /** Determinate progress amount. Omit for an indeterminate bar. */

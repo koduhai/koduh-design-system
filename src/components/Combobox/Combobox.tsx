@@ -123,6 +123,18 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
     const [open, setOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
 
+    // Re-sync the visible query text when the selected value changes out of band
+    // (e.g. a form reset() or a programmatic value change) rather than via the
+    // input/option handlers, which already set `query` themselves. We don't touch
+    // `query` while the user is typing because `currentValue` only changes on an
+    // actual selection. Tracking the last-seen value lets us re-derive the label.
+    const lastValueRef = useRef<string | undefined>(currentValue);
+    if (currentValue !== lastValueRef.current) {
+      lastValueRef.current = currentValue;
+      const nextLabel = options.find((o) => o.value === currentValue)?.label ?? '';
+      if (nextLabel !== query) setQuery(nextLabel);
+    }
+
     const filtered =
       query.trim() === '' && !open ? options : options.filter((o) => filter(o, query));
 

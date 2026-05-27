@@ -5,6 +5,10 @@
   margin-block-end: var(--ku-space-4);
   color: var(--ku-color-fg-default);
 }
+.root:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
 .heading {
   margin: 0 0 var(--ku-space-2);
   font-weight: var(--ku-font-weight-semibold);
@@ -14,5 +18,8 @@
   padding-inline-start: var(--ku-space-5);
 }
 .link {
+  color: inherit;
+}
+.text {
   color: inherit;
 }

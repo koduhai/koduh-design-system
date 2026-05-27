@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Combobox } from './Combobox';
 import { FormField } from '../FormField';
@@ -119,6 +119,31 @@ describe('Combobox', () => {
       await userEvent.click(screen.getByText('United Kingdom'));
       // form value updated
       expect(screen.getByTestId('v')).toHaveTextContent('"uk"');
+    });
+
+    it('re-syncs the visible query text on form reset()', async () => {
+      let api!: ReturnType<typeof useForm>;
+      function Wrap() {
+        api = useForm({ defaultValues: { field: 'us' } });
+        return (
+          <Form form={api} aria-label="f">
+            <FormField name="field" label="L">
+              <Combobox options={opts} />
+            </FormField>
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      const input = screen.getByRole('combobox');
+      expect(input).toHaveValue('United States');
+      // select a different option
+      await userEvent.clear(input);
+      await userEvent.type(input, 'united k');
+      await userEvent.click(screen.getByText('United Kingdom'));
+      expect(input).toHaveValue('United Kingdom');
+      // reset back to the default value → query text re-derives to its label
+      act(() => api.reset());
+      expect(input).toHaveValue('United States');
     });
   });
 });

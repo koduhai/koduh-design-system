@@ -40,4 +40,32 @@ describe('FormErrorSummary', () => {
     fireEvent.click(link);
     expect(screen.getByLabelText('Email')).toHaveFocus();
   });
+
+  it('moves focus to the summary region on a failed submit', async () => {
+    render(<Wrap />);
+    fireEvent.click(screen.getByText('Go'));
+    const region = await screen.findByRole('group', { name: 'Fix these' });
+    expect(region).toHaveAttribute('tabindex', '-1');
+    expect(region).toHaveFocus();
+  });
+
+  it('renders plain text (not a link) for an error with no registered field id', async () => {
+    function NoFieldWrap() {
+      const form = useForm({
+        // Resolver-level error keyed to a field that has no bound input/DOM id.
+        resolver: async (v) => ({ values: v, errors: { server: 'Server is down' } }),
+      });
+      return (
+        <Form form={form} aria-label="f">
+          <FormErrorSummary heading="Problems" />
+          <button type="submit">Go</button>
+        </Form>
+      );
+    }
+    render(<NoFieldWrap />);
+    fireEvent.click(screen.getByText('Go'));
+    expect(await screen.findByText('Server is down')).toBeInTheDocument();
+    // No dead <a href={undefined}> — the message is plain text.
+    expect(screen.queryByRole('link', { name: 'Server is down' })).toBeNull();
+  });
 });

@@ -193,7 +193,14 @@ export const themes = {
   },
 } as const;
 
+/** A concrete, resolved color theme. Always maps to a real token set. */
 export type ColorMode = keyof typeof themes;
+/**
+ * A user-facing color preference. Adds `'system'` to the resolved {@link ColorMode}
+ * set; `'system'` follows the OS `prefers-color-scheme` and resolves to a concrete
+ * {@link ColorMode} at runtime.
+ */
+export type ColorScheme = ColorMode | 'system';
 export type ColorTokenName = keyof (typeof themes)['dark']['color'];
 export type Tokens = typeof tokens;
 export type Density = keyof typeof density;

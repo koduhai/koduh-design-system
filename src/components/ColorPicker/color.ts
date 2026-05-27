@@ -87,15 +87,18 @@ export function hsvToRgb({ h, s, v, a = 1 }: HSV): RGB {
   const c = v * s;
   const x = c * (1 - Math.abs(((hh / 60) % 2) - 1));
   const m = v - c;
-  let rp = 0;
-  let gp = 0;
-  let bp = 0;
-  if (hh < 60) [rp, gp, bp] = [c, x, 0];
-  else if (hh < 120) [rp, gp, bp] = [x, c, 0];
-  else if (hh < 180) [rp, gp, bp] = [0, c, x];
-  else if (hh < 240) [rp, gp, bp] = [0, x, c];
-  else if (hh < 300) [rp, gp, bp] = [x, 0, c];
-  else [rp, gp, bp] = [c, 0, x];
+  const [rp, gp, bp] =
+    hh < 60
+      ? [c, x, 0]
+      : hh < 120
+        ? [x, c, 0]
+        : hh < 180
+          ? [0, c, x]
+          : hh < 240
+            ? [0, x, c]
+            : hh < 300
+              ? [x, 0, c]
+              : [c, 0, x];
   return {
     r: round((rp + m) * 255),
     g: round((gp + m) * 255),

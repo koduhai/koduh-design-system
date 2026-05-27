@@ -47,3 +47,23 @@ export const Tones: Story = {
     </div>
   ),
 };
+
+export const Showcase: Story = {
+  args: { children: null, items },
+  render: () => (
+    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+      <SplitButton onClick={() => {}} items={items} tone="primary">
+        Save
+      </SplitButton>
+      <SplitButton onClick={() => {}} items={items} tone="neutral" variant="outline">
+        Export
+      </SplitButton>
+      <SplitButton onClick={() => {}} items={items} tone="danger" size="sm">
+        Delete
+      </SplitButton>
+      <SplitButton onClick={() => {}} items={items} disabled>
+        Disabled
+      </SplitButton>
+    </div>
+  ),
+};

@@ -17,6 +17,15 @@ export const Default: Story = {
   args: { label: 'Brand color', defaultValue: '#1B5FCC' },
 };
 
+export const Showcase: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+      <ColorPicker label="Brand color" defaultValue="#1B5FCC" />
+      <ColorPicker label="Overlay tint" defaultValue="#7C3AED" alpha />
+    </div>
+  ),
+};
+
 export const WithAlpha: Story = {
   args: { label: 'Overlay tint', defaultValue: '#1B5FCC', alpha: true },
 };

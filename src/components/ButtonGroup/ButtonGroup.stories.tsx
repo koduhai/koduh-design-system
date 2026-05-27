@@ -54,3 +54,35 @@ export const Solid: Story = {
     </ButtonGroup>
   ),
 };
+
+export const Showcase: Story = {
+  args: { children: null },
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+      <ButtonGroup aria-label="Text alignment">
+        <Button variant="outline" tone="neutral">
+          Left
+        </Button>
+        <Button variant="outline" tone="neutral">
+          Center
+        </Button>
+        <Button variant="outline" tone="neutral">
+          Right
+        </Button>
+      </ButtonGroup>
+      <ButtonGroup aria-label="View">
+        <Button tone="primary">Day</Button>
+        <Button tone="primary">Week</Button>
+        <Button tone="primary">Month</Button>
+      </ButtonGroup>
+      <ButtonGroup orientation="vertical" aria-label="Actions">
+        <Button variant="outline" tone="neutral">
+          First
+        </Button>
+        <Button variant="outline" tone="neutral">
+          Second
+        </Button>
+      </ButtonGroup>
+    </div>
+  ),
+};

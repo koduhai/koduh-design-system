@@ -15,7 +15,7 @@ export type { SlotProps } from './primitives';
 
 // Theme tokens
 export { tokens, themes, density } from './theme';
-export type { ColorMode, ColorTokenName, Tokens, Density } from './theme';
+export type { ColorMode, ColorScheme, ColorTokenName, Tokens, Density } from './theme';
 
 // Utilities
 export { cx } from './utils/cx';

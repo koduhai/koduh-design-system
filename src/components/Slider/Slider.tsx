@@ -9,6 +9,7 @@ import type {
 } from 'react';
 import { useControllableState, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useOptionalFieldContext } from '../FormField';
 import styles from './Slider.module.css';
 
 export type SliderSize = 'sm' | 'md';
@@ -17,7 +18,11 @@ export interface SliderProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   'onChange' | 'defaultValue'
 > {
-  label: ReactNode;
+  /**
+   * Visible label, rendered as a `<span>` referenced by aria-labelledby. Required
+   * standalone; optional (and not rendered) inside a `<FormField>`, which supplies it.
+   */
+  label?: ReactNode;
   value?: number;
   defaultValue?: number;
   /** Fires with the new value and the originating keyboard/pointer event. */
@@ -62,25 +67,42 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
   ref,
 ) {
   const reactId = useId('slider');
-  const id = idProp ?? reactId;
-  const labelId = `${id}-label`;
+  const field = useOptionalFieldContext();
+  // Inside a <FormField>, defer id/label/aria to it; otherwise use own props.
+  const id = field?.id ?? idProp ?? reactId;
+  const ownLabelId = `${id}-label`;
+  const labelId = field ? field.labelId : ownLabelId;
   const descriptionId = `${id}-description`;
-  const description = error ? errorText : helperText;
+  const ownDescription = error ? errorText : helperText;
+  const description = field ? undefined : ownDescription;
+  const describedBy = field
+    ? field.describedById
+    : ownDescription != null
+      ? descriptionId
+      : undefined;
+  const invalid = field ? field.invalid : error;
+  const showOwnLabel = !field; // FormField renders the label when present
   const trackRef = useRef<HTMLDivElement>(null);
   const [val, setVal] = useControllableState<number>({
     value,
     defaultValue: defaultValue ?? min,
   });
+
+  // Bind to an enclosing <Form> only when the consumer didn't pass a controlled
+  // `value`. Slider value semantics = number.
+  const bound = value === undefined ? field?.binding : undefined;
+  const currentVal = bound ? Number(bound.value ?? min) : val;
   const clampSnap = (n: number) => {
     const stepped = Math.round((n - min) / step) * step + min;
     return Math.min(max, Math.max(min, stepped));
   };
   const set = (n: number, event?: SyntheticEvent) => {
     const clamped = clampSnap(n);
-    setVal(clamped);
+    if (bound) bound.onChange(clamped, event);
+    else setVal(clamped);
     onChange?.(clamped, event);
   };
-  const pct = ((val - min) / (max - min)) * 100;
+  const pct = ((currentVal - min) / (max - min)) * 100;
 
   const isRtl = () =>
     typeof window !== 'undefined' && trackRef.current
@@ -94,16 +116,16 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
     let next: number;
     switch (e.key) {
       case 'ArrowRight':
-        next = rtl ? val - step : val + step;
+        next = rtl ? currentVal - step : currentVal + step;
         break;
       case 'ArrowUp':
-        next = val + step;
+        next = currentVal + step;
         break;
       case 'ArrowLeft':
-        next = rtl ? val + step : val - step;
+        next = rtl ? currentVal + step : currentVal - step;
         break;
       case 'ArrowDown':
-        next = val - step;
+        next = currentVal - step;
         break;
       case 'Home':
         next = min;
@@ -112,10 +134,10 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
         next = max;
         break;
       case 'PageUp':
-        next = val + step * 10;
+        next = currentVal + step * 10;
         break;
       case 'PageDown':
-        next = val - step * 10;
+        next = currentVal - step * 10;
         break;
       default:
         return;
@@ -140,13 +162,15 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
       className={cx(styles.root, className)}
       data-size={size}
       data-disabled={disabled ? 'true' : undefined}
-      data-error={error ? 'true' : undefined}
+      data-error={invalid ? 'true' : undefined}
       {...rest}
     >
-      <span id={labelId} className={styles.label}>
-        {label}
-        {formatValue ? ` — ${formatValue(val)}` : ''}
-      </span>
+      {showOwnLabel ? (
+        <span id={labelId} className={styles.label}>
+          {label}
+          {formatValue ? ` — ${formatValue(currentVal)}` : ''}
+        </span>
+      ) : null}
       <div
         ref={trackRef}
         className={styles.track}
@@ -159,19 +183,23 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
       >
         <div className={styles.fill} />
         <div
+          id={id}
           className={styles.thumb}
           role="slider"
           tabIndex={disabled ? -1 : 0}
           aria-labelledby={labelId}
           aria-valuemin={min}
           aria-valuemax={max}
-          aria-valuenow={val}
-          aria-valuetext={formatValue ? formatValue(val) : undefined}
+          aria-valuenow={currentVal}
+          aria-valuetext={formatValue ? formatValue(currentVal) : undefined}
           aria-disabled={disabled || undefined}
-          aria-invalid={error || undefined}
-          aria-describedby={description != null ? descriptionId : undefined}
+          aria-invalid={invalid || undefined}
+          aria-describedby={describedBy}
           onKeyDown={disabled ? undefined : onKeyDown}
-          onBlur={onBlur}
+          onBlur={(e) => {
+            bound?.onBlur();
+            onBlur?.(e);
+          }}
           onFocus={onFocus}
         />
       </div>

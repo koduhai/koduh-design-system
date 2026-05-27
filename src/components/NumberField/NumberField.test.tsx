@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NumberField } from './NumberField';
 import { FormField } from '../FormField';
@@ -32,6 +33,20 @@ describe('NumberField', () => {
     expect(onChange).toHaveBeenLastCalledWith(42, expect.anything());
     await userEvent.clear(input);
     expect(onChange).toHaveBeenLastCalledWith(null, expect.anything());
+  });
+
+  it('reaches a decimal like "1.5" while editing (controlled)', async () => {
+    // Previously the display was derived as String(parse(text)); with the parent
+    // echoing the parsed number back, the trailing-decimal text was clobbered so
+    // "1.5" was unreachable. The raw-text buffer keeps the typed characters.
+    function Controlled() {
+      const [v, setV] = useState<number | null>(1);
+      return <NumberField label="Qty" value={v ?? undefined} onChange={setV} />;
+    }
+    render(<Controlled />);
+    const input = screen.getByLabelText('Qty') as HTMLInputElement;
+    await userEvent.type(input, '.5');
+    expect(input.value).toBe('1.5');
   });
 
   it('ArrowUp/ArrowDown adjust by step', async () => {
@@ -96,5 +111,39 @@ describe('NumberField bound to a Form', () => {
     await userEvent.clear(input);
     await userEvent.type(input, '7');
     expect(screen.getByTestId('probe').textContent).toBe('7');
+  });
+
+  it('preserves an intermediate decimal like "1." while editing (bound)', async () => {
+    function Wrap() {
+      const form = useForm({ defaultValues: { qty: 1 } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="qty" label="Qty"><NumberField /></FormField>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByLabelText(/Qty/) as HTMLInputElement;
+    await userEvent.type(input, '.5');
+    expect(input.value).toBe('1.5');
+  });
+
+  it('re-syncs the display from the bound value on form reset()', async () => {
+    let api!: ReturnType<typeof useForm>;
+    function Wrap() {
+      api = useForm({ defaultValues: { qty: 5 } });
+      return (
+        <Form form={api} aria-label="f">
+          <FormField name="qty" label="Qty"><NumberField /></FormField>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByLabelText(/Qty/) as HTMLInputElement;
+    await userEvent.clear(input);
+    await userEvent.type(input, '99');
+    expect(input.value).toBe('99');
+    act(() => api.reset());
+    expect(input.value).toBe('5');
   });
 });

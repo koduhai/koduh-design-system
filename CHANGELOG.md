@@ -4,6 +4,32 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2026-05-27
+
+Additive release: the issue #43 component round-out (7 new components) plus a
+ConfirmDialog enhancement (#57). No breaking changes. Component count 72 → 79.
+
+### Added
+
+- **`Banner`** — page-level notice with a severity vocabulary (info/success/
+  warning/danger), distinct from the transient `Alert`/`Toaster`.
+- **`ButtonGroup`** — segmented cluster of attached buttons sharing one border.
+- **`SplitButton`** — a primary action with an attached dropdown menu of related
+  actions.
+- **`Meter`** — a `role="meter"` measurement gauge with threshold tones (a static
+  measured value, distinct from `Progress`).
+- **`NotificationBadge`** — count / dot overlay for anchoring a badge to an icon
+  or avatar.
+- **`Popconfirm`** — inline confirmation popover for a lightweight, in-context
+  confirm without a modal `Dialog`.
+- **`ColorPicker`** — saturation/value + hue + alpha + hex input + swatch picker,
+  built on pure color-math helpers (`parseHex`/`toHex`/`hsv`).
+
+### Changed
+
+- **`ConfirmDialog`** — adds a loading/pending confirm state (guards against
+  double-submit and reflects async progress) plus a `warning` tone (#57).
+
 ## [2.7.0] - 2026-05-26
 
 Additive release making the design system adoptable by Tailwind CSS consumers

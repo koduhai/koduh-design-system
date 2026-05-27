@@ -260,6 +260,12 @@ export type { CommandPaletteProps, CommandPaletteCommand } from './components/Co
 export { ColorPicker } from './components/ColorPicker';
 export type { ColorPickerProps } from './components/ColorPicker';
 
+// issue #43 — component round-out
+export { ButtonGroup } from './components/ButtonGroup';
+export type { ButtonGroupProps, ButtonGroupOrientation } from './components/ButtonGroup';
+export { SplitButton } from './components/SplitButton';
+export type { SplitButtonProps } from './components/SplitButton';
+
 // Form orchestration (#38)
 export {
   Form,

@@ -169,6 +169,11 @@ export type {
   ToastRecord,
   ToastSeverity,
 } from './components/Toaster';
+export { NotificationBadge } from './components/NotificationBadge';
+export type {
+  NotificationBadgeProps,
+  NotificationBadgePlacement,
+} from './components/NotificationBadge';
 // Form layer
 export {
   FormField,

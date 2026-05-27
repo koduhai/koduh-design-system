@@ -14,6 +14,8 @@
   border-radius: var(--ku-radius-full);
   background: var(--ku-color-bg-surface);
   cursor: pointer;
+  /* Pointer-drag owns the gesture; stop touch scroll/zoom from hijacking it. */
+  touch-action: none;
 }
 .root[data-size='sm'] .track {
   height: 4px;

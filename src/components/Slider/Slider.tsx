@@ -83,6 +83,8 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
   const invalid = field ? field.invalid : error;
   const showOwnLabel = !field; // FormField renders the label when present
   const trackRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
   const [val, setVal] = useControllableState<number>({
     value,
     defaultValue: defaultValue ?? min,
@@ -156,6 +158,40 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
     set(min + fraction * (max - min), event);
   };
 
+  // Pointer-drag: down on the track seeds the value and begins a drag; we capture
+  // the pointer so subsequent moves keep tracking even if it leaves the track
+  // bounds, until release. (setPointerCapture is a no-op/throws under jsdom, so
+  // it's guarded.) Down also focuses the thumb so keyboard control follows a grab.
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    e.preventDefault(); // avoid text selection / native drag during the gesture
+    draggingRef.current = true;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* unsupported (jsdom) */
+    }
+    thumbRef.current?.focus();
+    pointerFromClientX(e.clientX, e);
+  };
+
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    pointerFromClientX(e.clientX, e);
+  };
+
+  const endDrag = (e: PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
+    try {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {
+      /* unsupported (jsdom) */
+    }
+  };
+
   return (
     <div
       ref={ref}
@@ -174,15 +210,15 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
       <div
         ref={trackRef}
         className={styles.track}
-        onPointerDown={(e: PointerEvent<HTMLDivElement>) => {
-          if (!disabled) {
-            pointerFromClientX(e.clientX, e);
-          }
-        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
         style={{ ['--slider-pct']: `${pct}%` } as CSSProperties}
       >
         <div className={styles.fill} />
         <div
+          ref={thumbRef}
           id={id}
           className={styles.thumb}
           role="slider"

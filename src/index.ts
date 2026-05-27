@@ -250,6 +250,8 @@ export type { CommandPaletteProps, CommandPaletteCommand } from './components/Co
 // issue #43 — component round-out
 export { ButtonGroup } from './components/ButtonGroup';
 export type { ButtonGroupProps, ButtonGroupOrientation } from './components/ButtonGroup';
+export { SplitButton } from './components/SplitButton';
+export type { SplitButtonProps } from './components/SplitButton';
 
 // Form orchestration (#38)
 export {

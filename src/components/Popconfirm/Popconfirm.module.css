@@ -1,0 +1,21 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-3);
+  max-width: 280px;
+}
+
+.title {
+  font-weight: var(--ku-font-weight-semibold);
+  color: var(--ku-color-text-primary);
+}
+
+.message {
+  color: var(--ku-color-text-primary);
+}
+
+.actions {
+  display: flex;
+  gap: var(--ku-space-2);
+  justify-content: flex-end;
+}

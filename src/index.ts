@@ -98,6 +98,8 @@ export { Select } from './components/Select';
 export type { SelectProps, SelectOption, SelectSize } from './components/Select';
 export { Menu } from './components/Menu';
 export type { MenuProps, MenuEntry, MenuItemConfig, MenuSeparator } from './components/Menu';
+export { Popconfirm } from './components/Popconfirm';
+export type { PopconfirmProps } from './components/Popconfirm';
 
 // Phase 8 — data & forms
 export { Textarea } from './components/Textarea';

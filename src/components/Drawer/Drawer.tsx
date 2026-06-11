@@ -3,6 +3,7 @@ import type { HTMLAttributes, ReactNode, RefObject } from 'react';
 import { mergeRefs, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import { CloseIcon } from '../../icons';
+import { useMessages } from '../../i18n';
 import styles from './Drawer.module.css';
 
 export type DrawerSide = 'start' | 'end' | 'top' | 'bottom';
@@ -53,6 +54,7 @@ export const Drawer = /* @__PURE__ */ forwardRef<HTMLDialogElement, DrawerProps>
 ) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId('drawer-title');
+  const messages = useMessages();
   const close = useCallback(() => onOpenChange(false), [onOpenChange]);
 
   // Sync React `open` to native showModal()/close(), guarding both directions.
@@ -138,7 +140,12 @@ export const Drawer = /* @__PURE__ */ forwardRef<HTMLDialogElement, DrawerProps>
               <span />
             )}
             {dismissable ? (
-              <button type="button" className={styles.close} aria-label="Close" onClick={close}>
+              <button
+                type="button"
+                className={styles.close}
+                aria-label={messages.close}
+                onClick={close}
+              >
                 <CloseIcon aria-hidden />
               </button>
             ) : null}

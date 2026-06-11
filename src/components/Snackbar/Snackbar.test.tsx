@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
 import { render, screen, act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Snackbar } from './Snackbar';
+import { KoduhI18nProvider } from '../../i18n';
 
 beforeAll(() => {
   // jsdom lacks the Popover API; stub so effects don't throw.
@@ -134,6 +135,27 @@ describe('Snackbar', () => {
     );
     // Opening inserts the content into the already-present region.
     expect(screen.getByRole('status')).toHaveTextContent('Saved');
+  });
+
+  it('uses the default "Close" label for the close button with no provider', () => {
+    render(
+      <Snackbar open onOpenChange={() => {}}>
+        Hi
+      </Snackbar>,
+    );
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+  });
+
+  it('routes the close label through the i18n catalog override', () => {
+    render(
+      <KoduhI18nProvider messages={{ close: 'Fermer' }}>
+        <Snackbar open onOpenChange={() => {}}>
+          Hi
+        </Snackbar>
+      </KoduhI18nProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
   });
 
   it('renders an action when provided', () => {

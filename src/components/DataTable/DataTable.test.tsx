@@ -5,6 +5,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DataTable } from './DataTable';
 import type { DataColumn } from './types';
+import { KoduhI18nProvider } from '../../i18n';
 
 interface Row {
   id: string;
@@ -48,11 +49,11 @@ test('renders noResults (not empty) when a non-empty dataset is filtered to zero
       data={data}
       getRowId={(r) => r.id}
       empty={<span>Nothing here yet</span>}
-      noResults={<span>No matches — clear your filters</span>}
+      noResults={<span>No matches, clear your filters</span>}
     />,
   );
   await user.type(screen.getByRole('textbox', { name: 'Name' }), 'zzz no such row');
-  expect(screen.getByText('No matches — clear your filters')).toBeInTheDocument();
+  expect(screen.getByText('No matches, clear your filters')).toBeInTheDocument();
   expect(screen.queryByText('Nothing here yet')).not.toBeInTheDocument();
 });
 
@@ -765,4 +766,85 @@ test('filter, sort, and pagination compose together', async () => {
   const firstRow = screen.getAllByRole('row')[1]!;
   expect(within(firstRow).getByText('31')).toBeInTheDocument();
   expect(screen.getByText('1–4 of 4')).toBeInTheDocument(); // en-dash
+});
+
+// ─── i18n catalog (issue #41) ─────────────────────────────────────────────────
+// The built-in empty / no-results copy now comes from the i18n catalog. With no
+// provider the English defaults match the prior built-in text; a provider
+// override flows through; and a per-call `empty`/`noResults` prop still wins.
+
+test('uses the catalog empty default for a genuinely empty dataset (no provider)', () => {
+  render(<DataTable columns={columns} data={[]} getRowId={(r) => r.id} />);
+  expect(screen.getByText('No data')).toBeInTheDocument();
+});
+
+test('uses the catalog noResults default when a dataset is filtered to zero rows (no provider)', async () => {
+  const user = userEvent.setup();
+  render(
+    <DataTable
+      columns={[{ key: 'name', header: 'Name', filter: 'text' }]}
+      data={data}
+      getRowId={(r) => r.id}
+    />,
+  );
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'zzz no such row');
+  expect(screen.getByText('No matching results')).toBeInTheDocument();
+});
+
+test('a provider message override flows through to the empty default', () => {
+  render(
+    <KoduhI18nProvider messages={{ dataTable: { empty: 'Aucune donnée' } }}>
+      <DataTable columns={columns} data={[]} getRowId={(r) => r.id} />
+    </KoduhI18nProvider>,
+  );
+  expect(screen.getByText('Aucune donnée')).toBeInTheDocument();
+  expect(screen.queryByText('No data')).not.toBeInTheDocument();
+});
+
+test('a provider noResults override flows through for the filter-miss case', async () => {
+  const user = userEvent.setup();
+  render(
+    <KoduhI18nProvider messages={{ dataTable: { noResults: 'Aucun résultat' } }}>
+      <DataTable
+        columns={[{ key: 'name', header: 'Name', filter: 'text' }]}
+        data={data}
+        getRowId={(r) => r.id}
+      />
+    </KoduhI18nProvider>,
+  );
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'zzz no such row');
+  expect(screen.getByText('Aucun résultat')).toBeInTheDocument();
+  expect(screen.queryByText('No matching results')).not.toBeInTheDocument();
+});
+
+test('the empty prop still overrides the provider default', () => {
+  render(
+    <KoduhI18nProvider messages={{ dataTable: { empty: 'Aucune donnée' } }}>
+      <DataTable
+        columns={columns}
+        data={[]}
+        getRowId={(r) => r.id}
+        empty={<span>Nothing here</span>}
+      />
+    </KoduhI18nProvider>,
+  );
+  expect(screen.getByText('Nothing here')).toBeInTheDocument();
+  expect(screen.queryByText('Aucune donnée')).not.toBeInTheDocument();
+});
+
+test('the noResults prop still overrides the provider default for the filter-miss case', async () => {
+  const user = userEvent.setup();
+  render(
+    <KoduhI18nProvider messages={{ dataTable: { noResults: 'Aucun résultat' } }}>
+      <DataTable
+        columns={[{ key: 'name', header: 'Name', filter: 'text' }]}
+        data={data}
+        getRowId={(r) => r.id}
+        noResults={<span>No matches, clear your filters</span>}
+      />
+    </KoduhI18nProvider>,
+  );
+  await user.type(screen.getByRole('textbox', { name: 'Name' }), 'zzz no such row');
+  expect(screen.getByText('No matches, clear your filters')).toBeInTheDocument();
+  expect(screen.queryByText('Aucun résultat')).not.toBeInTheDocument();
 });

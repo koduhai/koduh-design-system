@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Alert } from './Alert';
+import { KoduhI18nProvider } from '../../i18n';
 
 describe('Alert', () => {
   it('renders the body and reflects severity as a data attribute', () => {
@@ -55,6 +56,38 @@ describe('Alert', () => {
       </Alert>,
     );
     expect(screen.getByRole('button', { name: 'Sluiten' })).toBeInTheDocument();
+  });
+
+  it('defaults the dismiss label to the catalog English string with no provider', () => {
+    render(
+      <Alert severity="info" dismissable>
+        body
+      </Alert>,
+    );
+    expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
+  });
+
+  it('routes the dismiss label through a KoduhI18nProvider override', () => {
+    render(
+      <KoduhI18nProvider messages={{ dismiss: 'Sluiten' }}>
+        <Alert severity="info" dismissable>
+          body
+        </Alert>
+      </KoduhI18nProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Sluiten' })).toBeInTheDocument();
+  });
+
+  it('lets the closeLabel prop override the provider', () => {
+    render(
+      <KoduhI18nProvider messages={{ dismiss: 'Sluiten' }}>
+        <Alert severity="info" dismissable closeLabel="Fermer">
+          body
+        </Alert>
+      </KoduhI18nProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sluiten' })).toBeNull();
   });
 
   it('does not render a close button by default', () => {

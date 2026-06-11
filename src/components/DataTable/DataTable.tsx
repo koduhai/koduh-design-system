@@ -4,6 +4,7 @@ import { Table } from '../Table';
 import type { Column, SortDirection } from '../Table';
 import { Checkbox } from '../Checkbox';
 import { useControllableState } from '../../primitives';
+import { useMessages } from '../../i18n';
 import { cx } from '../../utils/cx';
 import { filterSortRows, paginateRows, cycleSort, pageCount, clampPage } from './pipeline';
 import { Pagination } from '../Pagination';
@@ -86,6 +87,7 @@ function DataTableInner<Row>(
   }: DataTableProps<Row>,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
+  const messages = useMessages();
   const [sortState, setSort] = useControllableState<SortRule[]>({
     value: sort,
     defaultValue: defaultSort,
@@ -333,14 +335,24 @@ function DataTableInner<Row>(
   // is 0 but `data` has rows, the dataset was filtered/searched to nothing —
   // distinct from a genuinely empty dataset. `noResults` wins for that filter
   // miss; a function `empty` receives the same distinction as context.
+  // Prop precedence is unchanged: a `noResults` prop wins for the filter-miss
+  // case, otherwise the (value or function) `empty` prop is used. Only when the
+  // consumer supplied neither do we fall back to the i18n catalog defaults
+  // (English copy matches the prior built-in defaults): `noResults` for the
+  // filter-miss case, `empty` for a genuinely empty dataset.
   const hasData = manual ? total > 0 : data.length > 0;
   const isFiltered = !manual && data.length > 0 && total === 0;
-  const emptyContent =
+  const providedEmptyContent =
     isFiltered && noResults != null
       ? noResults
       : typeof empty === 'function'
         ? empty({ hasData, isFiltered })
         : empty;
+  const catalogFallback =
+    isFiltered && noResults == null && empty == null
+      ? messages.dataTable.noResults
+      : messages.dataTable.empty;
+  const emptyContent = providedEmptyContent ?? catalogFallback;
 
   const toolbar =
     searchable || selected.length > 0 ? (

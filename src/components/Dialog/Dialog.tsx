@@ -3,6 +3,7 @@ import type { HTMLAttributes, ReactNode, RefObject } from 'react';
 import { mergeRefs, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import { CloseIcon } from '../../icons';
+import { useMessages } from '../../i18n';
 import styles from './Dialog.module.css';
 
 export type DialogSize = 'sm' | 'md' | 'lg';
@@ -48,6 +49,7 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
   },
   forwardedRef,
 ) {
+  const messages = useMessages();
   const dialogRef = useRef<HTMLDialogElement>(null);
   // Tracks whether the press that may become a backdrop click actually started
   // on the backdrop. A drag that begins inside .surface (e.g. selecting text in
@@ -141,7 +143,12 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
               <span />
             )}
             {dismissable ? (
-              <button type="button" className={styles.close} aria-label="Close" onClick={close}>
+              <button
+                type="button"
+                className={styles.close}
+                aria-label={messages.close}
+                onClick={close}
+              >
                 <CloseIcon aria-hidden />
               </button>
             ) : null}

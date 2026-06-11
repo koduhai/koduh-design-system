@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Calendar } from './Calendar';
+import { KoduhI18nProvider } from '../../i18n';
 
 // A fixed month so day cells are deterministic. June 2026 starts on a Monday.
 const JUNE_2026 = new Date(2026, 5, 15);
@@ -147,5 +148,32 @@ describe('Calendar', () => {
     render(<Calendar defaultValue={JUNE_2026} />);
     expect(day(15)).toHaveAttribute('tabindex', '0');
     expect(day(14)).toHaveAttribute('tabindex', '-1');
+  });
+
+  describe('i18n', () => {
+    it('formats the month label in English by default (no provider)', () => {
+      render(<Calendar defaultValue={JUNE_2026} />);
+      expect(screen.getByText(/June 2026/)).toBeInTheDocument();
+    });
+
+    it('falls back to the provider locale for Intl formatting', () => {
+      render(
+        <KoduhI18nProvider locale="fr-FR">
+          <Calendar defaultValue={JUNE_2026} />
+        </KoduhI18nProvider>,
+      );
+      // French month name for June is "juin"; the heading uses the provider locale.
+      expect(screen.getByText(/juin 2026/)).toBeInTheDocument();
+    });
+
+    it('the locale prop overrides the provider locale', () => {
+      render(
+        <KoduhI18nProvider locale="fr-FR">
+          <Calendar defaultValue={JUNE_2026} locale="en-US" />
+        </KoduhI18nProvider>,
+      );
+      // Prop (en-US) wins over the provider (fr-FR).
+      expect(screen.getByText(/June 2026/)).toBeInTheDocument();
+    });
   });
 });

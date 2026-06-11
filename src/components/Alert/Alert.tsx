@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { InfoIcon, CheckIcon, WarningIcon, ErrorIcon, CloseIcon } from '../../icons';
+import { useMessages } from '../../i18n';
 import { cx } from '../../utils/cx';
 import styles from './Alert.module.css';
 
@@ -15,7 +16,7 @@ export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
   dismissable?: boolean;
   /** Called when the dismiss button is clicked. */
   onClose?: () => void;
-  /** Accessible label for the dismiss button. Defaults to `'Dismiss'`. */
+  /** Accessible label for the dismiss button. Defaults to the i18n catalog's `dismiss` ('Dismiss'). */
   closeLabel?: string;
   /**
    * Custom leading icon. Overrides the severity default.
@@ -45,7 +46,7 @@ export const Alert = /* @__PURE__ */ forwardRef<HTMLDivElement, AlertProps>(func
     title,
     dismissable = false,
     onClose,
-    closeLabel = 'Dismiss',
+    closeLabel,
     icon,
     className,
     children,
@@ -53,6 +54,7 @@ export const Alert = /* @__PURE__ */ forwardRef<HTMLDivElement, AlertProps>(func
   },
   ref,
 ) {
+  const messages = useMessages();
   const resolvedIcon = icon === undefined ? defaultIcons[severity] : icon;
   const classes = cx(styles.root, className);
 
@@ -74,7 +76,12 @@ export const Alert = /* @__PURE__ */ forwardRef<HTMLDivElement, AlertProps>(func
         {children ? <div className={styles.body}>{children}</div> : null}
       </div>
       {dismissable ? (
-        <button type="button" className={styles.close} aria-label={closeLabel} onClick={onClose}>
+        <button
+          type="button"
+          className={styles.close}
+          aria-label={closeLabel ?? messages.dismiss}
+          onClick={onClose}
+        >
           <CloseIcon size={18} />
         </button>
       ) : null}

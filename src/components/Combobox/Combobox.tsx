@@ -11,6 +11,7 @@ import {
   mergeRefs,
 } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './Combobox.module.css';
 
 export type ComboboxSize = 'sm' | 'md' | 'lg';
@@ -45,7 +46,10 @@ export interface ComboboxProps extends Omit<
   placeholder?: string;
   /** Match predicate. Defaults to case-insensitive label `includes`. */
   filter?: (option: ComboboxOption, query: string) => boolean;
-  /** Shown in the listbox when no option matches. Defaults to 'No results'. */
+  /**
+   * Shown in the listbox when no option matches. Defaults to the i18n catalog's
+   * `combobox.noResults` ('No results').
+   */
   noResultsText?: ReactNode;
   /** Defaults to 'md'. */
   size?: ComboboxSize;
@@ -62,7 +66,10 @@ export interface ComboboxProps extends Omit<
    * value and fires `onChange('', event)` — `''` is the "no selection" signal.
    */
   clearable?: boolean;
-  /** Accessible label for the clear button. Defaults to 'Clear selection'. */
+  /**
+   * Accessible label for the clear button. Defaults to the i18n catalog's
+   * `clearSelection` ('Clear selection').
+   */
   clearLabel?: string;
   /** Base id for the control; ids for label/listbox/description derive from it. */
   id?: string;
@@ -84,20 +91,21 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
       onChange,
       placeholder,
       filter = defaultFilter,
-      noResultsText = 'No results',
+      noResultsText,
       size = 'md',
       required,
       error = false,
       helperText,
       errorText,
       clearable,
-      clearLabel = 'Clear selection',
+      clearLabel,
       id: idProp,
       className,
       ...rest
     },
     ref,
   ) {
+    const messages = useMessages();
     const reactId = useId('combobox');
     const field = useOptionalFieldContext();
     // Inside a <FormField>, defer label/required/aria to it; otherwise use own props.
@@ -159,8 +167,8 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
     useEffect(() => {
       if (!open) return;
       const n = filtered.length;
-      announce(n === 0 ? 'No results' : `${n} result${n === 1 ? '' : 's'} available`);
-    }, [filtered.length, open, announce]);
+      announce(messages.combobox.resultCount(n));
+    }, [filtered.length, open, announce, messages]);
 
     const choose = (opt: ComboboxOption, event: SyntheticEvent) => {
       if (opt.disabled) return;
@@ -285,7 +293,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
             >
               {filtered.length === 0 ? (
                 <li className={styles.noResults} role="presentation">
-                  {noResultsText}
+                  {noResultsText ?? messages.combobox.noResults}
                 </li>
               ) : (
                 filtered.map((opt, i) => (
@@ -311,7 +319,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
             <button
               type="button"
               className={styles.clear}
-              aria-label={clearLabel}
+              aria-label={clearLabel ?? messages.clearSelection}
               onMouseDown={(e) => e.preventDefault()}
               onClick={clear}
             >

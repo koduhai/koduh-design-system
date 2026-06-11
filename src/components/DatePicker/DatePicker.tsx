@@ -3,6 +3,7 @@ import type { InputHTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNod
 import { Popover } from '../Popover';
 import { Calendar } from '../Calendar';
 import { useOptionalFieldContext } from '../FormField';
+import { useLocale } from '../../i18n';
 import { composeEventHandlers, mergeRefs, useControllableState, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './DatePicker.module.css';
@@ -68,7 +69,7 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
       error,
       required,
       label,
-      locale,
+      locale: localeProp,
       triggerLabel = 'Open calendar',
       className,
       id,
@@ -82,6 +83,11 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
       onChange: undefined,
     });
     const [open, setOpen] = useState(false);
+
+    // The `locale` prop still wins; the provider's configured locale is the
+    // default when unset (both fall through to the Intl runtime default).
+    const contextLocale = useLocale();
+    const locale = localeProp ?? contextLocale;
 
     const reactId = useId('datepicker');
     const field = useOptionalFieldContext();

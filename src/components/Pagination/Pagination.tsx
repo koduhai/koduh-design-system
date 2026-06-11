@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import type { HTMLAttributes } from 'react';
+import { useMessages } from '../../i18n';
 import { cx } from '../../utils/cx';
 import { getPaginationRange } from './getPaginationRange';
 import styles from './Pagination.module.css';
@@ -20,13 +21,14 @@ export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onCh
   boundaryCount?: number;
   /** Disables all controls. */
   disabled?: boolean;
-  /** Accessible label for the Previous control. Default `'Previous page'`. */
+  /** Accessible label for the Previous control. Defaults to the i18n catalog's `pagination.previous` ('Previous page'). */
   previousLabel?: string;
-  /** Accessible label for the Next control. Default `'Next page'`. */
+  /** Accessible label for the Next control. Defaults to the i18n catalog's `pagination.next` ('Next page'). */
   nextLabel?: string;
   /**
    * Formats the accessible label for each control, for localization. When
-   * omitted, the English defaults are used (e.g. `'Go to page 3'`). For
+   * omitted, the i18n catalog defaults are used (`pagination.page`/`current`
+   * for page buttons, `pagination.previous`/`next` for the arrows). For
    * `'previous'`/`'next'`, `page` is the target page the control navigates to.
    */
   getItemAriaLabel?: (type: PaginationItemType, page: number) => string;
@@ -41,15 +43,16 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
       siblingCount = 1,
       boundaryCount = 1,
       disabled = false,
-      previousLabel = 'Previous page',
-      nextLabel = 'Next page',
+      previousLabel,
+      nextLabel,
       getItemAriaLabel,
       className,
-      'aria-label': ariaLabel = 'Pagination',
+      'aria-label': ariaLabel,
       ...props
     },
     ref,
   ) {
+    const messages = useMessages();
     const items = getPaginationRange({ count, page, siblingCount, boundaryCount });
 
     const go = (target: number) => {
@@ -61,13 +64,22 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
       getItemAriaLabel ? getItemAriaLabel(type, target) : fallback;
 
     return (
-      <nav ref={ref} className={cx(styles.root, className)} aria-label={ariaLabel} {...props}>
+      <nav
+        ref={ref}
+        className={cx(styles.root, className)}
+        aria-label={ariaLabel ?? messages.pagination.label}
+        {...props}
+      >
         <ul className={styles.list}>
           <li>
             <button
               type="button"
               className={styles.item}
-              aria-label={labelFor('previous', page - 1, previousLabel)}
+              aria-label={labelFor(
+                'previous',
+                page - 1,
+                previousLabel ?? messages.pagination.previous,
+              )}
               disabled={disabled || page <= 1}
               onClick={() => go(page - 1)}
             >
@@ -88,7 +100,13 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
                 <button
                   type="button"
                   className={styles.item}
-                  aria-label={labelFor('page', item, `Go to page ${item}`)}
+                  aria-label={labelFor(
+                    'page',
+                    item,
+                    item === page
+                      ? messages.pagination.current(item)
+                      : messages.pagination.page(item),
+                  )}
                   aria-current={item === page ? 'page' : undefined}
                   data-current={item === page ? 'true' : undefined}
                   disabled={disabled}
@@ -103,7 +121,7 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
             <button
               type="button"
               className={styles.item}
-              aria-label={labelFor('next', page + 1, nextLabel)}
+              aria-label={labelFor('next', page + 1, nextLabel ?? messages.pagination.next)}
               disabled={disabled || page >= count}
               onClick={() => go(page + 1)}
             >

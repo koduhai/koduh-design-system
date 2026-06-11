@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Drawer } from './Drawer';
+import { KoduhI18nProvider } from '../../i18n';
 
 // jsdom does not implement <dialog> showModal/close — shim them (mirrors Dialog.test).
 beforeAll(() => {
@@ -90,6 +91,27 @@ describe('Drawer', () => {
       </Drawer>,
     );
     expect(document.body.style.overflow).toBe('auto');
+  });
+
+  it('labels the close button "Close" by default (no i18n provider)', () => {
+    render(
+      <Drawer open onOpenChange={() => {}} title="Filters">
+        Body
+      </Drawer>,
+    );
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+  });
+
+  it('routes the close label through the i18n catalog when a provider overrides it', () => {
+    render(
+      <KoduhI18nProvider messages={{ close: 'Fermer' }}>
+        <Drawer open onOpenChange={() => {}} title="Filters">
+          Body
+        </Drawer>
+      </KoduhI18nProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
   });
 
   it('restores background scroll on unmount', () => {

@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DatePicker } from './DatePicker';
+import { KoduhI18nProvider } from '../../i18n';
 import { FormField } from '../FormField';
 import { Form } from '../Form/Form';
 import { useForm } from '../Form/useForm';
@@ -201,6 +202,49 @@ describe('DatePicker', () => {
     const input = screen.getByLabelText(/Event date/);
     expect(input).toBeRequired();
     expect(input).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  describe('i18n locale', () => {
+    it('default (no provider) formats with the runtime locale, unchanged', () => {
+      render(<DatePicker label="Event date" defaultValue={JUNE_2026} />);
+      expect(screen.getByLabelText('Event date')).toHaveValue(
+        new Intl.DateTimeFormat(undefined, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(JUNE_2026),
+      );
+    });
+
+    it('the provider locale flows through to the formatted value', () => {
+      render(
+        <KoduhI18nProvider locale="fr-FR">
+          <DatePicker label="Event date" defaultValue={JUNE_2026} />
+        </KoduhI18nProvider>,
+      );
+      expect(screen.getByLabelText('Event date')).toHaveValue(
+        new Intl.DateTimeFormat('fr-FR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(JUNE_2026),
+      );
+    });
+
+    it('the locale prop overrides the provider locale', () => {
+      render(
+        <KoduhI18nProvider locale="fr-FR">
+          <DatePicker label="Event date" defaultValue={JUNE_2026} locale="de-DE" />
+        </KoduhI18nProvider>,
+      );
+      expect(screen.getByLabelText('Event date')).toHaveValue(
+        new Intl.DateTimeFormat('de-DE', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(JUNE_2026),
+      );
+    });
   });
 
   describe('DatePicker bound to a Form', () => {

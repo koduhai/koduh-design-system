@@ -1,6 +1,7 @@
 import { forwardRef, Children, cloneElement, isValidElement } from 'react';
 import type { HTMLAttributes, ReactElement } from 'react';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import type { AvatarProps, AvatarSize, AvatarShape } from '../Avatar';
 import styles from './AvatarGroup.module.css';
 
@@ -38,6 +39,7 @@ export const AvatarGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, AvatarGrou
     },
     ref,
   ) {
+    const messages = useMessages();
     const avatars = Children.toArray(children).filter(
       isValidElement,
     ) as ReactElement<AvatarProps>[];
@@ -71,7 +73,7 @@ export const AvatarGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, AvatarGrou
             className={cx(styles.avatar, styles.overflow)}
             data-size={size}
             data-shape={shape}
-            aria-label={`${overflow} more`}
+            aria-label={messages.avatarGroup.overflow(overflow)}
           >
             +{overflow}
           </span>

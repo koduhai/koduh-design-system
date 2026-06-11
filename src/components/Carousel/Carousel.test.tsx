@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Carousel } from './Carousel';
+import { KoduhI18nProvider } from '../../i18n';
 
 const items = [
   { id: 'a', content: 'Slide A' },
@@ -166,5 +167,66 @@ describe('Carousel', () => {
       'aria-current',
       'true',
     );
+  });
+
+  describe('i18n', () => {
+    it('uses the English catalog defaults with no provider', () => {
+      const { container } = render(<Carousel items={items} aria-label="Highlights" />);
+      // Region role description, prev/next labels, dot labels.
+      expect(screen.getByRole('group', { name: 'Highlights' })).toHaveAttribute(
+        'aria-roledescription',
+        'carousel',
+      );
+      expect(screen.getByRole('button', { name: 'Previous slide' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Next slide' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Go to slide 1' })).toBeInTheDocument();
+      // Slide list label.
+      expect(screen.getByRole('group', { name: 'Slides' })).toBeInTheDocument();
+      // Live-region status.
+      expect(container.querySelector('[aria-live="polite"]')).toHaveTextContent('Slide 1 of 3');
+    });
+
+    it('routes built-in strings through a provider override', () => {
+      const { container } = render(
+        <KoduhI18nProvider
+          messages={{
+            carousel: {
+              label: 'Diapositives',
+              region: 'carrousel',
+              previous: 'Précédent',
+              next: 'Suivant',
+              goToSlide: (slide) => `Aller à la diapositive ${slide}`,
+              slideStatus: (index, total) => `Diapositive ${index} sur ${total}`,
+            },
+          }}
+        >
+          <Carousel items={items} aria-label="Highlights" />
+        </KoduhI18nProvider>,
+      );
+      expect(screen.getByRole('group', { name: 'Highlights' })).toHaveAttribute(
+        'aria-roledescription',
+        'carrousel',
+      );
+      expect(screen.getByRole('button', { name: 'Précédent' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Suivant' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Aller à la diapositive 1' })).toBeInTheDocument();
+      expect(screen.getByRole('group', { name: 'Diapositives' })).toBeInTheDocument();
+      expect(container.querySelector('[aria-live="polite"]')).toHaveTextContent(
+        'Diapositive 1 sur 3',
+      );
+    });
+
+    it('lets prevLabel / nextLabel props override the provider', () => {
+      render(
+        <KoduhI18nProvider messages={{ carousel: { previous: 'Précédent', next: 'Suivant' } }}>
+          <Carousel items={items} aria-label="Highlights" prevLabel="Back" nextLabel="Forward" />
+        </KoduhI18nProvider>,
+      );
+      // The per-component prop still wins over the catalog.
+      expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Forward' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Précédent' })).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Suivant' })).toBeNull();
+    });
   });
 });

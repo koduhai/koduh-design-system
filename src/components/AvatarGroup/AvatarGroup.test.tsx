@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { AvatarGroup } from './AvatarGroup';
 import { Avatar } from '../Avatar';
+import { KoduhI18nProvider } from '../../i18n';
 
 describe('AvatarGroup', () => {
   it('renders all avatars when under max', () => {
@@ -82,5 +83,36 @@ describe('AvatarGroup', () => {
     const sized = container.querySelectorAll('[data-size="lg"]');
     // one rendered avatar + the overflow chip both reflect lg.
     expect(sized.length).toBe(2);
+  });
+
+  it('routes the overflow aria-label through the catalog (default unchanged)', () => {
+    render(
+      <AvatarGroup max={2}>
+        <Avatar name="A B" />
+        <Avatar name="C D" />
+        <Avatar name="E F" />
+        <Avatar name="G H" />
+      </AvatarGroup>,
+    );
+    // Visible text stays "+N"; the accessible name matches the catalog default.
+    expect(screen.getByText('+3')).toBeInTheDocument();
+    expect(screen.getByLabelText('3 more')).toBeInTheDocument();
+  });
+
+  it('flows a provider message override through to the overflow aria-label', () => {
+    render(
+      <KoduhI18nProvider messages={{ avatarGroup: { overflow: (count) => `${count} de plus` } }}>
+        <AvatarGroup max={2}>
+          <Avatar name="A B" />
+          <Avatar name="C D" />
+          <Avatar name="E F" />
+          <Avatar name="G H" />
+        </AvatarGroup>
+      </KoduhI18nProvider>,
+    );
+    // Visible text is unaffected; only the accessible name is localized.
+    expect(screen.getByText('+3')).toBeInTheDocument();
+    expect(screen.getByLabelText('3 de plus')).toBeInTheDocument();
+    expect(screen.queryByLabelText('3 more')).not.toBeInTheDocument();
   });
 });

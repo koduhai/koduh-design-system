@@ -1,0 +1,25 @@
+# Keeps SHA-pinned GitHub Actions and npm dev dependencies up to date.
+# The `github-actions` ecosystem updates the commit SHAs in .github/workflows
+# (pinned for supply-chain safety) while preserving the trailing version comment.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns:
+          - '*'
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+    groups:
+      dev-dependencies:
+        dependency-type: development

@@ -181,4 +181,42 @@ describe('ConfirmDialog', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onOpenChange).not.toHaveBeenCalled();
   });
+
+  it('preventDefaults the native cancel (Esc) while confirmLoading so the dialog cannot get stuck closed', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={onOpenChange}
+        onConfirm={() => {}}
+        title="Deleting"
+        confirmLoading
+        loadingText="Deleting…"
+      />,
+    );
+    const dlg = document.querySelector('dialog') as HTMLDialogElement;
+    const cancelEvent = new Event('cancel', { cancelable: true });
+    dlg.dispatchEvent(cancelEvent);
+    // dismissable={!confirmLoading} → false, so Dialog preventDefaults the native
+    // cancel; the browser never runs dialog.close(), so React `open` stays true
+    // and the dialog can't end up visually closed but logically open.
+    expect(cancelEvent.defaultPrevented).toBe(true);
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('lets the native cancel (Esc) through when not loading', () => {
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={() => {}}
+        onConfirm={() => {}}
+        title="Delete?"
+        confirmLoading={false}
+      />,
+    );
+    const dlg = document.querySelector('dialog') as HTMLDialogElement;
+    const cancelEvent = new Event('cancel', { cancelable: true });
+    dlg.dispatchEvent(cancelEvent);
+    expect(cancelEvent.defaultPrevented).toBe(false);
+  });
 });

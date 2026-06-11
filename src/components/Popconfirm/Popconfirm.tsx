@@ -1,5 +1,5 @@
-import { cloneElement } from 'react';
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import { cloneElement, useEffect, useRef } from 'react';
+import type { HTMLAttributes, KeyboardEvent, ReactElement, ReactNode } from 'react';
 import { Popover } from '../Popover';
 import type { PopoverPlacement } from '../Popover';
 import { Button } from '../Button';
@@ -58,6 +58,52 @@ export function Popconfirm({
   const titleId = title != null ? `${baseId}-title` : undefined;
   const messageId = `${baseId}-message`;
 
+  // This panel is role="dialog", so it owns focus: move focus in on open, trap
+  // Tab within it, and return focus to the opener on close. Popover itself does
+  // no focus management (it's the shared low-level floating primitive), so a
+  // composing dialog has to supply it or keyboard/SR users tab straight past the
+  // Confirm/Cancel buttons and focus is orphaned when it closes.
+  const panelRef = useRef<HTMLDivElement>(null);
+  const restoreRef = useRef<HTMLElement | null>(null);
+
+  const getFocusable = () => {
+    const panel = panelRef.current;
+    if (!panel) return [] as HTMLElement[];
+    return Array.from(
+      panel.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      // Capture the opener before focus moves into the panel so we can restore it.
+      restoreRef.current = restoreRef.current ?? (document.activeElement as HTMLElement | null);
+      getFocusable()[0]?.focus();
+    } else if (restoreRef.current) {
+      restoreRef.current.focus();
+      restoreRef.current = null;
+    }
+    // getFocusable reads refs only; safe to omit from deps.
+  }, [isOpen]);
+
+  const onPanelKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'Tab') return;
+    const focusable = getFocusable();
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
+    const active = document.activeElement;
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   // onConfirm fires before close, matching ConfirmDialog.
   const confirmAndClose = () => {
     onConfirm();
@@ -78,6 +124,7 @@ export function Popconfirm({
 
   return (
     <Popover
+      ref={panelRef}
       id={baseId}
       open={isOpen}
       onOpenChange={setOpen}
@@ -87,6 +134,7 @@ export function Popconfirm({
       aria-describedby={messageId}
       trigger={clonedTrigger}
       className={cx(styles.panel, className)}
+      onKeyDown={onPanelKeyDown}
     >
       {title != null ? (
         <span id={titleId} className={styles.title}>

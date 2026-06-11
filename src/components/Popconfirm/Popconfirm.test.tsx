@@ -29,4 +29,36 @@ describe('Popconfirm', () => {
     expect(onCancel).toHaveBeenCalledOnce();
     expect(onConfirm).not.toHaveBeenCalled();
   });
+
+  it('moves focus into the dialog on open and restores it to the trigger on close', async () => {
+    render(
+      <Popconfirm trigger={<button>Delete</button>} onConfirm={() => {}}>
+        Are you sure?
+      </Popconfirm>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Delete' });
+    await userEvent.click(trigger);
+    // Focus moves to the first actionable control inside the role="dialog" panel.
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+    // Confirming closes the panel and returns focus to the opener.
+    await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+    expect(trigger).toHaveFocus();
+  });
+
+  it('traps Tab within the dialog', async () => {
+    render(
+      <Popconfirm trigger={<button>Delete</button>} onConfirm={() => {}}>
+        Are you sure?
+      </Popconfirm>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    const cancel = screen.getByRole('button', { name: 'Cancel' });
+    const confirm = screen.getByRole('button', { name: 'Confirm' });
+    expect(cancel).toHaveFocus();
+    await userEvent.tab();
+    expect(confirm).toHaveFocus();
+    // Tab past the last control wraps back to the first.
+    await userEvent.tab();
+    expect(cancel).toHaveFocus();
+  });
 });

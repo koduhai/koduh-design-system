@@ -172,18 +172,24 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
             ref={ref}
             id={id}
             className={styles.input}
-            inputMode="numeric"
-            type="number"
+            // Deliberately a text input, not type="number". Browsers sanitize the
+            // value of a number input, coercing an in-progress string like '1.' or
+            // '1.5e' to '', which destroys the raw-text buffer this component is
+            // built around. inputMode="decimal" still surfaces a numeric keypad on
+            // mobile. (min/max/step are number-input attributes — they'd be inert
+            // here; clamping is enforced in JS via clamp()/adjust().)
+            inputMode="decimal"
+            type="text"
             value={display}
-            min={min}
-            max={max}
-            step={step}
             required={isRequired}
             disabled={disabled}
             aria-invalid={invalid || undefined}
             aria-describedby={describedBy}
             onChange={(e) => commit(e.target.value, e)}
-            onBlur={(e) => { bound?.onBlur(); onBlur?.(e); }}
+            onBlur={(e) => {
+              bound?.onBlur();
+              onBlur?.(e);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'ArrowUp') {
                 e.preventDefault();

@@ -75,6 +75,11 @@ export function ConfirmDialog({
       onOpenChange={requestClose}
       title={title}
       size="sm"
+      // While a confirm is pending, make the dialog truly non-dismissable so the
+      // native <dialog> cancel (Esc) is preventDefault'd. Without this, Esc runs
+      // the browser's dialog.close() and the React `open` guard in requestClose
+      // leaves the component stuck closed (open stays true, never re-shown).
+      dismissable={!confirmLoading}
       initialFocus={initialFocus ?? confirmRef}
       footer={
         <>

@@ -9,9 +9,10 @@ import { useForm } from '../Form/useForm';
 import { useFormField } from '../Form/useFormField';
 
 describe('NumberField', () => {
-  it('renders a labelled spinbutton-ish numeric input', () => {
+  it('renders a labelled numeric (text-mode) input', () => {
     render(<NumberField label="Qty" defaultValue={2} />);
-    expect(screen.getByLabelText('Qty')).toHaveValue(2);
+    // type="text" (see NumberField.tsx) so the value reads back as a string.
+    expect(screen.getByLabelText('Qty')).toHaveValue('2');
   });
 
   it('increment/decrement buttons step by `step` and clamp to min/max', async () => {
@@ -100,7 +101,9 @@ describe('NumberField bound to a Form', () => {
       const form = useForm({ defaultValues: { qty: 5 } });
       return (
         <Form form={form} aria-label="f">
-          <FormField name="qty" label="Qty"><NumberField /></FormField>
+          <FormField name="qty" label="Qty">
+            <NumberField />
+          </FormField>
           <Probe />
         </Form>
       );
@@ -118,7 +121,9 @@ describe('NumberField bound to a Form', () => {
       const form = useForm({ defaultValues: { qty: 1 } });
       return (
         <Form form={form} aria-label="f">
-          <FormField name="qty" label="Qty"><NumberField /></FormField>
+          <FormField name="qty" label="Qty">
+            <NumberField />
+          </FormField>
         </Form>
       );
     }
@@ -134,7 +139,9 @@ describe('NumberField bound to a Form', () => {
       api = useForm({ defaultValues: { qty: 5 } });
       return (
         <Form form={api} aria-label="f">
-          <FormField name="qty" label="Qty"><NumberField /></FormField>
+          <FormField name="qty" label="Qty">
+            <NumberField />
+          </FormField>
         </Form>
       );
     }

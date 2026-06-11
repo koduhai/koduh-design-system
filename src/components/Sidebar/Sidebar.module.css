@@ -86,10 +86,10 @@
   color: var(--ku-color-text-primary);
 }
 .link[data-active='true'] {
-  /* High-contrast text (passes WCAG AA in both themes) plus a primary accent
-     bar + tint + weight as color-independent "active" signals. Primary-colored
-     text on the tinted background fell just under 4.5:1 in the light theme. */
-  background-color: color-mix(in srgb, var(--ku-color-primary) 16%, transparent);
+  /* Shared selected-fill token (16% primary wash) plus a primary accent bar +
+     weight as color-independent "active" signals. High-contrast text keeps AA in
+     both themes (the tint legibility is guarded in contrast.test.ts). */
+  background-color: var(--ku-color-bg-selected);
   color: var(--ku-color-text-primary);
   font-weight: var(--ku-font-weight-medium);
   box-shadow: inset 3px 0 0 var(--ku-color-primary);

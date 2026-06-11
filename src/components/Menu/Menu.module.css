@@ -24,10 +24,10 @@
   cursor: pointer;
 }
 .item[data-active='true'] {
-  /* bg-selected is a dedicated selected-fill surface that stays perceptibly
-     distinct from the popover surface in BOTH themes (unlike bg-raised, which
-     equals bg-default in light). The inset ring is a non-color signal so the
-     highlight is never conveyed by color alone. */
+  /* bg-selected is the shared selected-fill token (16% primary wash) used across
+     Menu/CommandPalette/Sidebar/Tree, perceptibly distinct from the popover
+     surface in BOTH themes (unlike bg-raised, which equals bg-default in light).
+     The inset ring is a non-color signal so the highlight is never color-only. */
   background-color: var(--ku-color-bg-selected);
   box-shadow: inset 0 0 0 1px var(--ku-color-border);
 }

@@ -71,8 +71,8 @@ export function Popconfirm({
   const ariaLabelledBy = field ? field.labelId : titleId;
   const ariaLabel = ariaLabelledBy == null ? 'Confirm action' : undefined;
   const ariaDescribedBy = field?.describedById ?? messageId;
-  const ariaInvalid = field?.invalid || undefined;
-  const ariaRequired = field?.required || undefined;
+  // No aria-invalid / aria-required: neither is a valid attribute on role="dialog"
+  // (axe aria-allowed-attr). The field error/help is conveyed via aria-describedby.
 
   // This panel is role="dialog", so it owns focus: move focus in on open, trap
   // Tab within it, and return focus to the opener on close. Popover itself does
@@ -149,8 +149,6 @@ export function Popconfirm({
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
-      aria-invalid={ariaInvalid}
-      aria-required={ariaRequired}
       trigger={clonedTrigger}
       className={cx(styles.panel, className)}
       onKeyDown={onPanelKeyDown}

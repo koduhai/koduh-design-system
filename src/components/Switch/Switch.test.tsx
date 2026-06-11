@@ -44,7 +44,7 @@ describe('Switch', () => {
     expect(document.getElementById(describedById as string)).toHaveTextContent('Send me emails');
   });
 
-  it('inside <FormField required>, forwards required + aria-required to the input', () => {
+  it('inside <FormField required>, forwards native required to the input', () => {
     render(
       <FormField label="Notifications" required>
         <Switch />
@@ -52,7 +52,9 @@ describe('Switch', () => {
     );
     const sw = screen.getByRole('switch') as HTMLInputElement;
     expect(sw.required).toBe(true);
-    expect(sw).toHaveAttribute('aria-required', 'true');
+    // aria-required is not a supported attribute on role="switch"; native required
+    // conveys the state instead.
+    expect(sw).not.toHaveAttribute('aria-required');
   });
 
   it('inside <FormField error>, reflects aria-invalid', () => {
@@ -86,6 +88,6 @@ describe('Switch', () => {
     render(<Switch label="Wi-Fi" required />);
     const sw = screen.getByRole('switch') as HTMLInputElement;
     expect(sw.required).toBe(true);
-    expect(sw).toHaveAttribute('aria-required', 'true');
+    expect(sw).not.toHaveAttribute('aria-required');
   });
 });

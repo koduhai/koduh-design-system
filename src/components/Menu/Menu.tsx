@@ -250,13 +250,13 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
     // FormField association: the trigger is a button wrapper, so use the group
     // attributes (aria-labelledby points at the field label). Without a field
     // context these stay undefined and the trigger keeps its own props.
+    // aria-invalid / aria-required are not valid on the trigger's button role
+    // (axe aria-allowed-attr), so only the name/description associations are wired.
     ...(field
       ? {
           id: field.id,
           'aria-labelledby': field.labelId,
           'aria-describedby': field.describedById,
-          'aria-invalid': field.invalid || undefined,
-          'aria-required': field.required || undefined,
         }
       : null),
     onClick: composeEventHandlers(typedTrigger.props.onClick, () => setOpen((o) => !o)),

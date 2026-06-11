@@ -39,7 +39,6 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
     const describedBy = field?.describedById
       ? `${field.describedById} ${instructionsId}`
       : instructionsId;
-    const invalid = field?.invalid;
     const isRequired = field?.required;
 
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -108,8 +107,9 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
         // cannot target a role="button", so reference the FormField label by id.
         aria-labelledby={field?.labelId}
         aria-describedby={describedBy}
-        aria-invalid={invalid || undefined}
-        aria-required={isRequired || undefined}
+        // No aria-invalid / aria-required here: neither is a valid ARIA attribute
+        // on role="button" (axe aria-allowed-attr). Required is enforced natively
+        // on the file input below; the error text is conveyed via aria-describedby.
         className={cx(styles.root, className)}
         data-dragover={dragover ? 'true' : undefined}
         data-disabled={disabled ? 'true' : undefined}

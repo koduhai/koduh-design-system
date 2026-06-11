@@ -86,7 +86,9 @@ describe('ColorPicker', () => {
     );
     const group = screen.getByRole('group', { name: 'Theme color' });
     expect(group).toHaveAccessibleDescription('Pick one');
-    expect(group).toHaveAttribute('aria-required', 'true');
+    // aria-required is not a valid attribute on role="group" (axe aria-allowed-attr);
+    // required is conveyed by the FormField label's asterisk, not on the group.
+    expect(group).not.toHaveAttribute('aria-required');
   });
   it('falls back to defaultValue when a Form binding holds a non-string value', () => {
     // The Form binding value is typed `unknown`; a non-string value must not be

@@ -124,8 +124,9 @@ describe('FileUpload', () => {
     const label = screen.getByText('Attachment').closest('label');
     expect(label).toHaveAttribute('for', zone.id);
     expect(zone).toHaveAttribute('aria-labelledby', `${zone.id}-label`);
-    // required is exposed on the wrapper via aria-required, and natively on the input.
-    expect(zone).toHaveAttribute('aria-required', 'true');
+    // required is enforced natively on the file input; aria-required is NOT a valid
+    // attribute on role="button", so the wrapper must not carry it.
+    expect(zone).not.toHaveAttribute('aria-required');
     expect(input.required).toBe(true);
     // The hidden input does not own the field id.
     expect(input.id).not.toBe(zone.id);
@@ -141,12 +142,16 @@ describe('FileUpload', () => {
     expect(input).not.toHaveAttribute('aria-label');
   });
 
-  it('marks the wrapper aria-invalid when the FormField is in error', () => {
+  it('associates the FormField error via aria-describedby (aria-invalid is invalid on role=button)', () => {
     render(
       <FormField label="Attachment" error errorText="Required">
         <FileUpload onFiles={() => {}} />
       </FormField>,
     );
-    expect(screen.getByRole('button')).toHaveAttribute('aria-invalid', 'true');
+    const zone = screen.getByRole('button');
+    // aria-invalid is not allowed on role="button"; the error is conveyed by
+    // linking the FormField error text through aria-describedby instead.
+    expect(zone).not.toHaveAttribute('aria-invalid');
+    expect(zone.getAttribute('aria-describedby')).toContain(screen.getByText('Required').id);
   });
 });

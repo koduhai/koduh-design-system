@@ -81,8 +81,10 @@ describe('Popconfirm', () => {
     // Group control: labelled by the field's label, not by htmlFor.
     expect(dialog).toHaveAccessibleName('Danger zone');
     expect(dialog).toHaveAttribute('aria-describedby', screen.getByText('Bad').id);
-    expect(dialog).toHaveAttribute('aria-invalid', 'true');
-    expect(dialog).toHaveAttribute('aria-required', 'true');
+    // aria-invalid / aria-required are not valid on role="dialog"; the error is
+    // conveyed through aria-describedby instead.
+    expect(dialog).not.toHaveAttribute('aria-invalid');
+    expect(dialog).not.toHaveAttribute('aria-required');
   });
 
   it('traps Tab within the dialog', async () => {

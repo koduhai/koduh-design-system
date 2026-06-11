@@ -192,8 +192,10 @@ describe('Menu', () => {
     const label = screen.getByText('Row actions');
     expect(trigger).toHaveAttribute('id', label.getAttribute('for'));
     expect(trigger).toHaveAttribute('aria-labelledby', label.id);
-    expect(trigger).toHaveAttribute('aria-invalid', 'true');
-    expect(trigger).toHaveAttribute('aria-required', 'true');
+    // aria-invalid / aria-required are not valid on the button-role trigger, so
+    // only the name + description associations are wired.
+    expect(trigger).not.toHaveAttribute('aria-invalid');
+    expect(trigger).not.toHaveAttribute('aria-required');
     const errorMessage = screen.getByText('Pick one');
     expect(trigger).toHaveAttribute('aria-describedby', errorMessage.id);
   });

@@ -76,8 +76,10 @@ export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(
         className={styles.input}
         checked={isChecked}
         disabled={disabled}
+        // Native `required` conveys the required state; aria-required is not a
+        // supported attribute on role="switch" (axe aria-allowed-attr), so it is
+        // intentionally omitted (mirrors Checkbox).
         required={isRequired}
-        aria-required={isRequired || undefined}
         aria-describedby={describedBy}
         aria-invalid={invalid || undefined}
         onChange={(event) => {

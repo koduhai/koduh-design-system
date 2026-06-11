@@ -70,8 +70,6 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
     // through the group's aria-labelledby instead.
     const labelId = field ? field.labelId : showOwnLabel ? ownLabelId : undefined;
     const describedBy = field ? field.describedById : undefined;
-    const invalid = field ? field.invalid || undefined : undefined;
-    const groupRequired = field ? field.required || undefined : undefined;
 
     // Bind to an enclosing <Form> only when not explicitly controlled.
     const bound = value === undefined ? field?.binding : undefined;
@@ -362,8 +360,9 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
         role="group"
         aria-labelledby={labelId}
         aria-describedby={describedBy}
-        aria-invalid={invalid}
-        aria-required={groupRequired}
+        // No aria-invalid / aria-required on role="group" (axe aria-allowed-attr
+        // forbids them there). The error/help text is conveyed via aria-describedby
+        // and the FormField label carries the required asterisk.
         data-disabled={disabled ? 'true' : undefined}
         style={rootStyle}
       >

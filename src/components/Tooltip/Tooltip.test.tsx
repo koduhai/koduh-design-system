@@ -22,6 +22,29 @@ describe('Tooltip', () => {
     expect(trigger).toHaveAttribute('aria-describedby', tip.id);
   });
 
+  it('merges its tooltip id with a consumer-provided aria-describedby on the trigger', () => {
+    render(
+      <>
+        <span id="helper-text">Extra help</span>
+        <Tooltip content="More info" delay={0}>
+          <button type="button" aria-describedby="helper-text">
+            Help
+          </button>
+        </Tooltip>
+      </>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Help' });
+    // Closed: only the consumer's own id is present.
+    expect(trigger).toHaveAttribute('aria-describedby', 'helper-text');
+    act(() => {
+      fireEvent.focus(trigger);
+      vi.runAllTimers();
+    });
+    const tip = screen.getByRole('tooltip');
+    // Open: the consumer's id is preserved and the tooltip id is appended.
+    expect(trigger).toHaveAttribute('aria-describedby', `helper-text ${tip.id}`);
+  });
+
   it('opens on hover after the delay', () => {
     render(
       <Tooltip content="Hi" delay={200}>

@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { useControllableState } from '../../primitives';
 import { useOptionalFieldContext } from '../FormField';
@@ -126,6 +126,20 @@ export const ToggleGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, ToggleGrou
       firstSelected >= 0 ? firstSelected : (enabledIndexes[0] ?? 0),
     );
 
+    // Keep the roving tabIndex on the checked option when the selection changes
+    // from outside the component (a controlled `value` prop, or a form binding
+    // updated via form.reset / external state). The WAI-ARIA radiogroup pattern
+    // requires the checked option to be the tabbable one. We only follow a
+    // genuine selection (firstSelected >= 0) so user-driven focus moves that do
+    // not select (multiple mode, focusing an unselected item) are preserved.
+    const prevSelectedRef = useRef(firstSelected);
+    useEffect(() => {
+      if (firstSelected >= 0 && firstSelected !== prevSelectedRef.current) {
+        setActiveIndex(firstSelected);
+      }
+      prevSelectedRef.current = firstSelected;
+    }, [firstSelected]);
+
     const focusAt = (index: number) => {
       setActiveIndex(index);
       btnRefs.current[index]?.focus();
@@ -174,7 +188,10 @@ export const ToggleGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, ToggleGrou
         aria-labelledby={labelledby}
         aria-describedby={describedby}
         aria-invalid={invalid}
-        aria-required={requiredAttr}
+        // aria-required is a supported state for radiogroup but not for the
+        // generic group role, so only emit it in single-select mode (mirrors
+        // the aria-orientation guard below).
+        aria-required={type === 'single' ? requiredAttr : undefined}
         // aria-orientation is valid on radiogroup but not on a plain group, so
         // only emit it in single-select mode (CSS uses data-orientation anyway).
         aria-orientation={type === 'single' ? orientation : undefined}

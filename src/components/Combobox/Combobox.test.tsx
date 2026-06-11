@@ -50,6 +50,34 @@ describe('Combobox', () => {
     expect(onChange).toHaveBeenLastCalledWith('ca', expect.anything());
   });
 
+  it('keyboard: ArrowUp opens the listbox and lands on the last option', async () => {
+    const onChange = vi.fn();
+    render(<Combobox label="Country" options={options} onChange={onChange} />);
+    const input = screen.getByRole('combobox');
+    input.focus();
+    // Closed -> ArrowUp opens and highlights the last option (Canada).
+    await userEvent.keyboard('{ArrowUp}');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.keyboard('{Enter}');
+    expect(onChange).toHaveBeenLastCalledWith('ca', expect.anything());
+  });
+
+  it('keyboard: Escape resets the highlight so reopen starts fresh', async () => {
+    const onChange = vi.fn();
+    render(<Combobox label="Country" options={options} onChange={onChange} />);
+    const input = screen.getByRole('combobox');
+    input.focus();
+    // Open and move the highlight onto the last option.
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');
+    expect(input).toHaveAttribute('aria-activedescendant');
+    // Escape closes the listbox.
+    await userEvent.keyboard('{Escape}');
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    // Reopening with ArrowDown starts at the first option, not the stale last one.
+    await userEvent.keyboard('{ArrowDown}{Enter}');
+    expect(onChange).toHaveBeenLastCalledWith('us', expect.anything());
+  });
+
   it('shows noResultsText when nothing matches', async () => {
     render(<Combobox label="Country" options={options} noResultsText="None" />);
     await userEvent.type(screen.getByRole('combobox'), 'zzz');

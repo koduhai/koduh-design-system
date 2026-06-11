@@ -48,6 +48,30 @@ describe('Rating', () => {
     expect(onChange).toHaveBeenLastCalledWith(5);
   });
 
+  it('does not fire onChange for boundary key presses that do not change the value', async () => {
+    const onChange = vi.fn();
+    render(<Rating defaultValue={1} onChange={onChange} />);
+    const radios = screen.getAllByRole('radio');
+    radios[0]!.focus();
+    // ArrowLeft at star 1 (already selected) must be a no-op, not re-select 1.
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(onChange).not.toHaveBeenCalled();
+    expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+    // Home while already at 1 is likewise a no-op.
+    await userEvent.keyboard('{Home}');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('does not re-fire onChange at the top boundary (ArrowRight / End on a maxed rating)', async () => {
+    const onChange = vi.fn();
+    render(<Rating defaultValue={5} max={5} onChange={onChange} />);
+    const radios = screen.getAllByRole('radio');
+    radios[4]!.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    await userEvent.keyboard('{End}');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('uses roving tabindex: only the active star is tabbable', () => {
     render(<Rating defaultValue={3} />);
     const radios = screen.getAllByRole('radio');

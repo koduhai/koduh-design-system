@@ -66,4 +66,41 @@ describe('Drawer', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
+
+  it('is named by a consumer-supplied aria-label when no title is given', () => {
+    render(
+      <Drawer open onOpenChange={() => {}} aria-label="Settings">
+        Body
+      </Drawer>,
+    );
+    expect(screen.getByRole('dialog', { name: 'Settings' })).toBeInTheDocument();
+  });
+
+  it('locks background scroll while open and restores it on close', () => {
+    document.body.style.overflow = 'auto';
+    const { rerender } = render(
+      <Drawer open onOpenChange={() => {}} title="Filters">
+        Body
+      </Drawer>,
+    );
+    expect(document.body.style.overflow).toBe('hidden');
+    rerender(
+      <Drawer open={false} onOpenChange={() => {}} title="Filters">
+        Body
+      </Drawer>,
+    );
+    expect(document.body.style.overflow).toBe('auto');
+  });
+
+  it('restores background scroll on unmount', () => {
+    document.body.style.overflow = 'auto';
+    const { unmount } = render(
+      <Drawer open onOpenChange={() => {}} title="Filters">
+        Body
+      </Drawer>,
+    );
+    expect(document.body.style.overflow).toBe('hidden');
+    unmount();
+    expect(document.body.style.overflow).toBe('auto');
+  });
 });

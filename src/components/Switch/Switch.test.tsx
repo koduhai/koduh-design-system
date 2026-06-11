@@ -72,6 +72,16 @@ describe('Switch', () => {
     expect(sw.required).toBe(false);
   });
 
+  it('standalone: error prop sets aria-invalid', () => {
+    render(<Switch label="Wi-Fi" error />);
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('standalone: no aria-invalid by default', () => {
+    render(<Switch label="Wi-Fi" />);
+    expect(screen.getByRole('switch')).not.toHaveAttribute('aria-invalid');
+  });
+
   it('standalone: forwards its own required prop', () => {
     render(<Switch label="Wi-Fi" required />);
     const sw = screen.getByRole('switch') as HTMLInputElement;

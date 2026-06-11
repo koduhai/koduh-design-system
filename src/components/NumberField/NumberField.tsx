@@ -84,7 +84,10 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
     const isControlled = value !== undefined;
     // Binding: when no explicit value prop is passed and a form binding exists, use form as source.
     const bound = value === undefined ? field?.binding : undefined;
-    const boundNumeric = bound ? (bound.value as number | null) : undefined;
+    // bound.value is `unknown` at the FieldBinding boundary; narrow at runtime
+    // rather than casting so a non-number form value (e.g. a string from another
+    // control or hydration) doesn't masquerade as a number.
+    const boundNumeric = bound ? (typeof bound.value === 'number' ? bound.value : null) : undefined;
 
     // The external (bound or controlled) numeric source of truth, or `undefined`
     // when the field is uncontrolled and owns its own state.
@@ -187,6 +190,15 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
             aria-describedby={describedBy}
             onChange={(e) => commit(e.target.value, e)}
             onBlur={(e) => {
+              // Typed input is unconstrained while editing so intermediate text
+              // (e.g. '1.') survives; on blur, snap an out-of-range value back
+              // into [min,max] so typed and stepped paths agree and a bound Form
+              // never receives a value the steppers would have rejected.
+              const parsed = parse(display);
+              if (parsed != null) {
+                const clamped = clamp(parsed);
+                if (clamped !== parsed) commit(String(clamped), e);
+              }
               bound?.onBlur();
               onBlur?.(e);
             }}

@@ -20,6 +20,11 @@ describe('Chart', () => {
     expect(svg).toBeInTheDocument();
   });
 
+  it('uses the invariant "series" wording in the generated label for a single series', () => {
+    render(<Chart series={single} type="line" />);
+    expect(screen.getByRole('img', { name: /1 series: Signups/ })).toBeInTheDocument();
+  });
+
   it('draws one path per series for a line chart', () => {
     const { container } = render(<Chart series={multi} type="line" aria-label="x" />);
     expect(container.querySelectorAll('path')).toHaveLength(2);
@@ -83,6 +88,50 @@ describe('Chart', () => {
     const svg = container.querySelector('svg')!;
     expect(svg).toHaveAttribute('width', '400');
     expect(svg).toHaveAttribute('viewBox', '0 0 400 200');
+  });
+
+  it('keeps a multi-series bar cluster within its category slot (no overflow)', () => {
+    // Many narrow series in a small chart used to overflow because the per-series
+    // stride was derived from a floored barW rather than from groupW.
+    const many = Array.from({ length: 8 }, (_, i) => ({ name: `s${i}`, data: [1, 2] }));
+    const width = 120;
+    const height = 80;
+    const { container } = render(
+      <Chart series={many} type="bar" width={width} height={height} aria-label="x" />,
+    );
+    const PAD = 8;
+    const plotW = width - PAD * 2;
+    const groupCount = 2;
+    const groupW = plotW / groupCount;
+    const rects = Array.from(container.querySelectorAll('rect'));
+    rects.forEach((r) => {
+      const x = Number(r.getAttribute('x'));
+      const w = Number(r.getAttribute('width'));
+      const slot = Math.floor((x - PAD) / groupW);
+      const slotStart = PAD + slot * groupW;
+      const slotEnd = slotStart + groupW;
+      // each bar stays inside its category slot (allow a sub-pixel epsilon)
+      expect(x).toBeGreaterThanOrEqual(slotStart - 0.01);
+      expect(x + w).toBeLessThanOrEqual(slotEnd + 0.01);
+    });
+  });
+
+  it('centers a single-series bar within its category slot', () => {
+    const width = 120;
+    const height = 80;
+    const { container } = render(
+      <Chart series={single} type="bar" width={width} height={height} aria-label="x" />,
+    );
+    const PAD = 8;
+    const plotW = width - PAD * 2;
+    const groupCount = single[0]!.data.length;
+    const groupW = plotW / groupCount;
+    const firstRect = container.querySelector('rect')!;
+    const x = Number(firstRect.getAttribute('x'));
+    const w = Number(firstRect.getAttribute('width'));
+    const slotCenter = PAD + groupW / 2;
+    const barCenter = x + w / 2;
+    expect(barCenter).toBeCloseTo(slotCenter, 5);
   });
 
   it('forwards a ref to the root element', () => {

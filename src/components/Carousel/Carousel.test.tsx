@@ -139,6 +139,20 @@ describe('Carousel', () => {
     );
   });
 
+  it('does not fire onIndexChange for no-op navigations', async () => {
+    const onIndexChange = vi.fn();
+    render(<Carousel items={items} index={0} onIndexChange={onIndexChange} aria-label="X" />);
+    // Clicking the already-active indicator is a no-op.
+    await userEvent.click(screen.getByRole('button', { name: 'Go to slide 1' }));
+    // Prev is clamped at the start boundary (no loop), also a no-op.
+    await userEvent.click(screen.getByRole('button', { name: 'Previous slide' }));
+    expect(onIndexChange).not.toHaveBeenCalled();
+    // A real move still notifies.
+    await userEvent.click(screen.getByRole('button', { name: 'Next slide' }));
+    expect(onIndexChange).toHaveBeenCalledTimes(1);
+    expect(onIndexChange).toHaveBeenCalledWith(1);
+  });
+
   it('forwards ref and className to the root', () => {
     const ref = { current: null as HTMLDivElement | null };
     render(<Carousel ref={ref} items={items} className="custom" aria-label="X" />);

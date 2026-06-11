@@ -32,7 +32,7 @@
   border-inline-start: 3px solid var(--snack-main);
   border-radius: var(--ku-radius-md);
   box-shadow: var(--ku-shadow-3);
-  z-index: var(--ku-z-snackbar, 1400);
+  z-index: var(--ku-z-index-snackbar, 1400);
 }
 
 /* The visual card is rendered only while open (data-open='true'), so it is shown

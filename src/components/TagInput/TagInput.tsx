@@ -30,6 +30,13 @@ export interface TagInputProps extends Omit<
   /** Allow duplicate tags. Defaults to false. */
   allowDuplicates?: boolean;
   size?: TagInputSize;
+  /**
+   * When set, the committed tags are submitted with a native `<form>` as one
+   * hidden input per tag under this name (standard multi-value encoding). The
+   * visible text input, whose value is the in-progress draft, never carries
+   * `name`, so the draft string is never posted.
+   */
+  name?: string;
   required?: boolean;
   error?: boolean;
   helperText?: ReactNode;
@@ -57,6 +64,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
       className,
       onBlur,
       onFocus,
+      name,
       ...rest
     },
     ref,
@@ -142,6 +150,17 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
           {currentValue.map((tag, i) => (
             <Chip key={`${tag}-${i}`} label={tag} size="sm" onDelete={() => removeAt(i)} />
           ))}
+          {/*
+            The committed tags are submitted under `name`, one hidden input per
+            tag (the standard multi-value form encoding). `name` is deliberately
+            kept off the visible input below, whose value is the in-progress
+            draft, so a native form submit posts the tags and never the draft.
+          */}
+          {name != null
+            ? currentValue.map((tag, i) => (
+                <input key={`hidden-${tag}-${i}`} type="hidden" name={name} value={tag} />
+              ))
+            : null}
           <input
             {...rest}
             ref={ref}

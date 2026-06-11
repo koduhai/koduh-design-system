@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Box } from './Box';
+import type { BoxProps } from './index';
 
 describe('Box', () => {
   it('renders a div, forwards className/DOM props', () => {
@@ -35,6 +36,17 @@ describe('Box', () => {
     expect(el).toHaveAttribute('data-shrink', 'false');
     expect(el.style.getPropertyValue('--box-min-width')).toBe('0');
     expect(el.style.getPropertyValue('--box-width')).toBe('200px');
+  });
+  it('lets consumers type space-token props via BoxProps without a standalone SpaceToken export', () => {
+    // The space-token union is reachable through BoxProps, so dropping the dead
+    // standalone SpaceToken re-export does not block consumers from typing padding.
+    const spacing: BoxProps['padding'] = 6;
+    render(
+      <Box padding={spacing} data-testid="b">
+        c
+      </Box>,
+    );
+    expect(screen.getByTestId('b').style.getPropertyValue('--box-p')).toBe('var(--ku-space-6)');
   });
   it('renders the consumer element with asChild', () => {
     render(

@@ -114,6 +114,35 @@ describe('HoverCard', () => {
     expect(card).toHaveAttribute('data-open', 'false');
   });
 
+  it("preserves the trigger's existing aria-describedby/aria-details and appends the card id", () => {
+    render(
+      <HoverCard
+        trigger={
+          <button type="button" aria-describedby="ext-desc" aria-details="ext-details">
+            @koduhai
+          </button>
+        }
+        openDelay={0}
+      >
+        <div>
+          <strong>Koduhai</strong>
+        </div>
+      </HoverCard>,
+    );
+    const trigger = screen.getByRole('button', { name: '@koduhai' });
+    // Before open, the consumer's own values are untouched.
+    expect(trigger).toHaveAttribute('aria-describedby', 'ext-desc');
+    expect(trigger).toHaveAttribute('aria-details', 'ext-details');
+    act(() => {
+      fireEvent.focus(trigger);
+      vi.runAllTimers();
+    });
+    const card = screen.getByText('Koduhai').closest('[data-open]') as HTMLElement;
+    // When open, the card id is appended, not replaced.
+    expect(trigger).toHaveAttribute('aria-describedby', `ext-desc ${card.id}`);
+    expect(trigger).toHaveAttribute('aria-details', `ext-details ${card.id}`);
+  });
+
   it("preserves the trigger's own handlers", () => {
     const onMouseEnter = vi.fn();
     render(

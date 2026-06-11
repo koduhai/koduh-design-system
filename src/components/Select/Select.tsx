@@ -282,6 +282,18 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     // change would fight user navigation. Mirrors the Popover open/close effect.
   }, [open]);
 
+  // Keep the active option visible during keyboard navigation. Without this,
+  // ArrowDown/Up/Home/End past the visible window move aria-activedescendant to
+  // an option the sighted user cannot see (WAI-ARIA listbox keyboard pattern).
+  useEffect(() => {
+    if (!open || activeIndex < 0) return;
+    const el = document.getElementById(optionId(activeIndex));
+    // scrollIntoView is unimplemented in jsdom; guard so unit tests don't throw.
+    el?.scrollIntoView?.({ block: 'nearest' });
+    // optionId derives from baseId only, which is stable for a given mount, so it
+    // is intentionally not a dependency (this project does not run exhaustive-deps).
+  }, [activeIndex, open]);
+
   const trigger = (
     <button
       {...rest}

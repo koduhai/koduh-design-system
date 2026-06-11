@@ -26,6 +26,14 @@ export interface SparklineProps extends Omit<SVGProps<SVGSVGElement>, 'type'> {
 /** Vertical padding so stroke width / point markers are not clipped. */
 const PAD = 2;
 
+/**
+ * Replace non-finite values (NaN / +-Infinity) with a safe baseline of 0 so a
+ * stray bad datum cannot poison min/max/span and emit NaN into path/aria output.
+ */
+function sanitize(data: number[]): number[] {
+  return data.map((value) => (Number.isFinite(value) ? value : 0));
+}
+
 /** Map a data series to evenly spaced [x, y] coordinates within the viewport. */
 function toPoints(data: number[], width: number, height: number): Array<[number, number]> {
   const n = data.length;
@@ -59,11 +67,12 @@ export const Sparkline = /* @__PURE__ */ forwardRef<SVGSVGElement, SparklineProp
     },
     ref,
   ) {
-    const points = toPoints(data, width, height);
+    const series = sanitize(data);
+    const points = toPoints(series, width, height);
     const label =
       ariaLabel ??
-      (data.length > 0
-        ? `Sparkline of ${data.length} values, from ${data[0]} to ${data[data.length - 1]}`
+      (series.length > 0
+        ? `Sparkline of ${series.length} values, from ${series[0]} to ${series[series.length - 1]}`
         : 'Sparkline, no data');
 
     return (
@@ -80,8 +89,8 @@ export const Sparkline = /* @__PURE__ */ forwardRef<SVGSVGElement, SparklineProp
         {...props}
       >
         {type === 'bar'
-          ? renderBars(data, width, height, color)
-          : renderPath(points, type, height, color)}
+          ? renderBars(series, width, height, color)
+          : renderPath(points, type, width, height, color)}
       </svg>
     );
   },
@@ -90,18 +99,26 @@ export const Sparkline = /* @__PURE__ */ forwardRef<SVGSVGElement, SparklineProp
 function renderPath(
   points: Array<[number, number]>,
   type: SparklineType,
+  width: number,
   height: number,
   color: string,
 ) {
   if (points.length === 0) return null;
 
-  const line = points.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x} ${y}`).join(' ');
+  // A single point produces only a moveto, which draws nothing. Emit a flat
+  // horizontal segment across the full width so a 1-value series stays visible.
+  const line =
+    points.length === 1
+      ? `M0 ${points[0]![1]} L${width} ${points[0]![1]}`
+      : points.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x} ${y}`).join(' ');
 
   if (type === 'area') {
-    const first = points[0]!;
-    const last = points[points.length - 1]!;
+    // For a single point the line spans the full width (see above), so close the
+    // area down to the baseline across [0, width] rather than the degenerate point.
+    const startX = points.length === 1 ? 0 : points[0]![0];
+    const endX = points.length === 1 ? width : points[points.length - 1]![0];
     const baseline = height - PAD;
-    const area = `${line} L${last[0]} ${baseline} L${first[0]} ${baseline} Z`;
+    const area = `${line} L${endX} ${baseline} L${startX} ${baseline} Z`;
     return (
       <>
         <path d={area} fill={color} fillOpacity={0.18} stroke="none" aria-hidden />

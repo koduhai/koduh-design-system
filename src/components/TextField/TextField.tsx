@@ -90,7 +90,7 @@ export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldP
     });
 
     const bound = value === undefined ? field?.binding : undefined;
-    const currentValue = bound ? ((bound.value as string) ?? '') : state;
+    const currentValue = bound ? String(bound.value ?? '') : state;
 
     return (
       <div
@@ -126,10 +126,14 @@ export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldP
             aria-describedby={describedBy}
             onChange={(event) => {
               const next = event.target.value;
-              if (bound) bound.onChange(next, event); else setState(next);
+              if (bound) bound.onChange(next, event);
+              else setState(next);
               onChange?.(next, event);
             }}
-            onBlur={(e) => { bound?.onBlur(); onBlur?.(e); }}
+            onBlur={(e) => {
+              bound?.onBlur();
+              onBlur?.(e);
+            }}
             {...props}
           />
           {endAdornment ? (

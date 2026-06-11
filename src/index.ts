@@ -112,6 +112,7 @@ export { Pagination, getPaginationRange } from './components/Pagination';
 export type {
   PaginationProps,
   PaginationItem,
+  PaginationItemType,
   PaginationRangeOptions,
 } from './components/Pagination';
 export { Table } from './components/Table';
@@ -138,7 +139,7 @@ export type { StackProps, SpaceToken, StackAlign, StackJustify } from './compone
 export { Inline } from './components/Inline';
 export type { InlineProps, InlineAlign, InlineJustify } from './components/Inline';
 export { Grid } from './components/Grid';
-export type { GridProps } from './components/Grid';
+export type { GridProps, GridColumns } from './components/Grid';
 export { Container } from './components/Container';
 export type { ContainerProps, ContainerSize } from './components/Container';
 export { Text } from './components/Text';
@@ -242,7 +243,12 @@ export type { ScrollAreaProps, ScrollAreaOrientation } from './components/Scroll
 export { Rating } from './components/Rating';
 export type { RatingProps, RatingSize } from './components/Rating';
 export { Stepper } from './components/Stepper';
-export type { StepperProps, StepperStep, StepperOrientation, StepState } from './components/Stepper';
+export type {
+  StepperProps,
+  StepperStep,
+  StepperOrientation,
+  StepState,
+} from './components/Stepper';
 export { Timeline } from './components/Timeline';
 export type { TimelineProps, TimelineItem } from './components/Timeline';
 export { HoverCard } from './components/HoverCard';

@@ -69,6 +69,9 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
     let target = next;
     if (target < 0) target = loop ? count - 1 : 0;
     else if (target > count - 1) target = loop ? 0 : count - 1;
+    // Skip no-op navigations (active indicator click, clamped boundary) so
+    // consumers don't get spurious onIndexChange notifications.
+    if (target === safeActive) return;
     setActive(target);
   };
 

@@ -133,6 +133,14 @@ describe('FileUpload', () => {
     expect(zone.getAttribute('aria-describedby')).toContain(`${zone.id}-instructions`);
   });
 
+  it('does not put an aria-label on the display:none input (the wrapper is the named control)', () => {
+    render(<FileUpload onFiles={() => {}} label="Attach a file" />);
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    // The input is display:none, so it is not in the a11y tree and must not carry
+    // a dead aria-label. The operable role="button" wrapper is the perceived control.
+    expect(input).not.toHaveAttribute('aria-label');
+  });
+
   it('marks the wrapper aria-invalid when the FormField is in error', () => {
     render(
       <FormField label="Attachment" error errorText="Required">

@@ -39,6 +39,8 @@ export const CodeBlock = /* @__PURE__ */ forwardRef<HTMLPreElement, CodeBlockPro
           ref={ref}
           className={cx(styles.pre, className)}
           data-has-language={language ? 'true' : undefined}
+          tabIndex={0}
+          aria-label={language ? `${language} code` : undefined}
           {...props}
         >
           <code className={styles.code}>{children}</code>

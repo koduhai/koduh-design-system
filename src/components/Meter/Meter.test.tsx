@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import { Meter } from './Meter';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { Meter, meterTone } from './Meter';
 
 describe('Meter', () => {
   it('exposes role=meter with aria value attributes', () => {
@@ -29,5 +29,54 @@ describe('Meter', () => {
   it('is neutral when no thresholds are given', () => {
     render(<Meter label="D" value={50} />);
     expect(screen.getByRole('meter')).toHaveAttribute('data-tone', 'neutral');
+  });
+
+  it('clamps aria-valuenow into [min,max] for out-of-range and non-finite values', () => {
+    const { rerender } = render(<Meter label="D" value={150} min={0} max={100} />);
+    expect(screen.getByRole('meter')).toHaveAttribute('aria-valuenow', '100');
+    rerender(<Meter label="D" value={-20} min={0} max={100} />);
+    expect(screen.getByRole('meter')).toHaveAttribute('aria-valuenow', '0');
+    rerender(<Meter label="D" value={Number.NaN} min={0} max={100} />);
+    expect(screen.getByRole('meter')).toHaveAttribute('aria-valuenow', '0');
+  });
+
+  it('constrains low/high/optimum into [min,max] and holds low <= high before grading', () => {
+    // optimum well above max is clamped to max => higher-is-better; high>max clamped to max.
+    // value at max should grade good under the constrained bounds.
+    expect(meterTone(100, 0, 100, 40, 200, 500)).toBe('good');
+    // inverted bounds (low > high) are constrained so high becomes low; no crash, valid band.
+    expect(['good', 'caution', 'poor']).toContain(meterTone(50, 0, 100, 80, 20, 10));
+  });
+
+  describe('accessible-name dev warning', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+    it('warns when no label/aria-label/aria-labelledby is provided', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      render(<Meter value={30} />);
+      expect(warn).toHaveBeenCalledOnce();
+    });
+    it('does not warn when an aria-label is provided', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      render(<Meter value={30} aria-label="Disk" />);
+      expect(warn).not.toHaveBeenCalled();
+    });
+  });
+
+  it('renders no empty placeholder span when only showValue is set', () => {
+    const { container } = render(
+      <Meter value={42} aria-label="D" formatValue={(v) => `${v}%`} showValue />,
+    );
+    // The label row holds exactly one child (the value), no empty placeholder.
+    const value = screen.getByText('42%');
+    const row = value.parentElement;
+    expect(row).not.toBeNull();
+    expect(row?.children).toHaveLength(1);
+    // No stray empty span anywhere in the tree.
+    const emptySpans = Array.from(container.querySelectorAll('span')).filter(
+      (s) => s.textContent === '' && s.children.length === 0,
+    );
+    expect(emptySpans).toHaveLength(0);
   });
 });

@@ -81,6 +81,11 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
   const hasBeenShown = (id: string) => id === selected || shownIds.has(id);
 
   const select = (id: string) => {
+    // No-op selection guard: clicking/keying the already-active tab must not
+    // emit a spurious change. onChange is deliberately wired here (not through
+    // useControllableState, which is passed onChange: undefined), so the guard
+    // lives in this function.
+    if (id === selected) return;
     setSelected(id);
     onChange?.(id);
   };
@@ -114,8 +119,19 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
       : (items.find((item) => !item.disabled)?.id ?? undefined);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    const nextKey = orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
-    const prevKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
+    // Reading-direction aware for the horizontal axis: in RTL the visual order
+    // flips (the CSS already uses logical inset-inline-* properties), so
+    // ArrowLeft must move to the next tab and ArrowRight to the previous one.
+    // Vertical (ArrowUp/Down) is unaffected by writing direction. Read the
+    // computed direction off the focused tab so a local dir="rtl" ancestor is
+    // honored, not just the document; guard getComputedStyle for jsdom/SSR.
+    const isRtl =
+      orientation === 'horizontal' &&
+      typeof window !== 'undefined' &&
+      window.getComputedStyle(event.currentTarget).direction === 'rtl';
+    const nextKey =
+      orientation === 'horizontal' ? (isRtl ? 'ArrowLeft' : 'ArrowRight') : 'ArrowDown';
+    const prevKey = orientation === 'horizontal' ? (isRtl ? 'ArrowRight' : 'ArrowLeft') : 'ArrowUp';
 
     if (enabledIndexes.length === 0) return;
     // Find the current tab's position within the enabled-only list.

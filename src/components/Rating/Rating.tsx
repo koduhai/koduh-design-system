@@ -97,7 +97,11 @@ export const Rating = /* @__PURE__ */ forwardRef<HTMLDivElement, RatingProps>(fu
   const focusStar = (rating: number) => {
     const clamped = Math.min(Math.max(rating, 1), max);
     starRefs.current[clamped - 1]?.focus();
-    select(clamped);
+    // Clearing is intentionally unsupported (no zero/toggle contract), so a
+    // boundary key press that does not move the value (e.g. ArrowLeft on star 1
+    // when 1 is already selected, or ArrowRight on a maxed rating) is a no-op:
+    // moving focus is fine, but we don't re-fire select/onChange redundantly.
+    if (clamped !== selected) select(clamped);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>, rating: number) => {

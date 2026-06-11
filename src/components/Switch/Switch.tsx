@@ -21,6 +21,8 @@ export interface SwitchProps extends Omit<
   onChange?: (checked: boolean, event: React.ChangeEvent<HTMLInputElement>) => void;
   /** Defaults to 'md'. */
   size?: SwitchSize;
+  /** Puts the control in the error state (aria-invalid). Ignored inside a FormField, which drives invalid from validation. */
+  error?: boolean;
 }
 
 export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(function Switch(
@@ -31,6 +33,7 @@ export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(
     onChange,
     onBlur,
     size = 'md',
+    error = false,
     className,
     disabled,
     required,
@@ -56,7 +59,7 @@ export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(
   // `checked`. Switch value semantics = checked boolean.
   const bound = checked === undefined ? field?.binding : undefined;
   const isChecked = bound ? Boolean(bound.value) : state;
-  const invalid = field?.invalid ?? false;
+  const invalid = field ? field.invalid : error;
 
   return (
     <label

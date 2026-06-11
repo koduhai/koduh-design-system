@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { useFormContext } from './FormContext';
 import type { FieldRules } from './useForm';
 
@@ -17,9 +17,26 @@ export interface UseFormFieldResult {
 export function useFormField(name: string, rules?: FieldRules): UseFormFieldResult {
   const api = useFormContext();
 
-  // Register once per name; rules are read at registration time.
+  // Keep the latest rules in a ref so dynamic required/validate (e.g. a
+  // `required` that toggles at runtime, or a `validate` closure capturing fresh
+  // state) are honored without re-registering on every render. Rules objects are
+  // typically recreated each render, so depending on them directly would churn.
+  const rulesRef = useRef<FieldRules | undefined>(rules);
+  rulesRef.current = rules;
+
+  // Register once per name with a stable proxy that reads the live ref at
+  // validation time. When the latest rules are undefined the proxy reports no
+  // required/validate, so toggling rules off clears them too.
   useEffect(() => {
-    api.register(name, rules);
+    const proxy: FieldRules = {
+      get required() {
+        return rulesRef.current?.required;
+      },
+      get validate() {
+        return rulesRef.current?.validate;
+      },
+    };
+    api.register(name, proxy);
     return () => api.unregister(name);
   }, [api, name]);
 

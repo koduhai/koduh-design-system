@@ -61,6 +61,16 @@ describe('RadioGroup / Radio', () => {
     expect(screen.getAllByText('Plan')).toHaveLength(1);
   });
 
+  it('nests the input inside its label so the positioned label contains the absolute input', () => {
+    render(<Group />);
+    const input = screen.getByRole('radio', { name: 'Free' });
+    // The input is absolutely positioned in CSS; its containing block must be the
+    // label root (which now sets position: relative), so the hit area overlays the circle.
+    const label = input.closest('label');
+    expect(label).not.toBeNull();
+    expect(label).toContainElement(input);
+  });
+
   it('standalone: unchanged, no describedby/invalid/required when no field context', () => {
     render(<Group />);
     const group = screen.getByRole('radiogroup', { name: 'Plan' });

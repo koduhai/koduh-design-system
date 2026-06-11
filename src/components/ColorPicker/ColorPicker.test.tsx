@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { ColorPicker } from './ColorPicker';
 import { FormField } from '../FormField';
+import { FieldContext } from '../FormField/useField';
+import type { FieldContextValue } from '../FormField/useField';
 
 describe('ColorPicker', () => {
   it('shows the current hex and emits onChange from the hex input', async () => {
@@ -85,6 +87,35 @@ describe('ColorPicker', () => {
     const group = screen.getByRole('group', { name: 'Theme color' });
     expect(group).toHaveAccessibleDescription('Pick one');
     expect(group).toHaveAttribute('aria-required', 'true');
+  });
+  it('falls back to defaultValue when a Form binding holds a non-string value', () => {
+    // The Form binding value is typed `unknown`; a non-string value must not be
+    // displayed raw in the hex input. It should fall back to defaultValue.
+    const ctx: FieldContextValue = {
+      id: 'cp',
+      labelId: 'cp-label',
+      invalid: false,
+      required: false,
+      binding: {
+        name: 'color',
+        value: 42 as unknown,
+        onChange: () => undefined,
+        onBlur: () => undefined,
+      },
+    };
+    render(
+      <FieldContext.Provider value={ctx}>
+        <ColorPicker defaultValue="#1B5FCC" />
+      </FieldContext.Provider>,
+    );
+    const input = screen.getByLabelText(/hex/i) as HTMLInputElement;
+    expect(input.value.toUpperCase()).toContain('1B5FCC');
+    expect(input.value).not.toContain('42');
+  });
+  it('does not mark the hex readout as an aria-live region (avoids drag flooding)', () => {
+    const { container } = render(<ColorPicker value="#1B5FCC" />);
+    const live = container.querySelector('[aria-live]');
+    expect(live).toBeNull();
   });
   it('exposes the saturation/brightness square with ARIA slider values', () => {
     render(<ColorPicker value="#1B5FCC" />);

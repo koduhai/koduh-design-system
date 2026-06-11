@@ -14,7 +14,7 @@
 .root[data-position='sticky'] {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: var(--ku-z-index-appbar, 1100);
 }
 
 .root[data-elevation='true'] {

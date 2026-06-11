@@ -73,6 +73,18 @@ describe('Textarea', () => {
     expect(el.style.overflowY).toBe('auto');
   });
 
+  it('clears inline height/overflow when autoResize is toggled off', async () => {
+    const { rerender } = render(<Textarea label="Bio" autoResize maxRows={3} />);
+    const el = screen.getByLabelText('Bio') as HTMLTextAreaElement;
+    Object.defineProperty(el, 'scrollHeight', { configurable: true, value: 500 });
+    await userEvent.type(el, 'overflowing content');
+    expect(el.style.height).not.toBe('');
+    expect(el.style.overflowY).toBe('auto');
+    rerender(<Textarea label="Bio" maxRows={3} />);
+    expect(el.style.height).toBe('');
+    expect(el.style.overflowY).toBe('');
+  });
+
   it('inside FormField: defers label + aria to the field', () => {
     render(
       <FormField label="Bio" error errorText="Too long" id="bio">
@@ -98,7 +110,9 @@ describe('Textarea bound to a Form', () => {
       const form = useForm({ defaultValues: { bio: 'hi' } });
       return (
         <Form form={form} aria-label="f">
-          <FormField name="bio" label="Bio"><Textarea /></FormField>
+          <FormField name="bio" label="Bio">
+            <Textarea />
+          </FormField>
         </Form>
       );
     }

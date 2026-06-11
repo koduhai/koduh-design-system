@@ -1,6 +1,6 @@
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import { useId, useControllableState } from '../../primitives';
+import { useControllableState } from '../../primitives';
 import { MenuIcon } from '../../icons';
 import { cx } from '../../utils/cx';
 import styles from './Sidebar.module.css';
@@ -103,20 +103,28 @@ export const Sidebar = /* @__PURE__ */ forwardRef<HTMLElement, SidebarProps>(fun
     defaultValue: defaultCollapsed,
     onChange: onCollapsedChange,
   });
-  const listId = useId('sidebar-list');
   const widthValue = typeof width === 'number' ? `${width}px` : width;
+
+  // Keep the latest setter in a ref so the media-query effect below can read it
+  // without depending on its identity. setCollapsed is recreated whenever an
+  // inline onCollapsedChange changes, and we do not want that to tear down and
+  // re-subscribe the listener (which would re-fire onCollapsedChange every render).
+  const setCollapsedRef = useRef(setCollapsed);
+  setCollapsedRef.current = setCollapsed;
 
   // Opt-in responsive auto-collapse: subscribe to a max-width media query and
   // mirror its match into collapsed state. Guarded for SSR/jsdom-without-matchMedia.
+  // Depends only on collapseBelow so the subscription is created once per
+  // breakpoint and only fires on real media changes.
   useEffect(() => {
     if (collapseBelow == null || typeof window === 'undefined' || !window.matchMedia) return;
     const bp = typeof collapseBelow === 'number' ? `${collapseBelow}px` : collapseBelow;
     const mql = window.matchMedia(`(max-width: ${bp})`);
-    setCollapsed(mql.matches);
-    const onChange = (e: MediaQueryListEvent) => setCollapsed(e.matches);
+    setCollapsedRef.current(mql.matches);
+    const onChange = (e: MediaQueryListEvent) => setCollapsedRef.current(e.matches);
     mql.addEventListener('change', onChange);
     return () => mql.removeEventListener('change', onChange);
-  }, [collapseBelow, setCollapsed]);
+  }, [collapseBelow]);
 
   return (
     <nav
@@ -132,15 +140,18 @@ export const Sidebar = /* @__PURE__ */ forwardRef<HTMLElement, SidebarProps>(fun
         <button
           type="button"
           className={styles.toggle}
-          aria-expanded={!isCollapsed}
-          aria-controls={listId}
+          // This is a width/label-density toggle, not a disclosure: the list is
+          // always present and its accessible names persist when collapsed. So we
+          // use aria-pressed (toggle semantics) rather than aria-expanded/
+          // aria-controls, which would imply the list is shown/hidden.
+          aria-pressed={isCollapsed}
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           onClick={() => setCollapsed(!isCollapsed)}
         >
           <MenuIcon size={20} />
         </button>
       </div>
-      <ul id={listId} className={styles.list}>
+      <ul className={styles.list}>
         {items.map((item) => (
           <li key={item.id} className={styles.item}>
             <SidebarItemControl item={item} collapsed={isCollapsed} />

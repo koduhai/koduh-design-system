@@ -169,16 +169,22 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
       inputRef.current?.focus();
     };
 
+    const lastIndex = filtered.length - 1;
     const onInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
           if (!open) setOpen(true);
-          setActiveIndex((i) => Math.min(filtered.length - 1, i + 1));
+          // Opening (or no active option yet): start at the first option rather
+          // than incrementing a stale index left over from a previous open.
+          setActiveIndex((i) => (i < 0 ? (lastIndex < 0 ? -1 : 0) : Math.min(lastIndex, i + 1)));
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setActiveIndex((i) => Math.max(0, i - 1));
+          // ArrowUp opens the listbox and, with no active option yet, lands on
+          // the last option, per the WAI-ARIA combobox keyboard pattern.
+          if (!open) setOpen(true);
+          setActiveIndex((i) => (i < 0 ? lastIndex : Math.max(0, i - 1)));
           break;
         case 'Enter': {
           if (open && activeIndex >= 0) {
@@ -191,6 +197,8 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
         case 'Escape':
           e.preventDefault();
           setOpen(false);
+          // Reset the highlight so a later reopen starts with no active option.
+          setActiveIndex(-1);
           break;
         default:
           break;

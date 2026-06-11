@@ -13,7 +13,11 @@ export interface DrawerProps extends Omit<HTMLAttributes<HTMLDialogElement>, 'ti
   open: boolean;
   /** Called with the requested next open state (the drawer only requests `false`). */
   onOpenChange: (open: boolean) => void;
-  /** Heading rendered in the header and used as the accessible name. */
+  /**
+   * Heading rendered in the header and used as the accessible name. When omitted,
+   * supply an `aria-label` (or `aria-labelledby`) so the modal still has an
+   * accessible name (WCAG 4.1.2); both are forwarded to the underlying dialog.
+   */
   title?: ReactNode;
   /**
    * Edge the panel is pinned to. Logical, so 'start'/'end' flip in `dir="rtl"`.
@@ -68,6 +72,21 @@ export const Drawer = /* @__PURE__ */ forwardRef<HTMLDialogElement, DrawerProps>
       dialog.close();
     }
     // Keyed on `open`; `initialFocus` is read via closure (no exhaustive-deps rule).
+  }, [open]);
+
+  // Lock background scrolling while open. Native showModal() makes background
+  // content inert but does NOT stop the page behind the backdrop from scrolling,
+  // and a full-edge drawer makes that wheel/touch bleed-through obvious. Restore
+  // the prior inline overflow on close/unmount so we never clobber a value the
+  // consumer set themselves.
+  useEffect(() => {
+    if (!open || typeof document === 'undefined') return;
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
   }, [open]);
 
   // Native close/cancel (Esc) → onOpenChange.

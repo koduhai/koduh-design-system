@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { useRef } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Dialog, ConfirmDialog } from './';
 
@@ -60,6 +60,47 @@ describe('Dialog', () => {
     const dlg = document.querySelector('dialog') as HTMLDialogElement;
     dlg.dispatchEvent(new Event('close'));
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('closes on a backdrop click that both presses and releases on the dialog backdrop', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog open onOpenChange={onOpenChange} title="Settings">
+        Body
+      </Dialog>,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Settings' });
+    fireEvent.mouseDown(dlg);
+    fireEvent.click(dlg);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('does not close when a press starts inside the surface and releases on the backdrop', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog open onOpenChange={onOpenChange} title="Settings">
+        <input aria-label="field" />
+      </Dialog>,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Settings' });
+    // Press begins inside the dialog (on the input), release bubbles to the
+    // dialog element (the browser reports this as a click on the backdrop).
+    fireEvent.mouseDown(screen.getByLabelText('field'));
+    fireEvent.click(dlg);
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('does not close when dismissable is false even on a genuine backdrop click', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog open onOpenChange={onOpenChange} title="Settings" dismissable={false}>
+        Body
+      </Dialog>,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Settings' });
+    fireEvent.mouseDown(dlg);
+    fireEvent.click(dlg);
+    expect(onOpenChange).not.toHaveBeenCalled();
   });
 
   it('focuses the initialFocus ref when opened', async () => {

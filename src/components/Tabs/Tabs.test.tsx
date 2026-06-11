@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Tabs } from './Tabs';
@@ -57,6 +57,18 @@ describe('Tabs', () => {
     expect(screen.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true'); // controlled
   });
 
+  it('does not re-fire onChange when the already-selected tab is clicked', async () => {
+    const onChange = vi.fn();
+    render(<Tabs items={items} onChange={onChange} />);
+    // "One" is selected by default; clicking it again is a no-op selection.
+    await userEvent.click(screen.getByRole('tab', { name: 'One' }));
+    expect(onChange).not.toHaveBeenCalled();
+    // A real change still fires once.
+    await userEvent.click(screen.getByRole('tab', { name: 'Two' }));
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith('two');
+  });
+
   it('eager (default): renders all panel content up front', () => {
     render(<Tabs items={items} />);
     // Inactive panels are hidden but their content is present in the DOM.
@@ -91,5 +103,32 @@ describe('Tabs', () => {
     const panelTwo = screen.getByText('Panel Two');
     expect(panelTwo).toBeInTheDocument();
     expect(panelTwo.closest('[role="tabpanel"]')).toHaveAttribute('hidden');
+  });
+
+  describe('RTL horizontal arrow keys', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('swaps ArrowLeft/ArrowRight when direction is rtl', async () => {
+      // jsdom does not resolve `dir`/`direction` layout, so report rtl for the
+      // tab elements the handler measures via getComputedStyle.
+      const real = window.getComputedStyle.bind(window);
+      vi.spyOn(window, 'getComputedStyle').mockImplementation((el: Element) => {
+        const style = real(el);
+        Object.defineProperty(style, 'direction', { value: 'rtl', configurable: true });
+        return style;
+      });
+
+      render(<Tabs items={items} />);
+      const first = screen.getByRole('tab', { name: 'One' });
+      first.focus();
+      // In RTL, ArrowLeft moves to the next (visually leftward) tab.
+      await userEvent.keyboard('{ArrowLeft}');
+      expect(screen.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true');
+      // ArrowRight moves to the previous tab, back to the first.
+      await userEvent.keyboard('{ArrowRight}');
+      expect(screen.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true');
+    });
   });
 });

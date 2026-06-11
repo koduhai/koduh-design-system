@@ -50,4 +50,18 @@ describe('Breadcrumbs', () => {
     const current = screen.getByText('Current');
     expect(current).toHaveAttribute('aria-current', 'page');
   });
+
+  it('announces how many breadcrumbs are collapsed and hides the glyph from AT', () => {
+    render(<Breadcrumbs items={items} maxItems={3} />);
+    // 4 items, maxItems 3 -> first, ellipsis, one trailing, last => 1 hidden.
+    expect(screen.getByText('1 more breadcrumb')).toBeInTheDocument();
+    // The bare ellipsis glyph is not exposed to assistive tech.
+    expect(screen.getByText('…')).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('pluralizes the collapsed-count announcement', () => {
+    render(<Breadcrumbs items={items} maxItems={2} />);
+    // 4 items, maxItems 2 -> first, ellipsis, last => 2 hidden.
+    expect(screen.getByText('2 more breadcrumbs')).toBeInTheDocument();
+  });
 });

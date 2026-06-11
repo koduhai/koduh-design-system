@@ -31,4 +31,24 @@ describe('Skeleton', () => {
     expect(css).toMatch(/background-color:\s*var\(--ku-color-border\)/);
     expect(css).not.toMatch(/background-color:\s*var\(--ku-color-bg-raised\)/);
   });
+
+  // Regression: a sizeless rect/circle previously collapsed to height:0 (an
+  // invisible, and for circle non-circular, placeholder). The variant rules now
+  // declare a default width/height so an omitted size still renders a box. An
+  // inline width/height (style prop) still overrides the CSS default.
+  it('rect/circle variants declare a default size in CSS', () => {
+    const css = readFileSync(join(__dirname, 'Skeleton.module.css'), 'utf8');
+    const rect = css.match(/\.root\[data-variant='rect'\]\s*\{([^}]*)\}/);
+    const circle = css.match(/\.root\[data-variant='circle'\]\s*\{([^}]*)\}/);
+    expect(rect?.[1]).toMatch(/height:/);
+    expect(circle?.[1]).toMatch(/width:/);
+    expect(circle?.[1]).toMatch(/height:/);
+  });
+
+  it('still applies an explicit inline size over the variant default', () => {
+    const { container } = render(<Skeleton variant="circle" width={48} height={48} />);
+    const el = container.firstChild as HTMLElement;
+    expect(el.style.width).toBe('48px');
+    expect(el.style.height).toBe('48px');
+  });
 });

@@ -48,6 +48,27 @@ describe('Select', () => {
     expect(onChange).toHaveBeenCalledWith('a', expect.anything());
   });
 
+  it('scrolls the active option into view during keyboard navigation', () => {
+    const scrollIntoView = vi.fn();
+    // jsdom does not implement scrollIntoView; stub it so the effect can call it.
+    const proto = Element.prototype as unknown as { scrollIntoView?: () => void };
+    const prev = proto.scrollIntoView;
+    proto.scrollIntoView = scrollIntoView;
+    try {
+      render(<Select label="Fruit" options={options} />);
+      const trigger = screen.getByRole('button', { name: /Fruit/ });
+      fireEvent.click(trigger);
+      const listbox = screen.getByRole('listbox');
+      scrollIntoView.mockClear();
+      fireEvent.keyDown(listbox, { key: 'ArrowDown' }); // -> Apple
+      const apple = screen.getByRole('option', { name: 'Apple' });
+      expect(listbox).toHaveAttribute('aria-activedescendant', apple.id);
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
+    } finally {
+      proto.scrollIntoView = prev;
+    }
+  });
+
   it('does not select a disabled option', () => {
     const onChange = vi.fn();
     render(<Select label="Fruit" options={options} onChange={onChange} />);

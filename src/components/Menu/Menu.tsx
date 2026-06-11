@@ -73,6 +73,10 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
   // Which item to highlight when the menu next opens: 'first' (default), 'last'
   // (ArrowUp from the trigger). The open effect consumes and clears this.
   const pendingSeed = useRef<'first' | 'last'>('first');
+  // First-letter typeahead state: the accumulated query and the timer that
+  // resets it after a short idle, per the WAI-ARIA menu keyboard pattern.
+  const typeahead = useRef('');
+  const typeaheadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Indices into `items` that are selectable (not a separator, not disabled).
   const itemIndices = items.reduce<number[]>((acc, entry, i) => {
@@ -94,6 +98,36 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
   const openFrom = (which: 'first' | 'last') => {
     pendingSeed.current = which;
     setOpen(true);
+  };
+
+  // First-letter typeahead: accumulate printable characters and move the active
+  // item to the next selectable item whose (string) label starts with the query,
+  // searching forward from the current item and wrapping. Items with non-string
+  // labels are skipped (no reliable text to match). Per the WAI-ARIA menu pattern.
+  const onTypeahead = (key: string) => {
+    if (typeaheadTimer.current) clearTimeout(typeaheadTimer.current);
+    typeaheadTimer.current = setTimeout(() => {
+      typeahead.current = '';
+    }, 500);
+    typeahead.current += key.toLowerCase();
+    const query = typeahead.current;
+    if (itemIndices.length === 0) return;
+    const startPos = itemIndices.indexOf(activeIndex);
+    const n = itemIndices.length;
+    // When nothing is active yet (startPos === -1) begin the search at the first
+    // item so it can match; otherwise search forward from the item after active.
+    const base = startPos < 0 ? -1 : startPos;
+    for (let step = 1; step <= n; step += 1) {
+      const idx = itemIndices[(base + step) % n];
+      if (idx === undefined) continue;
+      const entry = items[idx];
+      if (!entry || isSeparator(entry)) continue;
+      const { label } = entry;
+      if (typeof label === 'string' && label.toLowerCase().startsWith(query)) {
+        setActiveIndex(idx);
+        return;
+      }
+    }
   };
 
   // Roving move over the selectable indices, wrapping at both ends.
@@ -141,6 +175,11 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
         setOpen(false);
         break;
       default:
+        // First-letter typeahead: a single printable character with no modifier.
+        if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+          event.preventDefault();
+          onTypeahead(event.key);
+        }
         break;
     }
   };
@@ -161,11 +200,25 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
       setActiveIndex(-1);
       if (wasOpen.current && restoreFocus.current) triggerRef.current?.focus();
       restoreFocus.current = false;
+      // Reset any in-flight typeahead query so a reopen starts clean.
+      typeahead.current = '';
+      if (typeaheadTimer.current) {
+        clearTimeout(typeaheadTimer.current);
+        typeaheadTimer.current = null;
+      }
     }
     wasOpen.current = open;
     // Intentionally keyed only on `open`: re-seeding on every items change would
     // fight user navigation. Mirrors the Popover/Select open/close effect.
   }, [open]);
+
+  // Clear the typeahead reset timer on unmount so it never fires after teardown.
+  useEffect(
+    () => () => {
+      if (typeaheadTimer.current) clearTimeout(typeaheadTimer.current);
+    },
+    [],
+  );
 
   // WAI-ARIA menu-button keyboard: open on ArrowDown/ArrowUp/Enter/Space.
   // ArrowDown opens to the first enabled item, ArrowUp to the last.
@@ -241,10 +294,15 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
                 type="button"
                 className={styles.item}
                 data-active={i === activeIndex || undefined}
-                disabled={entry.disabled}
+                // Use aria-disabled (not the native `disabled` attribute) so the
+                // item stays in the accessibility tree and is announced as
+                // dimmed/unavailable rather than dropped by screen readers.
+                // Mirrors sibling Select (aria-disabled on options). Activation is
+                // still blocked by `activate()` guarding on entry.disabled.
+                aria-disabled={entry.disabled || undefined}
                 tabIndex={-1}
                 onClick={() => activate(entry)}
-                onMouseEnter={() => setActiveIndex(i)}
+                onMouseEnter={() => !entry.disabled && setActiveIndex(i)}
               >
                 {entry.icon != null ? <span className={styles.icon}>{entry.icon}</span> : null}
                 {entry.label}

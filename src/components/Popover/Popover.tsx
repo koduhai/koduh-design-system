@@ -179,9 +179,18 @@ export const Popover = /* @__PURE__ */ forwardRef<HTMLDivElement, PopoverProps>(
     // Capture-phase scroll so we react to any ancestor scroll, not just window.
     window.addEventListener('scroll', reposition, true);
     window.addEventListener('resize', reposition);
+    // Reposition when the panel's own size changes (content/font swap), so the
+    // fallback coordinates don't go stale. Guarded for jsdom/SSR where
+    // ResizeObserver may be unavailable.
+    let resizeObserver: ResizeObserver | undefined;
+    if (typeof ResizeObserver !== 'undefined' && panelRef.current) {
+      resizeObserver = new ResizeObserver(() => reposition());
+      resizeObserver.observe(panelRef.current);
+    }
     return () => {
       window.removeEventListener('scroll', reposition, true);
       window.removeEventListener('resize', reposition);
+      resizeObserver?.disconnect();
     };
   }, [supportsAnchor, isOpen, placement, offset]);
 
@@ -209,7 +218,13 @@ export const Popover = /* @__PURE__ */ forwardRef<HTMLDivElement, PopoverProps>(
   useEffect(() => {
     if (!isOpen || !dismissable) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false);
+        // Return focus to the trigger so keyboard users are not stranded on a
+        // now-hidden panel. Composing components (Select/Menu) manage their own
+        // focus; this is the safe default for a bare dialog/listbox Popover.
+        triggerRef.current?.focus();
+      }
     };
     const onPointerDown = (e: PointerEvent) => {
       const target = e.target as Node;

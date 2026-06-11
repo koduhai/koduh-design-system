@@ -93,18 +93,26 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
   // Bind to an enclosing <Form> only when the consumer didn't pass a controlled
   // `value`. Slider value semantics = number.
   const bound = value === undefined ? field?.binding : undefined;
-  const currentVal = bound ? Number(bound.value ?? min) : val;
+  // Guard public numeric props: a non-positive/non-finite step would make
+  // Math.round(x / step) NaN, and max <= min would make the percentage divide
+  // by zero. Fall back to safe values so aria-valuenow and the fill stay valid.
+  const safeStep = Number.isFinite(step) && step > 0 ? step : 1;
+  const safeMax = Number.isFinite(max) && max > min ? max : min + 1;
   const clampSnap = (n: number) => {
-    const stepped = Math.round((n - min) / step) * step + min;
-    return Math.min(max, Math.max(min, stepped));
+    if (!Number.isFinite(n)) return min;
+    const stepped = Math.round((n - min) / safeStep) * safeStep + min;
+    return Math.min(safeMax, Math.max(min, stepped));
   };
+  // The displayed value is always clamped/snapped, including the Form-bound path,
+  // so aria-valuenow stays within [min, max] and the fill never overflows the track.
+  const currentVal = clampSnap(bound ? Number(bound.value ?? min) : val);
   const set = (n: number, event?: SyntheticEvent) => {
     const clamped = clampSnap(n);
     if (bound) bound.onChange(clamped, event);
     else setVal(clamped);
     onChange?.(clamped, event);
   };
-  const pct = ((currentVal - min) / (max - min)) * 100;
+  const pct = ((currentVal - min) / (safeMax - min)) * 100;
 
   const isRtl = () =>
     typeof window !== 'undefined' && trackRef.current
@@ -118,28 +126,28 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
     let next: number;
     switch (e.key) {
       case 'ArrowRight':
-        next = rtl ? currentVal - step : currentVal + step;
+        next = rtl ? currentVal - safeStep : currentVal + safeStep;
         break;
       case 'ArrowUp':
-        next = currentVal + step;
+        next = currentVal + safeStep;
         break;
       case 'ArrowLeft':
-        next = rtl ? currentVal + step : currentVal - step;
+        next = rtl ? currentVal + safeStep : currentVal - safeStep;
         break;
       case 'ArrowDown':
-        next = currentVal - step;
+        next = currentVal - safeStep;
         break;
       case 'Home':
         next = min;
         break;
       case 'End':
-        next = max;
+        next = safeMax;
         break;
       case 'PageUp':
-        next = currentVal + step * 10;
+        next = currentVal + safeStep * 10;
         break;
       case 'PageDown':
-        next = currentVal - step * 10;
+        next = currentVal - safeStep * 10;
         break;
       default:
         return;
@@ -155,7 +163,7 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
     const fraction = isRtl()
       ? (rect.right - clientX) / rect.width
       : (clientX - rect.left) / rect.width;
-    set(min + fraction * (max - min), event);
+    set(min + fraction * (safeMax - min), event);
   };
 
   // Pointer-drag: down on the track seeds the value and begins a drag; we capture
@@ -204,7 +212,7 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
       {showOwnLabel ? (
         <span id={labelId} className={styles.label}>
           {label}
-          {formatValue ? ` — ${formatValue(currentVal)}` : ''}
+          {formatValue ? `: ${formatValue(currentVal)}` : ''}
         </span>
       ) : null}
       <div
@@ -225,7 +233,7 @@ export const Slider = /* @__PURE__ */ forwardRef<HTMLDivElement, SliderProps>(fu
           tabIndex={disabled ? -1 : 0}
           aria-labelledby={labelId}
           aria-valuemin={min}
-          aria-valuemax={max}
+          aria-valuemax={safeMax}
           aria-valuenow={currentVal}
           aria-valuetext={formatValue ? formatValue(currentVal) : undefined}
           aria-disabled={disabled || undefined}

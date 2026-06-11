@@ -24,6 +24,7 @@
 }
 
 .root {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--ku-space-2);

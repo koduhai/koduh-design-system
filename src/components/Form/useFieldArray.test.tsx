@@ -16,12 +16,19 @@ function List() {
       <button onClick={() => arr.append({ title: 'x' })}>append</button>
       <button onClick={() => arr.remove(0)}>remove0</button>
       <button onClick={() => arr.move(0, 1)}>move</button>
+      <button onClick={() => arr.move(9, 0)}>moveOOR</button>
+      <button onClick={() => arr.remove(9)}>removeOOR</button>
+      <button onClick={() => arr.insert(9, { title: 'z' })}>insertOOR</button>
     </div>
   );
 }
 function Wrap({ defaults }: { defaults?: unknown[] }) {
   api = useForm({ defaultValues: { items: defaults ?? [] } });
-  return <Form form={api} aria-label="f"><List /></Form>;
+  return (
+    <Form form={api} aria-label="f">
+      <List />
+    </Form>
+  );
 }
 
 describe('useFieldArray', () => {
@@ -45,6 +52,20 @@ describe('useFieldArray', () => {
     render(<Wrap defaults={[{ title: 'a' }, { title: 'b' }]} />);
     fireEvent.click(screen.getByText('move'));
     expect(api.getValues().items).toEqual([{ title: 'b' }, { title: 'a' }]);
+  });
+
+  it('no-ops out-of-range move/remove/insert without desyncing ids or values', () => {
+    render(<Wrap defaults={[{ title: 'a' }, { title: 'b' }]} />);
+    const idsBefore = screen.getByTestId('ids').textContent;
+    fireEvent.click(screen.getByText('moveOOR'));
+    expect(api.getValues().items).toEqual([{ title: 'a' }, { title: 'b' }]);
+    fireEvent.click(screen.getByText('removeOOR'));
+    expect(api.getValues().items).toEqual([{ title: 'a' }, { title: 'b' }]);
+    fireEvent.click(screen.getByText('insertOOR'));
+    expect(api.getValues().items).toEqual([{ title: 'a' }, { title: 'b' }]);
+    // No undefined holes injected and the id list stayed in sync.
+    expect(screen.getByTestId('count')).toHaveTextContent('2');
+    expect(screen.getByTestId('ids').textContent).toBe(idsBefore);
   });
 
   it('does not burn ids under StrictMode double-invoke (one id per item)', () => {

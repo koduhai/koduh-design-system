@@ -79,7 +79,8 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
 
   const commit = (next: string) => {
     const trimmed = next.slice(0, length);
-    if (bound) bound.onChange(trimmed); else setVal(trimmed);
+    if (bound) bound.onChange(trimmed);
+    else setVal(trimmed);
     onChange?.(trimmed);
     if (trimmed.length === length) onComplete?.(trimmed);
   };
@@ -95,8 +96,10 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
   const setCharAt = (index: number, char: string) => {
     const arr = chars.slice();
     arr[index] = char;
-    // Reconstruct as a contiguous string (trailing empties dropped).
-    return arr.join('').replace(/\s+$/, '');
+    // Reconstruct as a contiguous string. Empty cells join to '' on their own,
+    // so no trimming is needed (and trimming would drop legitimate spaces in a
+    // text PIN).
+    return arr.join('');
   };
 
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +156,7 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
       arr[cursor] = c;
       cursor += 1;
     }
-    const next = arr.join('').replace(/\s+$/, '');
+    const next = arr.join('');
     commit(next);
     // Focus the cell after the last filled one (clamped).
     focusCell(Math.min(cursor, length - 1));
@@ -197,7 +200,10 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={(e) => handlePaste(i, e)}
           onFocus={(e) => e.target.select()}
-          onBlur={(e) => { bound?.onBlur(); onBlur?.(e); }}
+          onBlur={(e) => {
+            bound?.onBlur();
+            onBlur?.(e);
+          }}
         />
       ))}
     </div>

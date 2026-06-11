@@ -7,8 +7,13 @@
 
 .labelRow {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: baseline;
+}
+
+/* With a label present, label sits left and value right. */
+.labelRow[data-labelled] {
+  justify-content: space-between;
 }
 
 .label {

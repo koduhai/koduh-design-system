@@ -48,13 +48,17 @@ describe('Sidebar', () => {
     expect(screen.queryByRole('link', { name: 'Off' })).toBeNull();
   });
 
-  it('toggles collapsed state (uncontrolled) and updates the toggle label + aria-expanded', async () => {
+  it('toggles collapsed state (uncontrolled) and updates the toggle label + aria-pressed', async () => {
     render(<Sidebar items={ITEMS} />);
     const toggle = screen.getByRole('button', { name: 'Collapse sidebar' });
-    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    // The toggle is a toggle button (aria-pressed), not a disclosure: the list
+    // is always present so aria-expanded/aria-controls would be misleading.
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    expect(toggle).not.toHaveAttribute('aria-expanded');
+    expect(toggle).not.toHaveAttribute('aria-controls');
     await userEvent.click(toggle);
     const expandToggle = screen.getByRole('button', { name: 'Expand sidebar' });
-    expect(expandToggle).toHaveAttribute('aria-expanded', 'false');
+    expect(expandToggle).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('respects controlled collapsed and calls onCollapsedChange without changing state itself', async () => {
@@ -110,6 +114,58 @@ describe('Sidebar', () => {
     const { container } = render(<Sidebar items={ITEMS} collapseBelow={768} />);
     expect(spy).toHaveBeenCalledWith('(max-width: 768px)');
     expect(container.querySelector('nav')).toHaveAttribute('data-collapsed', 'true');
+    spy.mockRestore();
+  });
+
+  it('does not re-subscribe or re-fire onCollapsedChange on re-render with an unstable handler', () => {
+    const addEventListener = vi.fn();
+    const removeEventListener = vi.fn();
+    const mql = {
+      matches: true,
+      media: '',
+      onchange: null,
+      addEventListener,
+      removeEventListener,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    };
+    const spy = vi.spyOn(window, 'matchMedia').mockReturnValue(mql as unknown as MediaQueryList);
+    // Controlled + a fresh inline handler identity on every render. The media
+    // effect must subscribe once and fire onCollapsedChange once (for the
+    // initial match), not on each subsequent re-render.
+    const onCollapsedChange = vi.fn();
+    const { rerender } = render(
+      <Sidebar
+        items={ITEMS}
+        collapsed
+        collapseBelow={768}
+        onCollapsedChange={() => onCollapsedChange()}
+      />,
+    );
+    expect(addEventListener).toHaveBeenCalledTimes(1);
+    expect(onCollapsedChange).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <Sidebar
+        items={ITEMS}
+        collapsed
+        collapseBelow={768}
+        onCollapsedChange={() => onCollapsedChange()}
+      />,
+    );
+    rerender(
+      <Sidebar
+        items={ITEMS}
+        collapsed
+        collapseBelow={768}
+        onCollapsedChange={() => onCollapsedChange()}
+      />,
+    );
+    // Still subscribed exactly once, never torn down, and not re-fired.
+    expect(addEventListener).toHaveBeenCalledTimes(1);
+    expect(removeEventListener).not.toHaveBeenCalled();
+    expect(onCollapsedChange).toHaveBeenCalledTimes(1);
     spy.mockRestore();
   });
 

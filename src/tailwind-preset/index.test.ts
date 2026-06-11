@@ -13,7 +13,22 @@ describe('koduhaiPreset (Tailwind)', () => {
     expect(colors.primary.DEFAULT).toBe('var(--ku-color-primary)');
     expect(colors.primary.contrast).toBe('var(--ku-color-primary-contrast)');
     expect(colors.danger.fg).toBe('var(--ku-color-danger-fg)');
+    expect(colors.accent.DEFAULT).toBe('var(--ku-color-accent)');
+    expect(colors.accent.fg).toBe('var(--ku-color-accent-fg)');
     expect(colors.border).toBe('var(--ku-color-border)');
+  });
+
+  it('covers the full shared tonal vocabulary so a token rename cannot silently drop one', () => {
+    // Guard: every action/status tone in the library vocabulary must resolve to
+    // var(--ku-color-<tone>). primary uses a `contrast` text key; the status
+    // tones use a `fg` key. neutral is a component-level tone with no semantic
+    // color token, so it is intentionally not in the preset.
+    expect(colors.primary.DEFAULT).toBe('var(--ku-color-primary)');
+    for (const tone of ['success', 'warning', 'danger', 'info', 'accent'] as const) {
+      const entry = colors[tone];
+      expect(entry.DEFAULT).toBe(`var(--ku-color-${tone})`);
+      expect(entry.fg).toBe(`var(--ku-color-${tone}-fg)`);
+    }
   });
 
   it('renames bg/text tokens to avoid bg-bg-* / text-text-* utility names', () => {

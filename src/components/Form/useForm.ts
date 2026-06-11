@@ -87,6 +87,11 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
   const registered = new Set<string>();
   const fieldCache = new Map<string, FieldState>();
 
+  // Monotonic token guarding async validation: each maybeValidate run captures
+  // the current value before awaiting, and a stale (older) run that resolves
+  // after a newer run started bails instead of clobbering the newer errors.
+  let validationSeq = 0;
+
   function emit() {
     for (const l of listeners) l();
   }
@@ -145,7 +150,10 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
       : (trigger === 'change' && reValidateMode === 'onChange') ||
         (trigger === 'blur' && reValidateMode === 'onBlur');
     if (!should) return;
+    const seq = ++validationSeq;
     const errors = await runValidation();
+    // A newer run started while this one awaited; discard this stale result.
+    if (seq !== validationSeq) return;
     setState({ errors });
   }
 
@@ -194,7 +202,11 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
     },
     register(name, fieldRules) {
       registered.add(name);
+      // Re-register must reflect the latest rule shape: set when provided, and
+      // clear when a field goes from having rules to none (required/validate
+      // toggled off at runtime) so stale rules are not validated.
       if (fieldRules) rules.set(name, fieldRules);
+      else rules.delete(name);
     },
     unregister(name) {
       registered.delete(name);
@@ -240,6 +252,10 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
           submitCount: state.submitCount + 1,
           touched: allTouched,
         });
+        // Claim the validation token so a slower in-flight onChange validation
+        // cannot resolve afterward and overwrite the submit-time errors. Submit
+        // itself is authoritative and does not bail on a token mismatch.
+        ++validationSeq;
         const errors = await runValidation();
         if (Object.keys(errors).length > 0) {
           // Mark every field that has an error as touched so error messages show

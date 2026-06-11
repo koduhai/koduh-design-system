@@ -12,7 +12,7 @@ export interface AspectRatioProps extends HTMLAttributes<HTMLDivElement> {
 
 export const AspectRatio = /* @__PURE__ */ forwardRef<HTMLDivElement, AspectRatioProps>(
   function AspectRatio({ ratio = 16 / 9, className, style, children, ...props }, ref) {
-    const mergedStyle = { ['--ar']: ratio, ...style } as CSSProperties;
+    const mergedStyle = { ['--ku-ar']: ratio, ...style } as CSSProperties;
     return (
       <div ref={ref} className={cx(styles.root, className)} style={mergedStyle} {...props}>
         {children}

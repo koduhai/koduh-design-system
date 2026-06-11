@@ -138,9 +138,10 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
           ref={mergeRefs(inputRef, ref)}
           id={inputId}
           type="file"
-          // The dropzone wrapper (role="button") is the perceived control, but the
-          // native input still needs its own accessible name to satisfy axe's label rule.
-          aria-label={typeof label === 'string' ? label : 'Upload files'}
+          // No aria-label: the input is display:none (see FileUpload.module.css),
+          // so it is not in the accessibility tree. The role="button" wrapper is the
+          // named, operable control. axe ignores display:none elements, so the input
+          // does not need its own label.
           className={styles.input}
           accept={accept}
           multiple={multiple}

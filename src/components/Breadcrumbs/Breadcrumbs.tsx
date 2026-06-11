@@ -1,6 +1,7 @@
 import { forwardRef, Fragment } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { ChevronDownIcon } from '../../icons';
+import { VisuallyHidden } from '../../primitives/VisuallyHidden';
 import { cx } from '../../utils/cx';
 import styles from './Breadcrumbs.module.css';
 
@@ -29,7 +30,7 @@ export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsPr
     const sep = separator ?? defaultSeparator;
 
     // Build the visible item list, optionally collapsing the middle.
-    type RenderItem = { kind: 'item'; item: BreadcrumbItem } | { kind: 'ellipsis' };
+    type RenderItem = { kind: 'item'; item: BreadcrumbItem } | { kind: 'ellipsis'; hidden: number };
     let rendered: RenderItem[];
 
     if (maxItems != null && items.length > maxItems && maxItems >= 1) {
@@ -44,9 +45,12 @@ export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsPr
       const tailCount = Math.max(0, maxItems - 2);
       // Slice the trailing items between the ellipsis and the last item.
       const tail = tailCount > 0 ? items.slice(items.length - 1 - tailCount, items.length - 1) : [];
+      // Count the items folded into the ellipsis (everything except first,
+      // last, and the shown trailing items) so assistive tech can announce it.
+      const hidden = items.length - 2 - tail.length;
       rendered = [
         { kind: 'item', item: first },
-        { kind: 'ellipsis' },
+        { kind: 'ellipsis', hidden },
         ...tail.map((item): RenderItem => ({ kind: 'item', item })),
         { kind: 'item', item: last },
       ];
@@ -71,7 +75,14 @@ export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsPr
               return (
                 <Fragment key={`ellipsis-${index}`}>
                   <li className={styles.item}>
-                    <span className={styles.ellipsis}>{ELLIPSIS}</span>
+                    <span className={styles.ellipsis} aria-hidden="true">
+                      {ELLIPSIS}
+                    </span>
+                    <VisuallyHidden>
+                      {entry.hidden === 1
+                        ? '1 more breadcrumb'
+                        : `${entry.hidden} more breadcrumbs`}
+                    </VisuallyHidden>
                   </li>
                   {separatorNode}
                 </Fragment>
@@ -84,7 +95,7 @@ export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsPr
             return (
               <Fragment key={index}>
                 <li className={styles.item}>
-                  {item.href != null && !isCurrent ? (
+                  {!isCurrent ? (
                     <a className={styles.link} href={item.href}>
                       {item.label}
                     </a>

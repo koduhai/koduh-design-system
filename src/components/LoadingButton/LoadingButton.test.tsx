@@ -38,4 +38,24 @@ describe('LoadingButton', () => {
     render(<LoadingButton tone="danger">Delete</LoadingButton>);
     expect(screen.getByRole('button')).toHaveAttribute('data-tone', 'danger');
   });
+
+  it('strips asChild so the loading guard stays on a native button', async () => {
+    const onClick = vi.fn();
+    // asChild is not part of the public type; a JS-only consumer could still
+    // pass it. It must be stripped so the spinner/disabled contract holds.
+    render(
+      // @ts-expect-error asChild is intentionally omitted from LoadingButtonProps
+      <LoadingButton loading asChild onClick={onClick}>
+        Save
+      </LoadingButton>,
+    );
+    // Rendered as a native <button> (not a Slot), so the native disabled guard
+    // and the spinner both hold.
+    const btn = screen.getByRole('button', { name: /Save/ });
+    expect(btn.tagName).toBe('BUTTON');
+    expect(btn).toBeDisabled();
+    expect(btn).toHaveAttribute('aria-busy', 'true');
+    await userEvent.click(btn);
+    expect(onClick).not.toHaveBeenCalled();
+  });
 });

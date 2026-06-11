@@ -155,6 +155,28 @@ describe('Menu', () => {
     expect(editItem).not.toHaveAttribute('data-active');
   });
 
+  it('marks a disabled item with aria-disabled (not native disabled) so AT still announces it', () => {
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    const deleteItem = screen.getByRole('menuitem', { name: 'Delete' });
+    // aria-disabled keeps the item in the accessibility tree; native `disabled`
+    // would drop it from several screen readers.
+    expect(deleteItem).toHaveAttribute('aria-disabled', 'true');
+    expect(deleteItem).not.toBeDisabled();
+  });
+
+  it('moves the active item via first-letter typeahead', () => {
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    const menu = screen.getByRole('menu');
+    // Edit is seeded active; typing "d" jumps to the next item starting with "d".
+    fireEvent.keyDown(menu, { key: 'd' });
+    expect(menu).toHaveAttribute(
+      'aria-activedescendant',
+      screen.getByRole('menuitem', { name: 'Duplicate' }).id,
+    );
+  });
+
   it('wires FormField group association onto the trigger', () => {
     render(
       <FormField label="Row actions" required error errorText="Pick one">

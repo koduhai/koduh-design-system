@@ -64,6 +64,13 @@ describe('Popover', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
+  it('returns focus to the trigger when Escape closes the panel', () => {
+    render(<Harness defaultOpen />);
+    const trigger = screen.getByRole('button', { name: 'Open' });
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(trigger).toHaveFocus();
+  });
+
   it('does not close on Escape when not dismissable', () => {
     const onOpenChange = vi.fn();
     render(<Harness defaultOpen dismissable={false} onOpenChange={onOpenChange} />);
@@ -116,6 +123,29 @@ describe('Popover', () => {
       unmount();
       expect(removeSpy).toHaveBeenCalledWith('scroll', expect.any(Function), true);
       expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+    });
+
+    it('observes the panel with a ResizeObserver and disconnects it on unmount', () => {
+      const observe = vi.fn();
+      const disconnect = vi.fn();
+      const priorRO = (globalThis as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver;
+      class StubResizeObserver {
+        observe = observe;
+        disconnect = disconnect;
+        unobserve = vi.fn();
+        constructor(_cb: ResizeObserverCallback) {}
+      }
+      (globalThis as { ResizeObserver?: unknown }).ResizeObserver = StubResizeObserver;
+      try {
+        const { unmount } = render(<Harness defaultOpen />);
+        expect(observe).toHaveBeenCalledTimes(1);
+        unmount();
+        expect(disconnect).toHaveBeenCalledTimes(1);
+      } finally {
+        if (priorRO)
+          (globalThis as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver = priorRO;
+        else delete (globalThis as { ResizeObserver?: unknown }).ResizeObserver;
+      }
     });
   });
 });

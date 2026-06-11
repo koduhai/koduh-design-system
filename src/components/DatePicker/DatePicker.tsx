@@ -1,9 +1,9 @@
 import { forwardRef, useRef, useState } from 'react';
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import type { InputHTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { Popover } from '../Popover';
 import { Calendar } from '../Calendar';
 import { useOptionalFieldContext } from '../FormField';
-import { mergeRefs, useControllableState, useId } from '../../primitives';
+import { composeEventHandlers, mergeRefs, useControllableState, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './DatePicker.module.css';
 
@@ -116,6 +116,22 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
       inputRef.current?.focus();
     };
 
+    // Clear the selection. The input is readOnly, so Backspace/Delete are the
+    // affordance that emits the documented onChange(null) contract.
+    const clear = () => {
+      if (disabled) return;
+      if (bound) bound.onChange(null);
+      else setSelected(undefined);
+      onChange?.(null);
+    };
+
+    const handleInputKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
+      if ((e.key === 'Backspace' || e.key === 'Delete') && currentValue) {
+        e.preventDefault();
+        clear();
+      }
+    };
+
     // Return focus to the trigger input when the popover closes via Esc or an
     // outside click (Popover does no focus management; day selection handles its
     // own focus in `choose`). Defer to a microtask so an outside pointerdown that
@@ -152,6 +168,7 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
           aria-describedby={describedBy}
           aria-labelledby={showOwnLabel && label ? labelId : undefined}
           onClick={() => !disabled && setOpen((o) => !o)}
+          onKeyDown={composeEventHandlers(rest.onKeyDown, handleInputKeyDown)}
         />
         <button
           type="button"
@@ -186,10 +203,11 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
           onOpenChange={handleOpenChange}
           placement="bottom-start"
           role="dialog"
+          id={calendarId}
           aria-label="Choose date"
           trigger={trigger}
         >
-          <div id={calendarId} className={styles.popover}>
+          <div className={styles.popover}>
             <Calendar value={currentValue} onChange={choose} min={min} max={max} locale={locale} />
           </div>
         </Popover>

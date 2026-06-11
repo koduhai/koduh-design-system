@@ -127,6 +127,40 @@ describe('Slider', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('clamps and snaps an out-of-range displayed value into [min, max]', () => {
+    const { rerender } = render(<Slider label="V" value={150} min={0} max={100} step={1} />);
+    // A controlled value above max is clamped for aria-valuenow (and the fill).
+    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '100');
+    rerender(<Slider label="V" value={-20} min={0} max={100} step={1} />);
+    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '0');
+    // Off-grid values snap to the nearest step.
+    rerender(<Slider label="V" value={37} min={0} max={100} step={10} />);
+    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '40');
+  });
+
+  it('treats a non-positive step as 1 instead of producing NaN', () => {
+    render(<Slider label="V" value={42} min={0} max={100} step={0} />);
+    const slider = screen.getByRole('slider');
+    // step=0 would make Math.round(x / step) NaN without the guard.
+    expect(slider).toHaveAttribute('aria-valuenow', '42');
+  });
+
+  it('treats max <= min as min + 1 instead of dividing by zero', () => {
+    render(<Slider label="V" value={5} min={10} max={10} />);
+    const slider = screen.getByRole('slider');
+    expect(slider).toHaveAttribute('aria-valuemin', '10');
+    expect(slider).toHaveAttribute('aria-valuemax', '11');
+    // value below min clamps to min; no NaN reaches aria-valuenow.
+    expect(slider).toHaveAttribute('aria-valuenow', '10');
+  });
+
+  it('separates the label and formatted value with a colon (no em-dash)', () => {
+    render(<Slider label="Volume" defaultValue={50} formatValue={(v) => `${v}%`} />);
+    const label = screen.getByText(/Volume/);
+    expect(label.textContent).toBe('Volume: 50%');
+    expect(label.textContent).not.toContain('—');
+  });
+
   it('forwards onBlur to the thumb', () => {
     const onBlur = vi.fn();
     render(<Slider label="V" onBlur={onBlur} />);

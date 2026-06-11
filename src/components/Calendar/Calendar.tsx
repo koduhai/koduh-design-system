@@ -1,6 +1,6 @@
-import { forwardRef, useRef, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { HTMLAttributes, KeyboardEvent } from 'react';
-import { useControllableState } from '../../primitives';
+import { useControllableState, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Calendar.module.css';
 
@@ -110,6 +110,20 @@ export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps
   // When a key handler changes the displayed month, defer focusing the new day
   // until after that render (the button doesn't exist yet on the current pass).
   const pendingFocus = useRef<number | null>(null);
+
+  // When controlled, a parent updating `value` to a date in a different month
+  // pages the displayed grid to it so the selected cell stays visible. We only
+  // sync the controlled prop (not internal `selected`) to avoid fighting the
+  // user's own paging in the uncontrolled case.
+  useEffect(() => {
+    if (!value) return;
+    if (value.getFullYear() === viewYear && value.getMonth() === viewMonth) return;
+    setViewYear(value.getFullYear());
+    setViewMonth(value.getMonth());
+    setFocusDay(value.getDate());
+  }, [value, viewYear, viewMonth]);
+
+  const labelId = useId('ku-cal-label');
 
   const monthLabel = new Intl.DateTimeFormat(locale, {
     month: 'long',
@@ -252,7 +266,13 @@ export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps
         >
           <span aria-hidden>‹</span>
         </button>
-        <span className={styles.monthLabel} aria-live="polite">
+        <span
+          id={labelId}
+          className={styles.monthLabel}
+          role="heading"
+          aria-level={2}
+          aria-live="polite"
+        >
           {monthLabel}
         </span>
         <button
@@ -264,7 +284,7 @@ export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps
           <span aria-hidden>›</span>
         </button>
       </div>
-      <div role="grid" aria-label={monthLabel} className={styles.grid}>
+      <div role="grid" aria-labelledby={labelId} className={styles.grid}>
         <div role="row" className={styles.weekdays}>
           {weekdayNames.map((name, i) => (
             <span key={i} role="columnheader" aria-label={name} className={styles.weekday}>

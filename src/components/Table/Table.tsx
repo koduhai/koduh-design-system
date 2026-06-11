@@ -148,8 +148,13 @@ function TableInner<Row>(
     onSelectionChange?.([...next]);
   };
 
+  // A column is only operable as a sort control when both `sortable` is set and a
+  // handler exists; otherwise rendering a focusable button + aria-sort + caret would
+  // advertise an interaction that does nothing.
+  const isSortable = (col: Column<Row>) => Boolean(col.sortable) && onSortChange != null;
+
   const ariaSort = (col: Column<Row>): 'ascending' | 'descending' | 'none' | undefined => {
-    if (!col.sortable) return undefined;
+    if (!isSortable(col)) return undefined;
     const found = ruleFor(col.key);
     if (!found) return 'none';
     return found.rule.dir === 'desc' ? 'descending' : 'ascending';
@@ -191,7 +196,7 @@ function TableInner<Row>(
                 aria-sort={ariaSort(col)}
                 style={col.width ? { width: col.width } : undefined}
               >
-                {col.sortable ? (
+                {isSortable(col) ? (
                   <button
                     type="button"
                     className={styles.sortButton}

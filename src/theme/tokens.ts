@@ -52,6 +52,7 @@ export const tokens = {
   zIndex: {
     appbar: '1100',
     sidebar: '1000',
+    snackbar: '1400',
   },
   breakpoint: {
     sm: '600px',

@@ -90,6 +90,39 @@ describe('Tree', () => {
     expect(tabbable[0]).toHaveAccessibleName(/src/);
   });
 
+  it('roving tabindex follows the last-focused row after arrow navigation', async () => {
+    render(<Tree nodes={nodes} defaultExpanded={['src']} />);
+    const src = screen.getByRole('treeitem', { name: /src/ });
+    src.focus();
+    await userEvent.keyboard('{ArrowDown}'); // move focus to Button.tsx
+    const child = screen.getByRole('treeitem', { name: 'Button.tsx' });
+    expect(child).toHaveFocus();
+    // The last-focused row becomes the single tabbable entry point, not src.
+    expect(child).toHaveAttribute('tabindex', '0');
+    expect(src).toHaveAttribute('tabindex', '-1');
+    const tabbable = screen
+      .getAllByRole('treeitem')
+      .filter((el) => el.getAttribute('tabindex') === '0');
+    expect(tabbable).toHaveLength(1);
+  });
+
+  it('falls back to the first visible row when the last-focused row is collapsed away', async () => {
+    render(<Tree nodes={nodes} defaultExpanded={['src']} />);
+    const src = screen.getByRole('treeitem', { name: /src/ });
+    src.focus();
+    await userEvent.keyboard('{ArrowDown}'); // focus Button.tsx
+    expect(screen.getByRole('treeitem', { name: 'Button.tsx' })).toHaveAttribute('tabindex', '0');
+    // Collapse src so the focused child unmounts.
+    await userEvent.click(src);
+    expect(screen.queryByRole('treeitem', { name: 'Button.tsx' })).not.toBeInTheDocument();
+    // Tabbable falls back to the first visible row rather than a vanished one.
+    expect(src).toHaveAttribute('tabindex', '0');
+    const tabbable = screen
+      .getAllByRole('treeitem')
+      .filter((el) => el.getAttribute('tabindex') === '0');
+    expect(tabbable).toHaveLength(1);
+  });
+
   it('Enter selects a node and reflects aria-selected', async () => {
     const onSelect = vi.fn();
     render(<Tree nodes={nodes} defaultExpanded={['src']} onSelect={onSelect} />);

@@ -58,6 +58,27 @@ describe('Toaster', () => {
     expect(screen.getByText('C')).toBeInTheDocument();
   });
 
+  it('expires a queued (overflow) toast even when an Infinity toast is ahead of it', () => {
+    vi.useFakeTimers();
+    try {
+      // max=1: only the Infinity toast is visible; the queued one is unmounted.
+      render(<Toaster max={1} />);
+      act(() => {
+        addToast({ description: 'Pinned', duration: Infinity });
+        addToast({ description: 'Queued', duration: 3000 });
+      });
+      expect(screen.getByText('Pinned')).toBeInTheDocument();
+      expect(screen.queryByText('Queued')).toBeNull(); // queued, not yet visible
+      // Its timer runs in the store regardless of visibility, so it expires.
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
+      expect(getSnapshot().map((t) => t.description)).toEqual(['Pinned']);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('auto-dismisses after duration, and pause-on-hover holds it', () => {
     vi.useFakeTimers();
     try {

@@ -100,13 +100,20 @@ export const HoverCard = /* @__PURE__ */ forwardRef<HTMLDivElement, HoverCardPro
       };
     }, []);
 
+    // Append cardId to any existing token-list value the consumer already set on
+    // the trigger, rather than replacing it, so a separate description is kept.
+    const mergeIds = (existing: string | undefined): string | undefined => {
+      if (!open) return existing;
+      return existing ? `${existing} ${cardId}` : cardId;
+    };
+
     // Compose our handlers with the child's existing handlers so consumers keep theirs.
     // A consumer-passed `id` lands on the trigger (its own element), so it cannot
     // clobber the internal `cardId` that wires the trigger <-> card aria linkage.
     const triggerEl = cloneElement(trigger, {
       id: consumerId ?? trigger.props.id,
-      'aria-describedby': open ? cardId : undefined,
-      'aria-details': open ? cardId : undefined,
+      'aria-describedby': mergeIds(trigger.props['aria-describedby']),
+      'aria-details': mergeIds(trigger.props['aria-details']),
       onMouseEnter: composeEventHandlers(trigger.props.onMouseEnter, scheduleOpen),
       onMouseLeave: composeEventHandlers(trigger.props.onMouseLeave, scheduleClose),
       onFocus: composeEventHandlers(trigger.props.onFocus, scheduleOpen),

@@ -50,6 +50,15 @@ describe('Stepper', () => {
     expect(onStepClick).toHaveBeenCalledWith(0);
   });
 
+  it('puts aria-current on the active step button (not the list item) when interactive', () => {
+    render(<Stepper steps={STEPS} activeStep={1} onStepClick={() => {}} />);
+    const items = screen.getAllByRole('listitem');
+    // The active step is interactive, so aria-current moves to the button.
+    expect(items[1]).not.toHaveAttribute('aria-current');
+    const activeButton = screen.getByRole('button', { name: /Profile/ });
+    expect(activeButton).toHaveAttribute('aria-current', 'step');
+  });
+
   it('does not render buttons without onStepClick', () => {
     render(<Stepper steps={STEPS} activeStep={2} />);
     expect(screen.queryByRole('button')).not.toBeInTheDocument();

@@ -80,7 +80,11 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
       value,
       defaultValue,
     });
-    const currentHex = bound ? ((bound.value as string) ?? defaultValue) : internalHex;
+    // bound.value is typed `unknown` at the Form-binding boundary; narrow it to a
+    // string rather than casting, so a non-string form value falls back to the
+    // default instead of feeding a bad value to parseHex/the hex input.
+    const boundHex = bound && typeof bound.value === 'string' ? bound.value : undefined;
+    const currentHex = bound ? (boundHex ?? defaultValue) : internalHex;
 
     // Keep an HSV working buffer so dragging the SV square / hue stays smooth
     // (parsing back from the rounded hex on every move would jitter the hue at
@@ -471,7 +475,13 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
               }}
             />
           </div>
-          <VisuallyHidden aria-live="polite">Selected color {currentDisplayHex}</VisuallyHidden>
+          {/*
+            Static (non-live) hex readout. Each slider's aria-valuetext already
+            announces the value on focus/change, so a polite live region here only
+            floods AT with a fresh full-hex announcement on every drag tick. Keep
+            the text as on-demand context instead of an aria-live region.
+          */}
+          <VisuallyHidden>Selected color {currentDisplayHex}</VisuallyHidden>
         </div>
 
         {/* Swatch row */}

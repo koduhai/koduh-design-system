@@ -57,10 +57,8 @@
   color: var(--ku-color-text-secondary);
 }
 
-/* Visually-hidden native input — kept in the accessibility tree and focusable
-   targetable via the wrapper's click, but removed from layout. */
 /* display:none (not sr-only clip) so the native input is neither focusable nor
-   in the accessibility tree — the role="button" wrapper is the operable control
+   in the accessibility tree: the role="button" wrapper is the operable control
    and opens the picker via .click(). This avoids a nested-interactive violation
    (focusable input inside a button) while keeping programmatic open working. */
 .input {

@@ -64,8 +64,14 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
     const id = field?.id ?? idProp ?? reactId;
     const hexInputId = `${id}-hex`;
     const ownLabelId = `${id}-label`;
-    const labelId = field ? field.labelId : ownLabelId;
     const showOwnLabel = !field && label != null;
+    // The ColorPicker is a composite control, so it can't be targeted by a
+    // <label htmlFor>. Associate the visible label (own, or the FormField's)
+    // through the group's aria-labelledby instead.
+    const labelId = field ? field.labelId : showOwnLabel ? ownLabelId : undefined;
+    const describedBy = field ? field.describedById : undefined;
+    const invalid = field ? field.invalid || undefined : undefined;
+    const groupRequired = field ? field.required || undefined : undefined;
 
     // Bind to an enclosing <Form> only when not explicitly controlled.
     const bound = value === undefined ? field?.binding : undefined;
@@ -330,6 +336,9 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
     const hueHex = toHex(hsvToRgb({ h: hsv.h, s: 1, v: 1, a: 1 }));
     const solidCurrent = toHex({ ...hsvToRgb(hsv), a: 1 });
     const alphaPct = Math.round(hsv.a * 100);
+    // The SV square is a 2D control; surface both axes for assistive tech.
+    const satPct = Math.round(hsv.s * 100);
+    const valPct = Math.round(hsv.v * 100);
 
     const rootStyle = {
       ['--cp-hue']: hueHex,
@@ -344,12 +353,18 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
     return (
       <div
         ref={ref}
+        id={id}
         className={cx(styles.root, className)}
+        role="group"
+        aria-labelledby={labelId}
+        aria-describedby={describedBy}
+        aria-invalid={invalid}
+        aria-required={groupRequired}
         data-disabled={disabled ? 'true' : undefined}
         style={rootStyle}
       >
         {showOwnLabel ? (
-          <span id={labelId} className={styles.label}>
+          <span id={ownLabelId} className={styles.label}>
             {label}
           </span>
         ) : null}
@@ -361,7 +376,10 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
           role="slider"
           tabIndex={disabled ? -1 : 0}
           aria-label="Saturation and brightness"
-          aria-valuetext={currentDisplayHex}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={valPct}
+          aria-valuetext={`${satPct}% saturation, ${valPct}% brightness, ${currentDisplayHex}`}
           aria-disabled={disabled || undefined}
           onPointerDown={onSvPointerDown}
           onPointerMove={onSvPointerMove}

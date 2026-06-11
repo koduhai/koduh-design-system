@@ -74,6 +74,23 @@ describe('FileUpload', () => {
     expect(onFiles).not.toHaveBeenCalled();
   });
 
+  it('preventDefaults dragover and drop even when disabled (no browser navigation)', () => {
+    render(<FileUpload disabled onFiles={() => {}} />);
+    const zone = screen.getByRole('button');
+
+    const dragEvent = new Event('dragover', { bubbles: true, cancelable: true });
+    Object.defineProperty(dragEvent, 'dataTransfer', { value: { files: [] } });
+    zone.dispatchEvent(dragEvent);
+    expect(dragEvent.defaultPrevented).toBe(true);
+
+    const dropEvent = new Event('drop', { bubbles: true, cancelable: true });
+    Object.defineProperty(dropEvent, 'dataTransfer', {
+      value: { files: [makeFile('a.txt')] },
+    });
+    zone.dispatchEvent(dropEvent);
+    expect(dropEvent.defaultPrevented).toBe(true);
+  });
+
   it('forwards accept and multiple to the native input', () => {
     render(<FileUpload multiple accept="image/*" onFiles={() => {}} />);
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -94,7 +111,7 @@ describe('FileUpload', () => {
     expect(zone).toHaveAttribute('aria-label', 'Upload');
   });
 
-  it('composes with FormField for id/aria wiring', () => {
+  it('composes with FormField, wiring the field association onto the operable wrapper', () => {
     render(
       <FormField label="Attachment" required helperText="PDF only">
         <FileUpload onFiles={() => {}} />
@@ -102,11 +119,26 @@ describe('FileUpload', () => {
     );
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     const zone = screen.getByRole('button');
-    // The FormField label is associated via the shared id.
+    // The FormField <label htmlFor> targets the operable wrapper (the field id),
+    // not the hidden input, so the label's accessible name reaches the button.
     const label = screen.getByText('Attachment').closest('label');
-    expect(label).toHaveAttribute('for', input.id);
+    expect(label).toHaveAttribute('for', zone.id);
+    expect(zone).toHaveAttribute('aria-labelledby', `${zone.id}-label`);
+    // required is exposed on the wrapper via aria-required, and natively on the input.
+    expect(zone).toHaveAttribute('aria-required', 'true');
     expect(input.required).toBe(true);
+    // The hidden input does not own the field id.
+    expect(input.id).not.toBe(zone.id);
     // describedby references the FormField description plus the instructions.
-    expect(zone.getAttribute('aria-describedby')).toContain(`${input.id}-instructions`);
+    expect(zone.getAttribute('aria-describedby')).toContain(`${zone.id}-instructions`);
+  });
+
+  it('marks the wrapper aria-invalid when the FormField is in error', () => {
+    render(
+      <FormField label="Attachment" error errorText="Required">
+        <FileUpload onFiles={() => {}} />
+      </FormField>,
+    );
+    expect(screen.getByRole('button')).toHaveAttribute('aria-invalid', 'true');
   });
 });

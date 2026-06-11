@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RadioGroup, Radio } from './';
+import { FormField } from '../FormField';
 
 function Group(props: { value?: string; defaultValue?: string; onChange?: (v: string) => void }) {
   return (
@@ -39,5 +40,32 @@ describe('RadioGroup / Radio', () => {
     const [a, b] = screen.getAllByRole('radio') as HTMLInputElement[];
     expect(a!.name).toBe(b!.name);
     expect(a!.name).toBeTruthy();
+  });
+
+  it('inside FormField: group wires id + aria-labelledby/describedby/invalid/required from context', () => {
+    render(
+      <FormField label="Plan" required error errorText="Pick one" id="plan">
+        <RadioGroup>
+          <Radio value="free" label="Free" />
+          <Radio value="pro" label="Pro" />
+        </RadioGroup>
+      </FormField>,
+    );
+    const group = screen.getByRole('radiogroup', { name: 'Plan' });
+    expect(group.id).toBe('plan');
+    expect(group).toHaveAttribute('aria-labelledby', 'plan-label');
+    expect(group).toHaveAttribute('aria-describedby', screen.getByText('Pick one').id);
+    expect(group).toHaveAttribute('aria-invalid', 'true');
+    expect(group).toHaveAttribute('aria-required', 'true');
+    // The control did not render a second "Plan" label.
+    expect(screen.getAllByText('Plan')).toHaveLength(1);
+  });
+
+  it('standalone: unchanged, no describedby/invalid/required when no field context', () => {
+    render(<Group />);
+    const group = screen.getByRole('radiogroup', { name: 'Plan' });
+    expect(group).not.toHaveAttribute('aria-describedby');
+    expect(group).not.toHaveAttribute('aria-invalid');
+    expect(group).not.toHaveAttribute('aria-required');
   });
 });

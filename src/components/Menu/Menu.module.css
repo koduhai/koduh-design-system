@@ -24,7 +24,12 @@
   cursor: pointer;
 }
 .item[data-active='true'] {
-  background: var(--ku-color-bg-raised);
+  /* A brand-tinted wash reads against the popover surface in BOTH themes; the
+     bg-raised token collapses onto bg-default (#FFFFFF) in light, so the active
+     item would have no visible highlight there. Mirrors CommandPalette. The
+     inset ring is a non-color signal so the highlight isn't color-only. */
+  background-color: color-mix(in srgb, var(--ku-color-primary) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ku-color-primary) 40%, transparent);
 }
 .item:disabled {
   opacity: 0.5;

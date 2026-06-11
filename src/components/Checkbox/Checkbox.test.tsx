@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Checkbox } from './Checkbox';
+import { FormField } from '../FormField';
 
 describe('Checkbox', () => {
   it('renders an accessible checkbox associated with its label', () => {
@@ -42,5 +43,30 @@ describe('Checkbox', () => {
     const ref = { current: null as HTMLInputElement | null };
     render(<Checkbox label="A" ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+
+  it('associates FormField description via aria-describedby', () => {
+    render(
+      <FormField label="Subscribe" helperText="We never share it.">
+        <Checkbox />
+      </FormField>,
+    );
+    const box = screen.getByRole('checkbox');
+    const desc = screen.getByText('We never share it.');
+    expect(box).toHaveAttribute('aria-describedby', desc.id);
+  });
+
+  it('inherits required from a FormField', () => {
+    render(
+      <FormField label="Agree" required>
+        <Checkbox />
+      </FormField>,
+    );
+    expect(screen.getByRole('checkbox')).toBeRequired();
+  });
+
+  it('honors a standalone required prop without a FormField', () => {
+    render(<Checkbox label="A" required />);
+    expect(screen.getByRole('checkbox')).toBeRequired();
   });
 });

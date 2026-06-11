@@ -2,6 +2,7 @@ import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'r
 import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { mergeRefs, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useOptionalFieldContext } from '../FormField';
 import { SearchIcon } from '../../icons';
 import styles from './CommandPalette.module.css';
 
@@ -61,10 +62,16 @@ export const CommandPalette = /* @__PURE__ */ forwardRef<HTMLDialogElement, Comm
     forwardedRef,
   ) {
     const dialogRef = useRef<HTMLDialogElement>(null);
+    const listboxRef = useRef<HTMLUListElement>(null);
     const baseId = useId('command-palette');
     const listboxId = `${baseId}-listbox`;
-    const inputId = `${baseId}-input`;
     const optionId = (id: string) => `${baseId}-opt-${id}`;
+
+    // When wrapped in a <FormField>, defer label/aria/id wiring to it. The
+    // combobox is a labelable <input>, so the field's <label htmlFor> targets it
+    // directly via the input id.
+    const field = useOptionalFieldContext();
+    const inputId = field?.id ?? `${baseId}-input`;
 
     const [query, setQuery] = useState('');
     const [activeIndex, setActiveIndex] = useState(0);
@@ -123,6 +130,13 @@ export const CommandPalette = /* @__PURE__ */ forwardRef<HTMLDialogElement, Comm
         return Math.min(i, flatCommands.length - 1);
       });
     }, [flatCommands.length]);
+
+    // Keep the active option visible during keyboard navigation. Guard
+    // scrollIntoView since jsdom doesn't implement it.
+    useEffect(() => {
+      const el = listboxRef.current?.querySelector<HTMLElement>('[data-active="true"]');
+      el?.scrollIntoView?.({ block: 'nearest' });
+    }, [activeIndex]);
 
     // Wire native close/cancel (browser fires these on Esc) to onOpenChange.
     useEffect(() => {
@@ -189,9 +203,15 @@ export const CommandPalette = /* @__PURE__ */ forwardRef<HTMLDialogElement, Comm
               role="combobox"
               className={styles.input}
               placeholder={placeholder}
-              aria-label={ariaLabel}
+              // In a <FormField>, the field's <label htmlFor> supplies the name;
+              // don't override it with aria-label. Defer error/required wiring too.
+              aria-label={field ? undefined : ariaLabel}
               aria-expanded
               aria-controls={listboxId}
+              aria-describedby={field?.describedById}
+              aria-invalid={field?.invalid || undefined}
+              required={field?.required}
+              aria-required={field?.required || undefined}
               aria-activedescendant={activeCommand ? optionId(activeCommand.id) : undefined}
               autoComplete="off"
               value={query}
@@ -203,7 +223,13 @@ export const CommandPalette = /* @__PURE__ */ forwardRef<HTMLDialogElement, Comm
             />
           </div>
 
-          <ul id={listboxId} role="listbox" aria-label={ariaLabel} className={styles.listbox}>
+          <ul
+            ref={listboxRef}
+            id={listboxId}
+            role="listbox"
+            aria-label={ariaLabel}
+            className={styles.listbox}
+          >
             {flatCommands.length === 0 ? (
               <li className={styles.noResults} role="presentation">
                 {noResultsText}

@@ -91,6 +91,40 @@ describe('TagInput', () => {
       // form value updated to include the new tag
       expect(screen.getByTestId('v')).toHaveTextContent('["existing","newone"]');
     });
+
+    it('Backspace removes the last tag from the form-bound value', async () => {
+      function Probe() {
+        const f = useFormField('field');
+        return <span data-testid="v">{JSON.stringify(f.value ?? null)}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { field: ['one', 'two'] } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="field" label="Tags">
+              <TagInput />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      const input = screen.getByLabelText(/Tags/);
+      input.focus();
+      await userEvent.keyboard('{Backspace}');
+      // reads the form-bound value, not stale internal state
+      expect(screen.getByTestId('v')).toHaveTextContent('["one"]');
+    });
+  });
+
+  it('announces tag add and remove in a polite live region', async () => {
+    render(<TagInput label="Tags" defaultValue={['keep']} />);
+    const input = screen.getByLabelText('Tags');
+    await userEvent.type(input, 'react{Enter}');
+    const status = screen.getByText('react added');
+    expect(status).toHaveAttribute('aria-live', 'polite');
+    await userEvent.click(screen.getByLabelText('Remove keep'));
+    expect(screen.getByText('keep removed')).toHaveAttribute('aria-live', 'polite');
   });
 
   it('onChange receives (tags, event) and forwards onBlur/name to the input', async () => {

@@ -73,6 +73,43 @@ describe('Carousel', () => {
     );
   });
 
+  it('mirrors ArrowLeft / ArrowRight under direction:rtl', async () => {
+    const realGCS = window.getComputedStyle.bind(window);
+    // Override only `direction`; keep the live declaration (and its prototype
+    // methods, which accessible-name queries call) intact.
+    const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation((el: Element) => {
+      const style = realGCS(el);
+      return new Proxy(style, {
+        get: (target, prop) => (prop === 'direction' ? 'rtl' : Reflect.get(target, prop, target)),
+      });
+    });
+    render(<Carousel items={items} aria-label="Highlights" />);
+    const region = screen.getByRole('group', { name: 'Highlights' });
+    region.focus();
+    // RTL: ArrowLeft advances forward.
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('button', { name: 'Go to slide 2' })).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
+    // RTL: ArrowRight goes back.
+    await userEvent.keyboard('{ArrowRight}');
+    expect(screen.getByRole('button', { name: 'Go to slide 1' })).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
+    spy.mockRestore();
+  });
+
+  it('announces the current slide in a polite live region', async () => {
+    const { container } = render(<Carousel items={items} aria-label="Highlights" />);
+    const status = container.querySelector('[aria-live="polite"]');
+    expect(status).not.toBeNull();
+    expect(status).toHaveTextContent('Slide 1 of 3');
+    await userEvent.click(screen.getByRole('button', { name: 'Next slide' }));
+    expect(status).toHaveTextContent('Slide 2 of 3');
+  });
+
   it('disables prev at the start and next at the end without loop', () => {
     render(<Carousel items={items} aria-label="Highlights" />);
     expect(screen.getByRole('button', { name: 'Previous slide' })).toBeDisabled();

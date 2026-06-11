@@ -1,6 +1,9 @@
 .root {
   display: block;
-  background-color: var(--ku-color-bg-raised);
+  /* Use the border token as the placeholder fill: it stays perceptibly different
+     from both the page (bg-default) and card (bg-surface) backgrounds in dark
+     and light themes, whereas bg-raised equals the white page in the light theme. */
+  background-color: var(--ku-color-border);
   border-radius: var(--ku-radius-sm);
 }
 

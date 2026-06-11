@@ -42,7 +42,18 @@ describe('NotificationBadge', () => {
     );
     const badge = container.querySelector('[data-badge]')!;
     expect(badge).toHaveAttribute('data-dot', 'true');
+    expect(badge).not.toHaveAttribute('aria-hidden');
     expect(screen.getByText('New')).toBeInTheDocument(); // visually-hidden label
+  });
+  it('hides a label-less dot from AT (shape/color is not a sufficient signal)', () => {
+    const { container } = render(
+      <NotificationBadge dot>
+        <span>x</span>
+      </NotificationBadge>,
+    );
+    const badge = container.querySelector('[data-badge]')!;
+    expect(badge).toHaveAttribute('data-dot', 'true');
+    expect(badge).toHaveAttribute('aria-hidden', 'true');
   });
   it('reflects tone and placement', () => {
     const { container } = render(

@@ -176,8 +176,8 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
             // value of a number input, coercing an in-progress string like '1.' or
             // '1.5e' to '', which destroys the raw-text buffer this component is
             // built around. inputMode="decimal" still surfaces a numeric keypad on
-            // mobile. (min/max/step are number-input attributes — they'd be inert
-            // here; clamping is enforced in JS via clamp()/adjust().)
+            // mobile. (min/max/step are number-input attributes, inert here;
+            // clamping is enforced in JS via clamp()/adjust().)
             inputMode="decimal"
             type="text"
             value={display}

@@ -109,6 +109,37 @@ describe('DatePicker', () => {
     expect(screen.getByLabelText('Open calendar')).toBeDisabled();
   });
 
+  it('gives the popover dialog an accessible name', async () => {
+    render(<DatePicker label="Event date" />);
+    await userEvent.click(screen.getByLabelText('Open calendar'));
+    expect(screen.getByRole('dialog', { name: 'Choose date' })).toBeInTheDocument();
+  });
+
+  it('returns focus to the input when closed via Escape', async () => {
+    render(<DatePicker label="Event date" />);
+    const trigger = screen.getByLabelText('Open calendar');
+    await userEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.keyboard('{Escape}');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('textbox')).toHaveFocus();
+  });
+
+  it('returns focus to the input when closed via outside click on dead space', async () => {
+    render(
+      <>
+        <DatePicker label="Event date" />
+        <div data-testid="outside">outside</div>
+      </>,
+    );
+    const trigger = screen.getByLabelText('Open calendar');
+    await userEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(screen.getByTestId('outside'));
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('textbox')).toHaveFocus();
+  });
+
   it('wires required + error aria standalone', () => {
     render(<DatePicker label="Event date" required error />);
     const input = screen.getByLabelText(/Event date/);

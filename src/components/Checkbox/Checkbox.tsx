@@ -39,6 +39,7 @@ export const Checkbox = /* @__PURE__ */ forwardRef<HTMLInputElement, CheckboxPro
       size = 'md',
       error = false,
       disabled,
+      required,
       className,
       id: idProp,
       ...props
@@ -48,6 +49,9 @@ export const Checkbox = /* @__PURE__ */ forwardRef<HTMLInputElement, CheckboxPro
     const inputRef = useRef<HTMLInputElement>(null);
     const field = useOptionalFieldContext();
     const id = field?.id ?? idProp;
+    // When inside a <FormField>, defer description/required to it; otherwise use own props.
+    const describedBy = field?.describedById;
+    const isRequired = field ? field.required : required;
 
     const [state, setState] = useControllableState<boolean>({
       value: checked,
@@ -83,7 +87,9 @@ export const Checkbox = /* @__PURE__ */ forwardRef<HTMLInputElement, CheckboxPro
           className={styles.input}
           checked={isChecked}
           disabled={disabled}
+          required={isRequired}
           aria-invalid={invalid || undefined}
+          aria-describedby={describedBy}
           onChange={(event) => {
             if (bound) bound.onChange(event.target.checked, event);
             else setState(event.target.checked);

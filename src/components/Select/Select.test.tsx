@@ -196,6 +196,20 @@ describe('Select', () => {
     expect(screen.getAllByText('Model')).toHaveLength(1);
   });
 
+  it('inside FormField: trigger + listbox get an accessible name from the field label', () => {
+    render(
+      <FormField label="Model" id="model">
+        <Select options={[{ value: 'a', label: 'A' }]} />
+      </FormField>,
+    );
+    // The role="button" trigger can't be targeted by the field's <label htmlFor>,
+    // so it must borrow the field label via aria-labelledby for an accessible name.
+    const trigger = screen.getByRole('button', { name: /Model/ });
+    expect(trigger).toHaveAttribute('aria-labelledby', screen.getByText('Model').id);
+    fireEvent.click(trigger);
+    expect(screen.getByRole('listbox', { name: /Model/ })).toBeInTheDocument();
+  });
+
   it('standalone: unchanged label + required indicator', () => {
     render(<Select label="Fruit" required options={[{ value: 'a', label: 'A' }]} />);
     expect(screen.getByText('*')).toBeInTheDocument();

@@ -103,6 +103,31 @@ describe('ConfirmDialog', () => {
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   });
 
+  it('associates the description with the dialog via aria-describedby', () => {
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={() => {}}
+        onConfirm={() => {}}
+        title="Delete item?"
+        description="This cannot be undone."
+      />,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Delete item?' });
+    const describedBy = dlg.getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    const description = document.getElementById(describedBy as string);
+    expect(description).toHaveTextContent('This cannot be undone.');
+  });
+
+  it('omits aria-describedby when no description is supplied', () => {
+    render(
+      <ConfirmDialog open onOpenChange={() => {}} onConfirm={() => {}} title="Delete item?" />,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Delete item?' });
+    expect(dlg).not.toHaveAttribute('aria-describedby');
+  });
+
   it('fires onConfirm then onOpenChange(false) on confirm; only onOpenChange(false) on cancel', async () => {
     const onConfirm = vi.fn();
     const onOpenChange = vi.fn();

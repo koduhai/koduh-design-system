@@ -5,11 +5,7 @@ import { VisuallyHidden } from '../../primitives/VisuallyHidden';
 import { cx } from '../../utils/cx';
 import styles from './NotificationBadge.module.css';
 
-export type NotificationBadgePlacement =
-  | 'top-end'
-  | 'top-start'
-  | 'bottom-end'
-  | 'bottom-start';
+export type NotificationBadgePlacement = 'top-end' | 'top-start' | 'bottom-end' | 'bottom-start';
 
 export interface NotificationBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** The anchored element (icon/avatar/button). Omit for a standalone badge. */
@@ -67,6 +63,10 @@ export const NotificationBadge = /* @__PURE__ */ forwardRef<
           data-dot={dot || undefined}
           data-placement={placement}
           className={styles.badge}
+          // A dot conveys meaning by shape/color alone, so a label-less dot is
+          // decorative: hide it from AT rather than expose an ambiguous bare
+          // element. A count is self-describing, so it stays announced.
+          aria-hidden={dot && !label ? true : undefined}
         >
           {!dot && <span aria-hidden={label ? true : undefined}>{display}</span>}
           {label && <VisuallyHidden>{label}</VisuallyHidden>}

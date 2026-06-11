@@ -24,11 +24,28 @@ export interface SwitchProps extends Omit<
 }
 
 export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(function Switch(
-  { label, checked, defaultChecked, onChange, onBlur, size = 'md', className, disabled, id: idProp, ...props },
+  {
+    label,
+    checked,
+    defaultChecked,
+    onChange,
+    onBlur,
+    size = 'md',
+    className,
+    disabled,
+    required,
+    id: idProp,
+    ...props
+  },
   ref,
 ) {
   const field = useOptionalFieldContext();
+  // When inside a <FormField>, defer id/required/aria to it; otherwise use own props.
+  // Switch is a labelable single input, so FormField's <label htmlFor> already
+  // targets field.id; we only set the input id plus describedby/invalid/required.
   const id = field?.id ?? idProp;
+  const describedBy = field?.describedById;
+  const isRequired = field ? field.required : required;
   const [state, setState] = useControllableState<boolean>({
     value: checked,
     defaultValue: defaultChecked ?? false,
@@ -56,6 +73,9 @@ export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(
         className={styles.input}
         checked={isChecked}
         disabled={disabled}
+        required={isRequired}
+        aria-required={isRequired || undefined}
+        aria-describedby={describedBy}
         aria-invalid={invalid || undefined}
         onChange={(event) => {
           if (bound) bound.onChange(event.target.checked, event);

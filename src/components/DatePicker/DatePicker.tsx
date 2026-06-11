@@ -97,6 +97,7 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
     const calendarId = `${baseId}-calendar`;
 
     const inputRef = useRef<HTMLInputElement>(null);
+    const rootRef = useRef<HTMLDivElement>(null);
 
     const formatted = currentValue
       ? new Intl.DateTimeFormat(locale, {
@@ -108,10 +109,30 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
 
     const choose = (date: Date) => {
       const day = startOfDay(date);
-      if (bound) bound.onChange(day); else setSelected(day);
+      if (bound) bound.onChange(day);
+      else setSelected(day);
       onChange?.(day);
       setOpen(false);
       inputRef.current?.focus();
+    };
+
+    // Return focus to the trigger input when the popover closes via Esc or an
+    // outside click (Popover does no focus management; day selection handles its
+    // own focus in `choose`). Defer to a microtask so an outside pointerdown that
+    // lands on another focusable element settles first: reclaim focus only when it
+    // is lost to the body or still sits inside this control (e.g. Esc with focus on
+    // the trigger or in the calendar), not when the user moved to an external
+    // focusable target.
+    const handleOpenChange = (next: boolean) => {
+      setOpen(next);
+      if (!next) {
+        queueMicrotask(() => {
+          const active = document.activeElement;
+          if (active == null || active === document.body || rootRef.current?.contains(active)) {
+            inputRef.current?.focus();
+          }
+        });
+      }
     };
 
     const trigger = (
@@ -148,7 +169,7 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
     );
 
     return (
-      <div className={cx(styles.root, className)}>
+      <div ref={rootRef} className={cx(styles.root, className)}>
         {showOwnLabel && label != null ? (
           <label id={labelId} className={styles.label} htmlFor={baseId}>
             {label}
@@ -162,9 +183,10 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
         ) : null}
         <Popover
           open={open}
-          onOpenChange={setOpen}
+          onOpenChange={handleOpenChange}
           placement="bottom-start"
           role="dialog"
+          aria-label="Choose date"
           trigger={trigger}
         >
           <div id={calendarId} className={styles.popover}>

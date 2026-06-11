@@ -4,6 +4,7 @@ import { Popover } from '../Popover';
 import type { PopoverPlacement } from '../Popover';
 import { composeEventHandlers, mergeRefs, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useOptionalFieldContext } from '../FormField';
 import styles from './Menu.module.css';
 
 /**
@@ -53,6 +54,12 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
 ) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+
+  // The trigger is a `aria-haspopup="menu"` button wrapper that a FormField's
+  // `<label htmlFor>` cannot target, so when wrapped in a <FormField> we wire the
+  // group-style association (aria-labelledby/describedby/invalid/required) plus
+  // the field id. Standalone (no field context) this is a no-op.
+  const field = useOptionalFieldContext();
 
   const menuId = useId('menu');
   const itemId = (i: number) => `${menuId}-item-${i}`;
@@ -187,6 +194,18 @@ export const Menu = /* @__PURE__ */ forwardRef<HTMLElement, MenuProps>(function 
     'aria-haspopup': 'menu',
     'aria-expanded': open,
     'aria-controls': open ? menuId : undefined,
+    // FormField association: the trigger is a button wrapper, so use the group
+    // attributes (aria-labelledby points at the field label). Without a field
+    // context these stay undefined and the trigger keeps its own props.
+    ...(field
+      ? {
+          id: field.id,
+          'aria-labelledby': field.labelId,
+          'aria-describedby': field.describedById,
+          'aria-invalid': field.invalid || undefined,
+          'aria-required': field.required || undefined,
+        }
+      : null),
     onClick: composeEventHandlers(typedTrigger.props.onClick, () => setOpen((o) => !o)),
     onKeyDown: composeEventHandlers(typedTrigger.props.onKeyDown, onTriggerKeyDown),
   } as HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });

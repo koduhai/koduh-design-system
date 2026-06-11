@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Switch } from './Switch';
+import { FormField } from '../FormField';
 
 describe('Switch', () => {
   it('renders a switch role with its label', () => {
@@ -29,5 +30,52 @@ describe('Switch', () => {
     const ref = { current: null as HTMLInputElement | null };
     render(<Switch label="X" ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+
+  it('inside <FormField>, associates the description via aria-describedby', () => {
+    render(
+      <FormField label="Notifications" helperText="Send me emails">
+        <Switch />
+      </FormField>,
+    );
+    const sw = screen.getByRole('switch') as HTMLInputElement;
+    const describedById = sw.getAttribute('aria-describedby');
+    expect(describedById).toBeTruthy();
+    expect(document.getElementById(describedById as string)).toHaveTextContent('Send me emails');
+  });
+
+  it('inside <FormField required>, forwards required + aria-required to the input', () => {
+    render(
+      <FormField label="Notifications" required>
+        <Switch />
+      </FormField>,
+    );
+    const sw = screen.getByRole('switch') as HTMLInputElement;
+    expect(sw.required).toBe(true);
+    expect(sw).toHaveAttribute('aria-required', 'true');
+  });
+
+  it('inside <FormField error>, reflects aria-invalid', () => {
+    render(
+      <FormField label="Notifications" error errorText="Required">
+        <Switch />
+      </FormField>,
+    );
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('standalone: no field-driven aria-describedby/required by default', () => {
+    render(<Switch label="Wi-Fi" />);
+    const sw = screen.getByRole('switch') as HTMLInputElement;
+    expect(sw).not.toHaveAttribute('aria-describedby');
+    expect(sw).not.toHaveAttribute('aria-required');
+    expect(sw.required).toBe(false);
+  });
+
+  it('standalone: forwards its own required prop', () => {
+    render(<Switch label="Wi-Fi" required />);
+    const sw = screen.getByRole('switch') as HTMLInputElement;
+    expect(sw.required).toBe(true);
+    expect(sw).toHaveAttribute('aria-required', 'true');
   });
 });

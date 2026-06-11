@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { ColorPicker } from './ColorPicker';
+import { FormField } from '../FormField';
 
 describe('ColorPicker', () => {
   it('shows the current hex and emits onChange from the hex input', async () => {
@@ -69,5 +70,29 @@ describe('ColorPicker', () => {
   it('forwards className to the root', () => {
     const { container } = render(<ColorPicker value="#1B5FCC" className="x" />);
     expect(container.firstElementChild).toHaveClass('x');
+  });
+  it('associates a standalone label with the group', () => {
+    render(<ColorPicker value="#1B5FCC" label="Brand" />);
+    const group = screen.getByRole('group', { name: 'Brand' });
+    expect(group).toBeInTheDocument();
+  });
+  it('honors an enclosing FormField for label/description/required', () => {
+    render(
+      <FormField label="Theme color" helperText="Pick one" required>
+        <ColorPicker value="#1B5FCC" />
+      </FormField>,
+    );
+    const group = screen.getByRole('group', { name: 'Theme color' });
+    expect(group).toHaveAccessibleDescription('Pick one');
+    expect(group).toHaveAttribute('aria-required', 'true');
+  });
+  it('exposes the saturation/brightness square with ARIA slider values', () => {
+    render(<ColorPicker value="#1B5FCC" />);
+    const sv = screen.getByRole('slider', { name: /saturation/i });
+    expect(sv).toHaveAttribute('aria-valuemin', '0');
+    expect(sv).toHaveAttribute('aria-valuemax', '100');
+    expect(sv).toHaveAttribute('aria-valuenow');
+    expect(sv).toHaveAttribute('aria-valuetext', expect.stringMatching(/saturation/i));
+    expect(sv).toHaveAttribute('aria-valuetext', expect.stringMatching(/#1B5FCC/i));
   });
 });

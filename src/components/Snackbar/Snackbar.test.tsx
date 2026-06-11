@@ -113,6 +113,29 @@ describe('Snackbar', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
+  it('keeps the live region in the accessibility tree while closed so opening is announced', () => {
+    // The aria-live container must persist (not display:none) so that inserting
+    // the message on open is announced. While closed it stays present but empty.
+    const { rerender } = render(
+      <Snackbar open={false} onOpenChange={() => {}} severity="success">
+        Saved
+      </Snackbar>,
+    );
+    const region = screen.getByRole('status');
+    expect(region).toBeInTheDocument();
+    // Closed: the message (and its chrome) is not yet inserted into the region.
+    expect(region).not.toHaveTextContent('Saved');
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+
+    rerender(
+      <Snackbar open onOpenChange={() => {}} severity="success">
+        Saved
+      </Snackbar>,
+    );
+    // Opening inserts the content into the already-present region.
+    expect(screen.getByRole('status')).toHaveTextContent('Saved');
+  });
+
   it('renders an action when provided', () => {
     render(
       <Snackbar open onOpenChange={() => {}} action={<button>Undo</button>}>

@@ -3,6 +3,7 @@ import { Dialog } from './Dialog';
 import type { DialogProps } from './Dialog';
 import { Button } from '../Button';
 import { LoadingButton } from '../LoadingButton';
+import { useId } from '../../primitives';
 import type { ReactNode } from 'react';
 import styles from './Dialog.module.css';
 
@@ -56,6 +57,9 @@ export function ConfirmDialog({
   initialFocus,
 }: ConfirmDialogProps) {
   const confirmRef = useRef<HTMLButtonElement>(null);
+  // Associate the description with the dialog via aria-describedby (only when a
+  // description is actually rendered).
+  const descriptionId = useId('confirm-dialog-description');
   // Providing `confirmLoading` (even as false) opts into managed mode: the
   // consumer owns closing, so confirm doesn't auto-close.
   const managed = confirmLoading !== undefined;
@@ -80,6 +84,7 @@ export function ConfirmDialog({
       // the browser's dialog.close() and the React `open` guard in requestClose
       // leaves the component stuck closed (open stays true, never re-shown).
       dismissable={!confirmLoading}
+      aria-describedby={description ? descriptionId : undefined}
       initialFocus={initialFocus ?? confirmRef}
       footer={
         <>
@@ -104,7 +109,11 @@ export function ConfirmDialog({
         </>
       }
     >
-      {description ? <p className={styles.description}>{description}</p> : null}
+      {description ? (
+        <p id={descriptionId} className={styles.description}>
+          {description}
+        </p>
+      ) : null}
     </Dialog>
   );
 }

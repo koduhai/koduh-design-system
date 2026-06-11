@@ -7,7 +7,7 @@ import type {
   SyntheticEvent,
 } from 'react';
 import { Chip } from '../Chip';
-import { useControllableState, useId } from '../../primitives';
+import { useControllableState, useId, VisuallyHidden } from '../../primitives';
 import { useOptionalFieldContext } from '../FormField';
 import { cx } from '../../utils/cx';
 import styles from './TagInput.module.css';
@@ -81,6 +81,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
     const bound = value === undefined ? field?.binding : undefined;
     const currentValue = bound ? (bound.value as string[]) : tags;
     const [draft, setDraft] = useState('');
+    const [announcement, setAnnouncement] = useState('');
 
     const addTag = (raw: string, event?: SyntheticEvent) => {
       const t = raw.trim();
@@ -88,13 +89,18 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
       if (!allowDuplicates && currentValue.includes(t)) return;
       if (max != null && currentValue.length >= max) return;
       const next = [...currentValue, t];
-      if (bound) bound.onChange(next, event); else setTags(next);
+      if (bound) bound.onChange(next, event);
+      else setTags(next);
       onChange?.(next, event);
+      setAnnouncement(`${t} added`);
     };
     const removeAt = (i: number, event?: SyntheticEvent) => {
+      const removed = currentValue[i];
       const next = currentValue.filter((_, idx) => idx !== i);
-      if (bound) bound.onChange(next, event); else setTags(next);
+      if (bound) bound.onChange(next, event);
+      else setTags(next);
       onChange?.(next, event);
+      if (removed != null) setAnnouncement(`${removed} removed`);
     };
 
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -102,8 +108,8 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
         e.preventDefault();
         addTag(draft, e);
         setDraft('');
-      } else if (e.key === 'Backspace' && draft === '' && tags.length > 0) {
-        removeAt(tags.length - 1, e);
+      } else if (e.key === 'Backspace' && draft === '' && currentValue.length > 0) {
+        removeAt(currentValue.length - 1, e);
       }
     };
 
@@ -152,6 +158,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
             onBlur={handleBlur}
           />
         </div>
+        <VisuallyHidden aria-live="polite">{announcement}</VisuallyHidden>
         {showOwnLabel && description != null ? (
           <p id={descriptionId} className={styles.description}>
             {description}

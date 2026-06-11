@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { Popconfirm } from './Popconfirm';
+import { FormField } from '../FormField';
 
 describe('Popconfirm', () => {
   it('opens from the trigger, confirms, and closes', async () => {
@@ -43,6 +44,45 @@ describe('Popconfirm', () => {
     // Confirming closes the panel and returns focus to the opener.
     await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
     expect(trigger).toHaveFocus();
+  });
+
+  it('labels the dialog from title when given', async () => {
+    render(
+      <Popconfirm trigger={<button>Delete</button>} title="Delete item?" onConfirm={() => {}}>
+        Are you sure?
+      </Popconfirm>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    expect(screen.getByRole('dialog', { name: 'Delete item?' })).toBeInTheDocument();
+  });
+
+  it('falls back to a default accessible name when title is omitted', async () => {
+    render(
+      <Popconfirm trigger={<button>Delete</button>} onConfirm={() => {}}>
+        Are you sure?
+      </Popconfirm>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    // No title, no field context: the role="dialog" still has an accessible name.
+    expect(screen.getByRole('dialog', { name: 'Confirm action' })).toBeInTheDocument();
+  });
+
+  it('inside FormField: dialog wires id + aria from the field context', async () => {
+    render(
+      <FormField label="Danger zone" required error errorText="Bad" id="dz">
+        <Popconfirm trigger={<button>Delete</button>} onConfirm={() => {}}>
+          Are you sure?
+        </Popconfirm>
+      </FormField>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('id', 'dz');
+    // Group control: labelled by the field's label, not by htmlFor.
+    expect(dialog).toHaveAccessibleName('Danger zone');
+    expect(dialog).toHaveAttribute('aria-describedby', screen.getByText('Bad').id);
+    expect(dialog).toHaveAttribute('aria-invalid', 'true');
+    expect(dialog).toHaveAttribute('aria-required', 'true');
   });
 
   it('traps Tab within the dialog', async () => {

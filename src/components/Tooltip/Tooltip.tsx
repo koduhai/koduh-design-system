@@ -1,5 +1,5 @@
 import { cloneElement, forwardRef, useEffect, useRef, useState } from 'react';
-import type { HTMLAttributes, KeyboardEvent, ReactElement, ReactNode } from 'react';
+import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
 import { Popover } from '../Popover';
 import type { PopoverPlacement } from '../Popover';
 import { useId, composeEventHandlers } from '../../primitives';
@@ -84,6 +84,20 @@ export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(
     };
   }, []);
 
+  // WCAG 1.4.13 (Content on Hover or Focus): the tooltip must be dismissable
+  // without moving the pointer/focus. A hover-opened tooltip leaves the trigger
+  // unfocused, so a trigger-level keydown never fires; listen on the document
+  // while open instead. This only hides the tooltip (close()), so re-hovering or
+  // re-focusing the trigger opens it again (no permanent suppression).
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
+
   // Fix 2: Compose our handlers with the child's existing handlers so consumers don't lose theirs.
   const trigger = cloneElement(children, {
     'aria-describedby': open ? tooltipId : undefined,
@@ -92,9 +106,6 @@ export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(
     onMouseLeave: composeEventHandlers(children.props.onMouseLeave, scheduleClose),
     onFocus: composeEventHandlers(children.props.onFocus, scheduleOpen),
     onBlur: composeEventHandlers(children.props.onBlur, close),
-    onKeyDown: composeEventHandlers(children.props.onKeyDown, (e: KeyboardEvent<HTMLElement>) => {
-      if (e.key === 'Escape') close();
-    }),
   });
 
   return (

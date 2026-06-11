@@ -1,11 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-// Browser-only interaction tests for behavior jsdom cannot exercise (audit
-// follow-up #65). The unit suite asserts the mechanism; these confirm it in real
-// Chromium, where the two High audit fixes actually matter:
+// The cross-browser e2e suite (#65 + #40). These run on Chromium, WebKit, AND
+// Firefox (see playwright.config.ts projects) because they cover behavior that is
+// engine-specific and jsdom can't exercise:
 //  - NumberField uses type="text" because a number input sanitizes its value,
 //    which would destroy the raw-text buffer (intermediate/trailing decimals).
 //  - ConfirmDialog blocks the native <dialog> cancel (Esc) while confirmLoading.
+//  - Overlay positioning (#34): WebKit/Firefox lack CSS anchor positioning, so
+//    they exercise the JS positioning fallback that Chromium never runs.
 
 function storyUrl(storyId: string, theme = 'dark'): string {
   return `/iframe.html?id=${storyId}&viewMode=story&globals=theme:${theme}`;
@@ -41,4 +43,27 @@ test('ConfirmDialog cannot be dismissed with Esc while confirmLoading', async ({
   // while loading; the dialog must stay open (the bug left it stuck closed).
   await page.keyboard.press('Escape');
   await expect(dialog).toBeVisible();
+});
+
+test('an opened overlay is anchored to its trigger, not the viewport origin (#34)', async ({
+  page,
+}) => {
+  // Exercises the JS positioning fallback on WebKit/Firefox (no CSS anchor
+  // positioning there). The #34 bug pinned the overlay to the viewport top-left.
+  await gotoStory(page, 'components-select--showcase');
+  const trigger = page.locator('#storybook-root button').first();
+  await trigger.click();
+  const listbox = page.locator('[role="listbox"]').first();
+  await listbox.waitFor();
+  const t = await trigger.boundingBox();
+  const l = await listbox.boundingBox();
+  expect(t, 'trigger has a bounding box').not.toBeNull();
+  expect(l, 'listbox has a bounding box').not.toBeNull();
+  if (t && l) {
+    // Anchored bottom placement: the listbox sits at/below the trigger and shares
+    // its horizontal range. A viewport-origin overlay (the #34 break) does neither.
+    expect(l.y).toBeGreaterThanOrEqual(t.y - 1);
+    expect(l.x).toBeLessThan(t.x + t.width);
+    expect(t.x).toBeLessThan(l.x + l.width);
+  }
 });

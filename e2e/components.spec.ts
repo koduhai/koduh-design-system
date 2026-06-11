@@ -163,22 +163,5 @@ for (const component of COMPONENTS) {
   }
 }
 
-// Regression guard for #34: an invalid position-area (physical + logical keyword
-// mix) computed to `none`, so the overlay fell back to inset:0 and rendered at
-// the viewport top-left instead of anchored to its trigger. Assert an opened
-// Select's listbox starts at/below its trigger, not pinned to the origin.
-test('open overlay is anchored to its trigger, not the viewport origin (#34)', async ({ page }) => {
-  await gotoStory(page, 'components-select--showcase', 'dark');
-  const trigger = page.locator('#storybook-root button').first();
-  await trigger.click();
-  const listbox = page.locator('[role="listbox"]').first();
-  await listbox.waitFor();
-  const t = await trigger.boundingBox();
-  const l = await listbox.boundingBox();
-  expect(t, 'trigger has a bounding box').not.toBeNull();
-  expect(l, 'listbox has a bounding box').not.toBeNull();
-  if (t && l) {
-    // Broken state: l.y === 0 (pinned to top). Valid bottom placement: l.y ≈ trigger bottom.
-    expect(l.y).toBeGreaterThanOrEqual(t.y - 1);
-  }
-});
+// The #34 overlay-anchoring regression guard now lives in interactions.spec.ts so
+// it runs cross-browser (WebKit/Firefox exercise the JS positioning fallback).

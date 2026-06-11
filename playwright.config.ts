@@ -14,7 +14,26 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:6006',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    // Chromium runs the whole suite (axe + visual snapshots + interactions).
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    // The overlay JS-positioning fallback (Popover/Select/Menu/Tooltip) only runs
+    // on engines WITHOUT CSS anchor positioning, so it is untested by Chromium
+    // alone (this was the #34 class of bug). Cover it on WebKit + Firefox, but only
+    // for the cross-browser interaction/positioning spec: axe is engine-agnostic
+    // and the visual snapshots are Chromium-linux baselines, so those stay
+    // Chromium-only.
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      testMatch: '**/interactions.spec.ts',
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+      testMatch: '**/interactions.spec.ts',
+    },
+  ],
   webServer: {
     command: 'npm run storybook -- --ci --quiet',
     url: 'http://localhost:6006',

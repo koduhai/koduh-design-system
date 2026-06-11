@@ -41,6 +41,23 @@ describe('status foreground tokens meet WCAG AA as text', () => {
   }
 });
 
+describe('bgSelected is a perceptible selected fill that stays legible', () => {
+  // A selected/placeholder fill must be visibly different from the page surface,
+  // or it collapses to the background (the bgRaised === bgDefault trap in the
+  // light theme). 1.04:1 is a small but perceptible surface boundary.
+  const PERCEPTIBLE = 1.04;
+  for (const mode of modes) {
+    it(`${mode}: bgSelected differs perceptibly from bgDefault`, () => {
+      const color = themes[mode].color;
+      expect(contrast(color.bgSelected, color.bgDefault)).toBeGreaterThanOrEqual(PERCEPTIBLE);
+    });
+    it(`${mode}: textPrimary on bgSelected >= ${AA_NORMAL}:1`, () => {
+      const color = themes[mode].color;
+      expect(contrast(color.textPrimary, color.bgSelected)).toBeGreaterThanOrEqual(AA_NORMAL);
+    });
+  }
+});
+
 describe('solid tonal fills are AA against their contrast text', () => {
   // Chip/Button solid variants render <tone> as the fill with bgDefault as text.
   for (const mode of modes) {

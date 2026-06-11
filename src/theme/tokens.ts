@@ -142,6 +142,11 @@ export const themes = {
       bgDefault: '#0A0E1A',
       bgSurface: '#141A2A',
       bgRaised: '#1C2438',
+      // Filled surface for selected/hover list rows. Kept perceptibly distinct
+      // from bgDefault in BOTH themes (guarded in contrast.test.ts) so a fill on
+      // the page never collapses to the page color (in the light theme bgRaised
+      // equals bgDefault, which a highlight must not rely on).
+      bgSelected: '#232C42',
       border: '#2A3346',
       textPrimary: '#F5F7FA',
       textSecondary: '#A8B2C4',
@@ -179,6 +184,9 @@ export const themes = {
       bgDefault: '#FFFFFF',
       bgSurface: '#F4F6FA',
       bgRaised: '#FFFFFF',
+      // See dark theme: a selected-fill that stays visible on the white page even
+      // though bgRaised is also white here.
+      bgSelected: '#E8EDF5',
       border: '#D4DAE5',
       textPrimary: '#10141F',
       textSecondary: '#4A5468',

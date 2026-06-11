@@ -1,9 +1,15 @@
-import { forwardRef, useRef, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { InputHTMLAttributes, KeyboardEvent, ReactNode, SyntheticEvent } from 'react';
 import { Popover } from '../Popover';
 import { useOptionalFieldContext } from '../FormField';
 import { CloseIcon } from '../../icons';
-import { composeEventHandlers, useControllableState, useId, mergeRefs } from '../../primitives';
+import {
+  composeEventHandlers,
+  useAnnouncer,
+  useControllableState,
+  useId,
+  mergeRefs,
+} from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './Combobox.module.css';
 
@@ -146,6 +152,15 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
 
     const filtered =
       query.trim() === '' && !open ? options : options.filter((o) => filter(o, query));
+
+    // Announce the live result count while the listbox is open, so screen-reader
+    // users hear how many options match as they type (imperative, fire-and-forget).
+    const announce = useAnnouncer();
+    useEffect(() => {
+      if (!open) return;
+      const n = filtered.length;
+      announce(n === 0 ? 'No results' : `${n} result${n === 1 ? '' : 's'} available`);
+    }, [filtered.length, open, announce]);
 
     const choose = (opt: ComboboxOption, event: SyntheticEvent) => {
       if (opt.disabled) return;

@@ -48,7 +48,7 @@ jobs:
         run: npm run verify:exports
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit firefox
 
       # Run the FULL e2e suite: axe a11y (both themes), visual regression against
       # the committed Linux baselines (e2e/components.spec.ts-snapshots/*-linux.png;

@@ -5,3 +5,7 @@ export { useControllableState } from './useControllableState';
 export { Slot } from './Slot';
 export type { SlotProps } from './Slot';
 export { VisuallyHidden } from './VisuallyHidden';
+export { LiveRegion } from './LiveRegion';
+export type { LiveRegionProps, LiveRegionPoliteness } from './LiveRegion';
+export { useAnnouncer, announce } from './useAnnouncer';
+export type { AnnouncerPoliteness } from './useAnnouncer';

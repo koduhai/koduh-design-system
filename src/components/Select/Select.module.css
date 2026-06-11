@@ -37,7 +37,7 @@
 [data-density='compact'] .trigger {
   padding: var(--ku-density-control-padding-y) var(--ku-density-control-padding-x);
 }
-.trigger[aria-invalid='true'] {
+.trigger[data-error='true'] {
   border-color: var(--ku-color-danger);
 }
 .trigger:disabled {

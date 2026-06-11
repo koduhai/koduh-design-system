@@ -43,6 +43,7 @@ export const HoverCard = /* @__PURE__ */ forwardRef<HTMLDivElement, HoverCardPro
       openDelay = 300,
       closeDelay = 150,
       className,
+      id: consumerId,
       onMouseEnter: panelMouseEnter,
       onMouseLeave: panelMouseLeave,
       ...rest
@@ -100,7 +101,10 @@ export const HoverCard = /* @__PURE__ */ forwardRef<HTMLDivElement, HoverCardPro
     }, []);
 
     // Compose our handlers with the child's existing handlers so consumers keep theirs.
+    // A consumer-passed `id` lands on the trigger (its own element), so it cannot
+    // clobber the internal `cardId` that wires the trigger <-> card aria linkage.
     const triggerEl = cloneElement(trigger, {
+      id: consumerId ?? trigger.props.id,
       'aria-describedby': open ? cardId : undefined,
       'aria-details': open ? cardId : undefined,
       onMouseEnter: composeEventHandlers(trigger.props.onMouseEnter, scheduleOpen),
@@ -119,12 +123,14 @@ export const HoverCard = /* @__PURE__ */ forwardRef<HTMLDivElement, HoverCardPro
         onOpenChange={setOpen}
         dismissable={false}
         placement={placement}
-        id={cardId}
         trigger={triggerEl}
         className={cx(styles.root, className)}
         onMouseEnter={composeEventHandlers(panelMouseEnter, onPanelEnter)}
         onMouseLeave={composeEventHandlers(panelMouseLeave, onPanelLeave)}
         {...rest}
+        // The card's own id wires the trigger <-> card aria linkage; keep it last
+        // so nothing spread in `rest` can override it.
+        id={cardId}
       >
         {children}
       </Popover>

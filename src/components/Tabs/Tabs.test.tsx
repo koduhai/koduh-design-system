@@ -34,6 +34,21 @@ describe('Tabs', () => {
     expect(screen.getByRole('tab', { name: 'Three' })).toHaveAttribute('aria-selected', 'true');
   });
 
+  it('keeps a focusable entry point when the selected tab is disabled', () => {
+    const disabledSelectedItems = [
+      { id: 'one', label: 'One', content: 'Panel One', disabled: true },
+      { id: 'two', label: 'Two', content: 'Panel Two' },
+      { id: 'three', label: 'Three', content: 'Panel Three' },
+    ];
+    // Force the disabled tab to be the selected one via the controlled value.
+    render(<Tabs items={disabledSelectedItems} value="one" />);
+    // The disabled selected tab must not be the roving entry point...
+    expect(screen.getByRole('tab', { name: 'One' })).toHaveAttribute('tabindex', '-1');
+    // ...the first enabled tab carries tabindex 0 so Tab can still reach the list.
+    expect(screen.getByRole('tab', { name: 'Two' })).toHaveAttribute('tabindex', '0');
+    expect(screen.getByRole('tab', { name: 'Three' })).toHaveAttribute('tabindex', '-1');
+  });
+
   it('controlled: respects value and calls onChange', async () => {
     const onChange = vi.fn();
     render(<Tabs items={items} value="one" onChange={onChange} />);

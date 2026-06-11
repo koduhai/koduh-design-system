@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -90,6 +91,29 @@ describe('Combobox', () => {
     render(<Combobox label="C" options={opts} clearable defaultValue="us" onChange={onChange} />);
     await userEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
     expect(onChange).toHaveBeenLastCalledWith('', expect.anything());
+  });
+
+  it('resolves the selected label when options arrive async after the value', () => {
+    function Wrap() {
+      const [opts2, setOpts2] = useState<typeof options>([]);
+      return (
+        <>
+          <Combobox label="Country" options={opts2} value="ca" />
+          <button type="button" onClick={() => setOpts2(options)}>
+            load
+          </button>
+        </>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByRole('combobox');
+    // No options yet: the value's label cannot resolve, so the input is empty.
+    expect(input).toHaveValue('');
+    // Options arrive after the value was already set.
+    act(() => {
+      screen.getByRole('button', { name: 'load' }).click();
+    });
+    expect(input).toHaveValue('Canada');
   });
 
   describe('Combobox bound to a Form', () => {

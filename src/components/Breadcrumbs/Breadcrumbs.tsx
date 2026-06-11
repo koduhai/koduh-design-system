@@ -33,14 +33,22 @@ export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsPr
     let rendered: RenderItem[];
 
     if (maxItems != null && items.length > maxItems && maxItems >= 1) {
-      const tailCount = Math.max(0, maxItems - 2);
+      // Always keep the first item and the last (current) item, plus an
+      // ellipsis between them. Any remaining budget shows trailing items just
+      // before the last one. Clamped so a tiny maxItems still renders a
+      // coherent trail (first, ellipsis, last).
       // Guarded by items.length > maxItems >= 1, so items[0] is defined.
       const first = items[0]!;
-      const tail = tailCount > 0 ? items.slice(items.length - tailCount) : [];
+      const last = items[items.length - 1]!;
+      // Reserve two slots for first and last; the rest are trailing items.
+      const tailCount = Math.max(0, maxItems - 2);
+      // Slice the trailing items between the ellipsis and the last item.
+      const tail = tailCount > 0 ? items.slice(items.length - 1 - tailCount, items.length - 1) : [];
       rendered = [
         { kind: 'item', item: first },
         { kind: 'ellipsis' },
         ...tail.map((item): RenderItem => ({ kind: 'item', item })),
+        { kind: 'item', item: last },
       ];
     } else {
       rendered = items.map((item): RenderItem => ({ kind: 'item', item }));

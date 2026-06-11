@@ -99,6 +99,38 @@ describe('Tree', () => {
     expect(onSelect).toHaveBeenCalledWith('button');
   });
 
+  it('uncontrolled selection: updates aria-selected on click and still fires onSelect', async () => {
+    const onSelect = vi.fn();
+    render(<Tree nodes={nodes} defaultExpanded={['src']} onSelect={onSelect} />);
+    const child = screen.getByRole('treeitem', { name: 'Button.tsx' });
+    await userEvent.click(child);
+    expect(onSelect).toHaveBeenCalledWith('button');
+    // Uncontrolled: the component tracks selection itself.
+    expect(child).toHaveAttribute('aria-selected', 'true');
+    expect(child).toHaveAttribute('tabindex', '0');
+  });
+
+  it('uncontrolled selection: seeds from defaultSelectedId', () => {
+    render(<Tree nodes={nodes} defaultExpanded={['src']} defaultSelectedId="tree" />);
+    const selected = screen.getByRole('treeitem', { name: 'Tree.tsx' });
+    expect(selected).toHaveAttribute('aria-selected', 'true');
+    expect(selected).toHaveAttribute('tabindex', '0');
+  });
+
+  it('controlled selection: aria-selected does not move until selectedId prop changes', async () => {
+    const onSelect = vi.fn();
+    render(<Tree nodes={nodes} defaultExpanded={['src']} selectedId="tree" onSelect={onSelect} />);
+    const button = screen.getByRole('treeitem', { name: 'Button.tsx' });
+    await userEvent.click(button);
+    expect(onSelect).toHaveBeenCalledWith('button');
+    // Controlled: selection stays on the prop value until the parent updates it.
+    expect(button).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByRole('treeitem', { name: 'Tree.tsx' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+  });
+
   it('reflects controlled selectedId via aria-selected and makes it the tab entry point', () => {
     render(<Tree nodes={nodes} defaultExpanded={['src']} selectedId="tree" />);
     const selected = screen.getByRole('treeitem', { name: 'Tree.tsx' });

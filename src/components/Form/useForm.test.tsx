@@ -75,10 +75,15 @@ describe('useForm', () => {
   });
 
   it('resolver error wins over a field-level error on the same field', async () => {
-    const resolver = vi.fn(async (v: Record<string, unknown>) => ({ values: v, errors: { a: 'from resolver' } }));
+    const resolver = vi.fn(async (v: Record<string, unknown>) => ({
+      values: v,
+      errors: { a: 'from resolver' },
+    }));
     const { result } = renderHook(() => useForm({ resolver }));
     act(() => result.current.register('a', { validate: () => 'from field' }));
-    await act(async () => { await result.current.handleSubmit(vi.fn())(); });
+    await act(async () => {
+      await result.current.handleSubmit(vi.fn())();
+    });
     expect(result.current.getFieldState('a').error).toBe('from resolver');
   });
 
@@ -88,7 +93,9 @@ describe('useForm', () => {
       errors: ((v.a as number) > 0 ? {} : { a: 'positive' }) as Record<string, string>,
     }));
     const { result } = renderHook(() => useForm({ mode: 'onChange', resolver }));
-    await act(async () => { result.current.setValue('a', -1); });
+    await act(async () => {
+      result.current.setValue('a', -1);
+    });
     await waitFor(() => expect(result.current.getFieldState('a').error).toBe('positive'));
   });
 
@@ -106,19 +113,43 @@ describe('useForm', () => {
     expect(after.value).toBe(1);
   });
 
+  it('unregister clears the field error/touched/dirty so no stale state remains', () => {
+    const { result } = renderHook(() => useForm({ defaultValues: { a: 1 } }));
+    act(() => {
+      result.current.register('a');
+      result.current.setValue('a', 2); // dirty
+      result.current.setError('a', 'bad');
+      result.current.setTouched('a');
+    });
+    expect(result.current.getFieldState('a').error).toBe('bad');
+    expect(result.current.getFieldState('a').touched).toBe(true);
+    expect(result.current.getFieldState('a').dirty).toBe(true);
+
+    act(() => result.current.unregister('a'));
+    const after = result.current.getFieldState('a');
+    expect(after.error).toBeUndefined();
+    expect(after.touched).toBe(false);
+    expect(after.dirty).toBe(false);
+    // Value is intentionally retained across unregister.
+    expect(after.value).toBe(2);
+  });
+
   it('handleSubmit ignores a concurrent submit while already submitting', async () => {
     let resolve!: () => void;
     const onValid = vi.fn(
-      () => new Promise<void>((r) => { resolve = () => r(); }),
+      () =>
+        new Promise<void>((r) => {
+          resolve = () => r();
+        }),
     );
     const { result } = renderHook(() => useForm({ defaultValues: { a: 1 } }));
     const submit = result.current.handleSubmit(onValid);
     await act(async () => {
-      void submit();            // first submit — hangs in onValid
+      void submit(); // first submit — hangs in onValid
       await Promise.resolve();
-      void submit();            // second submit — should be ignored
+      void submit(); // second submit — should be ignored
       await Promise.resolve();
-      resolve();                // let the first finish
+      resolve(); // let the first finish
     });
     expect(onValid).toHaveBeenCalledTimes(1);
   });

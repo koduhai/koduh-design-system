@@ -25,6 +25,25 @@ describe('SplitButton', () => {
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Save as…' }));
     expect(onSelect).toHaveBeenCalledOnce();
   });
+  it('forwards id, data-*, className, and ref to the root cluster', () => {
+    const ref = vi.fn();
+    render(
+      <SplitButton
+        ref={ref}
+        id="split-1"
+        data-testid="cluster"
+        className="custom"
+        onClick={() => {}}
+        items={[]}
+      >
+        Save
+      </SplitButton>,
+    );
+    const root = screen.getByTestId('cluster');
+    expect(root).toHaveAttribute('id', 'split-1');
+    expect(root).toHaveClass('custom');
+    expect(ref).toHaveBeenCalledWith(root);
+  });
   it('disables both buttons when disabled', () => {
     render(
       <SplitButton disabled onClick={() => {}} items={[]}>

@@ -103,6 +103,16 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
     return acc;
   }, []);
 
+  // Roving-tabindex entry point: the tab that carries tabindex 0 (the rest are
+  // -1). Normally that is the selected tab, but if the selected tab is disabled
+  // it cannot be a keyboard entry point, so fall back to the first enabled tab.
+  // This keeps the tablist reachable by Tab as long as any tab is enabled.
+  const selectedItem = items.find((item) => item.id === selected);
+  const tabStopId =
+    selectedItem && !selectedItem.disabled
+      ? selected
+      : (items.find((item) => !item.disabled)?.id ?? undefined);
+
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const nextKey = orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
     const prevKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
@@ -159,7 +169,7 @@ export const Tabs = /* @__PURE__ */ forwardRef<HTMLDivElement, TabsProps>(functi
               className={styles.tab}
               aria-selected={isSelected}
               aria-controls={panelId(item.id)}
-              tabIndex={isSelected ? 0 : -1}
+              tabIndex={item.id === tabStopId ? 0 : -1}
               disabled={item.disabled}
               data-selected={isSelected ? 'true' : undefined}
               onClick={() => {

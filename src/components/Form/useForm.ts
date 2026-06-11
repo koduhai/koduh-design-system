@@ -121,13 +121,9 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
     let errors: FormErrors = {};
     for (const [name, rule] of rules) {
       const value = get(state.values, name);
-      const empty =
-        value == null ||
-        value === '' ||
-        (Array.isArray(value) && value.length === 0);
+      const empty = value == null || value === '' || (Array.isArray(value) && value.length === 0);
       if (rule.required && empty) {
-        errors[name] =
-          typeof rule.required === 'string' ? rule.required : 'This field is required';
+        errors[name] = typeof rule.required === 'string' ? rule.required : 'This field is required';
         continue;
       }
       if (rule.validate) {
@@ -145,8 +141,7 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
   async function maybeValidate(trigger: 'change' | 'blur') {
     const first = state.submitCount === 0;
     const should = first
-      ? (trigger === 'change' && mode === 'onChange') ||
-        (trigger === 'blur' && mode === 'onBlur')
+      ? (trigger === 'change' && mode === 'onChange') || (trigger === 'blur' && mode === 'onBlur')
       : (trigger === 'change' && reValidateMode === 'onChange') ||
         (trigger === 'blur' && reValidateMode === 'onBlur');
     if (!should) return;
@@ -205,6 +200,23 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
       registered.delete(name);
       rules.delete(name);
       ids.delete(name);
+      fieldCache.delete(name);
+      // Clear validation state so a removed (or remounted) field does not carry
+      // stale errors/touched/dirty. Value is intentionally retained: field arrays
+      // store their items under the array name (not per-field), and consumers may
+      // rely on values persisting across conditional unmounts.
+      const hasError = name in state.errors;
+      const hasTouched = name in state.touched;
+      const hasDirty = name in state.dirty;
+      if (hasError || hasTouched || hasDirty) {
+        const errors = { ...state.errors };
+        const touched = { ...state.touched };
+        const dirty = { ...state.dirty };
+        delete errors[name];
+        delete touched[name];
+        delete dirty[name];
+        setState({ errors, touched, dirty });
+      }
     },
     setFieldId(name, id) {
       if (id) ids.set(name, id);

@@ -136,4 +136,19 @@ describe('HoverCard', () => {
     setup({ 'data-testid': 'hc-panel' } as never);
     expect(screen.getByTestId('hc-panel')).toBeInTheDocument();
   });
+
+  it('keeps the aria linkage intact when a consumer passes an id', () => {
+    const trigger = setup({ id: 'consumer-id', openDelay: 0 });
+    act(() => {
+      fireEvent.focus(trigger);
+      vi.runAllTimers();
+    });
+    const card = screen.getByText('Koduhai').closest('[data-open]') as HTMLElement;
+    // The consumer id lands on the trigger, not on the card.
+    expect(trigger).toHaveAttribute('id', 'consumer-id');
+    expect(card.id).not.toBe('consumer-id');
+    // The internal card id still wires aria-describedby/aria-details.
+    expect(trigger).toHaveAttribute('aria-describedby', card.id);
+    expect(trigger).toHaveAttribute('aria-details', card.id);
+  });
 });

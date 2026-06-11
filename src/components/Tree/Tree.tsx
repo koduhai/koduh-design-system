@@ -26,7 +26,9 @@ export interface TreeProps extends Omit<
   expanded?: string[];
   /** Fires with the next set of expanded ids. */
   onExpandedChange?: (ids: string[]) => void;
-  /** Currently selected node id. */
+  /** Initially selected node id when uncontrolled. */
+  defaultSelectedId?: string;
+  /** Controlled selected node id. */
   selectedId?: string;
   /** Fires with a node id when it is selected. */
   onSelect?: (id: string) => void;
@@ -45,7 +47,17 @@ interface VisibleRow {
 }
 
 export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(function Tree(
-  { nodes, defaultExpanded, expanded, onExpandedChange, selectedId, onSelect, className, ...props },
+  {
+    nodes,
+    defaultExpanded,
+    expanded,
+    onExpandedChange,
+    defaultSelectedId,
+    selectedId,
+    onSelect,
+    className,
+    ...props
+  },
   ref,
 ) {
   const [expandedIds, setExpandedIds] = useControllableState<string[]>({
@@ -54,6 +66,14 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
     onChange: undefined,
   });
   const expandedSet = new Set(expandedIds);
+
+  // Selection follows the controlled/uncontrolled symmetry: pass selectedId to
+  // control it, defaultSelectedId to seed it, and onSelect fires either way.
+  const [selected, setSelected] = useControllableState<string | undefined>({
+    value: selectedId,
+    defaultValue: defaultSelectedId,
+    onChange: onSelect as ((value: string | undefined) => void) | undefined,
+  });
 
   const rowRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
 
@@ -76,7 +96,7 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
   };
 
   const select = (id: string) => {
-    onSelect?.(id);
+    setSelected(id);
   };
 
   // Flatten the currently-visible rows (roots + descendants of expanded parents),
@@ -97,9 +117,7 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
 
   // First visible row is the roving-tabindex entry point unless a selection exists.
   const tabbableId =
-    selectedId != null && visible.some((row) => row.id === selectedId)
-      ? selectedId
-      : visible[0]?.id;
+    selected != null && visible.some((row) => row.id === selected) ? selected : visible[0]?.id;
 
   const focusRow = (id: string | undefined) => {
     if (id == null) return;
@@ -168,7 +186,7 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
     return list.map((node) => {
       const hasChildren = Array.isArray(node.children) && node.children.length > 0;
       const isExpanded = hasChildren && expandedSet.has(node.id);
-      const isSelected = selectedId != null && node.id === selectedId;
+      const isSelected = selected != null && node.id === selected;
       const isTabbable = node.id === tabbableId;
       return (
         <li key={node.id} role="none" className={styles.item}>

@@ -2,6 +2,10 @@
 export { KoduhThemeProvider, useColorMode } from './provider';
 export type { KoduhThemeProviderProps, ColorModeContextValue } from './provider';
 
+// Internationalization (built-in UI strings + Intl locale)
+export { KoduhI18nProvider, useMessages, useLocale, defaultMessages, mergeMessages } from './i18n';
+export type { KoduhI18nProviderProps, Messages, PartialMessages } from './i18n';
+
 // Primitives (public utilities reused by component consumers)
 export {
   Slot,

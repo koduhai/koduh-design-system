@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { useControllableState, useId } from '../../primitives';
+import { useLocale } from '../../i18n';
 import { cx } from '../../utils/cx';
 import styles from './Calendar.module.css';
 
@@ -76,9 +77,15 @@ function firstEnabledDay(
 }
 
 export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps>(function Calendar(
-  { value, defaultValue, onChange, min, max, locale, className, ...props },
+  { value, defaultValue, onChange, min, max, locale: localeProp, className, ...props },
   ref,
 ) {
+  // Fall back to the i18n-provider locale when no explicit prop is given; the prop
+  // still wins. `undefined` lets `Intl` pick the host locale, preserving prior
+  // behavior. useLocale() is called unconditionally (the ?? is on the value, not
+  // the hook) to respect the rules of hooks.
+  const contextLocale = useLocale();
+  const locale = localeProp ?? contextLocale;
   const [selected, setSelected] = useControllableState<Date | undefined>({
     value,
     defaultValue,

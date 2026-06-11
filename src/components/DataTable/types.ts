@@ -122,7 +122,7 @@ export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>
   empty?: ReactNode | ((ctx: EmptyStateContext) => ReactNode);
   /**
    * Convenience slot shown specifically when a non-empty dataset is filtered or
-   * searched down to zero rows (e.g. "No matches — clear your filters"). Takes
+   * searched down to zero rows (e.g. "No matches, clear your filters"). Takes
    * precedence over `empty` in that case; the truly-empty-dataset case still
    * falls back to `empty`.
    */

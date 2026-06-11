@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Dialog, ConfirmDialog } from './';
+import { KoduhI18nProvider } from '../../i18n';
 
 beforeAll(() => {
   if (!HTMLDialogElement.prototype.showModal) {
@@ -124,6 +125,27 @@ describe('Dialog', () => {
       </Dialog>,
     );
     await waitFor(() => expect(screen.getByLabelText('target field')).toHaveFocus());
+  });
+
+  it('uses the catalog default "Close" for the close button with no provider', () => {
+    render(
+      <Dialog open onOpenChange={() => {}} title="Settings">
+        Body
+      </Dialog>,
+    );
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+  });
+
+  it('routes the close label through the i18n catalog override', () => {
+    render(
+      <KoduhI18nProvider messages={{ close: 'Fermer' }}>
+        <Dialog open onOpenChange={() => {}} title="Settings">
+          Body
+        </Dialog>
+      </KoduhI18nProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
   });
 });
 
@@ -268,6 +290,16 @@ describe('ConfirmDialog', () => {
     // and the dialog can't end up visually closed but logically open.
     expect(cancelEvent.defaultPrevented).toBe(true);
     expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('routes the embedded Dialog close label through the i18n catalog override', () => {
+    render(
+      <KoduhI18nProvider messages={{ close: 'Fermer' }}>
+        <ConfirmDialog open onOpenChange={() => {}} onConfirm={() => {}} title="Delete?" />
+      </KoduhI18nProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
   });
 
   it('lets the native cancel (Esc) through when not loading', () => {

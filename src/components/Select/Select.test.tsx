@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { Select } from './Select';
+import { KoduhI18nProvider } from '../../i18n';
 import { FormField } from '../FormField';
 import { Form } from '../Form/Form';
 import { useForm } from '../Form/useForm';
@@ -269,6 +270,33 @@ describe('Select', () => {
       fireEvent.click(screen.getByRole('option', { name: 'Banana' }));
       // form value updated
       expect(screen.getByTestId('v')).toHaveTextContent('"b"');
+    });
+  });
+
+  describe('i18n', () => {
+    it('uses the English default clear label with no provider', () => {
+      render(<Select label="Fruit" options={options} defaultValue="a" clearable />);
+      expect(screen.getByRole('button', { name: 'Clear selection' })).toBeInTheDocument();
+    });
+
+    it('flows a provider clearSelection override through to the clear button', () => {
+      render(
+        <KoduhI18nProvider messages={{ clearSelection: 'Effacer' }}>
+          <Select label="Fruit" options={options} defaultValue="a" clearable />
+        </KoduhI18nProvider>,
+      );
+      expect(screen.getByRole('button', { name: 'Effacer' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Clear selection' })).toBeNull();
+    });
+
+    it('lets the clearLabel prop override the provider', () => {
+      render(
+        <KoduhI18nProvider messages={{ clearSelection: 'Effacer' }}>
+          <Select label="Fruit" options={options} defaultValue="a" clearable clearLabel="Wipe it" />
+        </KoduhI18nProvider>,
+      );
+      expect(screen.getByRole('button', { name: 'Wipe it' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Effacer' })).toBeNull();
     });
   });
 

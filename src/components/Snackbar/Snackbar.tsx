@@ -2,6 +2,7 @@ import { forwardRef, useCallback, useEffect, useRef } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { InfoIcon, CheckIcon, WarningIcon, ErrorIcon, CloseIcon } from '../../icons';
 import { mergeRefs } from '../../primitives';
+import { useMessages } from '../../i18n';
 import { cx } from '../../utils/cx';
 import styles from './Snackbar.module.css';
 
@@ -50,6 +51,7 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
   },
   ref,
 ) {
+  const messages = useMessages();
   const innerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -166,7 +168,7 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
           <button
             type="button"
             className={styles.close}
-            aria-label="Close"
+            aria-label={messages.close}
             onClick={() => onOpenChange(false)}
           >
             <CloseIcon size={18} />

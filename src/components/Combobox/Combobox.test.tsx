@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, act, waitFor } from '@testing-library/react';
+import { render, screen, act, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Combobox } from './Combobox';
+import { KoduhI18nProvider } from '../../i18n';
 import { FormField } from '../FormField';
 import { Form } from '../Form/Form';
 import { useForm } from '../Form/useForm';
@@ -220,5 +221,83 @@ describe('Combobox result-count announcement', () => {
         '1 result available',
       ),
     );
+  });
+});
+
+describe('Combobox i18n', () => {
+  afterEach(() => {
+    document.getElementById('ku-announcer-polite')?.remove();
+  });
+
+  it('default (no provider): empty state, clear label, and count match prior strings', async () => {
+    render(<Combobox label="Country" options={options} clearable defaultValue="us" />);
+    const input = screen.getByRole('combobox');
+    // Default clear-button label.
+    expect(screen.getByRole('button', { name: 'Clear selection' })).toBeInTheDocument();
+    // Default empty-state text.
+    await userEvent.clear(input);
+    await userEvent.type(input, 'zzz');
+    // 'No results' renders in both the listbox empty state and the announcer.
+    const listbox = screen.getByRole('listbox');
+    expect(within(listbox).getByText('No results')).toBeInTheDocument();
+    // Default live count announcement.
+    await waitFor(() =>
+      expect(document.getElementById('ku-announcer-polite')).toHaveTextContent('No results'),
+    );
+  });
+
+  it('provider override flows through to empty state, clear label, and count', async () => {
+    render(
+      <KoduhI18nProvider
+        messages={{
+          clearSelection: 'Effacer',
+          combobox: {
+            noResults: 'Aucun résultat',
+            resultCount: (n) => (n === 0 ? 'Aucun résultat' : `${n} résultat(s)`),
+          },
+        }}
+      >
+        <Combobox label="Country" options={options} clearable defaultValue="us" />
+      </KoduhI18nProvider>,
+    );
+    const input = screen.getByRole('combobox');
+    expect(screen.getByRole('button', { name: 'Effacer' })).toBeInTheDocument();
+    await userEvent.clear(input);
+    await userEvent.type(input, 'united');
+    await waitFor(() =>
+      expect(document.getElementById('ku-announcer-polite')).toHaveTextContent('2 résultat(s)'),
+    );
+    await userEvent.clear(input);
+    await userEvent.type(input, 'zzz');
+    // 'Aucun résultat' renders both in the listbox empty state and the announcer
+    // live region, so scope the assertion to the listbox.
+    const listbox = screen.getByRole('listbox');
+    expect(within(listbox).getByText('Aucun résultat')).toBeInTheDocument();
+  });
+
+  it('per-component props still override the provider', async () => {
+    render(
+      <KoduhI18nProvider
+        messages={{
+          clearSelection: 'Effacer',
+          combobox: { noResults: 'Aucun résultat', resultCount: (n) => `${n}` },
+        }}
+      >
+        <Combobox
+          label="Country"
+          options={options}
+          clearable
+          defaultValue="us"
+          clearLabel="Wipe"
+          noResultsText="Nothing here"
+        />
+      </KoduhI18nProvider>,
+    );
+    const input = screen.getByRole('combobox');
+    expect(screen.getByRole('button', { name: 'Wipe' })).toBeInTheDocument();
+    await userEvent.clear(input);
+    await userEvent.type(input, 'zzz');
+    expect(screen.getByText('Nothing here')).toBeInTheDocument();
+    expect(screen.queryByText('Aucun résultat')).toBeNull();
   });
 });

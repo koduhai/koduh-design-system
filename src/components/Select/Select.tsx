@@ -4,6 +4,7 @@ import { Popover } from '../Popover';
 import { useOptionalFieldContext } from '../FormField';
 import { CloseIcon } from '../../icons';
 import { composeEventHandlers, useControllableState, useId, mergeRefs } from '../../primitives';
+import { useMessages } from '../../i18n';
 import { cx } from '../../utils/cx';
 import styles from './Select.module.css';
 
@@ -75,7 +76,10 @@ export interface SelectProps extends Omit<
    * so consumers no longer need a synthetic empty `{ label, value: '' }` option.
    */
   clearable?: boolean;
-  /** Accessible label for the clear button. Defaults to 'Clear selection'. */
+  /**
+   * Accessible label for the clear button. Overrides the i18n catalog's
+   * `clearSelection` (default 'Clear selection').
+   */
   clearLabel?: string;
   /** Class applied to the root wrapper. */
   className?: string;
@@ -100,7 +104,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     size = 'md',
     density,
     clearable,
-    clearLabel = 'Clear selection',
+    clearLabel,
     className,
     id,
     ...rest
@@ -109,6 +113,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
 ) {
   // When inside a <FormField>, defer label/required/aria to it; otherwise use own props.
   const field = useOptionalFieldContext();
+  const messages = useMessages();
   const description = error ? errorText : helperText;
   const [selected, setSelected] = useControllableState<string | undefined>({
     value,
@@ -375,7 +380,12 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
           </ul>
         </Popover>
         {clearable && selectedOption ? (
-          <button type="button" className={styles.clear} aria-label={clearLabel} onClick={clear}>
+          <button
+            type="button"
+            className={styles.clear}
+            aria-label={clearLabel ?? messages.clearSelection}
+            onClick={clear}
+          >
             <CloseIcon size={16} />
           </button>
         ) : null}

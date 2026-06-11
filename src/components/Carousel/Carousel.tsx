@@ -1,6 +1,7 @@
 import { forwardRef, useRef } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { mergeRefs, useControllableState, useId, LiveRegion } from '../../primitives';
+import { useMessages } from '../../i18n';
 import { cx } from '../../utils/cx';
 import { ChevronLeftIcon, ChevronRightIcon } from '../../icons';
 import styles from './Carousel.module.css';
@@ -28,9 +29,9 @@ export interface CarouselProps extends Omit<
   loop?: boolean;
   /** Accessible name for the carousel region. */
   'aria-label'?: string;
-  /** Label for the previous-slide control. Defaults to 'Previous slide'. */
+  /** Label for the previous-slide control. Defaults to the i18n catalog ('Previous slide'). */
   prevLabel?: string;
-  /** Label for the next-slide control. Defaults to 'Next slide'. */
+  /** Label for the next-slide control. Defaults to the i18n catalog ('Next slide'). */
   nextLabel?: string;
 }
 
@@ -42,8 +43,8 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
     index,
     onIndexChange,
     loop = false,
-    prevLabel = 'Previous slide',
-    nextLabel = 'Next slide',
+    prevLabel,
+    nextLabel,
     className,
     onKeyDown,
     tabIndex,
@@ -51,6 +52,7 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
   },
   ref,
 ) {
+  const messages = useMessages();
   const baseId = useId('carousel');
   const rootRef = useRef<HTMLDivElement>(null);
   const count = items.length;
@@ -100,13 +102,15 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
     <div
       ref={mergeRefs(ref, rootRef)}
       role="group"
-      aria-roledescription="carousel"
+      aria-roledescription={messages.carousel.region}
       className={cx(styles.root, className)}
       tabIndex={tabIndex ?? 0}
       onKeyDown={handleKeyDown}
       {...props}
     >
-      <LiveRegion>{count === 0 ? '' : `Slide ${safeActive + 1} of ${count}`}</LiveRegion>
+      <LiveRegion>
+        {count === 0 ? '' : messages.carousel.slideStatus(safeActive + 1, count)}
+      </LiveRegion>
 
       <div className={styles.viewport}>
         {items.map((item, i) => (
@@ -130,20 +134,20 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
         <button
           type="button"
           className={styles.nav}
-          aria-label={prevLabel}
+          aria-label={prevLabel ?? messages.carousel.previous}
           disabled={prevDisabled}
           onClick={() => goTo(safeActive - 1)}
         >
           <ChevronLeftIcon aria-hidden />
         </button>
 
-        <div className={styles.indicators} role="group" aria-label="Slides">
+        <div className={styles.indicators} role="group" aria-label={messages.carousel.label}>
           {items.map((item, i) => (
             <button
               key={item.id}
               type="button"
               className={styles.indicator}
-              aria-label={`Go to slide ${i + 1}`}
+              aria-label={messages.carousel.goToSlide(i + 1)}
               aria-current={i === safeActive ? 'true' : undefined}
               data-active={i === safeActive ? 'true' : undefined}
               aria-controls={slideId(i)}
@@ -155,7 +159,7 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
         <button
           type="button"
           className={styles.nav}
-          aria-label={nextLabel}
+          aria-label={nextLabel ?? messages.carousel.next}
           disabled={nextDisabled}
           onClick={() => goTo(safeActive + 1)}
         >

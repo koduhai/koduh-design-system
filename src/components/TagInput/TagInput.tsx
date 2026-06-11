@@ -7,7 +7,7 @@ import type {
   SyntheticEvent,
 } from 'react';
 import { Chip } from '../Chip';
-import { useControllableState, useId, VisuallyHidden } from '../../primitives';
+import { useControllableState, useId, LiveRegion } from '../../primitives';
 import { useOptionalFieldContext } from '../FormField';
 import { cx } from '../../utils/cx';
 import styles from './TagInput.module.css';
@@ -177,7 +177,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
             onBlur={handleBlur}
           />
         </div>
-        <VisuallyHidden aria-live="polite">{announcement}</VisuallyHidden>
+        <LiveRegion>{announcement}</LiveRegion>
         {showOwnLabel && description != null ? (
           <p id={descriptionId} className={styles.description}>
             {description}

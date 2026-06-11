@@ -1,6 +1,6 @@
 import { forwardRef, useRef } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
-import { mergeRefs, useControllableState, useId, VisuallyHidden } from '../../primitives';
+import { mergeRefs, useControllableState, useId, LiveRegion } from '../../primitives';
 import { cx } from '../../utils/cx';
 import { ChevronLeftIcon, ChevronRightIcon } from '../../icons';
 import styles from './Carousel.module.css';
@@ -106,9 +106,7 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
       onKeyDown={handleKeyDown}
       {...props}
     >
-      <VisuallyHidden aria-live="polite" aria-atomic="true">
-        {count === 0 ? '' : `Slide ${safeActive + 1} of ${count}`}
-      </VisuallyHidden>
+      <LiveRegion>{count === 0 ? '' : `Slide ${safeActive + 1} of ${count}`}</LiveRegion>
 
       <div className={styles.viewport}>
         {items.map((item, i) => (

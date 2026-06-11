@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Combobox } from './Combobox';
 import { FormField } from '../FormField';
@@ -197,5 +197,28 @@ describe('Combobox', () => {
       act(() => api.reset());
       expect(input).toHaveValue('United States');
     });
+  });
+});
+
+describe('Combobox result-count announcement', () => {
+  afterEach(() => {
+    document.getElementById('ku-announcer-polite')?.remove();
+  });
+
+  it('announces the live result count via the shared announcer as the list filters', async () => {
+    render(<Combobox label="Country" options={options} />);
+    const input = screen.getByRole('combobox');
+    await userEvent.type(input, 'united');
+    await waitFor(() =>
+      expect(document.getElementById('ku-announcer-polite')).toHaveTextContent(
+        '2 results available',
+      ),
+    );
+    await userEvent.type(input, ' kingdom');
+    await waitFor(() =>
+      expect(document.getElementById('ku-announcer-polite')).toHaveTextContent(
+        '1 result available',
+      ),
+    );
   });
 });

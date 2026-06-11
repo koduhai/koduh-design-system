@@ -6,12 +6,20 @@ export type { KoduhThemeProviderProps, ColorModeContextValue } from './provider'
 export {
   Slot,
   VisuallyHidden,
+  LiveRegion,
+  useAnnouncer,
+  announce,
   mergeRefs,
   composeEventHandlers,
   useId,
   useControllableState,
 } from './primitives';
-export type { SlotProps } from './primitives';
+export type {
+  SlotProps,
+  LiveRegionProps,
+  LiveRegionPoliteness,
+  AnnouncerPoliteness,
+} from './primitives';
 
 // Theme tokens
 export { tokens, themes, density } from './theme';

@@ -557,6 +557,63 @@ test('resize width does not drop below the column minWidth', async () => {
   expect(onColumnWidthsChange).toHaveBeenLastCalledWith({ name: 100 });
 });
 
+test('resize separator seeds aria-valuenow and aria-valuemin before any resize', () => {
+  render(
+    <DataTable
+      columns={[
+        { key: 'name', header: 'Name', width: '180px', minWidth: 100 },
+        { key: 'age', header: 'Age', type: 'number' },
+      ]}
+      data={data}
+      getRowId={(r) => r.id}
+      resizableColumns
+    />,
+  );
+  const nameHandle = screen.getByRole('separator', { name: 'Resize Name column' });
+  // Seeded from the configured px width, with the lower bound from minWidth.
+  expect(nameHandle).toHaveAttribute('aria-valuenow', '180');
+  expect(nameHandle).toHaveAttribute('aria-valuemin', '100');
+  // A column without a configured width falls back to the default min (48).
+  const ageHandle = screen.getByRole('separator', { name: 'Resize Age column' });
+  expect(ageHandle).toHaveAttribute('aria-valuenow', '48');
+  expect(ageHandle).toHaveAttribute('aria-valuemin', '48');
+});
+
+test('keyboard resize inverts direction in RTL to match the pointer drag', async () => {
+  const user = userEvent.setup();
+  const onColumnWidthsChange = vi.fn();
+  document.dir = 'rtl';
+  try {
+    function Controlled() {
+      const [widths, setWidths] = useState<Record<string, number>>({ name: 120 });
+      return (
+        <DataTable
+          columns={columns}
+          data={data}
+          getRowId={(r) => r.id}
+          resizableColumns
+          resizeStep={20}
+          columnWidths={widths}
+          onColumnWidthsChange={(next) => {
+            onColumnWidthsChange(next);
+            setWidths(next);
+          }}
+        />
+      );
+    }
+    render(<Controlled />);
+    const handle = screen.getByRole('separator', { name: 'Resize Name column' });
+    handle.focus();
+    // In RTL, ArrowLeft grows the column (inverse of LTR).
+    await user.keyboard('{ArrowLeft}');
+    expect(onColumnWidthsChange).toHaveBeenLastCalledWith({ name: 140 });
+    await user.keyboard('{ArrowRight}');
+    expect(onColumnWidthsChange).toHaveBeenLastCalledWith({ name: 120 });
+  } finally {
+    document.dir = '';
+  }
+});
+
 test('a column with resizable:false gets no handle', () => {
   render(
     <DataTable
@@ -598,6 +655,34 @@ test('onStateChange surfaces sort/filter/search/page state for remote fetching',
   expect(onStateChange).toHaveBeenLastCalledWith(
     expect.objectContaining({ sort: [{ key: 'name', dir: 'asc' }] }),
   );
+});
+
+test('onStateChange does not re-fire on a parent re-render with an inline callback', async () => {
+  const user = userEvent.setup();
+  const onStateChange = vi.fn();
+  function Wrapper() {
+    const [, force] = useState(0);
+    return (
+      <>
+        <button type="button" onClick={() => force((n) => n + 1)}>
+          rerender
+        </button>
+        <DataTable
+          columns={columns}
+          data={data}
+          getRowId={(r) => r.id}
+          // Intentionally an inline arrow: a new identity every render.
+          onStateChange={(s) => onStateChange(s)}
+        />
+      </>
+    );
+  }
+  render(<Wrapper />);
+  // Fires once on mount.
+  expect(onStateChange).toHaveBeenCalledTimes(1);
+  // A parent re-render that changes no table state must not re-fire it.
+  await user.click(screen.getByRole('button', { name: 'rerender' }));
+  expect(onStateChange).toHaveBeenCalledTimes(1);
 });
 
 test('manual mode bypasses the client pipeline: shows given rows and uses rowCount', () => {

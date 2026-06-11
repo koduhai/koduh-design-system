@@ -64,8 +64,12 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
     const id = field?.id ?? idProp ?? reactId;
     const hexInputId = `${id}-hex`;
     const ownLabelId = `${id}-label`;
-    const labelId = field ? field.labelId : ownLabelId;
     const showOwnLabel = !field && label != null;
+    // The ColorPicker is a composite control, so it can't be targeted by a
+    // <label htmlFor>. Associate the visible label (own, or the FormField's)
+    // through the group's aria-labelledby instead.
+    const labelId = field ? field.labelId : showOwnLabel ? ownLabelId : undefined;
+    const describedBy = field ? field.describedById : undefined;
 
     // Bind to an enclosing <Form> only when not explicitly controlled.
     const bound = value === undefined ? field?.binding : undefined;
@@ -74,7 +78,11 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
       value,
       defaultValue,
     });
-    const currentHex = bound ? ((bound.value as string) ?? defaultValue) : internalHex;
+    // bound.value is typed `unknown` at the Form-binding boundary; narrow it to a
+    // string rather than casting, so a non-string form value falls back to the
+    // default instead of feeding a bad value to parseHex/the hex input.
+    const boundHex = bound && typeof bound.value === 'string' ? bound.value : undefined;
+    const currentHex = bound ? (boundHex ?? defaultValue) : internalHex;
 
     // Keep an HSV working buffer so dragging the SV square / hue stays smooth
     // (parsing back from the rounded hex on every move would jitter the hue at
@@ -330,6 +338,9 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
     const hueHex = toHex(hsvToRgb({ h: hsv.h, s: 1, v: 1, a: 1 }));
     const solidCurrent = toHex({ ...hsvToRgb(hsv), a: 1 });
     const alphaPct = Math.round(hsv.a * 100);
+    // The SV square is a 2D control; surface both axes for assistive tech.
+    const satPct = Math.round(hsv.s * 100);
+    const valPct = Math.round(hsv.v * 100);
 
     const rootStyle = {
       ['--cp-hue']: hueHex,
@@ -344,12 +355,19 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
     return (
       <div
         ref={ref}
+        id={id}
         className={cx(styles.root, className)}
+        role="group"
+        aria-labelledby={labelId}
+        aria-describedby={describedBy}
+        // No aria-invalid / aria-required on role="group" (axe aria-allowed-attr
+        // forbids them there). The error/help text is conveyed via aria-describedby
+        // and the FormField label carries the required asterisk.
         data-disabled={disabled ? 'true' : undefined}
         style={rootStyle}
       >
         {showOwnLabel ? (
-          <span id={labelId} className={styles.label}>
+          <span id={ownLabelId} className={styles.label}>
             {label}
           </span>
         ) : null}
@@ -361,7 +379,10 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
           role="slider"
           tabIndex={disabled ? -1 : 0}
           aria-label="Saturation and brightness"
-          aria-valuetext={currentDisplayHex}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={valPct}
+          aria-valuetext={`${satPct}% saturation, ${valPct}% brightness, ${currentDisplayHex}`}
           aria-disabled={disabled || undefined}
           onPointerDown={onSvPointerDown}
           onPointerMove={onSvPointerMove}
@@ -453,7 +474,13 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
               }}
             />
           </div>
-          <VisuallyHidden aria-live="polite">Selected color {currentDisplayHex}</VisuallyHidden>
+          {/*
+            Static (non-live) hex readout. Each slider's aria-valuetext already
+            announces the value on focus/change, so a polite live region here only
+            floods AT with a fresh full-hex announcement on every drag tick. Keep
+            the text as on-demand context instead of an aria-live region.
+          */}
+          <VisuallyHidden>Selected color {currentDisplayHex}</VisuallyHidden>
         </div>
 
         {/* Swatch row */}

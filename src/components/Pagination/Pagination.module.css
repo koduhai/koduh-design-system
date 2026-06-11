@@ -52,6 +52,17 @@
   cursor: not-allowed;
 }
 
+.chevron {
+  display: inline-flex;
+  line-height: 1;
+}
+
+/* In RTL the Previous/Next directions reverse, so the chevron glyphs must
+   point the opposite way to match their aria-labels. */
+:global([dir='rtl']) .chevron {
+  transform: scaleX(-1);
+}
+
 .ellipsis {
   display: inline-flex;
   align-items: center;

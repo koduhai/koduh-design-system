@@ -15,6 +15,12 @@ export interface AvatarGroupProps extends HTMLAttributes<HTMLDivElement> {
   shape?: AvatarShape;
   /** Overlap amount. Defaults to 'normal'. */
   spacing?: 'tight' | 'normal';
+  /**
+   * Accessible name for the group, announced by assistive tech as the label of
+   * the avatar stack (e.g. "Project collaborators"). Maps to aria-label. Omit to
+   * pass aria-label / aria-labelledby directly via props instead.
+   */
+  label?: string;
 }
 
 export const AvatarGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, AvatarGroupProps>(
@@ -25,6 +31,7 @@ export const AvatarGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, AvatarGrou
       size = 'md',
       shape = 'circle',
       spacing = 'normal',
+      label,
       className,
       children,
       ...props
@@ -43,7 +50,14 @@ export const AvatarGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, AvatarGrou
     const overflow = count - visible.length;
 
     return (
-      <div ref={ref} className={cx(styles.root, className)} data-spacing={spacing} {...props}>
+      <div
+        ref={ref}
+        role="group"
+        aria-label={label}
+        className={cx(styles.root, className)}
+        data-spacing={spacing}
+        {...props}
+      >
         {visible.map((child, index) =>
           cloneElement(child, {
             key: child.key ?? index,

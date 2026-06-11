@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { InfoIcon, CheckIcon, WarningIcon, ErrorIcon, CloseIcon } from '../../icons';
+import { pauseToast, resumeToast } from './store';
 import type { ToastRecord, ToastSeverity } from './store';
 import styles from './Toaster.module.css';
 
@@ -10,7 +11,6 @@ const icons: Record<ToastSeverity, ReactNode> = {
   warning: <WarningIcon size={20} />,
   error: <ErrorIcon size={20} />,
 };
-const defaultDuration = (s: ToastSeverity) => (s === 'error' ? 8000 : 5000);
 
 export function ToastItem({
   toast,
@@ -19,26 +19,10 @@ export function ToastItem({
   toast: ToastRecord;
   onDismiss: (id: string) => void;
 }) {
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const duration = toast.duration ?? defaultDuration(toast.severity);
-
-  const clear = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
-  const start = useCallback(() => {
-    clear();
-    if (Number.isFinite(duration) && duration > 0) {
-      timerRef.current = setTimeout(() => onDismiss(toast.id), duration);
-    }
-  }, [clear, duration, onDismiss, toast.id]);
-
-  useEffect(() => {
-    start();
-    return clear;
-  }, [start, clear]);
+  // The auto-dismiss timer lives in the store (so queued toasts still expire);
+  // hover/focus pause it and blur/leave resume it from the full duration.
+  const clear = useCallback(() => pauseToast(toast.id), [toast.id]);
+  const start = useCallback(() => resumeToast(toast.id), [toast.id]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') onDismiss(toast.id);

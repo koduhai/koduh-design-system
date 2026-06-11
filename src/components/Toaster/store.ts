@@ -40,6 +40,49 @@ let toasts: ToastRecord[] = [];
 let counter = 0;
 const listeners = new Set<() => void>();
 
+/**
+ * Per-toast auto-dismiss timers, owned by the store rather than by the rendered
+ * ToastItem. Running them here means a toast queued behind the `max` cap (and
+ * therefore not yet mounted) still counts down and expires on schedule, instead
+ * of stalling until something ahead of it is dismissed. The default duration is
+ * resolved from severity, matching the visible-toast behavior.
+ */
+const timers = new Map<string, ReturnType<typeof setTimeout>>();
+
+function defaultDuration(s: ToastSeverity): number {
+  return s === 'error' ? 8000 : 5000;
+}
+
+function clearTimer(id: string): void {
+  const t = timers.get(id);
+  if (t !== undefined) {
+    clearTimeout(t);
+    timers.delete(id);
+  }
+}
+
+function scheduleTimer(record: ToastRecord): void {
+  clearTimer(record.id);
+  const duration = record.duration ?? defaultDuration(record.severity);
+  if (Number.isFinite(duration) && duration > 0) {
+    timers.set(
+      record.id,
+      setTimeout(() => dismissToast(record.id), duration),
+    );
+  }
+}
+
+/** Pause a toast's auto-dismiss timer (e.g. on hover/focus). */
+export function pauseToast(id: string): void {
+  clearTimer(id);
+}
+
+/** Resume a toast's auto-dismiss timer from the full remaining duration. */
+export function resumeToast(id: string): void {
+  const record = toasts.find((t) => t.id === id);
+  if (record) scheduleTimer(record);
+}
+
 function emit(): void {
   for (const l of listeners) l();
 }
@@ -56,13 +99,17 @@ export function getSnapshot(): ToastRecord[] {
 
 export function addToast(options: ToastOptions): string {
   const id = options.id ?? `toast-${++counter}`;
+  let record: ToastRecord;
   if (toasts.some((t) => t.id === id)) {
     toasts = toasts.map((t) =>
       t.id === id ? { ...t, ...options, id, severity: options.severity ?? t.severity } : t,
     );
+    record = toasts.find((t) => t.id === id)!;
   } else {
-    toasts = [...toasts, { ...options, id, severity: options.severity ?? 'info' }];
+    record = { ...options, id, severity: options.severity ?? 'info' };
+    toasts = [...toasts, record];
   }
+  scheduleTimer(record);
   emit();
   return id;
 }
@@ -70,6 +117,7 @@ export function addToast(options: ToastOptions): string {
 export function dismissToast(id: string): void {
   const next = toasts.filter((t) => t.id !== id);
   if (next.length !== toasts.length) {
+    clearTimer(id);
     toasts = next;
     emit();
   }
@@ -77,11 +125,14 @@ export function dismissToast(id: string): void {
 
 export function updateToast(id: string, patch: Partial<ToastOptions>): void {
   toasts = toasts.map((t) => (t.id === id ? { ...t, ...patch } : t));
+  const record = toasts.find((t) => t.id === id);
+  if (record) scheduleTimer(record);
   emit();
 }
 
 /** Test-only: clear all toasts and reset the id counter. */
 export function __resetToasts(): void {
+  for (const id of [...timers.keys()]) clearTimer(id);
   toasts = [];
   counter = 0;
   emit();

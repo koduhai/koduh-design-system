@@ -21,14 +21,34 @@ export interface SwitchProps extends Omit<
   onChange?: (checked: boolean, event: React.ChangeEvent<HTMLInputElement>) => void;
   /** Defaults to 'md'. */
   size?: SwitchSize;
+  /** Puts the control in the error state (aria-invalid). Ignored inside a FormField, which drives invalid from validation. */
+  error?: boolean;
 }
 
 export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(function Switch(
-  { label, checked, defaultChecked, onChange, onBlur, size = 'md', className, disabled, id: idProp, ...props },
+  {
+    label,
+    checked,
+    defaultChecked,
+    onChange,
+    onBlur,
+    size = 'md',
+    error = false,
+    className,
+    disabled,
+    required,
+    id: idProp,
+    ...props
+  },
   ref,
 ) {
   const field = useOptionalFieldContext();
+  // When inside a <FormField>, defer id/required/aria to it; otherwise use own props.
+  // Switch is a labelable single input, so FormField's <label htmlFor> already
+  // targets field.id; we only set the input id plus describedby/invalid/required.
   const id = field?.id ?? idProp;
+  const describedBy = field?.describedById;
+  const isRequired = field ? field.required : required;
   const [state, setState] = useControllableState<boolean>({
     value: checked,
     defaultValue: defaultChecked ?? false,
@@ -39,7 +59,7 @@ export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(
   // `checked`. Switch value semantics = checked boolean.
   const bound = checked === undefined ? field?.binding : undefined;
   const isChecked = bound ? Boolean(bound.value) : state;
-  const invalid = field?.invalid ?? false;
+  const invalid = field ? field.invalid : error;
 
   return (
     <label
@@ -56,6 +76,11 @@ export const Switch = /* @__PURE__ */ forwardRef<HTMLInputElement, SwitchProps>(
         className={styles.input}
         checked={isChecked}
         disabled={disabled}
+        // Native `required` conveys the required state; aria-required is not a
+        // supported attribute on role="switch" (axe aria-allowed-attr), so it is
+        // intentionally omitted (mirrors Checkbox).
+        required={isRequired}
+        aria-describedby={describedBy}
         aria-invalid={invalid || undefined}
         onChange={(event) => {
           if (bound) bound.onChange(event.target.checked, event);

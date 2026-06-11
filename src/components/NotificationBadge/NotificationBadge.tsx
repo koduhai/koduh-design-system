@@ -5,11 +5,7 @@ import { VisuallyHidden } from '../../primitives/VisuallyHidden';
 import { cx } from '../../utils/cx';
 import styles from './NotificationBadge.module.css';
 
-export type NotificationBadgePlacement =
-  | 'top-end'
-  | 'top-start'
-  | 'bottom-end'
-  | 'bottom-start';
+export type NotificationBadgePlacement = 'top-end' | 'top-start' | 'bottom-end' | 'bottom-start';
 
 export interface NotificationBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** The anchored element (icon/avatar/button). Omit for a standalone badge. */
@@ -48,9 +44,18 @@ export const NotificationBadge = /* @__PURE__ */ forwardRef<
   },
   ref,
 ) {
-  const hidden = !dot && (count === undefined || (count === 0 && !showZero));
-  const display = dot ? '' : count! > max ? `${max}+` : String(count);
+  // Normalize to a non-negative integer so a stray negative or fractional
+  // count never renders as e.g. "-1" or "3.5". A non-finite count (NaN) and
+  // a count <= 0 both collapse to the zero case.
+  const n = count === undefined ? undefined : Math.max(0, Math.floor(count));
+  const safeCount = n === undefined || !Number.isFinite(n) ? 0 : n;
+  const hidden = !dot && (count === undefined || (safeCount === 0 && !showZero));
+  const display = dot ? '' : safeCount > max ? `${max}+` : String(safeCount);
   const standalone = children === undefined;
+  // When no explicit label is given, announce the count with a unit so AT
+  // never hears a bare, context-free integer. The visual number stays
+  // aria-hidden and the synthesized text is exposed via VisuallyHidden.
+  const accessibleLabel = label ?? (dot ? undefined : `${display} notifications`);
 
   return (
     <span
@@ -67,9 +72,14 @@ export const NotificationBadge = /* @__PURE__ */ forwardRef<
           data-dot={dot || undefined}
           data-placement={placement}
           className={styles.badge}
+          // A dot conveys meaning by shape/color alone, so a label-less dot is
+          // decorative: hide it from AT rather than expose an ambiguous bare
+          // element. A count always carries an accessibleLabel, so it stays
+          // announced.
+          aria-hidden={dot && !label ? true : undefined}
         >
-          {!dot && <span aria-hidden={label ? true : undefined}>{display}</span>}
-          {label && <VisuallyHidden>{label}</VisuallyHidden>}
+          {!dot && <span aria-hidden>{display}</span>}
+          {accessibleLabel && <VisuallyHidden>{accessibleLabel}</VisuallyHidden>}
         </span>
       )}
     </span>

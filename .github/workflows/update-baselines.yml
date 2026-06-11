@@ -17,6 +17,16 @@ jobs:
   update:
     runs-on: ubuntu-24.04
     steps:
+      # This job has contents: write and pushes with the default token. It is
+      # meant to run on feature branches only; refuse to run against main so a
+      # stray dispatch can't push a bot commit straight to the protected branch.
+      - name: Refuse to run on main
+        run: |
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            echo "::error::update-baselines must not run on main; dispatch it on a feature branch."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v6
 
@@ -42,7 +52,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add e2e
+          # Stage only the regenerated baseline PNGs, never stray build output.
+          git add 'e2e/**/*-linux.png'
           if git diff --cached --quiet; then
             echo "No baseline changes to commit."
           else

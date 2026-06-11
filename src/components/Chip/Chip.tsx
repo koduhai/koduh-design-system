@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import type { HTMLAttributes, KeyboardEvent, MouseEvent, ReactNode, Ref } from 'react';
 import { CloseIcon } from '../../icons';
 import { cx } from '../../utils/cx';
@@ -46,6 +46,9 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
   ref,
 ) {
   const interactive = Boolean(onClick) && !onDelete;
+  // Tracks whether Space was pressed down on this element, so activation fires on
+  // keyup (native <button> semantics: press-and-release-elsewhere cancels).
+  const spaceDownRef = useRef(false);
   const dataAttrs = {
     'data-variant': variant,
     'data-tone': tone,
@@ -103,10 +106,23 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
         className={classes}
         onClick={onClick}
         onKeyDown={(event: KeyboardEvent<HTMLSpanElement>) => {
-          if (event.key === 'Enter' || event.key === ' ') {
+          if (event.key === 'Enter') {
+            // Enter activates on keydown, matching native <button> semantics.
             event.preventDefault();
             // Keyboard activation forwards to the same click handler; the
             // consumer's onClick is typed for mouse events, so narrow here.
+            onClick(event as unknown as MouseEvent<HTMLElement>);
+          } else if (event.key === ' ') {
+            // Space activates on keyup; suppress page scroll and track the press
+            // here, ignoring auto-repeat from a held key.
+            event.preventDefault();
+            if (!event.repeat) spaceDownRef.current = true;
+          }
+        }}
+        onKeyUp={(event: KeyboardEvent<HTMLSpanElement>) => {
+          if (event.key === ' ' && spaceDownRef.current) {
+            spaceDownRef.current = false;
+            event.preventDefault();
             onClick(event as unknown as MouseEvent<HTMLElement>);
           }
         }}

@@ -16,7 +16,14 @@ export const Divider = /* @__PURE__ */ forwardRef<HTMLDivElement, DividerProps>(
   { orientation = 'horizontal', inset = false, className, children, ...props },
   ref,
 ) {
-  const hasLabel = children != null && children !== false;
+  // An empty or whitespace-only string is a common product of conditional
+  // rendering (e.g. `<Divider>{show ? 'OR' : ''}</Divider>`); treat it as "no
+  // label" so the divider keeps its real role="separator" semantics instead of
+  // rendering an empty label and falling back to role="presentation".
+  const hasLabel =
+    children != null &&
+    children !== false &&
+    !(typeof children === 'string' && children.trim() === '');
 
   const dataAttrs = {
     'data-orientation': orientation,

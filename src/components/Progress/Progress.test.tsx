@@ -61,4 +61,27 @@ describe('Progress', () => {
     render(<Progress value={30} showValue />);
     expect(screen.queryByText('30%')).toBeNull();
   });
+
+  it('exposes aria-valuetext as a percentage for a custom max', () => {
+    render(<Progress value={3} max={5} label="Steps" />);
+    expect(screen.getByRole('progressbar', { name: 'Steps' })).toHaveAttribute(
+      'aria-valuetext',
+      '60%',
+    );
+  });
+
+  it('omits aria-valuetext when indeterminate', () => {
+    render(<Progress label="Loading" />);
+    expect(screen.getByRole('progressbar', { name: 'Loading' })).not.toHaveAttribute(
+      'aria-valuetext',
+    );
+  });
+
+  it('treats a non-finite value as indeterminate (no NaN attributes)', () => {
+    render(<Progress value={NaN} label="Broken" />);
+    const bar = screen.getByRole('progressbar', { name: 'Broken' });
+    expect(bar).not.toHaveAttribute('aria-valuenow');
+    expect(bar).not.toHaveAttribute('aria-valuetext');
+    expect(bar).toHaveAttribute('data-indeterminate', 'true');
+  });
 });

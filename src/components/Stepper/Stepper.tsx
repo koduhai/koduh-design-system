@@ -79,15 +79,25 @@ export const Stepper = /* @__PURE__ */ forwardRef<HTMLOListElement, StepperProps
           </span>
         );
 
+        // When the active step is interactive, aria-current belongs on the
+        // focusable button (the element a screen-reader user lands on). Only
+        // fall back to the <li> for the non-interactive case.
+        const current = isActive ? 'step' : undefined;
+
         return (
           <li
             key={index}
             className={styles.step}
             data-state={state}
-            aria-current={isActive ? 'step' : undefined}
+            aria-current={clickable ? undefined : current}
           >
             {clickable ? (
-              <button type="button" className={styles.trigger} onClick={() => onStepClick(index)}>
+              <button
+                type="button"
+                className={styles.trigger}
+                onClick={() => onStepClick(index)}
+                aria-current={current}
+              >
                 {indicator}
                 {body}
               </button>

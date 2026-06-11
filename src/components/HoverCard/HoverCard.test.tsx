@@ -114,6 +114,35 @@ describe('HoverCard', () => {
     expect(card).toHaveAttribute('data-open', 'false');
   });
 
+  it("preserves the trigger's existing aria-describedby/aria-details and appends the card id", () => {
+    render(
+      <HoverCard
+        trigger={
+          <button type="button" aria-describedby="ext-desc" aria-details="ext-details">
+            @koduhai
+          </button>
+        }
+        openDelay={0}
+      >
+        <div>
+          <strong>Koduhai</strong>
+        </div>
+      </HoverCard>,
+    );
+    const trigger = screen.getByRole('button', { name: '@koduhai' });
+    // Before open, the consumer's own values are untouched.
+    expect(trigger).toHaveAttribute('aria-describedby', 'ext-desc');
+    expect(trigger).toHaveAttribute('aria-details', 'ext-details');
+    act(() => {
+      fireEvent.focus(trigger);
+      vi.runAllTimers();
+    });
+    const card = screen.getByText('Koduhai').closest('[data-open]') as HTMLElement;
+    // When open, the card id is appended, not replaced.
+    expect(trigger).toHaveAttribute('aria-describedby', `ext-desc ${card.id}`);
+    expect(trigger).toHaveAttribute('aria-details', `ext-details ${card.id}`);
+  });
+
   it("preserves the trigger's own handlers", () => {
     const onMouseEnter = vi.fn();
     render(
@@ -135,5 +164,20 @@ describe('HoverCard', () => {
   it('forwards arbitrary DOM props to the card panel', () => {
     setup({ 'data-testid': 'hc-panel' } as never);
     expect(screen.getByTestId('hc-panel')).toBeInTheDocument();
+  });
+
+  it('keeps the aria linkage intact when a consumer passes an id', () => {
+    const trigger = setup({ id: 'consumer-id', openDelay: 0 });
+    act(() => {
+      fireEvent.focus(trigger);
+      vi.runAllTimers();
+    });
+    const card = screen.getByText('Koduhai').closest('[data-open]') as HTMLElement;
+    // The consumer id lands on the trigger, not on the card.
+    expect(trigger).toHaveAttribute('id', 'consumer-id');
+    expect(card.id).not.toBe('consumer-id');
+    // The internal card id still wires aria-describedby/aria-details.
+    expect(trigger).toHaveAttribute('aria-describedby', card.id);
+    expect(trigger).toHaveAttribute('aria-details', card.id);
   });
 });

@@ -103,6 +103,37 @@ describe('KoduhThemeProvider', () => {
     expect(screen.getByTestId('mode').textContent).toBe('light');
   });
 
+  it('does not crash when localStorage.getItem throws (sandboxed/blocked storage)', () => {
+    const spy = vi.spyOn(window.localStorage, 'getItem').mockImplementation(() => {
+      throw new Error('SecurityError: storage access denied');
+    });
+    expect(() =>
+      render(
+        <KoduhThemeProvider defaultMode="light">
+          <ModeProbe />
+        </KoduhThemeProvider>,
+      ),
+    ).not.toThrow();
+    // Falls back to defaultMode rather than taking down the whole subtree.
+    expect(screen.getByTestId('mode').textContent).toBe('light');
+    spy.mockRestore();
+  });
+
+  it('does not crash when localStorage.setItem throws (quota/blocked storage)', async () => {
+    const spy = vi.spyOn(window.localStorage, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    render(
+      <KoduhThemeProvider>
+        <ModeProbe />
+      </KoduhThemeProvider>,
+    );
+    // Persistence fails silently; the in-memory preference still updates.
+    await userEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    expect(screen.getByTestId('mode').textContent).toBe('light');
+    spy.mockRestore();
+  });
+
   it('throws when useColorMode is used outside the provider', () => {
     const Broken = () => {
       useColorMode();

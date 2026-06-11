@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Chip } from './Chip';
 
@@ -65,6 +65,7 @@ describe('Chip', () => {
 
     await userEvent.keyboard('{Enter}');
     expect(onClick).toHaveBeenCalledTimes(1);
+    // Space fires a full keydown+keyup; activation lands on keyup.
     await userEvent.keyboard(' ');
     expect(onClick).toHaveBeenCalledTimes(2);
     expect(onDelete).not.toHaveBeenCalled();
@@ -73,6 +74,30 @@ describe('Chip', () => {
     const del = screen.getByRole('button', { name: 'Remove Apple' });
     await userEvent.click(del);
     expect(onDelete).toHaveBeenCalledTimes(1);
+    expect(onClick).toHaveBeenCalledTimes(2);
+  });
+
+  it('activates Space on keyup (not keydown) and ignores auto-repeat, matching native button', () => {
+    const onClick = vi.fn();
+    const onDelete = vi.fn();
+    render(<Chip label="Apple" onClick={onClick} onDelete={onDelete} />);
+    const target = screen.getByText('Apple').closest('[data-variant]') as HTMLElement;
+
+    // Space keydown alone (including auto-repeat) must not activate.
+    fireEvent.keyDown(target, { key: ' ' });
+    fireEvent.keyDown(target, { key: ' ', repeat: true });
+    expect(onClick).not.toHaveBeenCalled();
+
+    // Activation lands on the matching keyup.
+    fireEvent.keyUp(target, { key: ' ' });
+    expect(onClick).toHaveBeenCalledTimes(1);
+
+    // A keyup without a preceding keydown on this element does nothing.
+    fireEvent.keyUp(target, { key: ' ' });
+    expect(onClick).toHaveBeenCalledTimes(1);
+
+    // Enter still activates on keydown.
+    fireEvent.keyDown(target, { key: 'Enter' });
     expect(onClick).toHaveBeenCalledTimes(2);
   });
 

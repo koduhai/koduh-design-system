@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -49,6 +50,34 @@ describe('Combobox', () => {
     expect(onChange).toHaveBeenLastCalledWith('ca', expect.anything());
   });
 
+  it('keyboard: ArrowUp opens the listbox and lands on the last option', async () => {
+    const onChange = vi.fn();
+    render(<Combobox label="Country" options={options} onChange={onChange} />);
+    const input = screen.getByRole('combobox');
+    input.focus();
+    // Closed -> ArrowUp opens and highlights the last option (Canada).
+    await userEvent.keyboard('{ArrowUp}');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.keyboard('{Enter}');
+    expect(onChange).toHaveBeenLastCalledWith('ca', expect.anything());
+  });
+
+  it('keyboard: Escape resets the highlight so reopen starts fresh', async () => {
+    const onChange = vi.fn();
+    render(<Combobox label="Country" options={options} onChange={onChange} />);
+    const input = screen.getByRole('combobox');
+    input.focus();
+    // Open and move the highlight onto the last option.
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');
+    expect(input).toHaveAttribute('aria-activedescendant');
+    // Escape closes the listbox.
+    await userEvent.keyboard('{Escape}');
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    // Reopening with ArrowDown starts at the first option, not the stale last one.
+    await userEvent.keyboard('{ArrowDown}{Enter}');
+    expect(onChange).toHaveBeenLastCalledWith('us', expect.anything());
+  });
+
   it('shows noResultsText when nothing matches', async () => {
     render(<Combobox label="Country" options={options} noResultsText="None" />);
     await userEvent.type(screen.getByRole('combobox'), 'zzz');
@@ -90,6 +119,29 @@ describe('Combobox', () => {
     render(<Combobox label="C" options={opts} clearable defaultValue="us" onChange={onChange} />);
     await userEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
     expect(onChange).toHaveBeenLastCalledWith('', expect.anything());
+  });
+
+  it('resolves the selected label when options arrive async after the value', () => {
+    function Wrap() {
+      const [opts2, setOpts2] = useState<typeof options>([]);
+      return (
+        <>
+          <Combobox label="Country" options={opts2} value="ca" />
+          <button type="button" onClick={() => setOpts2(options)}>
+            load
+          </button>
+        </>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByRole('combobox');
+    // No options yet: the value's label cannot resolve, so the input is empty.
+    expect(input).toHaveValue('');
+    // Options arrive after the value was already set.
+    act(() => {
+      screen.getByRole('button', { name: 'load' }).click();
+    });
+    expect(input).toHaveValue('Canada');
   });
 
   describe('Combobox bound to a Form', () => {

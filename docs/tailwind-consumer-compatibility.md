@@ -16,14 +16,14 @@ library itself.
 
 ## Architecture at a glance
 
-| | koduh-mail-web | @koduhai/design-system |
-|---|---|---|
-| Styling | Tailwind utilities (`bg-brand-600`, `dark:`) | CSS Modules + `--ku-*` token variables |
-| Dark mode | `.dark` **class** on `<html>` (`useTheme`, key `km_theme`) | `data-theme` **attribute** (`KoduhThemeProvider`, key `koduh-color-mode`) |
-| Brand color | Tailwind blue scale (`brand-50…900`) | semantic `--ku-color-primary` (single tone) |
-| Icons | `lucide-react` | any `ReactNode` — no conflict |
-| Charts | Recharts (lazy) | own `Sparkline` / `Chart` |
-| Runtime deps | — | none |
+|              | koduh-mail-web                                             | @koduhai/design-system                                                    |
+| ------------ | ---------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Styling      | Tailwind utilities (`bg-brand-600`, `dark:`)               | CSS Modules + `--ku-*` token variables                                    |
+| Dark mode    | `.dark` **class** on `<html>` (`useTheme`, key `km_theme`) | `data-theme` **attribute** (`KoduhThemeProvider`, key `koduh-color-mode`) |
+| Brand color  | Tailwind blue scale (`brand-50…900`)                       | semantic `--ku-color-primary` (single tone)                               |
+| Icons        | `lucide-react`                                             | any `ReactNode` — no conflict                                             |
+| Charts       | Recharts (lazy)                                            | own `Sparkline` / `Chart`                                                 |
+| Runtime deps | —                                                          | none                                                                      |
 
 ## The three seams
 
@@ -42,7 +42,7 @@ to a `data-theme` **attribute**. A dropped-in `<Button>` would have ignored thei
 So our tokens now follow Tailwind's `darkMode: 'class'` signal automatically.
 
 **One caveat — the default.** `:root` is **dark by default** (unchanged, so existing
-consumers aren't affected). Tailwind's class strategy treats *absence* of `.dark` as
+consumers aren't affected). Tailwind's class strategy treats _absence_ of `.dark` as
 light. mail-web's `applyClass()` only toggles `.dark`, so in light mode (no class) our
 tokens would fall back to the dark `:root`. The fix is one line — toggle `.light`
 explicitly too:
@@ -59,7 +59,7 @@ function applyClass(resolved: Resolved) {
 ### 2. Color identity diverged — bridged by the Tailwind preset (FIXED in the library)
 
 New entry point: **`@koduhai/design-system/tailwind-preset`**. It maps our semantic color
-tokens onto Tailwind's palette as CSS *variables*, so utilities resolve to our tokens and
+tokens onto Tailwind's palette as CSS _variables_, so utilities resolve to our tokens and
 stay theme-reactive:
 
 ```js
@@ -75,17 +75,18 @@ export default {
 
 Utilities it adds (all `var(--ku-color-*)`, so dark/light follow automatically):
 
-| Utility examples | Token |
-|---|---|
-| `bg-primary`, `text-primary-contrast` | `--ku-color-primary` / `-contrast` |
-| `text-danger-fg`, `bg-success`, `text-warning-fg`, `bg-info` | status tones (+`-fg` text variants) |
-| `bg-canvas`, `bg-surface`, `bg-raised` | `--ku-color-bg-default` / `-surface` / `-raised` |
-| `text-fg`, `text-fg-muted`, `text-fg-disabled` | `--ku-color-text-primary` / `-secondary` / `-disabled` |
-| `border-border` | `--ku-color-border` |
-| `bg-chart-1` … `bg-chart-8` | categorical chart palette |
-| `font-sans`, `font-mono` | `--ku-font-family-base` / `-mono` |
+| Utility examples                                             | Token                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------ |
+| `bg-primary`, `text-primary-contrast`                        | `--ku-color-primary` / `-contrast`                     |
+| `text-danger-fg`, `bg-success`, `text-warning-fg`, `bg-info` | status tones (+`-fg` text variants)                    |
+| `bg-accent`, `text-accent-fg`                                | brand accent tone (+`-fg` text variant)                |
+| `bg-canvas`, `bg-surface`, `bg-raised`                       | `--ku-color-bg-default` / `-surface` / `-raised`       |
+| `text-fg`, `text-fg-muted`, `text-fg-disabled`               | `--ku-color-text-primary` / `-secondary` / `-disabled` |
+| `border-border`                                              | `--ku-color-border`                                    |
+| `bg-chart-1` … `bg-chart-8`                                  | categorical chart palette                              |
+| `font-sans`, `font-mono`                                     | `--ku-font-family-base` / `-mono`                      |
 
-**Scope on purpose:** the preset maps **only colors + fontFamily**. It does *not* touch
+**Scope on purpose:** the preset maps **only colors + fontFamily**. It does _not_ touch
 `spacing`, `borderRadius`, or `fontSize`, because overriding those would clobber the
 built-in Tailwind scales (`p-4`, `rounded-md`, `text-sm`, …) the app already relies on.
 Backgrounds/text are renamed (`canvas`/`surface`/`raised`, `fg`/`fg-muted`/`fg-disabled`)
@@ -121,7 +122,7 @@ the `Form`/`useForm` orchestration layer. Migrate the simple primitives later (o
   one-to-one token. Options: keep `brand-*` for those tints, or extend tokens with a ramp.
   Worth a follow-up if they want full brand unification.
 - **`styles.css` carries our reset.** `@koduhai/design-system/styles.css` bundles the
-  component CSS *and* a light global reset, which overlaps Tailwind's Preflight. It's
+  component CSS _and_ a light global reset, which overlaps Tailwind's Preflight. It's
   intentionally minimal and honors `prefers-reduced-motion`; load it after Tailwind's base
   layer and spot-check headings/lists. If conflicts appear, we can split the reset into its
   own optional import.

@@ -109,6 +109,93 @@ describe('DatePicker', () => {
     expect(screen.getByLabelText('Open calendar')).toBeDisabled();
   });
 
+  it('gives the popover dialog an accessible name', async () => {
+    render(<DatePicker label="Event date" />);
+    await userEvent.click(screen.getByLabelText('Open calendar'));
+    expect(screen.getByRole('dialog', { name: 'Choose date' })).toBeInTheDocument();
+  });
+
+  it('returns focus to the input when closed via Escape', async () => {
+    render(<DatePicker label="Event date" />);
+    const trigger = screen.getByLabelText('Open calendar');
+    await userEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.keyboard('{Escape}');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('textbox')).toHaveFocus();
+  });
+
+  it('returns focus to the input when closed via outside click on dead space', async () => {
+    render(
+      <>
+        <DatePicker label="Event date" />
+        <div data-testid="outside">outside</div>
+      </>,
+    );
+    const trigger = screen.getByLabelText('Open calendar');
+    await userEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(screen.getByTestId('outside'));
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('textbox')).toHaveFocus();
+  });
+
+  it('Backspace clears the selection and emits onChange(null) (uncontrolled)', async () => {
+    const onChange = vi.fn();
+    render(<DatePicker label="Event date" defaultValue={JUNE_2026} onChange={onChange} />);
+    const input = screen.getByLabelText('Event date');
+    expect(input).not.toHaveValue('');
+    input.focus();
+    await userEvent.keyboard('{Backspace}');
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange.mock.calls[0]![0]).toBeNull();
+    expect(input).toHaveValue('');
+  });
+
+  it('Delete clears a Form-bound value via onChange(null)', async () => {
+    const BOUND_DATE = new Date(2026, 5, 15);
+    function Probe() {
+      const f = useFormField('field');
+      return <span data-testid="v">{f.value == null ? 'empty' : 'set'}</span>;
+    }
+    function Wrap() {
+      const form = useForm({ defaultValues: { field: BOUND_DATE } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="field" label="Date">
+            <DatePicker />
+          </FormField>
+          <Probe />
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    expect(screen.getByTestId('v')).toHaveTextContent('set');
+    const input = screen.getByLabelText(/Date/);
+    input.focus();
+    await userEvent.keyboard('{Delete}');
+    expect(screen.getByTestId('v')).toHaveTextContent('empty');
+  });
+
+  it('does not clear or emit when already empty', async () => {
+    const onChange = vi.fn();
+    render(<DatePicker label="Event date" onChange={onChange} />);
+    const input = screen.getByLabelText('Event date');
+    input.focus();
+    await userEvent.keyboard('{Backspace}');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('trigger aria-controls points at the role=dialog popover panel', async () => {
+    render(<DatePicker label="Event date" />);
+    const trigger = screen.getByLabelText('Open calendar');
+    await userEvent.click(trigger);
+    const dialog = screen.getByRole('dialog', { name: 'Choose date' });
+    const controls = trigger.getAttribute('aria-controls');
+    expect(controls).toBeTruthy();
+    expect(dialog.id).toBe(controls);
+  });
+
   it('wires required + error aria standalone', () => {
     render(<DatePicker label="Event date" required error />);
     const input = screen.getByLabelText(/Event date/);

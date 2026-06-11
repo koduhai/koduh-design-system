@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CommandPalette } from './CommandPalette';
+import { FormField } from '../FormField';
 
 beforeAll(() => {
   if (!HTMLDialogElement.prototype.showModal) {
@@ -78,6 +79,19 @@ describe('CommandPalette', () => {
     expect(input.getAttribute('aria-activedescendant')).toBe(options[0]!.id);
   });
 
+  it('scrolls the active option into view as the active index changes', async () => {
+    const scrollIntoView = vi.fn();
+    // jsdom doesn't implement scrollIntoView; the component guards for that, so
+    // stub it to assert it's driven on navigation.
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    render(<CommandPalette open onOpenChange={() => {}} commands={commands} />);
+    scrollIntoView.mockClear();
+    await userEvent.type(screen.getByRole('combobox'), '{ArrowDown}');
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
+    const calledOn = scrollIntoView.mock.instances[0] as HTMLElement;
+    expect(calledOn).toHaveAttribute('data-active', 'true');
+  });
+
   it('runs the active command on Enter, then closes', async () => {
     const onOpenChange = vi.fn();
     render(<CommandPalette open onOpenChange={onOpenChange} commands={commands} />);
@@ -121,5 +135,30 @@ describe('CommandPalette', () => {
     const ref = { current: null as HTMLDialogElement | null };
     render(<CommandPalette ref={ref} open={false} onOpenChange={() => {}} commands={commands} />);
     expect(ref.current).toBeInstanceOf(HTMLDialogElement);
+  });
+
+  it('does not force aria-label or field aria when used standalone', () => {
+    render(<CommandPalette open onOpenChange={() => {}} commands={commands} />);
+    const input = screen.getByRole('combobox', { name: 'Command menu' });
+    expect(input).not.toHaveAttribute('aria-describedby');
+    expect(input).not.toHaveAttribute('aria-invalid');
+    expect(input).not.toHaveAttribute('aria-required');
+    expect(input).not.toHaveAttribute('required');
+  });
+
+  it('wires its combobox to an enclosing FormField (label, error, required)', () => {
+    render(
+      <FormField label="Search commands" required error errorText="Pick one">
+        <CommandPalette open onOpenChange={() => {}} commands={commands} />
+      </FormField>,
+    );
+    // The field's <label htmlFor> supplies the accessible name (no aria-label override).
+    const input = screen.getByRole('combobox', { name: 'Search commands' });
+    expect(input).not.toHaveAttribute('aria-label');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('aria-required', 'true');
+    expect(input).toBeRequired();
+    // Description (error text) is associated for assistive tech.
+    expect(input).toHaveAccessibleDescription('Pick one');
   });
 });

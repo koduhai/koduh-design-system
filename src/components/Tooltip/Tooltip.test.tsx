@@ -22,6 +22,29 @@ describe('Tooltip', () => {
     expect(trigger).toHaveAttribute('aria-describedby', tip.id);
   });
 
+  it('merges its tooltip id with a consumer-provided aria-describedby on the trigger', () => {
+    render(
+      <>
+        <span id="helper-text">Extra help</span>
+        <Tooltip content="More info" delay={0}>
+          <button type="button" aria-describedby="helper-text">
+            Help
+          </button>
+        </Tooltip>
+      </>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Help' });
+    // Closed: only the consumer's own id is present.
+    expect(trigger).toHaveAttribute('aria-describedby', 'helper-text');
+    act(() => {
+      fireEvent.focus(trigger);
+      vi.runAllTimers();
+    });
+    const tip = screen.getByRole('tooltip');
+    // Open: the consumer's id is preserved and the tooltip id is appended.
+    expect(trigger).toHaveAttribute('aria-describedby', `helper-text ${tip.id}`);
+  });
+
   it('opens on hover after the delay', () => {
     render(
       <Tooltip content="Hi" delay={200}>
@@ -65,6 +88,45 @@ describe('Tooltip', () => {
     expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'true');
     act(() => fireEvent.keyDown(trigger, { key: 'Escape' }));
     expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'false');
+  });
+
+  it('dismisses a hover-opened tooltip with Escape even when the trigger is not focused (WCAG 1.4.13)', () => {
+    render(
+      <Tooltip content="Hi" delay={0}>
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    const trigger = screen.getByRole('button');
+    // Hover-open: the trigger never receives focus, so a trigger-scoped keydown
+    // would not fire. Esc must still dismiss via the document-level handler.
+    act(() => {
+      fireEvent.mouseEnter(trigger);
+      vi.runAllTimers();
+    });
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'true');
+    act(() => fireEvent.keyDown(document, { key: 'Escape' }));
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'false');
+  });
+
+  it('re-opens after an Escape dismissal (no permanent suppression)', () => {
+    render(
+      <Tooltip content="Hi" delay={0}>
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    const trigger = screen.getByRole('button');
+    act(() => {
+      fireEvent.focus(trigger);
+      vi.runAllTimers();
+    });
+    act(() => fireEvent.keyDown(document, { key: 'Escape' }));
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'false');
+    // Hovering again re-opens it.
+    act(() => {
+      fireEvent.mouseEnter(trigger);
+      vi.runAllTimers();
+    });
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'true');
   });
 
   it('stays open when the pointer moves from the trigger onto the panel (WCAG 1.4.13)', () => {

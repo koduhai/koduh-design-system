@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { CountUp } from './CountUp';
 
 function mockReducedMotion(reduce: boolean) {
@@ -49,5 +49,43 @@ describe('CountUp', () => {
     const { container } = render(<CountUp value={1} className="stat" />);
     expect(container.firstChild).toHaveClass('stat');
     expect((container.firstChild as HTMLElement).tagName).toBe('SPAN');
+  });
+
+  it('tweens forward from the current display when value changes mid-animation', () => {
+    mockReducedMotion(false);
+    // Drive the animation manually: each rAF callback is queued and flushed
+    // with a caller-controlled timestamp so we can step the tween precisely.
+    const callbacks: FrameRequestCallback[] = [];
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      callbacks.push(cb);
+      return callbacks.length;
+    });
+    vi.stubGlobal('cancelAnimationFrame', () => {});
+    let nowValue = 0;
+    vi.stubGlobal('performance', { now: () => nowValue });
+
+    const flush = (now: number) => {
+      nowValue = now;
+      const pending = callbacks.splice(0);
+      act(() => {
+        for (const cb of pending) cb(now);
+      });
+    };
+
+    const { container, rerender } = render(<CountUp value={100} duration={1000} />);
+    const span = container.firstChild as HTMLElement;
+
+    // Advance to the midpoint of the first tween (0 -> 100), display is now well above 0.
+    flush(0);
+    flush(500);
+    const midDisplay = Number(span.textContent);
+    expect(midDisplay).toBeGreaterThan(0);
+
+    // Interrupt with a new target. The new tween must start from the current
+    // display, so the very next frame must not jump below where we already were.
+    rerender(<CountUp value={200} duration={1000} />);
+    flush(500);
+    flush(510);
+    expect(Number(span.textContent)).toBeGreaterThanOrEqual(midDisplay);
   });
 });

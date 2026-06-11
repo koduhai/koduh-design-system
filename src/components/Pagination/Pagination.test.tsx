@@ -57,6 +57,24 @@ describe('Pagination', () => {
     expect(screen.getByRole('navigation', { name: 'Article pages' })).toBeInTheDocument();
   });
 
+  it('allows overriding the Previous/Next control labels', () => {
+    render(<Pagination count={5} page={3} previousLabel="Vorige" nextLabel="Volgende" />);
+    expect(screen.getByRole('button', { name: 'Vorige' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Volgende' })).toBeInTheDocument();
+  });
+
+  it('formats every control label via getItemAriaLabel', () => {
+    const getItemAriaLabel = (type: string, target: number) =>
+      type === 'page' ? `Pagina ${target}` : type === 'previous' ? 'Vorige' : 'Volgende';
+    render(<Pagination count={5} page={3} getItemAriaLabel={getItemAriaLabel} />);
+    expect(screen.getByRole('button', { name: 'Pagina 3' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('button', { name: 'Vorige' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Volgende' })).toBeInTheDocument();
+  });
+
   it('renders ellipses as inert, non-button nodes', () => {
     render(<Pagination count={20} page={10} />);
     expect(screen.getAllByText('…').length).toBeGreaterThan(0);

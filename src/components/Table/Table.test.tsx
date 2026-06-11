@@ -57,6 +57,14 @@ describe('Table', () => {
     expect(onSortChange).toHaveBeenLastCalledWith('name', 'asc', expect.anything());
   });
 
+  it('does not render a no-op sort control or aria-sort when onSortChange is omitted', () => {
+    // `sortable: true` but no handler: the header must not advertise a dead interaction.
+    render(<Table {...base} />);
+    const header = screen.getByRole('columnheader', { name: 'Name' });
+    expect(header).not.toHaveAttribute('aria-sort');
+    expect(screen.queryByRole('button', { name: /Name/ })).toBeNull();
+  });
+
   it('reflects sort state via aria-sort on the active header', () => {
     render(<Table {...base} sortKey="name" sortDir="asc" onSortChange={() => {}} />);
     expect(screen.getByRole('columnheader', { name: /Name/ })).toHaveAttribute(

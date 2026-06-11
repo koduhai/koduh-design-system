@@ -48,6 +48,27 @@ describe('Select', () => {
     expect(onChange).toHaveBeenCalledWith('a', expect.anything());
   });
 
+  it('scrolls the active option into view during keyboard navigation', () => {
+    const scrollIntoView = vi.fn();
+    // jsdom does not implement scrollIntoView; stub it so the effect can call it.
+    const proto = Element.prototype as unknown as { scrollIntoView?: () => void };
+    const prev = proto.scrollIntoView;
+    proto.scrollIntoView = scrollIntoView;
+    try {
+      render(<Select label="Fruit" options={options} />);
+      const trigger = screen.getByRole('button', { name: /Fruit/ });
+      fireEvent.click(trigger);
+      const listbox = screen.getByRole('listbox');
+      scrollIntoView.mockClear();
+      fireEvent.keyDown(listbox, { key: 'ArrowDown' }); // -> Apple
+      const apple = screen.getByRole('option', { name: 'Apple' });
+      expect(listbox).toHaveAttribute('aria-activedescendant', apple.id);
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
+    } finally {
+      proto.scrollIntoView = prev;
+    }
+  });
+
   it('does not select a disabled option', () => {
     const onChange = vi.fn();
     render(<Select label="Fruit" options={options} onChange={onChange} />);
@@ -194,6 +215,20 @@ describe('Select', () => {
     expect(trigger).toHaveAttribute('aria-invalid', 'true');
     expect(trigger).toHaveAttribute('aria-describedby', screen.getByText('Pick one').id);
     expect(screen.getAllByText('Model')).toHaveLength(1);
+  });
+
+  it('inside FormField: trigger + listbox get an accessible name from the field label', () => {
+    render(
+      <FormField label="Model" id="model">
+        <Select options={[{ value: 'a', label: 'A' }]} />
+      </FormField>,
+    );
+    // The role="button" trigger can't be targeted by the field's <label htmlFor>,
+    // so it must borrow the field label via aria-labelledby for an accessible name.
+    const trigger = screen.getByRole('button', { name: /Model/ });
+    expect(trigger).toHaveAttribute('aria-labelledby', screen.getByText('Model').id);
+    fireEvent.click(trigger);
+    expect(screen.getByRole('listbox', { name: /Model/ })).toBeInTheDocument();
   });
 
   it('standalone: unchanged label + required indicator', () => {

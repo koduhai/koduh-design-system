@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Menu } from './Menu';
+import { FormField } from '../FormField';
 
 function setup(onSelect = vi.fn()) {
   render(
@@ -138,6 +139,74 @@ describe('Menu', () => {
     // Outside pointerdown closes the menu but must not yank focus back to trigger.
     fireEvent.pointerDown(elsewhere);
     expect(trigger).not.toHaveFocus();
+  });
+
+  it('marks the seeded item with data-active so it gets the highlight rule', () => {
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    // The CSS highlight keys on [data-active='true']; the seeded (first) item
+    // carries it so the active row reads in both themes.
+    const editItem = screen.getByRole('menuitem', { name: 'Edit' });
+    expect(editItem).toHaveAttribute('data-active', 'true');
+    // Hover moves the highlight; only one item is active at a time.
+    const dup = screen.getByRole('menuitem', { name: 'Duplicate' });
+    fireEvent.mouseEnter(dup);
+    expect(dup).toHaveAttribute('data-active', 'true');
+    expect(editItem).not.toHaveAttribute('data-active');
+  });
+
+  it('marks a disabled item with aria-disabled (not native disabled) so AT still announces it', () => {
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    const deleteItem = screen.getByRole('menuitem', { name: 'Delete' });
+    // aria-disabled keeps the item in the accessibility tree; native `disabled`
+    // would drop it from several screen readers.
+    expect(deleteItem).toHaveAttribute('aria-disabled', 'true');
+    expect(deleteItem).not.toBeDisabled();
+  });
+
+  it('moves the active item via first-letter typeahead', () => {
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    const menu = screen.getByRole('menu');
+    // Edit is seeded active; typing "d" jumps to the next item starting with "d".
+    fireEvent.keyDown(menu, { key: 'd' });
+    expect(menu).toHaveAttribute(
+      'aria-activedescendant',
+      screen.getByRole('menuitem', { name: 'Duplicate' }).id,
+    );
+  });
+
+  it('wires FormField group association onto the trigger', () => {
+    render(
+      <FormField label="Row actions" required error errorText="Pick one">
+        <Menu
+          trigger={<button type="button">Actions</button>}
+          items={[{ label: 'Edit', onSelect: () => {} }]}
+        />
+      </FormField>,
+    );
+    // aria-labelledby overrides the text, so the accessible name is the label.
+    const trigger = screen.getByRole('button', { name: /Row actions/ });
+    // Group/button-wrapper control: associated via aria-labelledby (not htmlFor).
+    const label = screen.getByText('Row actions');
+    expect(trigger).toHaveAttribute('id', label.getAttribute('for'));
+    expect(trigger).toHaveAttribute('aria-labelledby', label.id);
+    // aria-invalid / aria-required are not valid on the button-role trigger, so
+    // only the name + description associations are wired.
+    expect(trigger).not.toHaveAttribute('aria-invalid');
+    expect(trigger).not.toHaveAttribute('aria-required');
+    const errorMessage = screen.getByText('Pick one');
+    expect(trigger).toHaveAttribute('aria-describedby', errorMessage.id);
+  });
+
+  it('leaves the trigger unwired when there is no FormField', () => {
+    setup();
+    const trigger = screen.getByRole('button', { name: 'Actions' });
+    expect(trigger).not.toHaveAttribute('aria-labelledby');
+    expect(trigger).not.toHaveAttribute('aria-invalid');
+    expect(trigger).not.toHaveAttribute('aria-required');
+    expect(trigger).not.toHaveAttribute('aria-describedby');
   });
 
   it('omits data-density by default and reflects density="compact" on the menu list', () => {

@@ -43,6 +43,27 @@ describe('PinInput', () => {
     expect(c0!.value).toBe('a');
   });
 
+  it('preserves a trailing space when type="text"', () => {
+    const onChange = vi.fn();
+    render(
+      <PinInput length={4} type="text" defaultValue="ab" onChange={onChange} aria-label="Code" />,
+    );
+    const c2 = cells()[2]!;
+    // A space is a valid single character for a text PIN and must not be stripped.
+    fireEvent.change(c2, { target: { value: ' ' } });
+    expect(onChange).toHaveBeenLastCalledWith('ab ');
+    expect(cells()[2]!.value).toBe(' ');
+  });
+
+  it('preserves trailing spaces pasted into a text PIN', () => {
+    const onChange = vi.fn();
+    render(<PinInput length={6} type="text" onChange={onChange} aria-label="Code" />);
+    const c0 = cells()[0]!;
+    c0.focus();
+    fireEvent.paste(c0, { clipboardData: { getData: () => 'ab  ' } });
+    expect(onChange).toHaveBeenLastCalledWith('ab  ');
+  });
+
   it('Backspace on an empty cell clears the previous one and moves back', () => {
     render(<PinInput length={4} defaultValue="12" aria-label="Code" />);
     const [c0, c1, c2] = cells();

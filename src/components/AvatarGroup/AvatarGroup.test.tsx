@@ -42,6 +42,36 @@ describe('AvatarGroup', () => {
     expect(screen.getByText('+118')).toBeInTheDocument();
   });
 
+  it('exposes a group role so members are conveyed as one collection', () => {
+    render(
+      <AvatarGroup>
+        <Avatar name="A B" />
+        <Avatar name="C D" />
+      </AvatarGroup>,
+    );
+    expect(screen.getByRole('group')).toBeInTheDocument();
+  });
+
+  it('labels the group from the label prop', () => {
+    render(
+      <AvatarGroup label="Project collaborators">
+        <Avatar name="A B" />
+        <Avatar name="C D" />
+      </AvatarGroup>,
+    );
+    expect(screen.getByRole('group', { name: 'Project collaborators' })).toBeInTheDocument();
+  });
+
+  it('lets a consumer override the default role and label via props', () => {
+    render(
+      <AvatarGroup role="list" aria-label="Team">
+        <Avatar name="A B" />
+      </AvatarGroup>,
+    );
+    expect(screen.getByRole('list', { name: 'Team' })).toBeInTheDocument();
+    expect(screen.queryByRole('group')).not.toBeInTheDocument();
+  });
+
   it('propagates size to children and the overflow chip', () => {
     const { container } = render(
       <AvatarGroup max={1} size="lg">

@@ -42,7 +42,9 @@ export const Progress = /* @__PURE__ */ forwardRef<HTMLDivElement, ProgressProps
   },
   ref,
 ) {
-  const indeterminate = value == null;
+  // A non-finite value (NaN/Infinity) is treated as indeterminate so it never
+  // leaks an invalid aria-valuenow or width:NaN% into the DOM.
+  const indeterminate = value == null || !Number.isFinite(value);
   const clamped = indeterminate ? 0 : Math.min(Math.max(value, 0), Math.max(max, 0));
   const pct = indeterminate || max <= 0 ? 0 : (clamped / max) * 100;
   const labelId = useId('progress-label');
@@ -66,6 +68,7 @@ export const Progress = /* @__PURE__ */ forwardRef<HTMLDivElement, ProgressProps
         aria-valuemin={0}
         aria-valuemax={max}
         aria-valuenow={indeterminate ? undefined : clamped}
+        aria-valuetext={indeterminate ? undefined : `${Math.round(pct)}%`}
         aria-label={showLabelBlock ? undefined : label}
         aria-labelledby={showLabelBlock ? labelId : undefined}
       >

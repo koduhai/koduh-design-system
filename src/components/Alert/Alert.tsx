@@ -15,6 +15,8 @@ export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
   dismissable?: boolean;
   /** Called when the dismiss button is clicked. */
   onClose?: () => void;
+  /** Accessible label for the dismiss button. Defaults to `'Dismiss'`. */
+  closeLabel?: string;
   /**
    * Custom leading icon. Overrides the severity default.
    * Pass a falsy value (e.g. `null`) to disable the icon entirely.
@@ -38,7 +40,17 @@ const roleForSeverity: Record<AlertSeverity, 'alert' | 'status'> = {
 };
 
 export const Alert = /* @__PURE__ */ forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { severity, title, dismissable = false, onClose, icon, className, children, ...props },
+  {
+    severity,
+    title,
+    dismissable = false,
+    onClose,
+    closeLabel = 'Dismiss',
+    icon,
+    className,
+    children,
+    ...props
+  },
   ref,
 ) {
   const resolvedIcon = icon === undefined ? defaultIcons[severity] : icon;
@@ -62,7 +74,7 @@ export const Alert = /* @__PURE__ */ forwardRef<HTMLDivElement, AlertProps>(func
         {children ? <div className={styles.body}>{children}</div> : null}
       </div>
       {dismissable ? (
-        <button type="button" className={styles.close} aria-label="Dismiss" onClick={onClose}>
+        <button type="button" className={styles.close} aria-label={closeLabel} onClick={onClose}>
           <CloseIcon size={18} />
         </button>
       ) : null}

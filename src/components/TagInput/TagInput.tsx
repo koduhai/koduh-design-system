@@ -7,7 +7,7 @@ import type {
   SyntheticEvent,
 } from 'react';
 import { Chip } from '../Chip';
-import { useControllableState, useId } from '../../primitives';
+import { useControllableState, useId, VisuallyHidden } from '../../primitives';
 import { useOptionalFieldContext } from '../FormField';
 import { cx } from '../../utils/cx';
 import styles from './TagInput.module.css';
@@ -30,6 +30,13 @@ export interface TagInputProps extends Omit<
   /** Allow duplicate tags. Defaults to false. */
   allowDuplicates?: boolean;
   size?: TagInputSize;
+  /**
+   * When set, the committed tags are submitted with a native `<form>` as one
+   * hidden input per tag under this name (standard multi-value encoding). The
+   * visible text input, whose value is the in-progress draft, never carries
+   * `name`, so the draft string is never posted.
+   */
+  name?: string;
   required?: boolean;
   error?: boolean;
   helperText?: ReactNode;
@@ -57,6 +64,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
       className,
       onBlur,
       onFocus,
+      name,
       ...rest
     },
     ref,
@@ -81,6 +89,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
     const bound = value === undefined ? field?.binding : undefined;
     const currentValue = bound ? (bound.value as string[]) : tags;
     const [draft, setDraft] = useState('');
+    const [announcement, setAnnouncement] = useState('');
 
     const addTag = (raw: string, event?: SyntheticEvent) => {
       const t = raw.trim();
@@ -88,13 +97,18 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
       if (!allowDuplicates && currentValue.includes(t)) return;
       if (max != null && currentValue.length >= max) return;
       const next = [...currentValue, t];
-      if (bound) bound.onChange(next, event); else setTags(next);
+      if (bound) bound.onChange(next, event);
+      else setTags(next);
       onChange?.(next, event);
+      setAnnouncement(`${t} added`);
     };
     const removeAt = (i: number, event?: SyntheticEvent) => {
+      const removed = currentValue[i];
       const next = currentValue.filter((_, idx) => idx !== i);
-      if (bound) bound.onChange(next, event); else setTags(next);
+      if (bound) bound.onChange(next, event);
+      else setTags(next);
       onChange?.(next, event);
+      if (removed != null) setAnnouncement(`${removed} removed`);
     };
 
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -102,8 +116,8 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
         e.preventDefault();
         addTag(draft, e);
         setDraft('');
-      } else if (e.key === 'Backspace' && draft === '' && tags.length > 0) {
-        removeAt(tags.length - 1, e);
+      } else if (e.key === 'Backspace' && draft === '' && currentValue.length > 0) {
+        removeAt(currentValue.length - 1, e);
       }
     };
 
@@ -136,6 +150,17 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
           {currentValue.map((tag, i) => (
             <Chip key={`${tag}-${i}`} label={tag} size="sm" onDelete={() => removeAt(i)} />
           ))}
+          {/*
+            The committed tags are submitted under `name`, one hidden input per
+            tag (the standard multi-value form encoding). `name` is deliberately
+            kept off the visible input below, whose value is the in-progress
+            draft, so a native form submit posts the tags and never the draft.
+          */}
+          {name != null
+            ? currentValue.map((tag, i) => (
+                <input key={`hidden-${tag}-${i}`} type="hidden" name={name} value={tag} />
+              ))
+            : null}
           <input
             {...rest}
             ref={ref}
@@ -152,6 +177,7 @@ export const TagInput = /* @__PURE__ */ forwardRef<HTMLInputElement, TagInputPro
             onBlur={handleBlur}
           />
         </div>
+        <VisuallyHidden aria-live="polite">{announcement}</VisuallyHidden>
         {showOwnLabel && description != null ? (
           <p id={descriptionId} className={styles.description}>
             {description}

@@ -100,6 +100,17 @@ describe('TextField', () => {
     expect(screen.getByLabelText(/Name/)).toBeRequired();
   });
 
+  it('forwards disabled to the input so the field wrapper can dim it', () => {
+    const { container } = render(<TextField label="Email" disabled />);
+    const input = screen.getByLabelText('Email') as HTMLInputElement;
+    expect(input).toBeDisabled();
+    // The disabled input lives inside the .field wrapper that the
+    // `:has(input:disabled)` rule dims, so the wrapper contains a disabled input.
+    const field = container.querySelector('input:disabled')?.parentElement;
+    expect(field).not.toBeNull();
+    expect(field?.querySelector('input:disabled')).toBe(input);
+  });
+
   it('omits data-density by default and reflects density="compact" on the root', () => {
     const { container, rerender } = render(<TextField label="Email" />);
     const root = container.firstElementChild as HTMLElement;
@@ -115,7 +126,9 @@ describe('TextField bound to a Form', () => {
       const form = useForm({ defaultValues: { email: 'a@b.com' } });
       return (
         <Form form={form} aria-label="f">
-          <FormField name="email" label="Email"><TextField /></FormField>
+          <FormField name="email" label="Email">
+            <TextField />
+          </FormField>
         </Form>
       );
     }
@@ -124,5 +137,23 @@ describe('TextField bound to a Form', () => {
     expect(input.value).toBe('a@b.com');
     fireEvent.change(input, { target: { value: 'c@d.com' } });
     expect(input.value).toBe('c@d.com');
+  });
+
+  it('coerces a non-string bound value to a string instead of an unchecked cast', () => {
+    function Wrap() {
+      const form = useForm({ defaultValues: { qty: 42 } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="qty" label="Quantity">
+            <TextField />
+          </FormField>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByLabelText('Quantity') as HTMLInputElement;
+    // A numeric form value must render as the string '42', not crash or read as
+    // a non-string controlled value.
+    expect(input.value).toBe('42');
   });
 });

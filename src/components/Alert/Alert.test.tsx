@@ -48,6 +48,15 @@ describe('Alert', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('supports a custom closeLabel on the dismiss button', () => {
+    render(
+      <Alert severity="info" dismissable closeLabel="Sluiten">
+        Localized close
+      </Alert>,
+    );
+    expect(screen.getByRole('button', { name: 'Sluiten' })).toBeInTheDocument();
+  });
+
   it('does not render a close button by default', () => {
     render(<Alert severity="info">No close</Alert>);
     expect(screen.queryByRole('button')).toBeNull();

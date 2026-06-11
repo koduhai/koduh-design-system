@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { ButtonGroup } from '../ButtonGroup';
 import { Button } from '../Button';
 import type { ButtonTone, ButtonVariant, ButtonSize } from '../Button';
@@ -10,7 +10,7 @@ import { ChevronDownIcon } from '../../icons';
 import { cx } from '../../utils/cx';
 import styles from './SplitButton.module.css';
 
-export interface SplitButtonProps {
+export interface SplitButtonProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onClick'> {
   /** Primary action label. */
   children: ReactNode;
   /** Primary action handler. */
@@ -52,11 +52,12 @@ export const SplitButton = /* @__PURE__ */ forwardRef<HTMLDivElement, SplitButto
       menuPlacement = 'bottom-end',
       menuLabel = 'More actions',
       className,
+      ...props
     },
     ref,
   ) {
     return (
-      <ButtonGroup ref={ref} className={cx(styles.root, className)}>
+      <ButtonGroup ref={ref} className={cx(styles.root, className)} {...props}>
         <Button
           tone={tone}
           variant={variant}

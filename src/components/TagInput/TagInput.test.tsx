@@ -1,3 +1,4 @@
+import type { FormEvent } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -91,18 +92,80 @@ describe('TagInput', () => {
       // form value updated to include the new tag
       expect(screen.getByTestId('v')).toHaveTextContent('["existing","newone"]');
     });
+
+    it('Backspace removes the last tag from the form-bound value', async () => {
+      function Probe() {
+        const f = useFormField('field');
+        return <span data-testid="v">{JSON.stringify(f.value ?? null)}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { field: ['one', 'two'] } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="field" label="Tags">
+              <TagInput />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      const input = screen.getByLabelText(/Tags/);
+      input.focus();
+      await userEvent.keyboard('{Backspace}');
+      // reads the form-bound value, not stale internal state
+      expect(screen.getByTestId('v')).toHaveTextContent('["one"]');
+    });
   });
 
-  it('onChange receives (tags, event) and forwards onBlur/name to the input', async () => {
+  it('announces tag add and remove in a polite live region', async () => {
+    render(<TagInput label="Tags" defaultValue={['keep']} />);
+    const input = screen.getByLabelText('Tags');
+    await userEvent.type(input, 'react{Enter}');
+    const status = screen.getByText('react added');
+    expect(status).toHaveAttribute('aria-live', 'polite');
+    await userEvent.click(screen.getByLabelText('Remove keep'));
+    expect(screen.getByText('keep removed')).toHaveAttribute('aria-live', 'polite');
+  });
+
+  it('onChange receives (tags, event) and forwards onBlur', async () => {
     const onChange = vi.fn();
     const onBlur = vi.fn();
-    render(<TagInput label="T" name="tags" onBlur={onBlur} onChange={onChange} />);
+    render(<TagInput label="T" onBlur={onBlur} onChange={onChange} />);
     const input = screen.getByLabelText('T');
-    expect(input).toHaveAttribute('name', 'tags');
     await userEvent.type(input, 'a{Enter}');
     expect(onChange).toHaveBeenLastCalledWith(['a'], expect.anything());
     input.focus();
     input.blur();
     expect(onBlur).toHaveBeenCalled();
+  });
+
+  it('keeps name off the draft input and submits committed tags via hidden inputs', async () => {
+    const onSubmit = vi.fn((e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const data = new FormData(e.currentTarget);
+      return data.getAll('tags');
+    });
+    render(
+      <form onSubmit={onSubmit} aria-label="f">
+        <TagInput label="T" name="tags" defaultValue={['a', 'b']} />
+        <button type="submit">Save</button>
+      </form>,
+    );
+    const input = screen.getByLabelText('T');
+    // The draft input must not carry the field name, so the half-typed value
+    // is never posted under it.
+    expect(input).not.toHaveAttribute('name');
+    // One hidden input per committed tag, all under the field name.
+    const hidden = document.querySelectorAll('input[type="hidden"][name="tags"]');
+    expect(Array.from(hidden).map((el) => (el as HTMLInputElement).value)).toEqual(['a', 'b']);
+
+    // Type an in-progress draft and submit without blurring the input (which
+    // would commit the draft as a real tag). The form must post the committed
+    // tags, never the uncommitted draft string.
+    await userEvent.type(input, 'draftonly');
+    const form = screen.getByLabelText('f') as HTMLFormElement;
+    form.requestSubmit();
+    expect(onSubmit).toHaveReturnedWith(['a', 'b']);
   });
 });

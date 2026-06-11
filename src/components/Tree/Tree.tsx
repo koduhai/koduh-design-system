@@ -1,4 +1,4 @@
-import { forwardRef, useRef } from 'react';
+import { forwardRef, useRef, useState } from 'react';
 import type { CSSProperties, HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
@@ -26,7 +26,9 @@ export interface TreeProps extends Omit<
   expanded?: string[];
   /** Fires with the next set of expanded ids. */
   onExpandedChange?: (ids: string[]) => void;
-  /** Currently selected node id. */
+  /** Initially selected node id when uncontrolled. */
+  defaultSelectedId?: string;
+  /** Controlled selected node id. */
   selectedId?: string;
   /** Fires with a node id when it is selected. */
   onSelect?: (id: string) => void;
@@ -45,7 +47,17 @@ interface VisibleRow {
 }
 
 export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(function Tree(
-  { nodes, defaultExpanded, expanded, onExpandedChange, selectedId, onSelect, className, ...props },
+  {
+    nodes,
+    defaultExpanded,
+    expanded,
+    onExpandedChange,
+    defaultSelectedId,
+    selectedId,
+    onSelect,
+    className,
+    ...props
+  },
   ref,
 ) {
   const [expandedIds, setExpandedIds] = useControllableState<string[]>({
@@ -55,7 +67,21 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
   });
   const expandedSet = new Set(expandedIds);
 
+  // Selection follows the controlled/uncontrolled symmetry: pass selectedId to
+  // control it, defaultSelectedId to seed it, and onSelect fires either way.
+  const [selected, setSelected] = useControllableState<string | undefined>({
+    value: selectedId,
+    defaultValue: defaultSelectedId,
+    onChange: onSelect as ((value: string | undefined) => void) | undefined,
+  });
+
   const rowRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+
+  // The most recently focused row id. Per the APG roving-tabindex pattern, the
+  // last item the user focused should remain the single tabbable item so that
+  // tabbing out and back into the tree restores their position rather than
+  // resetting to the first/selected row.
+  const [lastFocusedId, setLastFocusedId] = useState<string | undefined>(undefined);
 
   const setExpanded = (next: string[]) => {
     setExpandedIds(next);
@@ -76,7 +102,7 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
   };
 
   const select = (id: string) => {
-    onSelect?.(id);
+    setSelected(id);
   };
 
   // Flatten the currently-visible rows (roots + descendants of expanded parents),
@@ -95,10 +121,17 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
   };
   walk(nodes, null, 0);
 
-  // First visible row is the roving-tabindex entry point unless a selection exists.
-  const tabbableId =
-    selectedId != null && visible.some((row) => row.id === selectedId)
-      ? selectedId
+  const isVisible = (id: string | undefined): boolean =>
+    id != null && visible.some((row) => row.id === id);
+
+  // The roving-tabindex entry point: prefer the last-focused row, then the
+  // selection, then the first visible row. Each candidate is only honored while
+  // it is still visible (its parent may have collapsed), so we always fall back
+  // to a row that actually exists in the current tree.
+  const tabbableId = isVisible(lastFocusedId)
+    ? lastFocusedId
+    : isVisible(selected)
+      ? selected
       : visible[0]?.id;
 
   const focusRow = (id: string | undefined) => {
@@ -168,13 +201,16 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
     return list.map((node) => {
       const hasChildren = Array.isArray(node.children) && node.children.length > 0;
       const isExpanded = hasChildren && expandedSet.has(node.id);
-      const isSelected = selectedId != null && node.id === selectedId;
+      const isSelected = selected != null && node.id === selected;
       const isTabbable = node.id === tabbableId;
       return (
         <li key={node.id} role="none" className={styles.item}>
           <div
             ref={(el) => {
-              rowRefs.current.set(node.id, el);
+              // Delete the entry when the row unmounts (el === null) so the Map
+              // does not accumulate stale null-valued keys as parents collapse.
+              if (el) rowRefs.current.set(node.id, el);
+              else rowRefs.current.delete(node.id);
             }}
             role="treeitem"
             tabIndex={isTabbable ? 0 : -1}
@@ -183,6 +219,9 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
             data-selected={isSelected ? 'true' : undefined}
             className={styles.row}
             style={{ '--tree-depth': depth } as CSSProperties}
+            onFocus={() => {
+              setLastFocusedId(node.id);
+            }}
             onClick={() => {
               if (hasChildren) toggle(node.id);
               select(node.id);

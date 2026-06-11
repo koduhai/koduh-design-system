@@ -68,6 +68,48 @@ describe('Sparkline', () => {
     expect(container.querySelectorAll('path, rect')).toHaveLength(0);
   });
 
+  it('draws a visible flat segment for a single-datum line series', () => {
+    const { container } = render(<Sparkline data={[7]} width={120} aria-label="x" />);
+    const d = container.querySelector('path')?.getAttribute('d') ?? '';
+    // A lone moveto would draw nothing; expect a line across the full width.
+    expect(d).toMatch(/^M0 /);
+    expect(d).toContain('L120 ');
+    expect(d).not.toContain('NaN');
+  });
+
+  it('draws a visible area for a single-datum area series', () => {
+    const { container } = render(<Sparkline data={[7]} type="area" width={120} aria-label="x" />);
+    const paths = container.querySelectorAll('path');
+    expect(paths).toHaveLength(2);
+    const areaD = paths[0]?.getAttribute('d') ?? '';
+    expect(areaD).toMatch(/Z$/);
+    expect(areaD).toContain('L120 ');
+    expect(areaD).not.toContain('NaN');
+  });
+
+  it('does not emit NaN coordinates when data contains non-finite values', () => {
+    const dirty = [1, NaN, Infinity, -Infinity, 4];
+    (['line', 'area', 'bar'] as const).forEach((type) => {
+      const { container } = render(<Sparkline data={dirty} type={type} aria-label="x" />);
+      container.querySelectorAll('path').forEach((p) => {
+        expect(p.getAttribute('d')).not.toContain('NaN');
+      });
+      container.querySelectorAll('rect').forEach((r) => {
+        ['x', 'y', 'width', 'height'].forEach((attr) => {
+          expect(r.getAttribute(attr)).not.toContain('NaN');
+        });
+      });
+    });
+  });
+
+  it('omits NaN from the generated label when data has non-finite values', () => {
+    render(<Sparkline data={[NaN, 2, 3]} />);
+    // Leading NaN is coerced to a finite baseline of 0, so the label reads "from 0".
+    const svg = screen.getByRole('img', { name: /from 0 to 3/i });
+    expect(svg).toBeInTheDocument();
+    expect(svg.getAttribute('aria-label')).not.toContain('NaN');
+  });
+
   it('forwards a ref to the svg element', () => {
     const ref = { current: null as SVGSVGElement | null };
     render(<Sparkline data={data} ref={ref} aria-label="x" />);

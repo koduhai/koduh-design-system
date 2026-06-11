@@ -8,7 +8,15 @@ export type ButtonGroupOrientation = 'horizontal' | 'vertical';
 export interface ButtonGroupProps extends HTMLAttributes<HTMLDivElement> {
   /** Layout direction. Defaults to 'horizontal'. */
   orientation?: ButtonGroupOrientation;
-  /** Expects Button elements; they are joined into a segmented cluster. */
+  /**
+   * Expects Button elements; they are joined into a segmented cluster.
+   *
+   * The root renders with `role="group"`, which only conveys useful grouping
+   * semantics to assistive tech when it has an accessible name. Pass an
+   * `aria-label` (or `aria-labelledby`) describing the cluster, e.g.
+   * `<ButtonGroup aria-label="Text style">`. Both forward to the root via the
+   * spread DOM props.
+   */
   children: ReactNode;
 }
 

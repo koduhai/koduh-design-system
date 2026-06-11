@@ -9,9 +9,10 @@ import { useForm } from '../Form/useForm';
 import { useFormField } from '../Form/useFormField';
 
 describe('NumberField', () => {
-  it('renders a labelled spinbutton-ish numeric input', () => {
+  it('renders a labelled numeric (text-mode) input', () => {
     render(<NumberField label="Qty" defaultValue={2} />);
-    expect(screen.getByLabelText('Qty')).toHaveValue(2);
+    // type="text" (see NumberField.tsx) so the value reads back as a string.
+    expect(screen.getByLabelText('Qty')).toHaveValue('2');
   });
 
   it('increment/decrement buttons step by `step` and clamp to min/max', async () => {
@@ -47,6 +48,31 @@ describe('NumberField', () => {
     const input = screen.getByLabelText('Qty') as HTMLInputElement;
     await userEvent.type(input, '.5');
     expect(input.value).toBe('1.5');
+  });
+
+  it('clamps an out-of-range typed value to min/max on blur', async () => {
+    const onChange = vi.fn();
+    render(<NumberField label="Qty" min={0} max={10} onChange={onChange} />);
+    const input = screen.getByLabelText('Qty') as HTMLInputElement;
+    await userEvent.type(input, '999');
+    // While editing, the raw typed value is unconstrained.
+    expect(input.value).toBe('999');
+    await userEvent.tab();
+    // On blur it snaps to max and reports the clamped value.
+    expect(input.value).toBe('10');
+    expect(onChange).toHaveBeenLastCalledWith(10, expect.anything());
+  });
+
+  it('does not re-commit an in-range typed value on blur', async () => {
+    const onChange = vi.fn();
+    render(<NumberField label="Qty" min={0} max={10} onChange={onChange} />);
+    const input = screen.getByLabelText('Qty') as HTMLInputElement;
+    await userEvent.type(input, '5');
+    onChange.mockClear();
+    await userEvent.tab();
+    // No clamp needed, so blur does not emit a redundant onChange.
+    expect(onChange).not.toHaveBeenCalled();
+    expect(input.value).toBe('5');
   });
 
   it('ArrowUp/ArrowDown adjust by step', async () => {
@@ -100,7 +126,9 @@ describe('NumberField bound to a Form', () => {
       const form = useForm({ defaultValues: { qty: 5 } });
       return (
         <Form form={form} aria-label="f">
-          <FormField name="qty" label="Qty"><NumberField /></FormField>
+          <FormField name="qty" label="Qty">
+            <NumberField />
+          </FormField>
           <Probe />
         </Form>
       );
@@ -118,7 +146,9 @@ describe('NumberField bound to a Form', () => {
       const form = useForm({ defaultValues: { qty: 1 } });
       return (
         <Form form={form} aria-label="f">
-          <FormField name="qty" label="Qty"><NumberField /></FormField>
+          <FormField name="qty" label="Qty">
+            <NumberField />
+          </FormField>
         </Form>
       );
     }
@@ -128,13 +158,34 @@ describe('NumberField bound to a Form', () => {
     expect(input.value).toBe('1.5');
   });
 
+  it('treats a non-number bound value as empty rather than coercing it', () => {
+    function Wrap() {
+      // A form field holding a string (e.g. from another control / hydration).
+      const form = useForm({ defaultValues: { qty: 'not-a-number' as unknown as number } });
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="qty" label="Qty">
+            <NumberField />
+          </FormField>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    const input = screen.getByLabelText(/Qty/) as HTMLInputElement;
+    // The unchecked string is narrowed to null, so the input renders empty
+    // instead of showing the raw non-numeric value.
+    expect(input.value).toBe('');
+  });
+
   it('re-syncs the display from the bound value on form reset()', async () => {
     let api!: ReturnType<typeof useForm>;
     function Wrap() {
       api = useForm({ defaultValues: { qty: 5 } });
       return (
         <Form form={api} aria-label="f">
-          <FormField name="qty" label="Qty"><NumberField /></FormField>
+          <FormField name="qty" label="Qty">
+            <NumberField />
+          </FormField>
         </Form>
       );
     }

@@ -88,15 +88,17 @@ export const Chart = /* @__PURE__ */ forwardRef<HTMLDivElement, ChartProps>(func
 
   const label =
     ariaLabel ??
-    `${type} chart with ${series.length} ${series.length === 1 ? 'series' : 'series'}: ${series
-      .map((s) => s.name)
-      .join(', ')}`;
+    `${type} chart with ${series.length} series: ${series.map((s) => s.name).join(', ')}`;
 
-  // group bars: each category gets a cluster of one bar per series
+  // group bars: each category gets a cluster of one bar per series.
+  // The per-series stride is derived from groupW (not from a floored barW) so the
+  // cluster always fits inside one category slot and never overflows into the next.
   const groupCount = maxLen || 1;
   const groupW = plotW / groupCount;
   const barGap = 2;
-  const barW = series.length > 0 ? Math.max(groupW / series.length - barGap, 0.5) : 0;
+  const barStride = series.length > 0 ? groupW / series.length : 0;
+  // Keep at least a hairline of bar; never let barW exceed its own stride.
+  const barW = series.length > 0 ? Math.min(Math.max(barStride - barGap, 0.5), barStride) : 0;
 
   return (
     <div ref={ref} className={cx(styles.root, className)} {...props}>
@@ -124,7 +126,9 @@ export const Chart = /* @__PURE__ */ forwardRef<HTMLDivElement, ChartProps>(func
               <g key={s.name + si} aria-hidden>
                 {s.data.map((v, i) => {
                   const h = ((v - min) / span) * plotH;
-                  const x = PAD.left + i * groupW + si * (barW + barGap) + barGap / 2;
+                  // Center each bar within its stride; the cluster spans exactly
+                  // groupW and sits under the same x as the line/axis category.
+                  const x = PAD.left + i * groupW + si * barStride + (barStride - barW) / 2;
                   const y = baseY - h;
                   return (
                     <rect

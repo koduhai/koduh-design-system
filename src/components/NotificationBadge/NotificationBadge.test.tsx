@@ -42,7 +42,62 @@ describe('NotificationBadge', () => {
     );
     const badge = container.querySelector('[data-badge]')!;
     expect(badge).toHaveAttribute('data-dot', 'true');
+    expect(badge).not.toHaveAttribute('aria-hidden');
     expect(screen.getByText('New')).toBeInTheDocument(); // visually-hidden label
+  });
+  it('hides a label-less dot from AT (shape/color is not a sufficient signal)', () => {
+    const { container } = render(
+      <NotificationBadge dot>
+        <span>x</span>
+      </NotificationBadge>,
+    );
+    const badge = container.querySelector('[data-badge]')!;
+    expect(badge).toHaveAttribute('data-dot', 'true');
+    expect(badge).toHaveAttribute('aria-hidden', 'true');
+  });
+  it('announces a unit fallback when no label is given so AT never hears a bare number', () => {
+    render(
+      <NotificationBadge count={3}>
+        <button>Inbox</button>
+      </NotificationBadge>,
+    );
+    // visible number is hidden from AT, the synthesized text carries context
+    expect(screen.getByText('3')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByText('3 notifications')).toBeInTheDocument();
+  });
+  it('prefers an explicit label over the synthesized fallback', () => {
+    render(
+      <NotificationBadge count={5} label="5 unread messages">
+        <button>Inbox</button>
+      </NotificationBadge>,
+    );
+    expect(screen.getByText('5 unread messages')).toBeInTheDocument();
+    expect(screen.queryByText('5 notifications')).toBeNull();
+  });
+  it('normalizes a negative count to the zero case', () => {
+    const { container } = render(
+      <NotificationBadge count={-1}>
+        <span>x</span>
+      </NotificationBadge>,
+    );
+    expect(container.querySelector('[data-badge]')).toBeNull();
+  });
+  it('floors a fractional count instead of rendering a decimal', () => {
+    render(
+      <NotificationBadge count={3.7}>
+        <span>x</span>
+      </NotificationBadge>,
+    );
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.queryByText('3.7')).toBeNull();
+  });
+  it('shows a normalized negative count as 0 when showZero is set', () => {
+    render(
+      <NotificationBadge count={-4} showZero>
+        <span>x</span>
+      </NotificationBadge>,
+    );
+    expect(screen.getByText('0')).toBeInTheDocument();
   });
   it('reflects tone and placement', () => {
     const { container } = render(

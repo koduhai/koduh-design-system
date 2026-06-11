@@ -24,9 +24,7 @@ function nextId(): string {
 
 const EMPTY: never[] = [];
 
-export function useFieldArray<T = Record<string, unknown>>(
-  name: string,
-): UseFieldArrayResult<T> {
+export function useFieldArray<T = Record<string, unknown>>(name: string): UseFieldArrayResult<T> {
   const api = useFormContext();
 
   const values = useSyncExternalStore(
@@ -79,6 +77,9 @@ export function useFieldArray<T = Record<string, unknown>>(
       write([value, ...values], [nextId(), ...ids]);
     },
     insert(index, value) {
+      // Insertion is valid anywhere in [0, length]; an out-of-range index would
+      // desync the value/id arrays, so no-op instead.
+      if (index < 0 || index > values.length) return;
       const next = values.slice();
       next.splice(index, 0, value);
       const nextIds = ids.slice();
@@ -86,6 +87,7 @@ export function useFieldArray<T = Record<string, unknown>>(
       write(next, nextIds);
     },
     remove(index) {
+      if (index < 0 || index >= values.length) return;
       const next = values.slice();
       next.splice(index, 1);
       const nextIds = ids.slice();
@@ -93,6 +95,12 @@ export function useFieldArray<T = Record<string, unknown>>(
       write(next, nextIds);
     },
     move(from, to) {
+      // Guard both endpoints: an out-of-range `from` makes splice return [], so
+      // `item`/`movedId` would be undefined and silently inject a hole plus a
+      // bogus id, desyncing the value and id arrays.
+      if (from < 0 || from >= values.length || to < 0 || to >= values.length) {
+        return;
+      }
       const next = values.slice();
       const [item] = next.splice(from, 1);
       next.splice(to, 0, item as T);

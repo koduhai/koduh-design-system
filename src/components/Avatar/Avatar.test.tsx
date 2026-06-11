@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Avatar } from './Avatar';
 
 describe('Avatar', () => {
@@ -16,6 +16,23 @@ describe('Avatar', () => {
 
   it('labels the initials avatar with the name', () => {
     render(<Avatar name="Ada Lovelace" />);
+    expect(screen.getByLabelText('Ada Lovelace')).toBeInTheDocument();
+  });
+
+  it('uses name as the image alt when alt is omitted', () => {
+    render(<Avatar src="/me.png" name="Ada Lovelace" />);
+    expect(screen.getByRole('img', { name: 'Ada Lovelace' })).toBeInTheDocument();
+  });
+
+  it('falls back to initials when the image fails to load', () => {
+    const { container } = render(<Avatar src="/broken.png" name="Ada Lovelace" />);
+    const img = container.querySelector('img')!;
+    expect(img).toBeInTheDocument();
+    fireEvent.error(img);
+    // The <img> element is removed and the initials fallback (labelled by name)
+    // takes over, so a src+name avatar with a broken image is still announced.
+    expect(container.querySelector('img')).toBeNull();
+    expect(screen.getByText('AL')).toBeInTheDocument();
     expect(screen.getByLabelText('Ada Lovelace')).toBeInTheDocument();
   });
 

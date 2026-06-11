@@ -1,5 +1,5 @@
 import { cloneElement, forwardRef, useEffect, useRef, useState } from 'react';
-import type { HTMLAttributes, KeyboardEvent, ReactElement, ReactNode } from 'react';
+import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
 import { Popover } from '../Popover';
 import type { PopoverPlacement } from '../Popover';
 import { useId, composeEventHandlers } from '../../primitives';
@@ -19,7 +19,14 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chil
   children: ReactElement<HTMLAttributes<HTMLElement>>;
 }
 
-/** `ref` forwards to the tooltip panel (the floating element), not the trigger. */
+/**
+ * `ref` forwards to the tooltip panel (the floating element), not the trigger.
+ *
+ * Touch note: the tooltip opens on hover/focus only. Touch devices have no
+ * hover and focus-on-tap is inconsistent across mobile browsers, so the content
+ * may be unreachable on touch. Do not place critical, tooltip-only information
+ * here; surface it inline or via a tap-activated control instead.
+ */
 export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(function Tooltip(
   {
     content,
@@ -84,17 +91,34 @@ export const Tooltip = /* @__PURE__ */ forwardRef<HTMLDivElement, TooltipProps>(
     };
   }, []);
 
+  // WCAG 1.4.13 (Content on Hover or Focus): the tooltip must be dismissable
+  // without moving the pointer/focus. A hover-opened tooltip leaves the trigger
+  // unfocused, so a trigger-level keydown never fires; listen on the document
+  // while open instead. This only hides the tooltip (close()), so re-hovering or
+  // re-focusing the trigger opens it again (no permanent suppression).
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
+
+  // Merge our tooltip id with any aria-describedby the child already carries
+  // (e.g. a trigger that also points at a helper-text id) so we don't clobber it.
+  const describedBy =
+    [children.props['aria-describedby'], open ? tooltipId : undefined].filter(Boolean).join(' ') ||
+    undefined;
+
   // Fix 2: Compose our handlers with the child's existing handlers so consumers don't lose theirs.
   const trigger = cloneElement(children, {
-    'aria-describedby': open ? tooltipId : undefined,
+    'aria-describedby': describedBy,
     onMouseEnter: composeEventHandlers(children.props.onMouseEnter, scheduleOpen),
     // Deferred close: let the pointer travel onto the (now hoverable) panel.
     onMouseLeave: composeEventHandlers(children.props.onMouseLeave, scheduleClose),
     onFocus: composeEventHandlers(children.props.onFocus, scheduleOpen),
     onBlur: composeEventHandlers(children.props.onBlur, close),
-    onKeyDown: composeEventHandlers(children.props.onKeyDown, (e: KeyboardEvent<HTMLElement>) => {
-      if (e.key === 'Escape') close();
-    }),
   });
 
   return (

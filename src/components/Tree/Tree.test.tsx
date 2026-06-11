@@ -90,6 +90,39 @@ describe('Tree', () => {
     expect(tabbable[0]).toHaveAccessibleName(/src/);
   });
 
+  it('roving tabindex follows the last-focused row after arrow navigation', async () => {
+    render(<Tree nodes={nodes} defaultExpanded={['src']} />);
+    const src = screen.getByRole('treeitem', { name: /src/ });
+    src.focus();
+    await userEvent.keyboard('{ArrowDown}'); // move focus to Button.tsx
+    const child = screen.getByRole('treeitem', { name: 'Button.tsx' });
+    expect(child).toHaveFocus();
+    // The last-focused row becomes the single tabbable entry point, not src.
+    expect(child).toHaveAttribute('tabindex', '0');
+    expect(src).toHaveAttribute('tabindex', '-1');
+    const tabbable = screen
+      .getAllByRole('treeitem')
+      .filter((el) => el.getAttribute('tabindex') === '0');
+    expect(tabbable).toHaveLength(1);
+  });
+
+  it('falls back to the first visible row when the last-focused row is collapsed away', async () => {
+    render(<Tree nodes={nodes} defaultExpanded={['src']} />);
+    const src = screen.getByRole('treeitem', { name: /src/ });
+    src.focus();
+    await userEvent.keyboard('{ArrowDown}'); // focus Button.tsx
+    expect(screen.getByRole('treeitem', { name: 'Button.tsx' })).toHaveAttribute('tabindex', '0');
+    // Collapse src so the focused child unmounts.
+    await userEvent.click(src);
+    expect(screen.queryByRole('treeitem', { name: 'Button.tsx' })).not.toBeInTheDocument();
+    // Tabbable falls back to the first visible row rather than a vanished one.
+    expect(src).toHaveAttribute('tabindex', '0');
+    const tabbable = screen
+      .getAllByRole('treeitem')
+      .filter((el) => el.getAttribute('tabindex') === '0');
+    expect(tabbable).toHaveLength(1);
+  });
+
   it('Enter selects a node and reflects aria-selected', async () => {
     const onSelect = vi.fn();
     render(<Tree nodes={nodes} defaultExpanded={['src']} onSelect={onSelect} />);
@@ -97,6 +130,38 @@ describe('Tree', () => {
     child.focus();
     await userEvent.keyboard('{Enter}');
     expect(onSelect).toHaveBeenCalledWith('button');
+  });
+
+  it('uncontrolled selection: updates aria-selected on click and still fires onSelect', async () => {
+    const onSelect = vi.fn();
+    render(<Tree nodes={nodes} defaultExpanded={['src']} onSelect={onSelect} />);
+    const child = screen.getByRole('treeitem', { name: 'Button.tsx' });
+    await userEvent.click(child);
+    expect(onSelect).toHaveBeenCalledWith('button');
+    // Uncontrolled: the component tracks selection itself.
+    expect(child).toHaveAttribute('aria-selected', 'true');
+    expect(child).toHaveAttribute('tabindex', '0');
+  });
+
+  it('uncontrolled selection: seeds from defaultSelectedId', () => {
+    render(<Tree nodes={nodes} defaultExpanded={['src']} defaultSelectedId="tree" />);
+    const selected = screen.getByRole('treeitem', { name: 'Tree.tsx' });
+    expect(selected).toHaveAttribute('aria-selected', 'true');
+    expect(selected).toHaveAttribute('tabindex', '0');
+  });
+
+  it('controlled selection: aria-selected does not move until selectedId prop changes', async () => {
+    const onSelect = vi.fn();
+    render(<Tree nodes={nodes} defaultExpanded={['src']} selectedId="tree" onSelect={onSelect} />);
+    const button = screen.getByRole('treeitem', { name: 'Button.tsx' });
+    await userEvent.click(button);
+    expect(onSelect).toHaveBeenCalledWith('button');
+    // Controlled: selection stays on the prop value until the parent updates it.
+    expect(button).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByRole('treeitem', { name: 'Tree.tsx' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
   });
 
   it('reflects controlled selectedId via aria-selected and makes it the tab entry point', () => {

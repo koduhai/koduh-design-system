@@ -132,6 +132,12 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   const invalid = field ? field.invalid : error;
   const isRequired = field ? field.required : required;
   const labelId = `${baseId}-label`;
+  // Accessible name for the trigger/listbox. In-context the FormField's <label>
+  // can't target the role="button" trigger via htmlFor, so reference its labelId
+  // with aria-labelledby; standalone, point at the own label span (+ trigger for
+  // the selected/placeholder value).
+  const triggerLabelledBy = field ? field.labelId : label ? `${labelId} ${baseId}` : undefined;
+  const listLabelledBy = field ? field.labelId : label ? labelId : undefined;
   const listboxId = `${baseId}-listbox`;
   const optionId = (i: number) => `${baseId}-opt-${i}`;
   const listRef = useRef<HTMLUListElement>(null);
@@ -144,7 +150,8 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
 
   const choose = (opt: SelectOption, event: React.SyntheticEvent) => {
     if (opt.disabled) return;
-    if (bound) bound.onChange(opt.value, event); else setSelected(opt.value);
+    if (bound) bound.onChange(opt.value, event);
+    else setSelected(opt.value);
     onChange?.(opt.value, event);
     restoreFocus.current = true; // selection → return focus to the trigger
     setOpen(false);
@@ -155,7 +162,8 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
   // firing, and focus returns to the trigger (the clear button is leaving).
   const clear = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    if (bound) bound.onChange('', event); else setSelected(undefined);
+    if (bound) bound.onChange('', event);
+    else setSelected(undefined);
     onChange?.('', event);
     triggerRef.current?.focus();
   };
@@ -274,6 +282,18 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
     // change would fight user navigation. Mirrors the Popover open/close effect.
   }, [open]);
 
+  // Keep the active option visible during keyboard navigation. Without this,
+  // ArrowDown/Up/Home/End past the visible window move aria-activedescendant to
+  // an option the sighted user cannot see (WAI-ARIA listbox keyboard pattern).
+  useEffect(() => {
+    if (!open || activeIndex < 0) return;
+    const el = document.getElementById(optionId(activeIndex));
+    // scrollIntoView is unimplemented in jsdom; guard so unit tests don't throw.
+    el?.scrollIntoView?.({ block: 'nearest' });
+    // optionId derives from baseId only, which is stable for a given mount, so it
+    // is intentionally not a dependency (this project does not run exhaustive-deps).
+  }, [activeIndex, open]);
+
   const trigger = (
     <button
       {...rest}
@@ -288,7 +308,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       aria-haspopup="listbox"
       aria-expanded={open}
       aria-controls={open ? listboxId : undefined}
-      aria-labelledby={showOwnLabel && label ? `${labelId} ${baseId}` : undefined}
+      aria-labelledby={triggerLabelledBy}
       aria-describedby={describedBy}
       aria-invalid={invalid || undefined}
       aria-required={isRequired || undefined}
@@ -329,7 +349,7 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
             role="listbox"
             data-density={density}
             tabIndex={-1}
-            aria-labelledby={showOwnLabel && label ? labelId : undefined}
+            aria-labelledby={listLabelledBy}
             aria-activedescendant={activeIndex >= 0 ? optionId(activeIndex) : undefined}
             className={styles.listbox}
             onKeyDown={onListKeyDown}

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { useRef } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Dialog, ConfirmDialog } from './';
 
@@ -62,6 +62,47 @@ describe('Dialog', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
+  it('closes on a backdrop click that both presses and releases on the dialog backdrop', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog open onOpenChange={onOpenChange} title="Settings">
+        Body
+      </Dialog>,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Settings' });
+    fireEvent.mouseDown(dlg);
+    fireEvent.click(dlg);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('does not close when a press starts inside the surface and releases on the backdrop', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog open onOpenChange={onOpenChange} title="Settings">
+        <input aria-label="field" />
+      </Dialog>,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Settings' });
+    // Press begins inside the dialog (on the input), release bubbles to the
+    // dialog element (the browser reports this as a click on the backdrop).
+    fireEvent.mouseDown(screen.getByLabelText('field'));
+    fireEvent.click(dlg);
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('does not close when dismissable is false even on a genuine backdrop click', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog open onOpenChange={onOpenChange} title="Settings" dismissable={false}>
+        Body
+      </Dialog>,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Settings' });
+    fireEvent.mouseDown(dlg);
+    fireEvent.click(dlg);
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
   it('focuses the initialFocus ref when opened', async () => {
     function Harness() {
       const inputRef = useRef<HTMLInputElement>(null);
@@ -101,6 +142,31 @@ describe('ConfirmDialog', () => {
     expect(screen.getByText('This cannot be undone.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Confirm' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+  });
+
+  it('associates the description with the dialog via aria-describedby', () => {
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={() => {}}
+        onConfirm={() => {}}
+        title="Delete item?"
+        description="This cannot be undone."
+      />,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Delete item?' });
+    const describedBy = dlg.getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    const description = document.getElementById(describedBy as string);
+    expect(description).toHaveTextContent('This cannot be undone.');
+  });
+
+  it('omits aria-describedby when no description is supplied', () => {
+    render(
+      <ConfirmDialog open onOpenChange={() => {}} onConfirm={() => {}} title="Delete item?" />,
+    );
+    const dlg = screen.getByRole('dialog', { name: 'Delete item?' });
+    expect(dlg).not.toHaveAttribute('aria-describedby');
   });
 
   it('fires onConfirm then onOpenChange(false) on confirm; only onOpenChange(false) on cancel', async () => {
@@ -180,5 +246,43 @@ describe('ConfirmDialog', () => {
     // Cancel is disabled and cannot dismiss mid-flight.
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('preventDefaults the native cancel (Esc) while confirmLoading so the dialog cannot get stuck closed', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={onOpenChange}
+        onConfirm={() => {}}
+        title="Deleting"
+        confirmLoading
+        loadingText="Deleting…"
+      />,
+    );
+    const dlg = document.querySelector('dialog') as HTMLDialogElement;
+    const cancelEvent = new Event('cancel', { cancelable: true });
+    dlg.dispatchEvent(cancelEvent);
+    // dismissable={!confirmLoading} → false, so Dialog preventDefaults the native
+    // cancel; the browser never runs dialog.close(), so React `open` stays true
+    // and the dialog can't end up visually closed but logically open.
+    expect(cancelEvent.defaultPrevented).toBe(true);
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('lets the native cancel (Esc) through when not loading', () => {
+    render(
+      <ConfirmDialog
+        open
+        onOpenChange={() => {}}
+        onConfirm={() => {}}
+        title="Delete?"
+        confirmLoading={false}
+      />,
+    );
+    const dlg = document.querySelector('dialog') as HTMLDialogElement;
+    const cancelEvent = new Event('cancel', { cancelable: true });
+    dlg.dispatchEvent(cancelEvent);
+    expect(cancelEvent.defaultPrevented).toBe(false);
   });
 });

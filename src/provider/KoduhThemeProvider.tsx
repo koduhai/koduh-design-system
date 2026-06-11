@@ -28,8 +28,15 @@ function isColorScheme(value: string | null): value is ColorScheme {
 
 function readStoredPreference(storageKey: string, fallback: ColorScheme): ColorScheme {
   if (typeof window === 'undefined') return fallback;
-  const stored = window.localStorage.getItem(storageKey);
-  return isColorScheme(stored) ? stored : fallback;
+  // Accessing localStorage can throw, not just return null: sandboxed iframes and
+  // some privacy/enterprise policies make the getter itself raise SecurityError.
+  // A throw here would crash the whole provider on mount, so fall back silently.
+  try {
+    const stored = window.localStorage.getItem(storageKey);
+    return isColorScheme(stored) ? stored : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 /** Resolve a preference into a concrete theme, reading the OS scheme for `'system'`. */
@@ -74,8 +81,13 @@ export function KoduhThemeProvider({
 
   const persist = useCallback(
     (next: ColorScheme) => {
-      if (!disablePersistence && typeof window !== 'undefined') {
+      if (disablePersistence || typeof window === 'undefined') return;
+      // setItem can throw on QuotaExceededError or in storage-blocked contexts;
+      // persistence is best-effort, so swallow it rather than crash setMode/toggle.
+      try {
         window.localStorage.setItem(storageKey, next);
+      } catch {
+        /* persistence unavailable — keep the in-memory preference */
       }
     },
     [disablePersistence, storageKey],

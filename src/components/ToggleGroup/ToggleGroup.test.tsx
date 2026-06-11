@@ -61,6 +61,38 @@ describe('ToggleGroup', () => {
     expect(screen.getByRole('radio', { name: 'Grid' })).toHaveAttribute('aria-checked', 'true');
   });
 
+  it('single: roving tabIndex follows an externally-driven controlled value change', () => {
+    const { rerender } = render(<ToggleGroup type="single" items={ITEMS} value="list" />);
+    // 'list' starts tabbable, 'grid' is not.
+    expect(screen.getByRole('radio', { name: 'List' })).toHaveAttribute('tabindex', '0');
+    expect(screen.getByRole('radio', { name: 'Grid' })).toHaveAttribute('tabindex', '-1');
+    // Parent drives a new selection without any click/keydown in the group.
+    rerender(<ToggleGroup type="single" items={ITEMS} value="grid" />);
+    // The checked option must be the tabbable one per the radiogroup pattern.
+    expect(screen.getByRole('radio', { name: 'Grid' })).toHaveAttribute('tabindex', '0');
+    expect(screen.getByRole('radio', { name: 'List' })).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('multiple mode does not emit aria-required on the role=group element', () => {
+    render(
+      <FormField label="View mode" required>
+        <ToggleGroup type="multiple" items={ITEMS} defaultValue={['list']} />
+      </FormField>,
+    );
+    const group = screen.getByRole('group', { name: 'View mode' });
+    expect(group).not.toHaveAttribute('aria-required');
+  });
+
+  it('single mode emits aria-required on the role=radiogroup element', () => {
+    render(
+      <FormField label="View mode" required>
+        <ToggleGroup type="single" items={ITEMS} defaultValue="list" />
+      </FormField>,
+    );
+    const group = screen.getByRole('radiogroup', { name: 'View mode' });
+    expect(group).toHaveAttribute('aria-required', 'true');
+  });
+
   describe('ToggleGroup bound to a Form', () => {
     it('single: reads value from the form and writes selection back', async () => {
       function Probe() {

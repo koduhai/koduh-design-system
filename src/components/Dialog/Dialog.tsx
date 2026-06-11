@@ -49,6 +49,12 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
   forwardedRef,
 ) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // Tracks whether the press that may become a backdrop click actually started
+  // on the backdrop. A drag that begins inside .surface (e.g. selecting text in
+  // a form field) and releases over the backdrop is reported by the browser as a
+  // click on the dialog element; without this guard it would dismiss and discard
+  // the user's input.
+  const pressedBackdrop = useRef(false);
   const titleId = useId('dialog-title');
   const close = useCallback(() => onOpenChange(false), [onOpenChange]);
 
@@ -94,9 +100,20 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
     };
   }, [close, dismissable]);
 
+  const handleBackdropMouseDown = useCallback((event: React.MouseEvent<HTMLDialogElement>) => {
+    // Only the dialog element itself is the backdrop; anything inside .surface
+    // bubbles up with a deeper target.
+    pressedBackdrop.current = event.target === dialogRef.current;
+  }, []);
+
   const handleBackdropClick = useCallback(
     (event: React.MouseEvent<HTMLDialogElement>) => {
-      if (dismissable && event.target === dialogRef.current) {
+      const releasedOnBackdrop = event.target === dialogRef.current;
+      const startedOnBackdrop = pressedBackdrop.current;
+      pressedBackdrop.current = false;
+      // Close only when both the press and the release landed on the backdrop,
+      // so a press-inside / release-on-backdrop drag does not dismiss.
+      if (dismissable && startedOnBackdrop && releasedOnBackdrop) {
         close();
       }
     },
@@ -109,6 +126,7 @@ export const Dialog = /* @__PURE__ */ forwardRef<HTMLDialogElement, DialogProps>
       className={cx(styles.root, className)}
       data-size={size}
       aria-labelledby={title ? titleId : undefined}
+      onMouseDown={handleBackdropMouseDown}
       onClick={handleBackdropClick}
       {...props}
     >

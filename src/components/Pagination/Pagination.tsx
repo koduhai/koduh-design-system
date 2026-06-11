@@ -4,6 +4,9 @@ import { cx } from '../../utils/cx';
 import { getPaginationRange } from './getPaginationRange';
 import styles from './Pagination.module.css';
 
+/** The kind of control an aria-label is being generated for. */
+export type PaginationItemType = 'page' | 'previous' | 'next';
+
 export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange'> {
   /** Total number of pages (>= 1). */
   count: number;
@@ -17,6 +20,16 @@ export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onCh
   boundaryCount?: number;
   /** Disables all controls. */
   disabled?: boolean;
+  /** Accessible label for the Previous control. Default `'Previous page'`. */
+  previousLabel?: string;
+  /** Accessible label for the Next control. Default `'Next page'`. */
+  nextLabel?: string;
+  /**
+   * Formats the accessible label for each control, for localization. When
+   * omitted, the English defaults are used (e.g. `'Go to page 3'`). For
+   * `'previous'`/`'next'`, `page` is the target page the control navigates to.
+   */
+  getItemAriaLabel?: (type: PaginationItemType, page: number) => string;
 }
 
 export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProps>(
@@ -28,6 +41,9 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
       siblingCount = 1,
       boundaryCount = 1,
       disabled = false,
+      previousLabel = 'Previous page',
+      nextLabel = 'Next page',
+      getItemAriaLabel,
       className,
       'aria-label': ariaLabel = 'Pagination',
       ...props
@@ -41,6 +57,9 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
       onPageChange?.(target);
     };
 
+    const labelFor = (type: PaginationItemType, target: number, fallback: string) =>
+      getItemAriaLabel ? getItemAriaLabel(type, target) : fallback;
+
     return (
       <nav ref={ref} className={cx(styles.root, className)} aria-label={ariaLabel} {...props}>
         <ul className={styles.list}>
@@ -48,11 +67,13 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
             <button
               type="button"
               className={styles.item}
-              aria-label="Previous page"
+              aria-label={labelFor('previous', page - 1, previousLabel)}
               disabled={disabled || page <= 1}
               onClick={() => go(page - 1)}
             >
-              ‹
+              <span className={styles.chevron} aria-hidden="true">
+                ‹
+              </span>
             </button>
           </li>
           {items.map((item, index) =>
@@ -67,7 +88,7 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
                 <button
                   type="button"
                   className={styles.item}
-                  aria-label={`Go to page ${item}`}
+                  aria-label={labelFor('page', item, `Go to page ${item}`)}
                   aria-current={item === page ? 'page' : undefined}
                   data-current={item === page ? 'true' : undefined}
                   disabled={disabled}
@@ -82,11 +103,13 @@ export const Pagination = /* @__PURE__ */ forwardRef<HTMLElement, PaginationProp
             <button
               type="button"
               className={styles.item}
-              aria-label="Next page"
+              aria-label={labelFor('next', page + 1, nextLabel)}
               disabled={disabled || page >= count}
               onClick={() => go(page + 1)}
             >
-              ›
+              <span className={styles.chevron} aria-hidden="true">
+                ›
+              </span>
             </button>
           </li>
         </ul>

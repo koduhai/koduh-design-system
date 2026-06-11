@@ -81,7 +81,9 @@ export const RadioGroup = /* @__PURE__ */ forwardRef<HTMLDivElement, RadioGroupP
           role="radiogroup"
           aria-orientation={orientation}
           aria-labelledby={field ? labelId : label ? labelId : undefined}
+          aria-describedby={field?.describedById}
           aria-invalid={field?.invalid || undefined}
+          aria-required={field?.required || undefined}
           className={cx(styles.group, className)}
           data-orientation={orientation}
           {...props}

@@ -14,4 +14,15 @@ describe('Divider', () => {
     expect(screen.getByText('OR')).toBeInTheDocument();
     expect(container.querySelector('[role="separator"]')).toBeNull();
   });
+
+  it('keeps separator semantics when the label is an empty string', () => {
+    render(<Divider>{''}</Divider>);
+    expect(screen.getByRole('separator')).toBeInTheDocument();
+  });
+
+  it('keeps separator semantics when the label is whitespace only', () => {
+    render(<Divider orientation="vertical">{'   '}</Divider>);
+    const sep = screen.getByRole('separator');
+    expect(sep).toHaveAttribute('aria-orientation', 'vertical');
+  });
 });

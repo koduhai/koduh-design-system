@@ -26,14 +26,17 @@ export const CountUp = /* @__PURE__ */ forwardRef<HTMLSpanElement, CountUpProps>
   ref,
 ) {
   const [display, setDisplay] = useState(from);
-  // Tracks the last settled value so subsequent `value` changes animate from there.
-  const startRef = useRef(from);
+  // Mirrors the latest rendered value so an interrupting `value` change tweens
+  // from what is currently on screen (not the original start, which would jump back).
+  const displayRef = useRef(from);
+  displayRef.current = display;
 
   useEffect(() => {
-    const start = startRef.current;
+    // Start the tween from the currently displayed value so a mid-animation
+    // `value` change continues forward instead of snapping back to the prior start.
+    const start = displayRef.current;
     if (duration <= 0 || prefersReducedMotion()) {
       setDisplay(value);
-      startRef.current = value;
       return;
     }
     let raf = 0;
@@ -43,8 +46,6 @@ export const CountUp = /* @__PURE__ */ forwardRef<HTMLSpanElement, CountUpProps>
       setDisplay(start + (value - start) * easeOut(t));
       if (t < 1) {
         raf = requestAnimationFrame(tick);
-      } else {
-        startRef.current = value;
       }
     };
     raf = requestAnimationFrame(tick);

@@ -134,34 +134,45 @@ export const Snackbar = /* @__PURE__ */ forwardRef<HTMLDivElement, SnackbarProps
   );
 
   return (
+    // Persistent live region. It is NOT the popover element, so it always stays
+    // in the accessibility tree (an open popover removes its closed self from the
+    // tree). Keeping it present means the message inserted on open is announced,
+    // rather than relying on a region appearing from display:none. While closed
+    // the region is empty and the visual card below is not rendered.
     <div
-      ref={mergeRefs(innerRef, ref)}
       role={severity === 'error' ? 'alert' : 'status'}
       aria-live={severity === 'error' ? 'assertive' : 'polite'}
-      data-severity={severity}
-      data-placement={placement}
-      data-open={open ? 'true' : undefined}
-      className={cx(styles.root, className)}
-      onMouseEnter={clearTimer}
-      onMouseLeave={startTimer}
-      onFocus={clearTimer}
-      onBlur={startTimer}
+      className={styles.region}
       onKeyDown={handleKeyDown}
-      {...props}
     >
-      <span className={styles.icon} aria-hidden>
-        {severityIcons[severity]}
-      </span>
-      <div className={styles.message}>{children}</div>
-      {action ? <div className={styles.action}>{action}</div> : null}
-      <button
-        type="button"
-        className={styles.close}
-        aria-label="Close"
-        onClick={() => onOpenChange(false)}
-      >
-        <CloseIcon size={18} />
-      </button>
+      {open ? (
+        <div
+          ref={mergeRefs(innerRef, ref)}
+          data-severity={severity}
+          data-placement={placement}
+          data-open="true"
+          className={cx(styles.root, className)}
+          onMouseEnter={clearTimer}
+          onMouseLeave={startTimer}
+          onFocus={clearTimer}
+          onBlur={startTimer}
+          {...props}
+        >
+          <span className={styles.icon} aria-hidden>
+            {severityIcons[severity]}
+          </span>
+          <div className={styles.message}>{children}</div>
+          {action ? <div className={styles.action}>{action}</div> : null}
+          <button
+            type="button"
+            className={styles.close}
+            aria-label="Close"
+            onClick={() => onOpenChange(false)}
+          >
+            <CloseIcon size={18} />
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 });

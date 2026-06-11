@@ -29,8 +29,13 @@ export default defineConfig({
   // the public import specifier is `@koduhai/design-system/styles.css`. Emit a
   // matching dist/styles.css so the on-disk filename matches the specifier.
   async onSuccess() {
-    if (existsSync('dist/index.css')) {
-      copyFileSync('dist/index.css', 'dist/styles.css');
+    // styles.css is a declared package export, so its absence is a broken build,
+    // not a no-op: fail loudly if the bundled CSS the copy depends on is missing.
+    if (!existsSync('dist/index.css')) {
+      throw new Error(
+        'tsup onSuccess: dist/index.css was not emitted, so dist/styles.css (a declared export) cannot be produced.',
+      );
     }
+    copyFileSync('dist/index.css', 'dist/styles.css');
   },
 });

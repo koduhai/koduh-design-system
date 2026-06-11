@@ -87,6 +87,11 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
   const registered = new Set<string>();
   const fieldCache = new Map<string, FieldState>();
 
+  // Monotonic token guarding async validation: each maybeValidate run captures
+  // the current value before awaiting, and a stale (older) run that resolves
+  // after a newer run started bails instead of clobbering the newer errors.
+  let validationSeq = 0;
+
   function emit() {
     for (const l of listeners) l();
   }
@@ -121,13 +126,9 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
     let errors: FormErrors = {};
     for (const [name, rule] of rules) {
       const value = get(state.values, name);
-      const empty =
-        value == null ||
-        value === '' ||
-        (Array.isArray(value) && value.length === 0);
+      const empty = value == null || value === '' || (Array.isArray(value) && value.length === 0);
       if (rule.required && empty) {
-        errors[name] =
-          typeof rule.required === 'string' ? rule.required : 'This field is required';
+        errors[name] = typeof rule.required === 'string' ? rule.required : 'This field is required';
         continue;
       }
       if (rule.validate) {
@@ -145,12 +146,14 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
   async function maybeValidate(trigger: 'change' | 'blur') {
     const first = state.submitCount === 0;
     const should = first
-      ? (trigger === 'change' && mode === 'onChange') ||
-        (trigger === 'blur' && mode === 'onBlur')
+      ? (trigger === 'change' && mode === 'onChange') || (trigger === 'blur' && mode === 'onBlur')
       : (trigger === 'change' && reValidateMode === 'onChange') ||
         (trigger === 'blur' && reValidateMode === 'onBlur');
     if (!should) return;
+    const seq = ++validationSeq;
     const errors = await runValidation();
+    // A newer run started while this one awaited; discard this stale result.
+    if (seq !== validationSeq) return;
     setState({ errors });
   }
 
@@ -199,12 +202,33 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
     },
     register(name, fieldRules) {
       registered.add(name);
+      // Re-register must reflect the latest rule shape: set when provided, and
+      // clear when a field goes from having rules to none (required/validate
+      // toggled off at runtime) so stale rules are not validated.
       if (fieldRules) rules.set(name, fieldRules);
+      else rules.delete(name);
     },
     unregister(name) {
       registered.delete(name);
       rules.delete(name);
       ids.delete(name);
+      fieldCache.delete(name);
+      // Clear validation state so a removed (or remounted) field does not carry
+      // stale errors/touched/dirty. Value is intentionally retained: field arrays
+      // store their items under the array name (not per-field), and consumers may
+      // rely on values persisting across conditional unmounts.
+      const hasError = name in state.errors;
+      const hasTouched = name in state.touched;
+      const hasDirty = name in state.dirty;
+      if (hasError || hasTouched || hasDirty) {
+        const errors = { ...state.errors };
+        const touched = { ...state.touched };
+        const dirty = { ...state.dirty };
+        delete errors[name];
+        delete touched[name];
+        delete dirty[name];
+        setState({ errors, touched, dirty });
+      }
     },
     setFieldId(name, id) {
       if (id) ids.set(name, id);
@@ -228,6 +252,10 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
           submitCount: state.submitCount + 1,
           touched: allTouched,
         });
+        // Claim the validation token so a slower in-flight onChange validation
+        // cannot resolve afterward and overwrite the submit-time errors. Submit
+        // itself is authoritative and does not bail on a token mismatch.
+        ++validationSeq;
         const errors = await runValidation();
         if (Object.keys(errors).length > 0) {
           // Mark every field that has an error as touched so error messages show

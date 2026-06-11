@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rating } from './Rating';
+import { FormField } from '../FormField';
 
 describe('Rating', () => {
   it('renders a radiogroup with `max` radios (default 5)', () => {
@@ -47,6 +48,30 @@ describe('Rating', () => {
     expect(onChange).toHaveBeenLastCalledWith(5);
   });
 
+  it('does not fire onChange for boundary key presses that do not change the value', async () => {
+    const onChange = vi.fn();
+    render(<Rating defaultValue={1} onChange={onChange} />);
+    const radios = screen.getAllByRole('radio');
+    radios[0]!.focus();
+    // ArrowLeft at star 1 (already selected) must be a no-op, not re-select 1.
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(onChange).not.toHaveBeenCalled();
+    expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+    // Home while already at 1 is likewise a no-op.
+    await userEvent.keyboard('{Home}');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('does not re-fire onChange at the top boundary (ArrowRight / End on a maxed rating)', async () => {
+    const onChange = vi.fn();
+    render(<Rating defaultValue={5} max={5} onChange={onChange} />);
+    const radios = screen.getAllByRole('radio');
+    radios[4]!.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    await userEvent.keyboard('{End}');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('uses roving tabindex: only the active star is tabbable', () => {
     render(<Rating defaultValue={3} />);
     const radios = screen.getAllByRole('radio');
@@ -76,5 +101,39 @@ describe('Rating', () => {
   it('reflects size as a data attribute', () => {
     render(<Rating size="lg" />);
     expect(screen.getByRole('radiogroup')).toHaveAttribute('data-size', 'lg');
+  });
+
+  it('associates with FormField label, description, error, and required (group pattern)', () => {
+    render(
+      <FormField
+        label="Satisfaction"
+        helperText="Rate your experience"
+        error
+        errorText="Please rate us"
+        required
+      >
+        <Rating />
+      </FormField>,
+    );
+    const group = screen.getByRole('radiogroup');
+    // Labelled by the FormField label, not the standalone aria-label.
+    expect(group).not.toHaveAttribute('aria-label');
+    const label = screen.getByText('Satisfaction');
+    expect(group).toHaveAttribute('aria-labelledby', label.id);
+    // Described by the FormField error message (error replaces helperText).
+    const desc = screen.getByText('Please rate us');
+    expect(group).toHaveAttribute('aria-describedby', desc.id);
+    expect(group).toHaveAttribute('aria-invalid', 'true');
+    expect(group).toHaveAttribute('aria-required', 'true');
+    expect(group).toHaveAttribute('id');
+  });
+
+  it('standalone (no FormField) keeps its aria-label and omits group associations', () => {
+    render(<Rating aria-label="Quality" />);
+    const group = screen.getByRole('radiogroup', { name: 'Quality' });
+    expect(group).not.toHaveAttribute('aria-labelledby');
+    expect(group).not.toHaveAttribute('aria-describedby');
+    expect(group).not.toHaveAttribute('aria-invalid');
+    expect(group).not.toHaveAttribute('aria-required');
   });
 });

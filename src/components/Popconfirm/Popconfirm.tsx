@@ -1,11 +1,12 @@
-import { cloneElement } from 'react';
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import { cloneElement, useEffect, useRef } from 'react';
+import type { HTMLAttributes, KeyboardEvent, ReactElement, ReactNode } from 'react';
 import { Popover } from '../Popover';
 import type { PopoverPlacement } from '../Popover';
 import { Button } from '../Button';
 import type { ButtonTone } from '../Button';
 import { composeEventHandlers, useControllableState, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useOptionalFieldContext } from '../FormField';
 import styles from './Popconfirm.module.css';
 
 export interface PopconfirmProps {
@@ -54,9 +55,70 @@ export function Popconfirm({
     onChange: onOpenChange,
   });
 
-  const baseId = useId('popconfirm');
+  // When composed inside a <FormField>, the dialog is a role="dialog" composite
+  // that <label htmlFor> can't target, so it defers its id/label/description/state
+  // to the field (aria-labelledby/-describedby/-invalid/-required). Standalone, it
+  // labels itself from `title` and falls back to a default name when none is given.
+  const field = useOptionalFieldContext();
+
+  const reactId = useId('popconfirm');
+  const baseId = field?.id ?? reactId;
   const titleId = title != null ? `${baseId}-title` : undefined;
   const messageId = `${baseId}-message`;
+
+  // role="dialog" needs an accessible name; with no title and no field label,
+  // fall back to a sensible default so it never goes unnamed.
+  const ariaLabelledBy = field ? field.labelId : titleId;
+  const ariaLabel = ariaLabelledBy == null ? 'Confirm action' : undefined;
+  const ariaDescribedBy = field?.describedById ?? messageId;
+  // No aria-invalid / aria-required: neither is a valid attribute on role="dialog"
+  // (axe aria-allowed-attr). The field error/help is conveyed via aria-describedby.
+
+  // This panel is role="dialog", so it owns focus: move focus in on open, trap
+  // Tab within it, and return focus to the opener on close. Popover itself does
+  // no focus management (it's the shared low-level floating primitive), so a
+  // composing dialog has to supply it or keyboard/SR users tab straight past the
+  // Confirm/Cancel buttons and focus is orphaned when it closes.
+  const panelRef = useRef<HTMLDivElement>(null);
+  const restoreRef = useRef<HTMLElement | null>(null);
+
+  const getFocusable = () => {
+    const panel = panelRef.current;
+    if (!panel) return [] as HTMLElement[];
+    return Array.from(
+      panel.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      // Capture the opener before focus moves into the panel so we can restore it.
+      restoreRef.current = restoreRef.current ?? (document.activeElement as HTMLElement | null);
+      getFocusable()[0]?.focus();
+    } else if (restoreRef.current) {
+      restoreRef.current.focus();
+      restoreRef.current = null;
+    }
+    // getFocusable reads refs only; safe to omit from deps.
+  }, [isOpen]);
+
+  const onPanelKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'Tab') return;
+    const focusable = getFocusable();
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
+    const active = document.activeElement;
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
 
   // onConfirm fires before close, matching ConfirmDialog.
   const confirmAndClose = () => {
@@ -78,15 +140,18 @@ export function Popconfirm({
 
   return (
     <Popover
+      ref={panelRef}
       id={baseId}
       open={isOpen}
       onOpenChange={setOpen}
       placement={placement}
       role="dialog"
-      aria-labelledby={titleId}
-      aria-describedby={messageId}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={ariaDescribedBy}
       trigger={clonedTrigger}
       className={cx(styles.panel, className)}
+      onKeyDown={onPanelKeyDown}
     >
       {title != null ? (
         <span id={titleId} className={styles.title}>

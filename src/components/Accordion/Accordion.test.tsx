@@ -67,6 +67,59 @@ describe('Accordion', () => {
     expect(screen.queryByText('Body A')).not.toBeInTheDocument();
   });
 
+  it('wraps each trigger in an <h3> heading by default', () => {
+    const { container } = render(<Accordion items={items} />);
+    const headings = container.querySelectorAll('h3');
+    expect(headings).toHaveLength(items.length);
+    expect(headings[0]?.querySelector('button')).toHaveTextContent('Section A');
+  });
+
+  it('renders the configured heading level', () => {
+    const { container } = render(<Accordion items={items} headingLevel={2} />);
+    expect(container.querySelectorAll('h2')).toHaveLength(items.length);
+    expect(container.querySelectorAll('h3')).toHaveLength(0);
+  });
+
+  it('ArrowDown/ArrowUp move focus between headers and wrap', async () => {
+    render(<Accordion items={items} />);
+    const a = screen.getByRole('button', { name: 'Section A' });
+    const b = screen.getByRole('button', { name: 'Section B' });
+    a.focus();
+    expect(a).toHaveFocus();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(b).toHaveFocus();
+    // Wraps back to the first header from the last.
+    await userEvent.keyboard('{ArrowDown}');
+    expect(a).toHaveFocus();
+    await userEvent.keyboard('{ArrowUp}');
+    expect(b).toHaveFocus();
+  });
+
+  it('Home/End jump to the first/last header', async () => {
+    render(<Accordion items={items} />);
+    const a = screen.getByRole('button', { name: 'Section A' });
+    const b = screen.getByRole('button', { name: 'Section B' });
+    a.focus();
+    await userEvent.keyboard('{End}');
+    expect(b).toHaveFocus();
+    await userEvent.keyboard('{Home}');
+    expect(a).toHaveFocus();
+  });
+
+  it('arrow navigation skips disabled headers', async () => {
+    const withDisabled = [
+      { id: 'a', title: 'Section A', content: 'Body A' },
+      { id: 'b', title: 'Section B', content: 'Body B', disabled: true },
+      { id: 'c', title: 'Section C', content: 'Body C' },
+    ];
+    render(<Accordion items={withDisabled} />);
+    const a = screen.getByRole('button', { name: 'Section A' });
+    const c = screen.getByRole('button', { name: 'Section C' });
+    a.focus();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(c).toHaveFocus();
+  });
+
   it('lazy + keepMounted: keeps content mounted (hidden) after collapse', async () => {
     render(<Accordion items={items} lazy keepMounted />);
     expect(screen.queryByText('Body A')).not.toBeInTheDocument();

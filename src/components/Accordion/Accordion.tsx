@@ -1,9 +1,12 @@
-import { forwardRef, useState } from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import { forwardRef, useRef, useState, createElement } from 'react';
+import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { useId, useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
+import type { HeadingLevel } from '../../utils/headingLevel';
 import { ChevronDownIcon } from '../../icons';
 import styles from './Accordion.module.css';
+
+export type { HeadingLevel };
 
 export interface AccordionItemData {
   /** Stable identity; used as the controlled/uncontrolled value. */
@@ -43,6 +46,11 @@ export interface AccordionProps extends Omit<
    * `false`.
    */
   keepMounted?: boolean;
+  /**
+   * Semantic heading level (`<h2>`–`<h6>`) wrapping each trigger, so the
+   * accordion aligns with the surrounding document outline. Defaults to `3`.
+   */
+  headingLevel?: HeadingLevel;
 }
 
 function toArray(value: string | string[] | undefined): string[] {
@@ -61,12 +69,17 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
       collapsible = true,
       lazy = false,
       keepMounted = false,
+      headingLevel = 3,
       className,
       ...props
     },
     ref,
   ) {
     const baseId = useId('accordion');
+
+    // Refs to each trigger button, indexed by item position, for the
+    // WAI-ARIA Accordion arrow-key roving-focus pattern.
+    const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
     const fallbackDefault: string | string[] = multiple ? [] : '';
     const [state, setState] = useControllableState<string | string[]>({
@@ -104,6 +117,44 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
       onChange?.(next);
     };
 
+    // WAI-ARIA Accordion keyboard pattern: ArrowDown/ArrowUp move focus to the
+    // next/previous enabled header, wrapping around; Home/End jump to the
+    // first/last enabled header. Tab/Enter/Space keep their native button
+    // behaviour, so we only intercept the cross-header navigation keys.
+    const focusTriggerAt = (start: number, direction: 1 | -1) => {
+      const count = items.length;
+      for (let step = 1; step <= count; step += 1) {
+        const idx = (((start + direction * step) % count) + count) % count;
+        if (!items[idx]?.disabled) {
+          triggerRefs.current[idx]?.focus();
+          return;
+        }
+      }
+    };
+
+    const handleTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          focusTriggerAt(index, 1);
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          focusTriggerAt(index, -1);
+          break;
+        case 'Home':
+          event.preventDefault();
+          focusTriggerAt(-1, 1);
+          break;
+        case 'End':
+          event.preventDefault();
+          focusTriggerAt(items.length, -1);
+          break;
+        default:
+          break;
+      }
+    };
+
     return (
       <div ref={ref} className={cx(styles.root, className)} {...props}>
         {items.map((item, index) => {
@@ -133,9 +184,14 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
               className={styles.item}
               data-expanded={expanded ? 'true' : undefined}
             >
-              <h3 className={styles.heading}>
+              {createElement(
+                `h${headingLevel}`,
+                { className: styles.heading },
                 <button
                   type="button"
+                  ref={(node: HTMLButtonElement | null) => {
+                    triggerRefs.current[index] = node;
+                  }}
                   id={headerId}
                   className={styles.trigger}
                   aria-expanded={expanded}
@@ -143,6 +199,7 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
                   disabled={item.disabled}
                   data-expanded={expanded ? 'true' : undefined}
                   onClick={() => toggle(item.id)}
+                  onKeyDown={(event) => handleTriggerKeyDown(event, index)}
                 >
                   <span className={styles.title}>{item.title}</span>
                   <ChevronDownIcon
@@ -151,8 +208,8 @@ export const Accordion = /* @__PURE__ */ forwardRef<HTMLDivElement, AccordionPro
                     data-expanded={expanded ? 'true' : undefined}
                     aria-hidden
                   />
-                </button>
-              </h3>
+                </button>,
+              )}
               <div
                 id={panelId}
                 role="region"

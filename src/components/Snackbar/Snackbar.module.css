@@ -1,3 +1,17 @@
+/* Persistent live region wrapper. It is always rendered (even while closed) and
+   is not a popover, so it stays in the accessibility tree and announces the
+   message inserted into it when the snackbar opens. Its only child is the
+   position:fixed card, so this wrapper has no in-flow content and collapses to
+   zero height; pointer-events:none keeps the empty region from intercepting
+   clicks. We deliberately avoid display:contents/display:none here so the live
+   region role is reliably exposed to assistive tech. */
+.region {
+  pointer-events: none;
+}
+.region > .root {
+  pointer-events: auto;
+}
+
 .root {
   /* Fixed-position fallback for environments without top-layer popover support.
      When promoted to the top layer the UA positions it; we still set the
@@ -18,13 +32,17 @@
   border-inline-start: 3px solid var(--snack-main);
   border-radius: var(--ku-radius-md);
   box-shadow: var(--ku-shadow-3);
-  z-index: var(--ku-z-snackbar, 1400);
+  z-index: var(--ku-z-index-snackbar, 1400);
 }
 
-/* Native popover defaults to display:none until shown; the data-open fallback
-   covers the no-popover-API path. */
-.root:not(:popover-open):not([data-open='true']) {
-  display: none;
+/* The visual card is rendered only while open (data-open='true'), so it is shown
+   directly here. In the native-popover path the UA stylesheet hides a popover
+   until showPopover() runs (`[popover]:not(:popover-open) { display: none }`);
+   keep the card visible across that brief pre-promotion frame so it does not
+   flash. The live region wrapper (.region) is what stays in the a11y tree while
+   closed; the card itself unmounts on close. */
+.root[data-open='true']:not(:popover-open) {
+  display: flex;
 }
 
 .root[data-severity='info'] {

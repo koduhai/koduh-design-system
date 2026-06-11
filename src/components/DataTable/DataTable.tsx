@@ -26,6 +26,17 @@ function headerLabel<Row>(col: DataColumn<Row>): string {
   return typeof col.header === 'string' ? col.header : col.key;
 }
 
+/**
+ * Parse a numeric pixel value from a CSS width string (e.g. '180px' → 180) so an
+ * unresized column can still seed aria-valuenow. Returns undefined for non-px
+ * widths (%, ch, auto) where no meaningful px value can be derived at render time.
+ */
+function parsePxWidth(width: string | undefined): number | undefined {
+  if (width == null) return undefined;
+  const match = /^(\d+(?:\.\d+)?)px$/.exec(width.trim());
+  return match ? Number(match[1]) : undefined;
+}
+
 function DataTableInner<Row>(
   {
     columns,
@@ -162,15 +173,20 @@ function DataTableInner<Row>(
   // Surface the current state for server-side consumers. Fires whenever any
   // input the caller would re-fetch on settles. `safePage` (not the raw
   // `pageState`) is reported so the caller fetches the page actually shown.
+  // The callback is read through a ref so a consumer passing an inline arrow
+  // (`onStateChange={(s) => fetchPage(s)}`) does not re-run this effect (and
+  // re-trigger a remote fetch) on every render; only real state changes fire it.
+  const onStateChangeRef = useRef(onStateChange);
+  onStateChangeRef.current = onStateChange;
   useEffect(() => {
-    onStateChange?.({
+    onStateChangeRef.current?.({
       sort: sortState,
       filters: filterState,
       search: searchState,
       page: safePage,
       pageSize: pageSizeState,
     });
-  }, [onStateChange, sortState, filterState, searchState, safePage, pageSizeState]);
+  }, [sortState, filterState, searchState, safePage, pageSizeState]);
 
   const handleSortChange = (key: string, _dir: SortRule['dir'], event?: MouseEvent) => {
     setSort(cycleSort(sortState, key, event?.shiftKey ?? false));
@@ -241,16 +257,18 @@ function DataTableInner<Row>(
   }, [resizableColumns, setWidths]);
 
   const handleResizeKeyDown = (col: DataColumn<Row>, e: KeyboardEvent<HTMLSpanElement>) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     const current = widths[col.key];
     const headerEl = (e.currentTarget.closest('th') as HTMLElement | null) ?? null;
     const base = current ?? headerEl?.getBoundingClientRect().width ?? minWidthFor(col);
-    if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      setColumnWidth(col, base - resizeStep);
-    } else if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      setColumnWidth(col, base + resizeStep);
-    }
+    e.preventDefault();
+    // Reading-direction aware, matching the pointer handler: in RTL the handle
+    // visually grows toward the left, so ArrowLeft should grow and ArrowRight
+    // shrink (the inverse of LTR).
+    const rtl = typeof document !== 'undefined' && document.dir === 'rtl';
+    const growKey = rtl ? 'ArrowLeft' : 'ArrowRight';
+    const sign = e.key === growKey ? 1 : -1;
+    setColumnWidth(col, base + sign * resizeStep);
   };
 
   const handleResizePointerDown = (
@@ -279,6 +297,11 @@ function DataTableInner<Row>(
         return { ...col, width: widthValue } as Column<Row>;
       }
       const label = headerLabel(col);
+      const min = minWidthFor(col);
+      // Seed aria-valuenow even before the first resize: prefer the persisted
+      // width, then a px width from the column config, then the column min, so a
+      // focusable range widget always exposes a current value and a lower bound.
+      const valueNow = w ?? parsePxWidth(col.width) ?? min;
       const header: ReactNode = (
         <span className={styles.resizableHeader}>
           <span className={styles.resizableHeaderContent}>{col.header}</span>
@@ -286,7 +309,8 @@ function DataTableInner<Row>(
             role="separator"
             aria-orientation="vertical"
             aria-label={`Resize ${label} column`}
-            aria-valuenow={w != null ? w : undefined}
+            aria-valuenow={valueNow}
+            aria-valuemin={min}
             tabIndex={0}
             className={styles.resizeHandle}
             onKeyDown={(ev) => handleResizeKeyDown(col, ev)}
@@ -301,8 +325,9 @@ function DataTableInner<Row>(
       );
       return { ...col, header, width: widthValue } as Column<Row>;
     });
-    // header handlers close over stable refs/state setters; recompute on width/col/flag.
-  }, [columns, widths, resizableColumns]);
+    // header handlers close over stable refs/state setters; recompute on
+    // width/col/flag and on resizeStep so the keyboard handler's step stays current.
+  }, [columns, widths, resizableColumns, resizeStep]);
 
   // Resolve the empty slot Table renders when there are zero rows. When `total`
   // is 0 but `data` has rows, the dataset was filtered/searched to nothing —

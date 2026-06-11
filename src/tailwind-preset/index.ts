@@ -57,6 +57,7 @@ export const koduhaiPreset = {
         success: { DEFAULT: color('success'), fg: color('success-fg') },
         warning: { DEFAULT: color('warning'), fg: color('warning-fg') },
         info: { DEFAULT: color('info'), fg: color('info-fg') },
+        accent: { DEFAULT: color('accent'), fg: color('accent-fg') },
         // Lines / dividers.
         border: color('border'),
         // Surfaces (renamed from bg* to keep utilities readable: bg-canvas, …).

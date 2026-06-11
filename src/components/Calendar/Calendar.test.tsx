@@ -50,6 +50,25 @@ describe('Calendar', () => {
     expect(day(20)).toHaveAttribute('aria-selected', 'false');
   });
 
+  it('controlled: updating value to a different month pages the grid to it', () => {
+    const { rerender } = render(<Calendar value={JUNE_2026} />);
+    expect(screen.getByText(/June 2026/)).toBeInTheDocument();
+    // Parent moves the controlled value to August 2026.
+    rerender(<Calendar value={new Date(2026, 7, 9)} />);
+    expect(screen.getByText(/August 2026/)).toBeInTheDocument();
+    expect(day(9)).toHaveAttribute('aria-selected', 'true');
+    expect(day(9)).toHaveAttribute('tabindex', '0');
+  });
+
+  it('grid is labelled by the month heading rather than a duplicated aria-label', () => {
+    render(<Calendar defaultValue={JUNE_2026} />);
+    const heading = screen.getByRole('heading', { name: /June 2026/ });
+    expect(heading).toHaveAttribute('aria-level', '2');
+    const grid = screen.getByRole('grid');
+    expect(grid).not.toHaveAttribute('aria-label');
+    expect(grid.getAttribute('aria-labelledby')).toBe(heading.id);
+  });
+
   it('previous/next month buttons change the displayed month', async () => {
     render(<Calendar defaultValue={JUNE_2026} />);
     await userEvent.click(screen.getByLabelText('Next month'));
@@ -90,6 +109,21 @@ describe('Calendar', () => {
     await userEvent.keyboard('{PageUp}');
     await userEvent.keyboard('{PageUp}');
     expect(screen.getByText(/May 2026/)).toBeInTheDocument();
+  });
+
+  it('paging into a month moves roving focus to the first enabled day, not a disabled one', async () => {
+    // August 2026 displayed; min is July 10, so July 1-9 are disabled.
+    render(<Calendar defaultValue={new Date(2026, 7, 15)} min={new Date(2026, 6, 10)} />);
+    expect(screen.getByText(/August 2026/)).toBeInTheDocument();
+    day(15).focus();
+    await userEvent.keyboard('{PageUp}'); // → July 2026
+    expect(screen.getByText(/July 2026/)).toBeInTheDocument();
+    // Day 1 is disabled (before min); focus and tabindex land on the first enabled day, July 10.
+    expect(day(1)).toBeDisabled();
+    expect(day(10)).not.toBeDisabled();
+    expect(day(10)).toHaveFocus();
+    expect(day(10)).toHaveAttribute('tabindex', '0');
+    expect(day(1)).toHaveAttribute('tabindex', '-1');
   });
 
   it('disables out-of-range days and refuses to select them', async () => {

@@ -14,6 +14,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-24.04
+    # Never publish from a pre-release (e.g. v1.2.0-rc.1). Only a final release
+    # should push a public version to the registry.
+    if: ${{ github.event.release.prerelease == false }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -24,6 +27,20 @@ jobs:
           node-version: 20
           cache: npm
           registry-url: https://npm.pkg.github.com
+
+      # Guard: the published artifact is whatever package.json says, so the
+      # release tag (vX.Y.Z) must match package.json's version exactly. Without
+      # this, tagging vN while package.json still holds an older/newer version
+      # would publish the wrong version under the wrong tag.
+      - name: Verify tag matches package.json version
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          PKG="v$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Release tag $TAG does not match package.json version $PKG" >&2
+            exit 1
+          fi
+          echo "Tag $TAG matches package.json ($PKG)."
 
       - name: Install dependencies
         run: npm ci
@@ -40,16 +57,14 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: E2E a11y tests (axe, both themes)
-        run: npm run test:e2e -- --grep axe
-
-      # Visual regression against the committed Linux baselines
-      # (e2e/components.spec.ts-snapshots/*-linux.png). The ubuntu runner and the
-      # playwright:*-jammy image used to generate the baselines share the same
-      # Chromium + glibc, so rendering matches; playwright.config.ts allows a
-      # small maxDiffPixelRatio for sub-pixel anti-aliasing differences.
-      - name: E2E visual regression
-        run: npm run test:e2e -- --grep visual
+      # Run the FULL e2e suite: axe a11y (both themes), visual regression against
+      # the committed Linux baselines (e2e/components.spec.ts-snapshots/*-linux.png;
+      # the ubuntu runner matches the baseline image's Chromium + glibc), AND any
+      # untitled interaction tests. This used to be split into `--grep axe` and
+      # `--grep visual` steps, which silently skipped any test whose title matched
+      # neither (e.g. the #34 overlay-anchoring test), so those never ran.
+      - name: E2E tests (axe + visual + interaction, both themes)
+        run: npm run test:e2e
 
       - name: Upload Playwright report + diffs on failure
         if: failure()

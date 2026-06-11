@@ -128,10 +128,19 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
     // input/option handlers, which already set `query` themselves. We don't touch
     // `query` while the user is typing because `currentValue` only changes on an
     // actual selection. Tracking the last-seen value lets us re-derive the label.
+    // We also re-derive when the value is unchanged but its label only resolves
+    // now (options arrived async after the value was set): in that case the query
+    // is still the empty placeholder, so adopting the resolved label is safe and
+    // does not clobber user typing.
     const lastValueRef = useRef<string | undefined>(currentValue);
-    if (currentValue !== lastValueRef.current) {
+    const lastLabelResolvedRef = useRef<boolean>(selectedOption != null);
+    const valueChanged = currentValue !== lastValueRef.current;
+    const labelJustResolved =
+      !lastLabelResolvedRef.current && selectedOption != null && query === '';
+    if (valueChanged || labelJustResolved) {
       lastValueRef.current = currentValue;
-      const nextLabel = options.find((o) => o.value === currentValue)?.label ?? '';
+      lastLabelResolvedRef.current = selectedOption != null;
+      const nextLabel = selectedOption?.label ?? '';
       if (nextLabel !== query) setQuery(nextLabel);
     }
 
@@ -140,7 +149,8 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
 
     const choose = (opt: ComboboxOption, event: SyntheticEvent) => {
       if (opt.disabled) return;
-      if (bound) bound.onChange(opt.value, event); else setSelected(opt.value);
+      if (bound) bound.onChange(opt.value, event);
+      else setSelected(opt.value);
       setQuery(opt.label);
       onChange?.(opt.value, event);
       setOpen(false);
@@ -150,7 +160,8 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
     // Reset to "no selection". Reports '' (not undefined) so the value stays a
     // string for consumers; refocus the input after clearing.
     const clear = (event: SyntheticEvent) => {
-      if (bound) bound.onChange('', event); else setSelected(undefined);
+      if (bound) bound.onChange('', event);
+      else setSelected(undefined);
       setQuery('');
       onChange?.('', event);
       setOpen(false);
@@ -158,16 +169,22 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
       inputRef.current?.focus();
     };
 
+    const lastIndex = filtered.length - 1;
     const onInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
           if (!open) setOpen(true);
-          setActiveIndex((i) => Math.min(filtered.length - 1, i + 1));
+          // Opening (or no active option yet): start at the first option rather
+          // than incrementing a stale index left over from a previous open.
+          setActiveIndex((i) => (i < 0 ? (lastIndex < 0 ? -1 : 0) : Math.min(lastIndex, i + 1)));
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setActiveIndex((i) => Math.max(0, i - 1));
+          // ArrowUp opens the listbox and, with no active option yet, lands on
+          // the last option, per the WAI-ARIA combobox keyboard pattern.
+          if (!open) setOpen(true);
+          setActiveIndex((i) => (i < 0 ? lastIndex : Math.max(0, i - 1)));
           break;
         case 'Enter': {
           if (open && activeIndex >= 0) {
@@ -180,6 +197,8 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
         case 'Escape':
           e.preventDefault();
           setOpen(false);
+          // Reset the highlight so a later reopen starts with no active option.
+          setActiveIndex(-1);
           break;
         default:
           break;
@@ -232,7 +251,10 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
             ) : null}
           </span>
         ) : null}
-        <div className={styles.control} data-clearable={clearable && currentValue ? 'true' : undefined}>
+        <div
+          className={styles.control}
+          data-clearable={clearable && currentValue ? 'true' : undefined}
+        >
           <Popover
             open={open}
             onOpenChange={setOpen}

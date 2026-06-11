@@ -89,7 +89,15 @@ export const Textarea = /* @__PURE__ */ forwardRef<HTMLTextAreaElement, Textarea
 
     useLayoutEffect(() => {
       const el = innerRef.current;
-      if (!el || !autoResize) return;
+      if (!el) return;
+      if (!autoResize) {
+        // autoResize was toggled off: drop any inline sizing we applied so the
+        // textarea reverts to its CSS/rows-driven height instead of staying
+        // frozen at its last auto-sized height/overflow.
+        el.style.height = '';
+        el.style.overflowY = '';
+        return;
+      }
       const cs = window.getComputedStyle(el);
       const lineHeight = parseFloat(cs.lineHeight) || 20;
       const vPad = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) || 0;
@@ -135,10 +143,14 @@ export const Textarea = /* @__PURE__ */ forwardRef<HTMLTextAreaElement, Textarea
           aria-describedby={describedBy}
           onChange={(event) => {
             const next = event.target.value;
-            if (bound) bound.onChange(next, event); else setState(next);
+            if (bound) bound.onChange(next, event);
+            else setState(next);
             onChange?.(next, event);
           }}
-          onBlur={(e) => { bound?.onBlur(); onBlur?.(e); }}
+          onBlur={(e) => {
+            bound?.onBlur();
+            onBlur?.(e);
+          }}
           {...props}
         />
         {showOwnLabel && description ? (

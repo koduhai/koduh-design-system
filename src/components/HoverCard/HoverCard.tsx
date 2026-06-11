@@ -43,6 +43,7 @@ export const HoverCard = /* @__PURE__ */ forwardRef<HTMLDivElement, HoverCardPro
       openDelay = 300,
       closeDelay = 150,
       className,
+      id: consumerId,
       onMouseEnter: panelMouseEnter,
       onMouseLeave: panelMouseLeave,
       ...rest
@@ -99,10 +100,20 @@ export const HoverCard = /* @__PURE__ */ forwardRef<HTMLDivElement, HoverCardPro
       };
     }, []);
 
+    // Append cardId to any existing token-list value the consumer already set on
+    // the trigger, rather than replacing it, so a separate description is kept.
+    const mergeIds = (existing: string | undefined): string | undefined => {
+      if (!open) return existing;
+      return existing ? `${existing} ${cardId}` : cardId;
+    };
+
     // Compose our handlers with the child's existing handlers so consumers keep theirs.
+    // A consumer-passed `id` lands on the trigger (its own element), so it cannot
+    // clobber the internal `cardId` that wires the trigger <-> card aria linkage.
     const triggerEl = cloneElement(trigger, {
-      'aria-describedby': open ? cardId : undefined,
-      'aria-details': open ? cardId : undefined,
+      id: consumerId ?? trigger.props.id,
+      'aria-describedby': mergeIds(trigger.props['aria-describedby']),
+      'aria-details': mergeIds(trigger.props['aria-details']),
       onMouseEnter: composeEventHandlers(trigger.props.onMouseEnter, scheduleOpen),
       onMouseLeave: composeEventHandlers(trigger.props.onMouseLeave, scheduleClose),
       onFocus: composeEventHandlers(trigger.props.onFocus, scheduleOpen),
@@ -119,12 +130,14 @@ export const HoverCard = /* @__PURE__ */ forwardRef<HTMLDivElement, HoverCardPro
         onOpenChange={setOpen}
         dismissable={false}
         placement={placement}
-        id={cardId}
         trigger={triggerEl}
         className={cx(styles.root, className)}
         onMouseEnter={composeEventHandlers(panelMouseEnter, onPanelEnter)}
         onMouseLeave={composeEventHandlers(panelMouseLeave, onPanelLeave)}
         {...rest}
+        // The card's own id wires the trigger <-> card aria linkage; keep it last
+        // so nothing spread in `rest` can override it.
+        id={cardId}
       >
         {children}
       </Popover>

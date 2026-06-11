@@ -1,6 +1,6 @@
-import { forwardRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
-import { useControllableState, useId } from '../../primitives';
+import { mergeRefs, useControllableState, useId, VisuallyHidden } from '../../primitives';
 import { cx } from '../../utils/cx';
 import { ChevronLeftIcon, ChevronRightIcon } from '../../icons';
 import styles from './Carousel.module.css';
@@ -52,6 +52,7 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
   ref,
 ) {
   const baseId = useId('carousel');
+  const rootRef = useRef<HTMLDivElement>(null);
   const count = items.length;
 
   const [active, setActive] = useControllableState<number>({
@@ -68,6 +69,9 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
     let target = next;
     if (target < 0) target = loop ? count - 1 : 0;
     else if (target > count - 1) target = loop ? 0 : count - 1;
+    // Skip no-op navigations (active indicator click, clamped boundary) so
+    // consumers don't get spurious onIndexChange notifications.
+    if (target === safeActive) return;
     setActive(target);
   };
 
@@ -79,20 +83,22 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(event);
     if (event.defaultPrevented) return;
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      goTo(safeActive - 1);
-    } else if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      goTo(safeActive + 1);
-    }
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    // In RTL the next slide sits to the left, so the horizontal arrows swap.
+    const rtl =
+      typeof window !== 'undefined' && rootRef.current
+        ? getComputedStyle(rootRef.current).direction === 'rtl'
+        : false;
+    const forward = rtl ? event.key === 'ArrowLeft' : event.key === 'ArrowRight';
+    event.preventDefault();
+    goTo(safeActive + (forward ? 1 : -1));
   };
 
   const slideId = (i: number) => `${baseId}-slide-${i}`;
 
   return (
     <div
-      ref={ref}
+      ref={mergeRefs(ref, rootRef)}
       role="group"
       aria-roledescription="carousel"
       className={cx(styles.root, className)}
@@ -100,6 +106,10 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
       onKeyDown={handleKeyDown}
       {...props}
     >
+      <VisuallyHidden aria-live="polite" aria-atomic="true">
+        {count === 0 ? '' : `Slide ${safeActive + 1} of ${count}`}
+      </VisuallyHidden>
+
       <div className={styles.viewport}>
         {items.map((item, i) => (
           <div

@@ -31,12 +31,14 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
     const reactId = useId('fileupload');
     const field = useOptionalFieldContext();
     // When inside a <FormField>, defer id/aria to it; otherwise use own props.
+    // The operable wrapper (role="button") is the perceived control, so it carries
+    // the field id and association; the hidden <input> gets its own derived id.
     const id = field?.id ?? idProp ?? reactId;
+    const inputId = `${id}-input`;
     const instructionsId = `${id}-instructions`;
     const describedBy = field?.describedById
       ? `${field.describedById} ${instructionsId}`
       : instructionsId;
-    const invalid = field?.invalid;
     const isRequired = field?.required;
 
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -68,8 +70,10 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
     };
 
     const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
-      if (disabled) return;
+      // Always preventDefault so the browser never tries to navigate to / open
+      // the file, even on a disabled dropzone; only the visual state is gated.
       event.preventDefault();
+      if (disabled) return;
       if (!dragover) setDragover(true);
     };
 
@@ -81,8 +85,10 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
     };
 
     const handleDrop = (event: DragEvent<HTMLDivElement>) => {
-      if (disabled) return;
+      // preventDefault unconditionally so a drop on a disabled dropzone does not
+      // navigate to / open the dropped file; emitting is gated on disabled.
       event.preventDefault();
+      if (disabled) return;
       setDragover(false);
       emit(event.dataTransfer?.files ?? null);
     };
@@ -94,10 +100,16 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
     return (
       <div
         role="button"
+        id={id}
         tabIndex={disabled ? -1 : 0}
         aria-disabled={disabled || undefined}
+        // The operable wrapper carries the field association: a <label htmlFor>
+        // cannot target a role="button", so reference the FormField label by id.
+        aria-labelledby={field?.labelId}
         aria-describedby={describedBy}
-        aria-invalid={invalid || undefined}
+        // No aria-invalid / aria-required here: neither is a valid ARIA attribute
+        // on role="button" (axe aria-allowed-attr). Required is enforced natively
+        // on the file input below; the error text is conveyed via aria-describedby.
         className={cx(styles.root, className)}
         data-dragover={dragover ? 'true' : undefined}
         data-disabled={disabled ? 'true' : undefined}
@@ -124,11 +136,12 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
         </span>
         <input
           ref={mergeRefs(inputRef, ref)}
-          id={id}
+          id={inputId}
           type="file"
-          // The dropzone wrapper (role="button") is the perceived control, but the
-          // native input still needs its own accessible name to satisfy axe's label rule.
-          aria-label={typeof label === 'string' ? label : 'Upload files'}
+          // No aria-label: the input is display:none (see FileUpload.module.css),
+          // so it is not in the accessibility tree. The role="button" wrapper is the
+          // named, operable control. axe ignores display:none elements, so the input
+          // does not need its own label.
           className={styles.input}
           accept={accept}
           multiple={multiple}

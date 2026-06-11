@@ -37,6 +37,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Catch tree-shaking / sideEffects regressions on the PR rather than only
+      # at release (release.yml runs this too).
+      - name: Verify bundle (tree-shaking / sideEffects)
+        run: npm run verify:bundle
+
       # Guard against release/docs drift: the built export surface must match
       # src/index.ts, and CLAUDE.md's component count must be accurate (issue #6).
       - name: Verify export surface + docs
@@ -45,16 +50,14 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: E2E a11y tests (axe, both themes)
-        run: npm run test:e2e -- --grep axe
-
-      # Visual regression against the committed Linux baselines
-      # (e2e/components.spec.ts-snapshots/*-linux.png). The ubuntu runner and the
-      # playwright:*-jammy image used to generate the baselines share the same
-      # Chromium + glibc, so rendering matches; playwright.config.ts allows a
-      # small maxDiffPixelRatio for sub-pixel anti-aliasing differences.
-      - name: E2E visual regression
-        run: npm run test:e2e -- --grep visual
+      # Run the FULL e2e suite: axe a11y (both themes), visual regression against
+      # the committed Linux baselines (e2e/components.spec.ts-snapshots/*-linux.png;
+      # the ubuntu runner matches the baseline image's Chromium + glibc), AND any
+      # untitled interaction tests. This used to be split into `--grep axe` and
+      # `--grep visual` steps, which silently skipped any test whose title matched
+      # neither (e.g. the #34 overlay-anchoring test), so those never ran.
+      - name: E2E tests (axe + visual + interaction, both themes)
+        run: npm run test:e2e
 
       - name: Upload Playwright report + diffs on failure
         if: failure()

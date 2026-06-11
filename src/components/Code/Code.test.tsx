@@ -52,4 +52,32 @@ describe('CodeBlock', () => {
     expect(ref.current).toBeInstanceOf(HTMLPreElement);
     expect(ref.current!.tagName).toBe('PRE');
   });
+
+  it('makes the scrollable <pre> keyboard-reachable (WCAG 2.1.1)', () => {
+    const { container } = render(<CodeBlock>{`const a = 1;`}</CodeBlock>);
+    const pre = container.querySelector('pre')!;
+    expect(pre).toHaveAttribute('tabindex', '0');
+  });
+
+  it('exposes the language as an accessible name on the <pre>', () => {
+    const { container } = render(<CodeBlock language="tsx">{`const a = 1;`}</CodeBlock>);
+    const pre = container.querySelector('pre')!;
+    expect(pre).toHaveAttribute('aria-label', 'tsx code');
+  });
+
+  it('omits the language aria-label when no language is provided', () => {
+    const { container } = render(<CodeBlock>{`const a = 1;`}</CodeBlock>);
+    const pre = container.querySelector('pre')!;
+    expect(pre).not.toHaveAttribute('aria-label');
+  });
+
+  it('lets a consumer override the aria-label', () => {
+    const { container } = render(
+      <CodeBlock language="tsx" aria-label="custom name">
+        {`const a = 1;`}
+      </CodeBlock>,
+    );
+    const pre = container.querySelector('pre')!;
+    expect(pre).toHaveAttribute('aria-label', 'custom name');
+  });
 });

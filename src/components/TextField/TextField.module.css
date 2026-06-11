@@ -39,6 +39,17 @@
   box-shadow: 0 0 0 1px var(--ku-color-danger);
 }
 
+/* Disabled treatment: dim the whole field wrapper (input + adornments) and
+   show a not-allowed cursor. Color is not the only signal here (opacity +
+   cursor), per the AA requirement. Matches Select's disabled trigger. */
+.field:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.field:has(input:disabled) .input {
+  cursor: not-allowed;
+}
+
 .root[data-size='sm'] .field {
   min-height: 32px;
   padding: 0 var(--ku-space-2);

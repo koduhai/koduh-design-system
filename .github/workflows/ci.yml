@@ -37,6 +37,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Catch tree-shaking / sideEffects regressions on the PR rather than only
+      # at release (release.yml runs this too).
+      - name: Verify bundle (tree-shaking / sideEffects)
+        run: npm run verify:bundle
+
       # Guard against release/docs drift: the built export surface must match
       # src/index.ts, and CLAUDE.md's component count must be accurate (issue #6).
       - name: Verify export surface + docs

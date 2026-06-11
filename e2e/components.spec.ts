@@ -124,6 +124,25 @@ async function openFloating(page: import('@playwright/test').Page) {
   await page.locator('[role="listbox"], [role="menu"]').first().waitFor();
 }
 
+// @axe-core/playwright intermittently throws "Axe is already running" when an
+// analyze() is invoked while a prior axe run in the page hasn't fully settled
+// (the axe-core global run guard). It's a transient infra race, not a violation,
+// so retry the analyze a few times on exactly that error before giving up. This
+// keeps the flake from failing the gate without masking real axe failures.
+async function analyzeAxe(page: import('@playwright/test').Page) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await new AxeBuilder({ page }).disableRules(DISABLED_RULES).analyze();
+    } catch (error) {
+      if (attempt <= 3 && /Axe is already running/i.test(String(error))) {
+        await page.waitForTimeout(200);
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+
 for (const component of COMPONENTS) {
   const { name, storyId } = component;
   const shouldOpen = 'open' in component && component.open;
@@ -131,7 +150,7 @@ for (const component of COMPONENTS) {
     test(`${name} has no axe violations (${theme})`, async ({ page }) => {
       await gotoStory(page, storyId, theme);
       if (shouldOpen) await openFloating(page);
-      const results = await new AxeBuilder({ page }).disableRules(DISABLED_RULES).analyze();
+      const results = await analyzeAxe(page);
       expect(results.violations).toEqual([]);
     });
 

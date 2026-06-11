@@ -4,6 +4,30 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.10.0] - 2026-06-12
+
+Accessibility + cross-browser hardening (#40). No breaking changes. Component
+count unchanged (79).
+
+### Added
+
+- **Live-region announcer primitive.** `<LiveRegion politeness atomic>` for
+  declarative, state-driven screen-reader announcements (a visually-hidden
+  `role=status` / `alert` region), plus `useAnnouncer()` / `announce(message,
+politeness)` for imperative, fire-and-forget announcements via a shared,
+  lazily-created region on `<body>` (SSR-safe). Exported from the package root.
+- `Combobox` now announces the live result count as the list filters.
+
+### Changed
+
+- Migrated the ad-hoc invisible live regions (`Carousel` slide, `TagInput`
+  add/remove) onto `<LiveRegion>`. Visible status regions (`Snackbar`, `Toaster`,
+  `Calendar` month label, `DataTable` range) are unchanged.
+- The e2e suite now runs the overlay-positioning and interaction specs on
+  **WebKit and Firefox** in addition to Chromium, covering the JS positioning
+  fallback used by overlays on engines without CSS anchor positioning (the #34
+  class of bug). axe and the Chromium-linux visual snapshots stay Chromium-only.
+
 ## [2.9.0] - 2026-06-11
 
 Quality and hardening release from a full multi-dimension code review of the

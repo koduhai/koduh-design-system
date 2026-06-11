@@ -109,6 +109,17 @@ describe('Chip', () => {
     expect(el).toHaveAttribute('data-size', 'sm');
   });
 
+  it('honors data-tone on the outline variant (tone is no longer ignored)', () => {
+    // The outline variant derives its border + text color from the tone's
+    // CSS-local custom properties (--chip-fg / --chip-main), so the tone must
+    // still reach the root as data-tone for the stylesheet to pick it up. A
+    // neutral fallback here would mean the tone is being dropped.
+    render(<Chip label="Overdue" variant="outline" tone="danger" />);
+    const el = screen.getByText('Overdue').closest('[data-variant]')!;
+    expect(el).toHaveAttribute('data-variant', 'outline');
+    expect(el).toHaveAttribute('data-tone', 'danger');
+  });
+
   it.each(['success', 'warning', 'info', 'accent'] as const)('supports the %s tone', (tone) => {
     render(<Chip label="X" tone={tone} />);
     expect(screen.getByText('X').closest('[data-tone]')).toHaveAttribute('data-tone', tone);

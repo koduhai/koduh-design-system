@@ -27,12 +27,12 @@ describe('Chart', () => {
 
   it('draws one path per series for a line chart', () => {
     const { container } = render(<Chart series={multi} type="line" aria-label="x" />);
-    expect(container.querySelectorAll('path')).toHaveLength(2);
+    expect(container.querySelectorAll('path[data-series-line]')).toHaveLength(2);
   });
 
   it('starts each line path with a move command', () => {
     const { container } = render(<Chart series={single} type="line" aria-label="x" />);
-    expect(container.querySelector('path')?.getAttribute('d')).toMatch(/^M/);
+    expect(container.querySelector('path[data-series-line]')?.getAttribute('d')).toMatch(/^M/);
   });
 
   it('draws series.length * data.length rects for a bar chart', () => {
@@ -44,7 +44,7 @@ describe('Chart', () => {
   it('colors series from the chart palette by index, wrapping past 8', () => {
     const eight = Array.from({ length: 9 }, (_, i) => ({ name: `s${i}`, data: [1, 2] }));
     const { container } = render(<Chart series={eight} type="line" aria-label="x" />);
-    const paths = container.querySelectorAll('path');
+    const paths = container.querySelectorAll('path[data-series-line]');
     expect(paths[0]).toHaveAttribute('stroke', 'var(--ku-color-chart-1)');
     expect(paths[7]).toHaveAttribute('stroke', 'var(--ku-color-chart-8)');
     // 9th series wraps back to chart-1
@@ -58,7 +58,27 @@ describe('Chart', () => {
         aria-label="x"
       />,
     );
-    expect(container.querySelector('path')).toHaveAttribute('stroke', 'var(--ku-color-chart-5)');
+    expect(container.querySelector('path[data-series-line]')).toHaveAttribute(
+      'stroke',
+      'var(--ku-color-chart-5)',
+    );
+  });
+
+  it('distinguishes line series by a non-color signal (distinct stroke-dasharray)', () => {
+    const { container } = render(<Chart series={multi} type="line" aria-label="x" />);
+    const lines = container.querySelectorAll('path[data-series-line]');
+    expect(lines).toHaveLength(2);
+    // First series is solid; the second carries a distinct dash pattern, so the
+    // two are differentiable without relying on color (WCAG 1.4.1).
+    expect(lines[0]).not.toHaveAttribute('stroke-dasharray');
+    expect(lines[1]).toHaveAttribute('stroke-dasharray');
+    const dash0 = lines[0]?.getAttribute('data-series-dash');
+    const dash1 = lines[1]?.getAttribute('data-series-dash');
+    expect(dash0).not.toBe(dash1);
+    // Each series also gets a distinct marker shape as a second non-color cue.
+    expect(lines[0]?.getAttribute('data-series-marker')).not.toBe(
+      lines[1]?.getAttribute('data-series-marker'),
+    );
   });
 
   it('renders axis lines by default and omits them when showAxes is false', () => {

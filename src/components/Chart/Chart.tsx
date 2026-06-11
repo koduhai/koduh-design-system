@@ -42,6 +42,58 @@ function seriesColor(s: ChartSeries, index: number): string {
   return `var(--ku-color-chart-${(index % 8) + 1})`;
 }
 
+/**
+ * Per-series stroke patterns so line series are distinguishable without relying
+ * on color alone (WCAG 1.4.1). The first series stays solid; later series cycle
+ * through dash patterns. Strings are valid SVG `stroke-dasharray` values; `''`
+ * means a solid stroke.
+ */
+const DASH_PATTERNS = ['', '6 4', '2 3', '8 3 2 3', '1 4'] as const;
+
+/** Distinct marker shapes per series, cycled, as a second non-color signal. */
+const MARKER_SHAPES = ['circle', 'square', 'diamond', 'triangle'] as const;
+type MarkerShape = (typeof MARKER_SHAPES)[number];
+
+function seriesDash(index: number): string {
+  return DASH_PATTERNS[index % DASH_PATTERNS.length] ?? '';
+}
+
+function seriesMarker(index: number): MarkerShape {
+  return MARKER_SHAPES[index % MARKER_SHAPES.length] ?? 'circle';
+}
+
+/** Render a small marker glyph centered on (cx, cy) for the given shape. */
+function Marker({
+  shape,
+  cx: mx,
+  cy: my,
+  color,
+  r = 3,
+}: {
+  shape: MarkerShape;
+  cx: number;
+  cy: number;
+  color: string;
+  r?: number;
+}) {
+  switch (shape) {
+    case 'square':
+      return <rect x={mx - r} y={my - r} width={r * 2} height={r * 2} fill={color} />;
+    case 'diamond':
+      return (
+        <path
+          d={`M${mx} ${my - r}L${mx + r} ${my}L${mx} ${my + r}L${mx - r} ${my}Z`}
+          fill={color}
+        />
+      );
+    case 'triangle':
+      return <path d={`M${mx} ${my - r}L${mx + r} ${my + r}L${mx - r} ${my + r}Z`} fill={color} />;
+    case 'circle':
+    default:
+      return <circle cx={mx} cy={my} r={r} fill={color} />;
+  }
+}
+
 function bounds(series: ChartSeries[]): { min: number; max: number; maxLen: number } {
   let min = Infinity;
   let max = -Infinity;
@@ -149,17 +201,32 @@ export const Chart = /* @__PURE__ */ forwardRef<HTMLDivElement, ChartProps>(func
           const d = s.data
             .map((v, i) => `${i === 0 ? 'M' : 'L'}${lineX(i, s.data.length)} ${valueY(v)}`)
             .join(' ');
+          const dash = seriesDash(si);
+          const marker = seriesMarker(si);
           return (
-            <path
-              key={s.name + si}
-              d={d}
-              fill="none"
-              stroke={color}
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            />
+            <g key={s.name + si} aria-hidden>
+              <path
+                d={d}
+                fill="none"
+                stroke={color}
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray={dash || undefined}
+                data-series-line=""
+                data-series-dash={dash || 'solid'}
+                data-series-marker={marker}
+              />
+              {s.data.map((v, i) => (
+                <Marker
+                  key={i}
+                  shape={marker}
+                  cx={lineX(i, s.data.length)}
+                  cy={valueY(v)}
+                  color={color}
+                />
+              ))}
+            </g>
           );
         })}
       </svg>

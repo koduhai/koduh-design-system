@@ -44,6 +44,54 @@ export function useOptionalFieldContext(): FieldContextValue | null {
   return useContext(FieldContext);
 }
 
+/**
+ * The kind of operable element a control exposes, which decides WHICH ARIA
+ * attributes are valid on it (axe aria-allowed-attr):
+ * - `labelable`: a native input/textarea/checkbox/switch. Named by the FormField
+ *   `<label htmlFor>`, so it only needs an id; uses native `required` and
+ *   `aria-invalid`. Must NOT get `aria-labelledby`/`aria-required`.
+ * - `widget`: a `radiogroup` | `listbox` | `combobox`. Named by `aria-labelledby`
+ *   and supports the full validity set (`aria-invalid`, `aria-required`).
+ * - `named`: a `button` | `group` | `dialog` role. Named by `aria-labelledby`,
+ *   but `aria-required`/`aria-invalid` are NOT allowed, so they are omitted (the
+ *   error is conveyed via `aria-describedby`, required via the label/native input).
+ */
+export type FieldControlKind = 'labelable' | 'widget' | 'named';
+
+export interface FieldControlProps {
+  id: string;
+  required?: true;
+  'aria-labelledby'?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: true;
+  'aria-required'?: true;
+}
+
+/**
+ * Returns the ARIA wiring for a control composed inside a `<FormField>`, branched
+ * by `kind` so each role only receives attributes it actually supports. Returns
+ * `null` when there is no enclosing `<FormField>` (the control uses its own
+ * label/required/error props). Centralizes the per-role rules so a control can't
+ * accidentally put `aria-required` on a `role="button"` (axe aria-allowed-attr).
+ */
+export function useFieldControlProps(kind: FieldControlKind): FieldControlProps | null {
+  const field = useContext(FieldContext);
+  if (!field) return null;
+  const props: FieldControlProps = { id: field.id };
+  if (field.describedById) props['aria-describedby'] = field.describedById;
+  if (kind === 'labelable') {
+    if (field.required) props.required = true;
+    if (field.invalid) props['aria-invalid'] = true;
+  } else if (kind === 'widget') {
+    props['aria-labelledby'] = field.labelId;
+    if (field.invalid) props['aria-invalid'] = true;
+    if (field.required) props['aria-required'] = true;
+  } else {
+    props['aria-labelledby'] = field.labelId;
+  }
+  return props;
+}
+
 export interface UseFieldOptions {
   id?: string;
   required?: boolean;

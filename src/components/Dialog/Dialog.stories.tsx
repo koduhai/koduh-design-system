@@ -108,3 +108,24 @@ export const AsyncConfirm: Story = {
     );
   },
 };
+
+/**
+ * Deterministic loading state for e2e: the dialog is open AND `confirmLoading`,
+ * so it stays non-dismissable. Used to verify Esc cannot close it mid-flight.
+ */
+export const LoadingLocked: Story = {
+  args: { open: true, onOpenChange: () => {} },
+  render: () => (
+    <ConfirmDialog
+      open
+      onOpenChange={() => {}}
+      onConfirm={() => {}}
+      tone="danger"
+      title="Deleting project"
+      description="This cannot be undone."
+      confirmLabel="Delete"
+      confirmLoading
+      loadingText="Deleting…"
+    />
+  ),
+};

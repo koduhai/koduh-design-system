@@ -89,8 +89,12 @@ describe('Select', () => {
     render(
       <Select label="Fruit" options={options} error errorText="Required" helperText="Pick one" />,
     );
-    expect(screen.getByRole('button', { name: /Fruit/ })).toHaveAttribute('aria-invalid', 'true');
-    expect(screen.getByText('Required')).toBeInTheDocument();
+    // The error state is shown via data-error (aria-invalid is not valid on the
+    // button-role trigger); the error text is conveyed through aria-describedby.
+    const trigger = screen.getByRole('button', { name: /Fruit/ });
+    expect(trigger).toHaveAttribute('data-error', 'true');
+    expect(trigger).not.toHaveAttribute('aria-invalid');
+    expect(trigger.getAttribute('aria-describedby')).toContain(screen.getByText('Required').id);
     expect(screen.queryByText('Pick one')).toBeNull();
   });
 
@@ -197,10 +201,12 @@ describe('Select', () => {
     expect(trigger).not.toHaveFocus();
   });
 
-  it('renders a required indicator and sets aria-required on the trigger', () => {
+  it('renders a required indicator on the trigger', () => {
     render(<Select label="Model" required options={[{ value: 'a', label: 'A' }]} />);
     expect(screen.getByText('*')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toHaveAttribute('aria-required', 'true');
+    // aria-required is not valid on the button-role trigger; the indicator + the
+    // enclosing FormField convey required instead.
+    expect(screen.getByRole('button')).not.toHaveAttribute('aria-required');
   });
 
   it('inside FormField: no own label span; trigger id + aria from context', () => {
@@ -211,8 +217,10 @@ describe('Select', () => {
     );
     const trigger = screen.getByRole('button');
     expect(trigger.id).toBe('model');
-    expect(trigger).toHaveAttribute('aria-required', 'true');
-    expect(trigger).toHaveAttribute('aria-invalid', 'true');
+    // button role: no aria-required/aria-invalid; error via data-error + describedby.
+    expect(trigger).not.toHaveAttribute('aria-required');
+    expect(trigger).not.toHaveAttribute('aria-invalid');
+    expect(trigger).toHaveAttribute('data-error', 'true');
     expect(trigger).toHaveAttribute('aria-describedby', screen.getByText('Pick one').id);
     expect(screen.getAllByText('Model')).toHaveLength(1);
   });

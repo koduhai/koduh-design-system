@@ -48,6 +48,7 @@ export interface FormApi {
   reset: (values?: FormValues) => void;
   register: (name: string, rules?: FieldRules) => void;
   unregister: (name: string) => void;
+  revalidate: () => void;
   setFieldId: (name: string, id: string | undefined) => void;
   getFieldId: (name: string) => string | undefined;
   focusField: (name: string) => void;
@@ -229,6 +230,20 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
         delete dirty[name];
         setState({ errors, touched, dirty });
       }
+    },
+    revalidate() {
+      // Re-run validation after a field's rules change at runtime (e.g. a bound
+      // `<FormField required>` toggling). Only do so once errors are already
+      // being surfaced (a submit has happened): before that, validation modes
+      // gate when errors appear, and a rule toggle must not surface them early.
+      // runValidation merges resolver errors last, so a resolver error for the
+      // same field still wins and is not clobbered.
+      if (state.submitCount === 0) return;
+      const seq = ++validationSeq;
+      void runValidation().then((errors) => {
+        if (seq !== validationSeq) return;
+        setState({ errors });
+      });
     },
     setFieldId(name, id) {
       if (id) ids.set(name, id);

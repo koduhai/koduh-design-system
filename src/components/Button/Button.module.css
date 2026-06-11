@@ -64,9 +64,21 @@
   background-color: transparent;
   color: var(--btn-main);
 }
-.root[data-variant='outline']:hover:not(:disabled),
-.root[data-variant='ghost']:hover:not(:disabled) {
+.root[data-variant='outline']:hover:not(:disabled):not([aria-disabled='true']),
+.root[data-variant='ghost']:hover:not(:disabled):not([aria-disabled='true']) {
   background-color: color-mix(in srgb, var(--btn-main) 14%, transparent);
+}
+.root[data-variant='outline']:active:not(:disabled):not([aria-disabled='true']),
+.root[data-variant='ghost']:active:not(:disabled):not([aria-disabled='true']) {
+  background-color: color-mix(in srgb, var(--btn-main) 22%, transparent);
+}
+
+/* Solid darkens its fill on hover and presses further on active. */
+.root[data-variant='solid']:hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: color-mix(in srgb, var(--btn-main) 88%, black);
+}
+.root[data-variant='solid']:active:not(:disabled):not([aria-disabled='true']) {
+  background-color: color-mix(in srgb, var(--btn-main) 78%, black);
 }
 
 .root[data-size='sm'] {

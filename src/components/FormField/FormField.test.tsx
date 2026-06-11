@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 import { FormField } from './FormField';
 import { useFieldContext, useField, useOptionalFieldContext } from './useField';
@@ -137,9 +138,9 @@ describe('FormField bound to a Form', () => {
     function Wrap() {
       const form = useForm({
         resolver: async (v) =>
-        v.city
-          ? { values: v, errors: {} as Record<string, string> }
-          : { values: v, errors: { city: 'Required' } },
+          v.city
+            ? { values: v, errors: {} as Record<string, string> }
+            : { values: v, errors: { city: 'Required' } },
       });
       return (
         <Form form={form} aria-label="f">
@@ -170,5 +171,76 @@ describe('FormField bound to a Form', () => {
     render(<Wrap />);
     fireEvent.click(screen.getByText('Go'));
     expect(await screen.findByText('This field is required')).toBeInTheDocument();
+  });
+
+  it('toggling `required` on a mounted bound field starts enforcing it after submit', async () => {
+    function Wrap() {
+      const form = useForm();
+      const [req, setReq] = useState(false);
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="city" label="City" required={req}>
+            <BindingProbe />
+          </FormField>
+          <button type="button" onClick={() => setReq(true)}>
+            require
+          </button>
+          <button type="submit">Go</button>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    // Submit while not required: no error surfaces.
+    fireEvent.click(screen.getByText('Go'));
+    await waitFor(() => expect(screen.queryByText('This field is required')).toBeNull());
+    // Toggle required on without touching the field: the error appears because
+    // the form has already validated once.
+    fireEvent.click(screen.getByText('require'));
+    expect(await screen.findByText('This field is required')).toBeInTheDocument();
+  });
+
+  it('toggling `required` off on a mounted bound field stops enforcing it', async () => {
+    function Wrap() {
+      const form = useForm();
+      const [req, setReq] = useState(true);
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="city" label="City" required={req}>
+            <BindingProbe />
+          </FormField>
+          <button type="button" onClick={() => setReq(false)}>
+            relax
+          </button>
+          <button type="submit">Go</button>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    fireEvent.click(screen.getByText('Go'));
+    expect(await screen.findByText('This field is required')).toBeInTheDocument();
+    // Drop required without touching the field: the error clears.
+    fireEvent.click(screen.getByText('relax'));
+    await waitFor(() => expect(screen.queryByText('This field is required')).toBeNull());
+  });
+
+  it('does not surface a required error before submit when required toggles on', async () => {
+    function Wrap() {
+      const form = useForm();
+      const [req, setReq] = useState(false);
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name="city" label="City" required={req}>
+            <BindingProbe />
+          </FormField>
+          <button type="button" onClick={() => setReq(true)}>
+            require
+          </button>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    // No submit yet: toggling required on must not surface an error early.
+    fireEvent.click(screen.getByText('require'));
+    await waitFor(() => expect(screen.queryByText('This field is required')).toBeNull());
   });
 });

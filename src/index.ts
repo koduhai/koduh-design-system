@@ -187,6 +187,7 @@ export {
   useField,
   useFieldContext,
   useOptionalFieldContext,
+  useFieldControlProps,
 } from './components/FormField';
 export type {
   FormFieldProps,
@@ -194,6 +195,8 @@ export type {
   FieldContextValue,
   UseFieldOptions,
   UseFieldResult,
+  FieldControlKind,
+  FieldControlProps,
 } from './components/FormField';
 export { NumberField } from './components/NumberField';
 export type { NumberFieldProps, NumberFieldSize } from './components/NumberField';

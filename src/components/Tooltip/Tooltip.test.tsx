@@ -179,6 +179,52 @@ describe('Tooltip', () => {
     expect(tip).toHaveAttribute('data-open', 'false');
   });
 
+  it('opens on a touch tap of the trigger (no hover/reliable focus on touch)', () => {
+    render(
+      <Tooltip content="Touch me" delay={200}>
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    const trigger = screen.getByRole('button');
+    // A touch pointerdown reveals the tooltip immediately, bypassing the
+    // hover/focus open delay (touch has no hover).
+    act(() => {
+      fireEvent.pointerDown(trigger, { pointerType: 'touch' });
+    });
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'true');
+  });
+
+  it('ignores a mouse pointerdown on the trigger (keeps the hover/focus path as the desktop opener)', () => {
+    render(
+      <Tooltip content="Hi" delay={200}>
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    const trigger = screen.getByRole('button');
+    act(() => {
+      fireEvent.pointerDown(trigger, { pointerType: 'mouse' });
+    });
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'false');
+  });
+
+  it('dismisses a touch-opened tooltip on a tap elsewhere', () => {
+    render(
+      <Tooltip content="Touch me" delay={200}>
+        <button type="button">Help</button>
+      </Tooltip>,
+    );
+    const trigger = screen.getByRole('button');
+    act(() => {
+      fireEvent.pointerDown(trigger, { pointerType: 'touch' });
+    });
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'true');
+    // Tap somewhere off the trigger and the panel → dismiss.
+    act(() => {
+      fireEvent.pointerDown(document.body, { pointerType: 'touch' });
+    });
+    expect(screen.getByRole('tooltip')).toHaveAttribute('data-open', 'false');
+  });
+
   it('forwards arbitrary DOM props (data-*) to the tooltip panel', () => {
     render(
       <Tooltip content="Hi" delay={0} data-testid="tip-panel">

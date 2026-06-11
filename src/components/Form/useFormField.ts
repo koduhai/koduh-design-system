@@ -40,6 +40,24 @@ export function useFormField(name: string, rules?: FieldRules): UseFormFieldResu
     return () => api.unregister(name);
   }, [api, name]);
 
+  // When the rule shape changes at runtime (e.g. a bound `required` toggles, or
+  // a `validate` rule is swapped) the proxy above already reads the fresh value
+  // at the next validation. But errors already on screen won't reflect the new
+  // rule until another change/blur/submit. Trigger a revalidation keyed on the
+  // rule identity so toggling required starts/stops enforcing it immediately.
+  // The store no-ops this until a submit has happened, so it never surfaces
+  // errors early, and it merges resolver errors last so a resolver error wins.
+  const required = rules?.required;
+  const validate = rules?.validate;
+  const firstRulesRun = useRef(true);
+  useEffect(() => {
+    if (firstRulesRun.current) {
+      firstRulesRun.current = false;
+      return;
+    }
+    api.revalidate();
+  }, [api, required, validate]);
+
   const fieldState = useSyncExternalStore(
     api.subscribe,
     () => api.getFieldState(name),

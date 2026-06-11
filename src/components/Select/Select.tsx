@@ -304,14 +304,17 @@ export const Select = /* @__PURE__ */ forwardRef<HTMLButtonElement, SelectProps>
       data-size={size}
       data-density={density}
       data-clearable={clearable && selectedOption ? 'true' : undefined}
+      // data-error (not aria-invalid) drives the error border: aria-invalid is not
+      // a valid attribute on the trigger's button role (axe aria-allowed-attr).
+      // The error itself is conveyed to AT via aria-describedby. invalid is field-
+      // aware, so the error state also shows when an enclosing FormField is invalid.
+      data-error={invalid ? 'true' : undefined}
       disabled={disabled}
       aria-haspopup="listbox"
       aria-expanded={open}
       aria-controls={open ? listboxId : undefined}
       aria-labelledby={triggerLabelledBy}
       aria-describedby={describedBy}
-      aria-invalid={invalid || undefined}
-      aria-required={isRequired || undefined}
       onClick={composeEventHandlers(rest.onClick, () => setOpen((o) => !o))}
       onKeyDown={composeEventHandlers(rest.onKeyDown, onTriggerKeyDown)}
     >

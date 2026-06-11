@@ -4,6 +4,69 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2026-06-11
+
+Quality and hardening release from a full multi-dimension code review of the
+library (correctness, accessibility, conventions, build/types/security), plus a
+few additive APIs and CI/supply-chain hardening. No breaking changes. Component
+count unchanged (79). See `docs/AUDIT-REPORT.md`.
+
+### Added
+
+- **`useFieldControlProps(kind)`** (plus `FieldControlKind` / `FieldControlProps`):
+  returns the ARIA wiring for a control composed inside a `<FormField>`, branched
+  by role so each element only gets attributes it supports. A new FormField
+  control contract test enforces this invariant across every form control.
+- **`--ku-color-bg-selected`** token: a shared, brand-tinted selected/active-row
+  surface used consistently across `Menu` / `CommandPalette` / `Sidebar` / `Tree`.
+- Additive, non-breaking props and types: `Pagination` `previousLabel` /
+  `nextLabel` / `getItemAriaLabel` (and `PaginationItemType`), `Alert` `closeLabel`,
+  `Accordion` `headingLevel`, `Tree` `defaultSelectedId` (uncontrolled selection).
+- `Button` solid variant hover/active feedback; `Chart` differentiates line series
+  by stroke-dasharray and marker shape (not color alone, WCAG 1.4.1); `Chip`
+  outline variant now honors `tone`; `Tooltip` reveals on touch tap.
+- `@types/react` / `@types/react-dom` declared as optional peer dependencies; the
+  `tailwind-preset` now exposes the `accent` tone (`bg-accent` / `text-accent-fg`).
+
+### Fixed
+
+- **Accessibility**: wired the FormField association (label, `aria-describedby`,
+  required, and `aria-labelledby` for group controls) through `Checkbox`, `Switch`,
+  `RadioGroup`, `Rating`, `Select`, `ColorPicker`, and `FileUpload`; removed ARIA
+  attributes not valid on their role (`aria-required` / `aria-invalid` on
+  button / group / dialog / switch roles) from `FileUpload`, `ColorPicker`,
+  `Select`, `Switch`, `Menu`, and `Popconfirm`; gave overlays accessible names and
+  focus return (`DatePicker`, `ConfirmDialog`, `Popconfirm`); made keyboard nav
+  RTL-aware (`Carousel`, and others); added live-region announcements (`Carousel`,
+  `TagInput`, `Snackbar`); made hover tooltips dismissable with Esc; and fixed
+  light-theme invisibility where `bg-raised` equals `bg-default` (`Menu`, `Skeleton`).
+- **Correctness**: `ConfirmDialog` can no longer get stuck closed when Esc is
+  pressed while `confirmLoading`; `NumberField` preserves intermediate/trailing
+  decimals in real browsers (it now uses a text buffer, not a number input);
+  `mergeRefs` honors React 19 ref-cleanup functions; `useForm` clears a field's
+  stale error/touched/dirty on unregister; a bound `<FormField required>`
+  re-validates when `required` toggles at runtime; plus edge-case fixes in
+  `Breadcrumbs`, `Calendar`, `Combobox`, `CountUp`, `HoverCard`, `Tabs`, and
+  `TagInput`; and the theme provider now guards `localStorage` access against
+  throwing (sandboxed iframes / blocked storage / quota).
+- **Type-safety**: form-binding values are narrowed at runtime instead of cast
+  (`NumberField`, `ColorPicker`, and others); fixed a `Toaster` barrel-export name
+  that never reached the package root.
+
+### Changed
+
+- Selected/active-item styling is consolidated onto the `bg-selected` token across
+  `Menu` / `CommandPalette` / `Sidebar` / `Tree` (`Tabs` keeps its underline).
+- `Menu` disabled items use `aria-disabled` (kept in the accessibility tree)
+  instead of the native `disabled` attribute.
+- CI / release hardening: the release gate verifies the tag matches
+  `package.json` and skips pre-releases; the full e2e suite runs (no more
+  silently-skipped tests); GitHub Actions are pinned to commit SHAs with
+  Dependabot; `verify:bundle` runs on PRs; and `update-baselines` refuses to run
+  on `main`. Added guards (a barrel-export completeness test and a token-reference
+  test), Playwright browser tests for the jsdom-masked fixes, and a retry for the
+  transient axe "already running" flake.
+
 ## [2.8.0] - 2026-05-27
 
 Additive release: the issue #43 component round-out (7 new components) plus a
@@ -173,7 +236,7 @@ Additive release closing four P1 component gaps from the consumer-app gap analys
   array. `type="single"` is a `radiogroup` of `radio`s; `type="multiple"` is a `group`
   of `aria-pressed` toggle buttons. Roving focus (arrow keys / Home / End, skipping
   disabled items), shared tone vocabulary (`primary | neutral | success | warning |
-  danger`), `size`, and `orientation`. Composes with `FormField`.
+danger`), `size`, and `orientation`. Composes with `FormField`.
 - **`Drawer`** (#12) — edge slide-in panel built on the native `<dialog>` +
   `showModal()` machinery (reusing `Dialog`'s focus-trap, backdrop, and Esc handling),
   with the same `open` / `onOpenChange` overlay API. `side` is logical

@@ -142,11 +142,13 @@ export const themes = {
       bgDefault: '#0A0E1A',
       bgSurface: '#141A2A',
       bgRaised: '#1C2438',
-      // Filled surface for selected/hover list rows. Kept perceptibly distinct
-      // from bgDefault in BOTH themes (guarded in contrast.test.ts) so a fill on
-      // the page never collapses to the page color (in the light theme bgRaised
-      // equals bgDefault, which a highlight must not rely on).
-      bgSelected: '#232C42',
+      // Selected/active list-row fill: a translucent brand wash (16% primary).
+      // Because it is semi-transparent it tints whatever surface it sits on and
+      // stays perceptibly distinct from it in BOTH themes (unlike bg-raised, which
+      // equals bg-default in light). The single token replaces the per-component
+      // color-mix rules so selection looks the same across Menu/CommandPalette/
+      // Sidebar/Tabs/Tree. Text legibility on the tint is guarded in contrast.test.ts.
+      bgSelected: 'color-mix(in srgb, var(--ku-color-primary) 16%, transparent)',
       border: '#2A3346',
       textPrimary: '#F5F7FA',
       textSecondary: '#A8B2C4',
@@ -184,9 +186,9 @@ export const themes = {
       bgDefault: '#FFFFFF',
       bgSurface: '#F4F6FA',
       bgRaised: '#FFFFFF',
-      // See dark theme: a selected-fill that stays visible on the white page even
-      // though bgRaised is also white here.
-      bgSelected: '#E8EDF5',
+      // See dark theme: the same translucent 16% primary wash, theme-adaptive via
+      // --ku-color-primary, so selection stays visible on the white page.
+      bgSelected: 'color-mix(in srgb, var(--ku-color-primary) 16%, transparent)',
       border: '#D4DAE5',
       textPrimary: '#10141F',
       textSecondary: '#4A5468',

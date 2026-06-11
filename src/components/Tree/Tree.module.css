@@ -41,7 +41,7 @@
 }
 
 .row[data-selected='true'] {
-  background-color: color-mix(in srgb, var(--ku-color-primary) 16%, transparent);
+  background-color: var(--ku-color-bg-selected);
   color: var(--ku-color-primary);
   font-weight: var(--ku-font-weight-semibold);
 }

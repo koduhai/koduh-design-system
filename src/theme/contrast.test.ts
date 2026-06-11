@@ -41,20 +41,28 @@ describe('status foreground tokens meet WCAG AA as text', () => {
   }
 });
 
-describe('bgSelected is a perceptible selected fill that stays legible', () => {
-  // A selected/placeholder fill must be visibly different from the page surface,
-  // or it collapses to the background (the bgRaised === bgDefault trap in the
-  // light theme). 1.04:1 is a small but perceptible surface boundary.
-  const PERCEPTIBLE = 1.04;
+describe('the selected-row tint stays legible (bg-selected = 16% primary wash)', () => {
+  // bg-selected is a translucent brand wash (color-mix(primary 16%, transparent)),
+  // so a selected row renders as 16% primary composited over whatever surface it
+  // sits on. The wash is perceptible by construction; the real risk is text on the
+  // tint, so assert textPrimary stays AA on a selected page row and raised row in
+  // both themes. (Mirrors the Sidebar note about light-theme text nearly failing.)
+  const TINT = 0.16;
+  /** Composite `fg` at `alpha` over opaque `bg` (the rendered tint color). */
+  function over(fg: string, bg: string, alpha: number): string {
+    const channel = (hex: string, i: number) => parseInt(hex.replace('#', '').slice(i, i + 2), 16);
+    const mix = (i: number) => Math.round(alpha * channel(fg, i) + (1 - alpha) * channel(bg, i));
+    const h = (n: number) => n.toString(16).padStart(2, '0');
+    return `#${h(mix(0))}${h(mix(2))}${h(mix(4))}`;
+  }
   for (const mode of modes) {
-    it(`${mode}: bgSelected differs perceptibly from bgDefault`, () => {
-      const color = themes[mode].color;
-      expect(contrast(color.bgSelected, color.bgDefault)).toBeGreaterThanOrEqual(PERCEPTIBLE);
-    });
-    it(`${mode}: textPrimary on bgSelected >= ${AA_NORMAL}:1`, () => {
-      const color = themes[mode].color;
-      expect(contrast(color.textPrimary, color.bgSelected)).toBeGreaterThanOrEqual(AA_NORMAL);
-    });
+    for (const surface of ['bgDefault', 'bgRaised'] as const) {
+      it(`${mode}: textPrimary on a selected ${surface} row >= ${AA_NORMAL}:1`, () => {
+        const color = themes[mode].color;
+        const tinted = over(color.primary, color[surface], TINT);
+        expect(contrast(color.textPrimary, tinted)).toBeGreaterThanOrEqual(AA_NORMAL);
+      });
+    }
   }
 });
 

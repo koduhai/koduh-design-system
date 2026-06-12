@@ -146,7 +146,7 @@ output and behavior are unchanged out of the box.
 Quality and hardening release from a full multi-dimension code review of the
 library (correctness, accessibility, conventions, build/types/security), plus a
 few additive APIs and CI/supply-chain hardening. No breaking changes. Component
-count unchanged (79). See `docs/AUDIT-REPORT.md`.
+count unchanged (79).
 
 ### Added
 
@@ -630,4 +630,4 @@ properties (`--ku-*`), and WCAG 2.1 AA enforced across every component.
 
 See `MIGRATION.md` for the full prop-by-prop mapping.
 
-[1.0.0]: https://github.com/koduhai/koduhai-design-system-v2/releases/tag/v1.0.0
+[1.0.0]: https://github.com/koduhai/koduh-design-system/releases/tag/v1.0.0

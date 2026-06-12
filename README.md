@@ -1,84 +1,141 @@
-# @koduhai/design-system (v1 — custom build)
+# @koduhai/design-system
 
-Koduh AI's design system, rebuilt from scratch without Material UI. Dark-first
-theme via CSS custom properties, zero-runtime CSS Modules styling, and a small
-set of accessible primitives and icons.
+[![npm version](https://img.shields.io/npm/v/@koduhai/design-system.svg)](https://www.npmjs.com/package/@koduhai/design-system)
+[![CI](https://github.com/koduhai/koduh-design-system/actions/workflows/ci.yml/badge.svg)](https://github.com/koduhai/koduh-design-system/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
-> **Status:** v2.2 — 47 components shipped through Phases 1–9 plus the v2 issue
-> follow-ups (`Textarea`, `Progress`, `Pagination`, `Table`, and the `DataTable`
-> orchestrator round out the data/forms phases). v2 is a small breaking release
-> harmonizing the overlay open/close API (`onClose` → `onOpenChange`; see
-> [`MIGRATION.md`](./MIGRATION.md)); the rest is additive (aligned `tone`
-> vocabulary, status text tokens, `Select` `clearable`, an expanded icon set).
-> The original 12 components (`Button`, `LoadingButton`, `Chip`,
-> `Avatar`, `StatusBadge`, `Alert`, `TextField`, `Card`, `EmptyState`,
-> `PageHeader`, `AppBar`, `Sidebar`) are joined by the Phase 5 set (`Checkbox`,
-> `Radio`/`RadioGroup`, `Switch`, `Spinner`, `Skeleton`, `Divider`, `Accordion`,
-> `Breadcrumbs`, `Tabs`), the Phase 6 overlays (`Dialog`, `ConfirmDialog`,
-> `Snackbar`, built on the native `<dialog>` element + Popover API — no portal or
-> focus-trap primitives), the Phase 7 floating components (`Popover`,
-> `Tooltip`, `Select`, `Menu`, built on the Popover API + CSS Anchor Positioning —
-> no positioning engine), and the **v2 follow-up layer**: layout/typography
-> primitives (`Stack`, `Inline`, `Grid`, `Container`, `Text`, `Heading`, `Link`),
-> a notification system (`Toaster` + the `useToast()` hook over the Snackbar
-> visuals), and a form layer (`FormField` + the `useField` hook, `NumberField`,
-> `Slider`, `TagInput`, `Combobox`). The v2.2 follow-ups make `FormField` compose
-> directly with the shipped controls (they defer label/aria to an ancestor field),
-> add toast conveniences (`toast.promise`, caller-supplied `id`, per-toast
-> placement), responsive props on `Grid`/`Stack`/`Inline` (`{base, md}` objects +
-> `Grid` track ratios), `Text` escape hatches (`leading`/`mono`/`tabular`/`truncate`),
-> and two new layout primitives (`Box`, `DescriptionList`). All ride the token pipeline, primitives, icon
-> set, and theme provider. Tree-shaking, a full accessibility audit
-> ([`ACCESSIBILITY.md`](./ACCESSIBILITY.md)), and CI visual-regression are in
-> place. See [`CHANGELOG.md`](./CHANGELOG.md). Publishing is maintainer-triggered
-> via a GitHub Release (`.github/workflows/release.yml`).
+A from-scratch React component library with **zero runtime dependencies** and no
+Material UI, Emotion, or other third-party component/styling library. Styling is
+zero-runtime: design tokens compile to CSS custom properties and component styles
+are CSS Modules. Dark-first theming, 80+ accessible components, and WCAG AA as a
+hard requirement.
 
-## Develop
+## Features
+
+- **80+ components** across layout, typography, forms, overlays, data display,
+  navigation, and feedback.
+- **Zero runtime dependencies.** React 18 and 19 are peer dependencies.
+- **Zero-runtime styling.** Tokens compile to `--ku-*` CSS custom properties;
+  components ship as hashed CSS Modules. No runtime CSS-in-JS.
+- **Dark-first theming** via a `data-theme` attribute, with a `.dark`/`.light`
+  class fallback so Tailwind `darkMode: 'class'` consumers get the tokens for free.
+- **Accessibility built in.** WCAG AA verified, color is never the only signal,
+  `prefers-reduced-motion` is honored, and every component is axe-tested in both
+  themes.
+- **Platform primitives, no heavy deps.** Overlays use the native `<dialog>`,
+  the Popover API, and CSS anchor positioning (with a JS fallback where those
+  are not yet supported).
+- **Typed, tree-shakeable** ESM + CJS builds with `.d.ts` types.
+
+## Installation
 
 ```bash
-npm install
-npm run storybook        # dev docs at http://localhost:6006
-npm test                 # unit tests (Vitest)
-npm run test:e2e         # a11y/visual e2e (Playwright + axe)
-npm run build            # generate theme.css + bundle (tsup)
+npm install @koduhai/design-system
 ```
 
-## Architecture
+React is a peer dependency, so install it too if you have not already:
 
-- `src/theme` — design tokens (single source of truth) → `dist/theme.css`
-- `src/primitives` — `Slot`, `VisuallyHidden`, `useId`, `useControllableState`, ref/handler utils
-- `src/icons` — vendored SVG icon set + `createIcon` factory
-- `src/provider` — `KoduhThemeProvider` + `useColorMode`
-
-## Avoiding a theme flash (SSR / static hosting)
-
-`KoduhThemeProvider` applies the `data-theme` attribute in a `useEffect`, which
-only runs after React mounts on the client. If your page is server-rendered or
-statically pre-rendered, the initial HTML paints before that effect runs, so a
-visitor whose persisted mode differs from the markup's default can see one frame
-of the wrong theme before hydration ("flash of wrong theme"). Pure client-side
-apps (e.g. a plain Vite/CRA SPA) are unaffected, since nothing is painted before
-React runs.
-
-The fix is a tiny blocking inline `<script>` in the document `<head>` that reads
-the same persisted value and sets `data-theme` _before_ first paint. It must use
-the same defaults as the provider — localStorage key `koduh-color-mode`,
-fallback `'dark'`, attribute `data-theme` on `document.documentElement`:
-
-```html
-<script>
-  (function () {
-    try {
-      var mode = localStorage.getItem('koduh-color-mode');
-      if (mode !== 'dark' && mode !== 'light') mode = 'dark';
-      document.documentElement.setAttribute('data-theme', mode);
-    } catch (e) {}
-  })();
-</script>
+```bash
+npm install react react-dom
 ```
 
-Next.js users can add this via `next/script` with
-`strategy="beforeInteractive"`, or inline it in the `<head>` of a custom
-`_document` / root layout.
+## Quick start
 
-See `docs/superpowers/specs/2026-05-21-custom-design-system-design.md` for the full spec.
+Import the theme stylesheet once at your app entry, wrap your tree in
+`KoduhThemeProvider`, and use components:
+
+```tsx
+// app entry (e.g. main.tsx)
+import '@koduhai/design-system/theme.css';
+import { KoduhThemeProvider } from '@koduhai/design-system';
+
+export function Root() {
+  return (
+    <KoduhThemeProvider defaultMode="dark">
+      <App />
+    </KoduhThemeProvider>
+  );
+}
+```
+
+```tsx
+import { Button, Card, CardBody } from '@koduhai/design-system';
+
+export function App() {
+  return (
+    <Card>
+      <CardBody>
+        <Button tone="primary" onClick={() => alert('Hi')}>
+          Get started
+        </Button>
+      </CardBody>
+    </Card>
+  );
+}
+```
+
+## Theming
+
+`KoduhThemeProvider` sets `data-theme` on `<html>`, persists the choice to
+`localStorage`, and exposes a `useColorMode()` hook:
+
+```tsx
+import { useColorMode } from '@koduhai/design-system';
+
+function ThemeToggle() {
+  const { mode, toggleMode } = useColorMode();
+  return <button onClick={toggleMode}>Theme: {mode}</button>;
+}
+```
+
+All colors, spacing, radii, and typography are CSS custom properties prefixed
+`--ku-`, so you can read or override them in your own CSS.
+
+### SSR / no-flash
+
+On server-rendered pages, the provider applies `data-theme` after hydration,
+which can flash the wrong theme on first paint. Drop `KoduhThemeScript` into your
+document `<head>` to set the theme synchronously before paint:
+
+```tsx
+import { KoduhThemeScript } from '@koduhai/design-system';
+// ...
+<head>
+  <KoduhThemeScript defaultMode="dark" />
+</head>;
+```
+
+See [`docs/ssr.md`](./docs/ssr.md) for Next.js and Remix usage.
+
+### Tailwind
+
+A `@koduhai/design-system/tailwind-preset` entry maps the semantic color tokens
+and brand ramp onto Tailwind's theme as `var(--ku-*)` values, so you can use
+utilities like `bg-primary` or `bg-brand-500` alongside the components. See
+[`docs/tailwind-consumer-compatibility.md`](./docs/tailwind-consumer-compatibility.md)
+and the runnable [`examples/tailwind`](./examples/tailwind) app.
+
+## Browser support
+
+Modern evergreen browsers. Overlay positioning uses the Popover API and CSS
+anchor positioning, which are Chromium-first; on browsers without them the
+library falls back to JS positioning.
+
+## Documentation
+
+- Component docs and live playground: run `npm run storybook`.
+- [`ACCESSIBILITY.md`](./ACCESSIBILITY.md) - the per-component a11y contract.
+- [`docs/component_guidelines.md`](./docs/component_guidelines.md) - conventions and API patterns.
+- [`CHANGELOG.md`](./CHANGELOG.md) - release notes.
+- [`MIGRATION.md`](./MIGRATION.md) - migrating from the v0.x MUI wrapper.
+
+## Contributing
+
+Contributions are welcome. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for setup,
+conventions, and the local gate to run before opening a pull request, and
+[`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md). To report a security issue, see
+[`SECURITY.md`](./SECURITY.md).
+
+## License
+
+[MIT](./LICENSE) (c) Koduh AI.

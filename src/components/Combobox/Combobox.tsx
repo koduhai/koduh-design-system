@@ -1,6 +1,8 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { InputHTMLAttributes, KeyboardEvent, ReactNode, SyntheticEvent } from 'react';
 import { Popover } from '../Popover';
+import { Chip } from '../Chip';
+import { Spinner } from '../Spinner';
 import { useOptionalFieldContext } from '../FormField';
 import { CloseIcon } from '../../icons';
 import {
@@ -19,13 +21,13 @@ export type ComboboxSize = 'sm' | 'md' | 'lg';
 export interface ComboboxOption {
   /** Value reported on selection. */
   value: string;
-  /** Visible option text; also shown in the input once selected. */
+  /** Visible option text; also shown in the input once selected (single-select). */
   label: string;
   /** Renders the option non-selectable. */
   disabled?: boolean;
 }
 
-export interface ComboboxProps extends Omit<
+interface ComboboxBaseProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   'value' | 'defaultValue' | 'onChange' | 'size'
 > {
@@ -36,21 +38,30 @@ export interface ComboboxProps extends Omit<
   label?: ReactNode;
   /** The selectable options, in order. */
   options: ComboboxOption[];
-  /** Controlled selected value. */
-  value?: string;
-  /** Initial selected value when uncontrolled. */
-  defaultValue?: string;
-  /** Fires with the chosen value and the originating event. */
-  onChange?: (value: string, event: SyntheticEvent) => void;
   /** Placeholder shown when the input is empty. */
   placeholder?: string;
-  /** Match predicate. Defaults to case-insensitive label `includes`. */
+  /** Match predicate. Defaults to case-insensitive label `includes`. Ignored when `onQueryChange` is set (options are then treated as already filtered server-side). */
   filter?: (option: ComboboxOption, query: string) => boolean;
-  /**
-   * Shown in the listbox when no option matches. Defaults to the i18n catalog's
-   * `combobox.noResults` ('No results').
-   */
+  /** Shown in the listbox when no option matches. Defaults to `combobox.noResults`. */
   noResultsText?: ReactNode;
+  /** Show a loading affordance in the listbox (e.g. while async options load). */
+  loading?: boolean;
+  /** Text shown beside the loading spinner. Defaults to `combobox.loading`. */
+  loadingText?: ReactNode;
+  /**
+   * Fires (debounced) with the current query text. Use to fetch options
+   * server-side; providing it also disables client-side filtering (the supplied
+   * `options` are shown as-is).
+   */
+  onQueryChange?: (query: string) => void;
+  /** Debounce for `onQueryChange`, in ms. Default 200. */
+  queryChangeDelay?: number;
+  /** Allow creating a new option from the typed query. */
+  creatable?: boolean;
+  /** Called when the create entry is chosen, with the trimmed query. */
+  onCreate?: (label: string, event: SyntheticEvent) => void;
+  /** Label for the create entry. Defaults to `combobox.create` (`Add "{query}"`). */
+  createLabel?: (query: string) => ReactNode;
   /** Defaults to 'md'. */
   size?: ComboboxSize;
   /** Marks the field required: shows the indicator and sets the input required. */
@@ -61,15 +72,9 @@ export interface ComboboxProps extends Omit<
   helperText?: ReactNode;
   /** Message shown below the control when `error` is set; replaces helperText. */
   errorText?: ReactNode;
-  /**
-   * Shows a clear affordance when a value is selected. Clearing resets the
-   * value and fires `onChange('', event)` — `''` is the "no selection" signal.
-   */
+  /** Shows a clear affordance when a value is selected. */
   clearable?: boolean;
-  /**
-   * Accessible label for the clear button. Defaults to the i18n catalog's
-   * `clearSelection` ('Clear selection').
-   */
+  /** Accessible label for the clear button. Defaults to `clearSelection`. */
   clearLabel?: string;
   /** Base id for the control; ids for label/listbox/description derive from it. */
   id?: string;
@@ -77,21 +82,56 @@ export interface ComboboxProps extends Omit<
   className?: string;
 }
 
+/** Single-select (default): value is a string, `''` means no selection. */
+export interface ComboboxSingleProps extends ComboboxBaseProps {
+  multiple?: false;
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string, event: SyntheticEvent) => void;
+}
+
+/** Multi-select: value is a string array of the selected option values. */
+export interface ComboboxMultiProps extends ComboboxBaseProps {
+  multiple: true;
+  value?: string[];
+  defaultValue?: string[];
+  onChange?: (value: string[], event: SyntheticEvent) => void;
+}
+
+export type ComboboxProps = ComboboxSingleProps | ComboboxMultiProps;
+
 const defaultFilter = (o: ComboboxOption, q: string) =>
   o.label.toLowerCase().includes(q.toLowerCase());
 
+/** Normalize a single/multi value (or form-binding value) to an array. */
+function toArray(value: string | string[] | undefined): string[] {
+  if (value == null || value === '') return [];
+  return Array.isArray(value) ? value : [value];
+}
+
 /** `ref` forwards to the editable `<input role="combobox">`. */
 export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxProps>(
-  function Combobox(
-    {
+  function Combobox(props, ref) {
+    // The public type is a single|multi union; internally we treat the selection
+    // as an array and report the shape `multiple` implies. The cast bridges the
+    // union's per-mode value/onChange to one internal handler.
+    const {
       label,
       options,
+      multiple = false,
       value,
       defaultValue,
       onChange,
       placeholder,
       filter = defaultFilter,
       noResultsText,
+      loading = false,
+      loadingText,
+      onQueryChange,
+      queryChangeDelay = 200,
+      creatable = false,
+      onCreate,
+      createLabel,
       size = 'md',
       required,
       error = false,
@@ -102,17 +142,20 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
       id: idProp,
       className,
       ...rest
-    },
-    ref,
-  ) {
+    } = props as ComboboxBaseProps & {
+      multiple?: boolean;
+      value?: string | string[];
+      defaultValue?: string | string[];
+      onChange?: (value: string | string[], event: SyntheticEvent) => void;
+    };
+
     const messages = useMessages();
     const reactId = useId('combobox');
     const field = useOptionalFieldContext();
-    // Inside a <FormField>, defer label/required/aria to it; otherwise use own props.
     const id = field?.id ?? idProp ?? reactId;
     const invalid = field ? field.invalid : error;
     const isRequired = field ? field.required : required;
-    const showOwnLabel = !field; // FormField renders the label when present
+    const showOwnLabel = !field;
     const labelId = `${id}-label`;
     const listboxId = `${id}-listbox`;
     const descriptionId = `${id}-description`;
@@ -125,108 +168,166 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
         : undefined;
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const [selected, setSelected] = useControllableState<string | undefined>({
+    const [selected, setSelected] = useControllableState<string | string[] | undefined>({
       value,
       defaultValue,
       onChange: undefined,
     });
     const bound = value === undefined ? field?.binding : undefined;
-    const currentValue = bound ? (bound.value as string | undefined) : selected;
-    const selectedOption = options.find((o) => o.value === currentValue);
-    const [query, setQuery] = useState<string>(selectedOption?.label ?? '');
+    const currentValue = bound ? (bound.value as string | string[] | undefined) : selected;
+    const selectedValues = toArray(currentValue);
+    const labelOf = (val: string) => options.find((o) => o.value === val)?.label ?? val;
+
+    const [query, setQuery] = useState<string>(() =>
+      multiple ? '' : (options.find((o) => o.value === selectedValues[0])?.label ?? ''),
+    );
     const [open, setOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
 
-    // Re-sync the visible query text when the selected value changes out of band
-    // (e.g. a form reset() or a programmatic value change) rather than via the
-    // input/option handlers, which already set `query` themselves. We don't touch
-    // `query` while the user is typing because `currentValue` only changes on an
-    // actual selection. Tracking the last-seen value lets us re-derive the label.
-    // We also re-derive when the value is unchanged but its label only resolves
-    // now (options arrived async after the value was set): in that case the query
-    // is still the empty placeholder, so adopting the resolved label is safe and
-    // does not clobber user typing.
-    const lastValueRef = useRef<string | undefined>(currentValue);
-    const lastLabelResolvedRef = useRef<boolean>(selectedOption != null);
-    const valueChanged = currentValue !== lastValueRef.current;
-    const labelJustResolved =
-      !lastLabelResolvedRef.current && selectedOption != null && query === '';
-    if (valueChanged || labelJustResolved) {
-      lastValueRef.current = currentValue;
-      lastLabelResolvedRef.current = selectedOption != null;
-      const nextLabel = selectedOption?.label ?? '';
-      if (nextLabel !== query) setQuery(nextLabel);
+    // Single-select only: re-sync the visible query text when the selected value
+    // changes out of band (form reset / programmatic set), or when the label only
+    // resolves now (options arrived async after the value was set). Multi-select's
+    // input is a filter box, not a value display, so it is never re-synced.
+    const single0 = multiple ? undefined : selectedValues[0];
+    const single0Option = multiple ? undefined : options.find((o) => o.value === single0);
+    const lastValueRef = useRef<string | undefined>(single0);
+    const lastLabelResolvedRef = useRef<boolean>(single0Option != null);
+    if (!multiple) {
+      const valueChanged = single0 !== lastValueRef.current;
+      const labelJustResolved =
+        !lastLabelResolvedRef.current && single0Option != null && query === '';
+      if (valueChanged || labelJustResolved) {
+        lastValueRef.current = single0;
+        lastLabelResolvedRef.current = single0Option != null;
+        const nextLabel = single0Option?.label ?? '';
+        if (nextLabel !== query) setQuery(nextLabel);
+      }
     }
 
+    // Server-side filtering: when onQueryChange is provided, options are already
+    // filtered upstream, so show them as-is.
+    const serverFiltering = onQueryChange != null;
     const filtered =
-      query.trim() === '' && !open ? options : options.filter((o) => filter(o, query));
+      serverFiltering || (query.trim() === '' && !open)
+        ? options
+        : options.filter((o) => filter(o, query));
 
-    // Announce the live result count while the listbox is open, so screen-reader
-    // users hear how many options match as they type (imperative, fire-and-forget).
+    // Debounced query callback for async fetching.
+    useEffect(() => {
+      if (!onQueryChange) return;
+      const handle = window.setTimeout(() => onQueryChange(query), queryChangeDelay);
+      return () => window.clearTimeout(handle);
+    }, [query, onQueryChange, queryChangeDelay]);
+
+    // Whether to offer a "create" entry: creatable, a non-empty query, and no
+    // existing option whose label matches the query exactly (case-insensitive).
+    const trimmedQuery = query.trim();
+    const showCreate =
+      creatable &&
+      trimmedQuery !== '' &&
+      !options.some((o) => o.label.toLowerCase() === trimmedQuery.toLowerCase());
+    const createIndex = showCreate ? filtered.length : -1;
+
+    // Announce the live result count while the listbox is open.
     const announce = useAnnouncer();
     useEffect(() => {
-      if (!open) return;
-      const n = filtered.length;
-      announce(messages.combobox.resultCount(n));
-    }, [filtered.length, open, announce, messages]);
+      if (!open || loading) return;
+      announce(messages.combobox.resultCount(filtered.length));
+    }, [filtered.length, open, loading, announce, messages]);
+
+    const commit = (nextValues: string[], event: SyntheticEvent) => {
+      const reported: string | string[] = multiple ? nextValues : (nextValues[0] ?? '');
+      if (bound) bound.onChange(reported, event);
+      else setSelected(reported);
+      onChange?.(reported, event);
+    };
 
     const choose = (opt: ComboboxOption, event: SyntheticEvent) => {
       if (opt.disabled) return;
-      if (bound) bound.onChange(opt.value, event);
-      else setSelected(opt.value);
-      setQuery(opt.label);
-      onChange?.(opt.value, event);
-      setOpen(false);
-      setActiveIndex(-1);
+      if (multiple) {
+        const next = selectedValues.includes(opt.value)
+          ? selectedValues.filter((v) => v !== opt.value)
+          : [...selectedValues, opt.value];
+        commit(next, event);
+        setQuery('');
+        setActiveIndex(-1);
+        inputRef.current?.focus();
+      } else {
+        commit([opt.value], event);
+        setQuery(opt.label);
+        setOpen(false);
+        setActiveIndex(-1);
+      }
     };
 
-    // Reset to "no selection". Reports '' (not undefined) so the value stays a
-    // string for consumers; refocus the input after clearing.
+    const create = (event: SyntheticEvent) => {
+      onCreate?.(trimmedQuery, event);
+      if (multiple) setQuery('');
+      setActiveIndex(-1);
+      inputRef.current?.focus();
+    };
+
+    const removeValue = (val: string, event: SyntheticEvent) => {
+      commit(
+        selectedValues.filter((v) => v !== val),
+        event,
+      );
+      inputRef.current?.focus();
+    };
+
     const clear = (event: SyntheticEvent) => {
-      if (bound) bound.onChange('', event);
-      else setSelected(undefined);
+      commit([], event);
       setQuery('');
-      onChange?.('', event);
       setOpen(false);
       setActiveIndex(-1);
       inputRef.current?.focus();
     };
 
-    const lastIndex = filtered.length - 1;
+    const lastIndex = (showCreate ? filtered.length + 1 : filtered.length) - 1;
+    const activateAt = (index: number, event: SyntheticEvent) => {
+      if (index === createIndex) {
+        create(event);
+      } else {
+        const opt = filtered[index];
+        if (opt) choose(opt, event);
+      }
+    };
+
     const onInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
           if (!open) setOpen(true);
-          // Opening (or no active option yet): start at the first option rather
-          // than incrementing a stale index left over from a previous open.
           setActiveIndex((i) => (i < 0 ? (lastIndex < 0 ? -1 : 0) : Math.min(lastIndex, i + 1)));
           break;
         case 'ArrowUp':
           e.preventDefault();
-          // ArrowUp opens the listbox and, with no active option yet, lands on
-          // the last option, per the WAI-ARIA combobox keyboard pattern.
           if (!open) setOpen(true);
           setActiveIndex((i) => (i < 0 ? lastIndex : Math.max(0, i - 1)));
           break;
-        case 'Enter': {
+        case 'Enter':
           if (open && activeIndex >= 0) {
             e.preventDefault();
-            const opt = filtered[activeIndex];
-            if (opt) choose(opt, e);
+            activateAt(activeIndex, e);
           }
           break;
-        }
+        case 'Backspace':
+          // Multi-select: Backspace on an empty input removes the last chip.
+          if (multiple && query === '' && selectedValues.length > 0) {
+            removeValue(selectedValues[selectedValues.length - 1]!, e);
+          }
+          break;
         case 'Escape':
           e.preventDefault();
           setOpen(false);
-          // Reset the highlight so a later reopen starts with no active option.
           setActiveIndex(-1);
           break;
         default:
           break;
       }
     };
+
+    const hasSelection = selectedValues.length > 0;
 
     const input = (
       <input
@@ -237,8 +338,8 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
         type="text"
         className={styles.input}
         value={query}
-        placeholder={placeholder}
-        required={isRequired}
+        placeholder={multiple && hasSelection ? undefined : placeholder}
+        required={isRequired && !hasSelection}
         autoComplete="off"
         aria-autocomplete="list"
         aria-expanded={open}
@@ -262,6 +363,7 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
         className={cx(styles.root, className)}
         data-size={size}
         data-error={invalid ? 'true' : undefined}
+        data-multiple={multiple ? 'true' : undefined}
       >
         {showOwnLabel && label != null ? (
           <span id={labelId} className={styles.label}>
@@ -276,22 +378,46 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
         ) : null}
         <div
           className={styles.control}
-          data-clearable={clearable && currentValue ? 'true' : undefined}
+          data-clearable={clearable && hasSelection ? 'true' : undefined}
         >
           <Popover
             open={open}
             onOpenChange={setOpen}
             placement="bottom-start"
             role="presentation"
-            trigger={input}
+            trigger={
+              multiple ? (
+                <div className={styles.multiControl}>
+                  {selectedValues.map((val) => (
+                    <Chip
+                      key={val}
+                      label={labelOf(val)}
+                      size="sm"
+                      onDelete={(e) => removeValue(val, e)}
+                      deleteLabel={messages.combobox.removeOption(labelOf(val))}
+                    />
+                  ))}
+                  {input}
+                </div>
+              ) : (
+                input
+              )
+            }
           >
             <ul
               id={listboxId}
               role="listbox"
+              aria-multiselectable={multiple || undefined}
               className={styles.listbox}
               aria-labelledby={showOwnLabel && label != null ? labelId : undefined}
             >
-              {filtered.length === 0 ? (
+              {loading ? (
+                <li className={styles.loading} role="presentation">
+                  <Spinner size="sm" />
+                  <span>{loadingText ?? messages.combobox.loading}</span>
+                </li>
+              ) : null}
+              {!loading && filtered.length === 0 && !showCreate ? (
                 <li className={styles.noResults} role="presentation">
                   {noResultsText ?? messages.combobox.noResults}
                 </li>
@@ -301,9 +427,10 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
                     key={opt.value}
                     id={optionId(i)}
                     role="option"
-                    aria-selected={opt.value === currentValue}
+                    aria-selected={selectedValues.includes(opt.value)}
                     aria-disabled={opt.disabled || undefined}
                     data-active={i === activeIndex ? 'true' : undefined}
+                    data-selected={selectedValues.includes(opt.value) ? 'true' : undefined}
                     className={styles.option}
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={(e) => choose(opt, e)}
@@ -313,9 +440,23 @@ export const Combobox = /* @__PURE__ */ forwardRef<HTMLInputElement, ComboboxPro
                   </li>
                 ))
               )}
+              {showCreate ? (
+                <li
+                  id={optionId(createIndex)}
+                  role="option"
+                  aria-selected={false}
+                  data-active={createIndex === activeIndex ? 'true' : undefined}
+                  className={styles.create}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={create}
+                  onMouseEnter={() => setActiveIndex(createIndex)}
+                >
+                  {createLabel ? createLabel(trimmedQuery) : messages.combobox.create(trimmedQuery)}
+                </li>
+              ) : null}
             </ul>
           </Popover>
-          {clearable && currentValue ? (
+          {clearable && hasSelection ? (
             <button
               type="button"
               className={styles.clear}

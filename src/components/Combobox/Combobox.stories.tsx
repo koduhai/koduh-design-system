@@ -18,11 +18,17 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: { label: 'Country', options, placeholder: 'Search a country' },
-  render: function DefaultStory(args) {
+  render: function DefaultStory() {
     const [value, setValue] = useState<string>();
     return (
       <div style={{ padding: 40 }}>
-        <Combobox {...args} value={value} onChange={(v) => setValue(v)} />
+        <Combobox
+          label="Country"
+          options={options}
+          placeholder="Search a country"
+          value={value}
+          onChange={(v) => setValue(v)}
+        />
       </div>
     );
   },
@@ -30,11 +36,37 @@ export const Default: Story = {
 
 export const Clearable: Story = {
   args: { label: 'Country', options, clearable: true },
-  render: function ClearableStory(args) {
+  render: function ClearableStory() {
     const [value, setValue] = useState<string>('us');
     return (
       <div style={{ padding: 40 }}>
-        <Combobox {...args} value={value} onChange={(v) => setValue(v)} />
+        <Combobox
+          label="Country"
+          options={options}
+          clearable
+          value={value}
+          onChange={(v) => setValue(v)}
+        />
+      </div>
+    );
+  },
+};
+
+export const Multiple: Story = {
+  args: { label: 'Countries', options },
+  render: function MultipleStory() {
+    const [value, setValue] = useState<string[]>(['us', 'jp']);
+    return (
+      <div style={{ padding: 40 }}>
+        <Combobox
+          label="Countries"
+          multiple
+          options={options}
+          placeholder="Add countries"
+          value={value}
+          onChange={(v) => setValue(v)}
+          clearable
+        />
       </div>
     );
   },

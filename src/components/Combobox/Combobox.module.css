@@ -104,6 +104,63 @@
   font-size: var(--ku-font-size-sm);
 }
 
+/* Multi-select: selected chips wrap together with the input inside one control. */
+.multiControl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ku-space-1);
+  min-width: 12rem;
+  padding: var(--ku-space-1);
+  background: var(--ku-color-bg-surface);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+}
+.multiControl:focus-within {
+  border-color: var(--ku-color-primary);
+  box-shadow: 0 0 0 1px var(--ku-color-primary);
+}
+/* The editable input inside the multi control is borderless and flexes to fill. */
+.multiControl .input {
+  flex: 1 1 6rem;
+  min-width: 6rem;
+  border: 0;
+  background: transparent;
+  padding: var(--ku-space-1) var(--ku-space-2);
+}
+.multiControl .input:focus-visible {
+  box-shadow: none;
+  border-color: transparent;
+}
+.root[data-multiple='true'][data-error='true'] .multiControl {
+  border-color: var(--ku-color-danger);
+}
+.control[data-clearable='true'] .multiControl {
+  padding-inline-end: 2.25rem;
+}
+
+/* Loading and "create option" rows. */
+.loading {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-2) var(--ku-space-3);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+}
+.create {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-2) var(--ku-space-3);
+  border-radius: var(--ku-radius-sm);
+  cursor: pointer;
+  color: var(--ku-color-primary);
+}
+.create[data-active='true'] {
+  background: var(--ku-color-bg-selected);
+}
+
 .description {
   font-size: var(--ku-font-size-xs);
   color: var(--ku-color-text-secondary);

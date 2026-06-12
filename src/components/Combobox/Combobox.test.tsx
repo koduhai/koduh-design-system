@@ -301,3 +301,94 @@ describe('Combobox i18n', () => {
     expect(screen.queryByText('Aucun résultat')).toBeNull();
   });
 });
+
+describe('Combobox multi-select', () => {
+  function Multi({
+    onChange,
+    initial = [] as string[],
+  }: {
+    onChange: (v: string[]) => void;
+    initial?: string[];
+  }) {
+    const [v, setV] = useState<string[]>(initial);
+    return (
+      <Combobox
+        label="Countries"
+        multiple
+        options={options}
+        value={v}
+        clearable
+        onChange={(next) => {
+          setV(next);
+          onChange(next);
+        }}
+      />
+    );
+  }
+
+  it('toggles options as chips, reports an array, and keeps the listbox open', async () => {
+    const onChange = vi.fn();
+    render(<Multi onChange={onChange} />);
+    const input = screen.getByRole('combobox');
+    await userEvent.click(input);
+    expect(screen.getByRole('listbox')).toHaveAttribute('aria-multiselectable', 'true');
+
+    await userEvent.click(screen.getByRole('option', { name: 'United States' }));
+    expect(onChange).toHaveBeenLastCalledWith(['us']);
+    expect(screen.getByRole('button', { name: 'Remove United States' })).toBeInTheDocument();
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+
+    await userEvent.click(screen.getByRole('option', { name: 'Canada' }));
+    expect(onChange).toHaveBeenLastCalledWith(['us', 'ca']);
+
+    // Re-clicking a selected option removes it.
+    await userEvent.click(screen.getByRole('option', { name: 'United States' }));
+    expect(onChange).toHaveBeenLastCalledWith(['ca']);
+  });
+
+  it('removes the last chip on Backspace in an empty input, and via the chip delete button', async () => {
+    const onChange = vi.fn();
+    render(<Multi onChange={onChange} initial={['us', 'ca']} />);
+    const input = screen.getByRole('combobox');
+    input.focus();
+    await userEvent.keyboard('{Backspace}');
+    expect(onChange).toHaveBeenLastCalledWith(['us']);
+    await userEvent.click(screen.getByRole('button', { name: 'Remove United States' }));
+    expect(onChange).toHaveBeenLastCalledWith([]);
+  });
+
+  it('clear removes all selected values', async () => {
+    const onChange = vi.fn();
+    render(<Multi onChange={onChange} initial={['us', 'ca']} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
+    expect(onChange).toHaveBeenLastCalledWith([]);
+  });
+});
+
+describe('Combobox loading / creatable / async', () => {
+  it('shows a loading affordance and suppresses the no-results message', async () => {
+    render(<Combobox label="C" options={[]} loading />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByText('Loading')).toBeInTheDocument();
+    expect(screen.queryByText('No results')).toBeNull();
+  });
+
+  it('creatable: offers an "Add" entry when nothing matches and calls onCreate', async () => {
+    const onCreate = vi.fn();
+    render(<Combobox label="C" options={options} creatable onCreate={onCreate} />);
+    await userEvent.type(screen.getByRole('combobox'), 'Brazil');
+    await userEvent.click(screen.getByText('Add "Brazil"'));
+    expect(onCreate).toHaveBeenCalledWith('Brazil', expect.anything());
+  });
+
+  it('calls onQueryChange (debounced) and shows the supplied options as-is', async () => {
+    const onQueryChange = vi.fn();
+    render(
+      <Combobox label="C" options={options} onQueryChange={onQueryChange} queryChangeDelay={40} />,
+    );
+    await userEvent.type(screen.getByRole('combobox'), 'zz');
+    await waitFor(() => expect(onQueryChange).toHaveBeenLastCalledWith('zz'));
+    // Server-side filtering: the supplied options are shown unfiltered.
+    expect(screen.getByRole('option', { name: 'United States' })).toBeInTheDocument();
+  });
+});

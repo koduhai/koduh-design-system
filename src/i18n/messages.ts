@@ -36,6 +36,12 @@ export interface Messages {
     noResults: string;
     /** Live result count announced while filtering. */
     resultCount: (count: number) => string;
+    /** Shown while async options are loading. */
+    loading: string;
+    /** The "create option" entry, e.g. `Add "foo"`. */
+    create: (query: string) => string;
+    /** aria-label for a removable selected chip in multi-select. */
+    removeOption: (label: string) => string;
   };
   avatarGroup: {
     /** Overflow indicator, e.g. "3 more". */
@@ -84,6 +90,9 @@ export const defaultMessages: Messages = {
     noResults: 'No results',
     resultCount: (count) =>
       count === 0 ? 'No results' : `${count} result${count === 1 ? '' : 's'} available`,
+    loading: 'Loading',
+    create: (query) => `Add "${query}"`,
+    removeOption: (label) => `Remove ${label}`,
   },
   avatarGroup: {
     overflow: (count) => `${count} more`,

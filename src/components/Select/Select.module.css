@@ -126,7 +126,7 @@
 }
 .multiControl:focus-within {
   border-color: var(--ku-color-primary);
-  box-shadow: 0 0 0 1px var(--ku-color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-primary) 25%, transparent);
 }
 /* Reserve room so the chips never run under the clear + chevron. */
 .multiControl[data-clearable='true'] {

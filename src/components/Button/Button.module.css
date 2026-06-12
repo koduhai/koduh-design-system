@@ -13,7 +13,9 @@
   transition:
     background-color var(--ku-duration-fast) var(--ku-easing-standard),
     border-color var(--ku-duration-fast) var(--ku-easing-standard),
-    color var(--ku-duration-fast) var(--ku-easing-standard);
+    color var(--ku-duration-fast) var(--ku-easing-standard),
+    box-shadow var(--ku-duration-fast) var(--ku-easing-standard),
+    transform var(--ku-duration-fast) var(--ku-easing-standard);
 }
 
 .root:disabled,
@@ -54,6 +56,8 @@
 .root[data-variant='solid'] {
   background-color: var(--btn-main);
   color: var(--btn-contrast);
+  /* Soft contact shadow + a faint top sheen so solid buttons read as raised. */
+  box-shadow: var(--ku-shadow-xs), var(--ku-shadow-highlight);
 }
 .root[data-variant='outline'] {
   background-color: transparent;
@@ -73,12 +77,20 @@
   background-color: color-mix(in srgb, var(--btn-main) 22%, transparent);
 }
 
-/* Solid darkens its fill on hover and presses further on active. */
+/* Solid darkens its fill on hover and lifts its shadow a touch. */
 .root[data-variant='solid']:hover:not(:disabled):not([aria-disabled='true']) {
   background-color: color-mix(in srgb, var(--btn-main) 88%, black);
+  box-shadow: var(--ku-shadow-sm), var(--ku-shadow-highlight);
 }
 .root[data-variant='solid']:active:not(:disabled):not([aria-disabled='true']) {
   background-color: color-mix(in srgb, var(--btn-main) 78%, black);
+  box-shadow: var(--ku-shadow-xs), var(--ku-shadow-highlight);
+}
+
+/* Every variant presses down 1px on click for a tactile feel. The nudge is a
+   state style (not an animation), so it reads instantly even with reduced motion. */
+.root:active:not(:disabled):not([aria-disabled='true']) {
+  transform: translateY(1px);
 }
 
 .root[data-size='sm'] {

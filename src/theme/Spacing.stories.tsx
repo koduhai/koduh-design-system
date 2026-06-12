@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { tokens } from './tokens';
+import { tokens, themes } from './tokens';
 
 const meta: Meta = {
   title: 'Foundations/Spacing',
@@ -29,7 +29,9 @@ const metaStyle: React.CSSProperties = {
 
 const spaceEntries = Object.entries(tokens.space);
 const radiusEntries = Object.entries(tokens.radius);
-const shadowEntries = Object.entries(tokens.shadow);
+// Elevation is theme-aware (lives under `themes`); show the named scale, minus the
+// `highlight` sheen helper which is not a standalone elevation level.
+const shadowEntries = Object.entries(themes.dark.shadow).filter(([key]) => key !== 'highlight');
 
 export const Spacing: Story = {
   render: () => (

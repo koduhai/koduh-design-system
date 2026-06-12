@@ -75,6 +75,7 @@ const COMPONENTS = [
   // issues #27/#28/#31/#32
   { name: 'Calendar', storyId: 'components-calendar--showcase' },
   { name: 'DatePicker', storyId: 'components-datepicker--showcase' },
+  { name: 'TimePicker', storyId: 'components-timepicker--showcase' },
   { name: 'Sparkline', storyId: 'components-sparkline--showcase' },
   { name: 'Chart', storyId: 'components-chart--showcase' },
   { name: 'Kbd', storyId: 'components-kbd--showcase' },

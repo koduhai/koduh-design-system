@@ -2,6 +2,7 @@ import { forwardRef, useRef, useState } from 'react';
 import type { DragEvent, HTMLAttributes, KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { useId, mergeRefs } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import { useOptionalFieldContext } from '../FormField';
 import styles from './FileUpload.module.css';
 
@@ -29,6 +30,7 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
     ref,
   ) {
     const reactId = useId('fileupload');
+    const messages = useMessages();
     const field = useOptionalFieldContext();
     // When inside a <FormField>, defer id/aria to it; otherwise use own props.
     // The operable wrapper (role="button") is the perceived control, so it carries
@@ -131,8 +133,8 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
           ) : null}
         </span>
         <span id={instructionsId} className={styles.instructions}>
-          {multiple ? 'You can select multiple files.' : 'Select a single file.'}
-          {accept ? ` Accepted: ${accept}.` : ''}
+          {multiple ? messages.fileUpload.multipleFiles : messages.fileUpload.singleFile}
+          {accept ? ` ${messages.fileUpload.accepted(accept)}` : ''}
         </span>
         <input
           ref={mergeRefs(inputRef, ref)}

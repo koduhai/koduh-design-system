@@ -3,7 +3,7 @@ import type { InputHTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNod
 import { Popover } from '../Popover';
 import { Calendar } from '../Calendar';
 import { useOptionalFieldContext } from '../FormField';
-import { useLocale } from '../../i18n';
+import { useLocale, useMessages } from '../../i18n';
 import { composeEventHandlers, mergeRefs, useControllableState, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import styles from './DatePicker.module.css';
@@ -63,20 +63,23 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
       onChange,
       min,
       max,
-      placeholder = 'Select a date…',
+      placeholder: placeholderProp,
       size = 'md',
       disabled,
       error,
       required,
       label,
       locale: localeProp,
-      triggerLabel = 'Open calendar',
+      triggerLabel: triggerLabelProp,
       className,
       id,
       ...rest
     },
     ref,
   ) {
+    const messages = useMessages();
+    const placeholder = placeholderProp ?? messages.datePicker.placeholder;
+    const triggerLabel = triggerLabelProp ?? messages.datePicker.triggerLabel;
     const [selected, setSelected] = useControllableState<Date | undefined>({
       value,
       defaultValue,
@@ -210,7 +213,7 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
           placement="bottom-start"
           role="dialog"
           id={calendarId}
-          aria-label="Choose date"
+          aria-label={messages.datePicker.dialogLabel}
           trigger={trigger}
         >
           <div className={styles.popover}>

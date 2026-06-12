@@ -2,6 +2,7 @@ import { forwardRef, useRef, useState } from 'react';
 import type { InputHTMLAttributes, ReactNode, SyntheticEvent } from 'react';
 import { useId } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import { useOptionalFieldContext } from '../FormField';
 import styles from './NumberField.module.css';
 
@@ -67,6 +68,7 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
     ref,
   ) {
     const reactId = useId('numberfield');
+    const messages = useMessages();
     const field = useOptionalFieldContext();
     // When inside a <FormField>, defer label/required/aria to it; otherwise use own props.
     const id = field?.id ?? idProp ?? reactId;
@@ -164,7 +166,7 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
           <button
             type="button"
             className={styles.step}
-            aria-label="Decrement"
+            aria-label={messages.numberField.decrement}
             disabled={disabled || atMin}
             onClick={(e) => adjust(-step, e)}
             tabIndex={-1}
@@ -216,7 +218,7 @@ export const NumberField = /* @__PURE__ */ forwardRef<HTMLInputElement, NumberFi
           <button
             type="button"
             className={styles.step}
-            aria-label="Increment"
+            aria-label={messages.numberField.increment}
             disabled={disabled || atMax}
             onClick={(e) => adjust(step, e)}
             tabIndex={-1}

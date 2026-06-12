@@ -310,7 +310,7 @@ function DataTableInner<Row>(
           <span
             role="separator"
             aria-orientation="vertical"
-            aria-label={`Resize ${label} column`}
+            aria-label={messages.dataTable.resizeColumn(label)}
             aria-valuenow={valueNow}
             aria-valuemin={min}
             tabIndex={0}
@@ -361,22 +361,22 @@ function DataTableInner<Row>(
           <TextField
             type="search"
             className={styles.search}
-            label="Search"
-            placeholder="Search…"
+            label={messages.dataTable.searchLabel}
+            placeholder={messages.dataTable.search}
             value={searchState}
             onChange={handleSearchChange}
           />
         ) : null}
         {selected.length > 0 ? (
           <div className={styles.selection}>
-            <span>{selected.length} selected</span>
+            <span>{messages.dataTable.selectedCount(selected.length)}</span>
             <button
               type="button"
               className={styles.clearSelection}
-              aria-label="Clear selection"
+              aria-label={messages.clearSelection}
               onClick={() => setSelected([])}
             >
-              Clear
+              {messages.dataTable.clear}
             </button>
           </div>
         ) : null}
@@ -519,6 +519,7 @@ function ExpandableTable<Row>({
   onExpandedChange,
   renderExpanded,
 }: ExpandableTableProps<Row>) {
+  const messages = useMessages();
   const ruleIndex = new Map(sort.map((r, i) => [r.key, i] as const));
   const ruleFor = (key: string) => {
     const i = ruleIndex.get(key);
@@ -576,7 +577,7 @@ function ExpandableTable<Row>({
           {selectable ? (
             <th scope="col" className={styles.expTh} data-control="true">
               <Checkbox
-                aria-label="Select all rows"
+                aria-label={messages.dataTable.selectAll}
                 checked={allSelected}
                 indeterminate={someSelected}
                 onChange={toggleAll}
@@ -700,6 +701,7 @@ function ExpandedRowGroup<Row>({
   onToggleExpand,
   renderExpanded,
 }: ExpandedRowGroupProps<Row>) {
+  const messages = useMessages();
   const detailId = `ku-dt-detail-${id}`;
   return (
     <>
@@ -710,7 +712,11 @@ function ExpandedRowGroup<Row>({
             className={styles.expandToggle}
             aria-expanded={isExpanded}
             aria-controls={detailId}
-            aria-label={isExpanded ? `Collapse ${rowLabel}` : `Expand ${rowLabel}`}
+            aria-label={
+              isExpanded
+                ? messages.dataTable.collapseRow(rowLabel)
+                : messages.dataTable.expandRow(rowLabel)
+            }
             onClick={onToggleExpand}
           >
             <span className={styles.expandIcon} aria-hidden="true" data-expanded={isExpanded} />
@@ -719,7 +725,7 @@ function ExpandedRowGroup<Row>({
         {selectable ? (
           <td className={styles.expTd} data-control="true">
             <Checkbox
-              aria-label={`Select ${rowLabel}`}
+              aria-label={messages.dataTable.selectRow(rowLabel)}
               checked={isSelected}
               onChange={onToggleSelect}
             />

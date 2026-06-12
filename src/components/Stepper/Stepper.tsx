@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { VisuallyHidden } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './Stepper.module.css';
 
 export type StepperOrientation = 'horizontal' | 'vertical';
@@ -39,6 +40,7 @@ export const Stepper = /* @__PURE__ */ forwardRef<HTMLOListElement, StepperProps
   { steps, activeStep, orientation = 'horizontal', onStepClick, className, ...props },
   ref,
 ) {
+  const messages = useMessages();
   return (
     <ol ref={ref} className={cx(styles.root, className)} data-orientation={orientation} {...props}>
       {steps.map((step, index) => {
@@ -71,7 +73,7 @@ export const Stepper = /* @__PURE__ */ forwardRef<HTMLOListElement, StepperProps
           <span className={styles.text}>
             <span className={styles.label}>
               {step.label}
-              {isComplete ? <VisuallyHidden> (completed)</VisuallyHidden> : null}
+              {isComplete ? <VisuallyHidden> {messages.stepper.completed}</VisuallyHidden> : null}
             </span>
             {step.description != null ? (
               <span className={styles.description}>{step.description}</span>

@@ -118,8 +118,8 @@ export const Carousel = /* @__PURE__ */ forwardRef<HTMLDivElement, CarouselProps
             key={item.id}
             id={slideId(i)}
             role="group"
-            aria-roledescription="slide"
-            aria-label={`${i + 1} of ${count}`}
+            aria-roledescription={messages.carousel.slideRoleDescription}
+            aria-label={messages.carousel.slide(i + 1, count)}
             className={styles.slide}
             data-active={i === safeActive ? 'true' : undefined}
             aria-hidden={i === safeActive ? undefined : 'true'}

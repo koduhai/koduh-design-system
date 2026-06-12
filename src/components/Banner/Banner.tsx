@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { InfoIcon, CheckIcon, WarningIcon, ErrorIcon, CloseIcon } from '../../icons';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './Banner.module.css';
 
 export type BannerSeverity = 'info' | 'success' | 'warning' | 'error';
@@ -22,6 +23,11 @@ export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title
   dismissable?: boolean;
   /** Called when the dismiss button is pressed. */
   onClose?: () => void;
+  /**
+   * Accessible label for the dismiss button. Overrides the i18n catalog's
+   * `dismiss` (default 'Dismiss').
+   */
+  closeLabel?: string;
   /** Trailing call-to-action slot (e.g. a Button or Link). */
   action?: ReactNode;
 }
@@ -42,9 +48,21 @@ const roleForSeverity: Record<BannerSeverity, 'alert' | 'status'> = {
 };
 
 export const Banner = /* @__PURE__ */ forwardRef<HTMLDivElement, BannerProps>(function Banner(
-  { severity, title, icon, dismissable = false, onClose, action, className, children, ...props },
+  {
+    severity,
+    title,
+    icon,
+    dismissable = false,
+    onClose,
+    closeLabel,
+    action,
+    className,
+    children,
+    ...props
+  },
   ref,
 ) {
+  const messages = useMessages();
   const resolvedIcon = icon === undefined ? defaultIcons[severity] : icon;
 
   return (
@@ -66,7 +84,12 @@ export const Banner = /* @__PURE__ */ forwardRef<HTMLDivElement, BannerProps>(fu
       </div>
       {action ? <div className={styles.action}>{action}</div> : null}
       {dismissable ? (
-        <button type="button" className={styles.dismiss} aria-label="Dismiss" onClick={onClose}>
+        <button
+          type="button"
+          className={styles.dismiss}
+          aria-label={closeLabel ?? messages.dismiss}
+          onClick={onClose}
+        >
           <CloseIcon size={18} />
         </button>
       ) : null}

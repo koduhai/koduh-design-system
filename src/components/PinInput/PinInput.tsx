@@ -3,6 +3,7 @@ import type { ClipboardEvent, FocusEvent, HTMLAttributes, KeyboardEvent, ChangeE
 import { useControllableState, useId } from '../../primitives';
 import { useOptionalFieldContext } from '../FormField';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './PinInput.module.css';
 
 export type PinInputSize = 'sm' | 'md' | 'lg';
@@ -59,6 +60,7 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
   ref,
 ) {
   const reactId = useId('pininput');
+  const messages = useMessages();
   const field = useOptionalFieldContext();
   const groupId = field?.id ?? idProp ?? reactId;
   const describedBy = field?.describedById ?? ariaDescribedBy;
@@ -195,7 +197,7 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
           disabled={disabled}
           required={required && i === 0}
           aria-invalid={invalid || undefined}
-          aria-label={`${ariaLabel ? `${ariaLabel} ` : ''}digit ${i + 1} of ${length}`}
+          aria-label={`${ariaLabel ? `${ariaLabel} ` : ''}${messages.pinInput.digit(i + 1, length)}`}
           onChange={(e) => handleChange(i, e)}
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={(e) => handlePaste(i, e)}

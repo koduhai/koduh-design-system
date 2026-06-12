@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './Code.module.css';
 
 export interface CodeProps extends HTMLAttributes<HTMLElement> {
@@ -28,6 +29,7 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLPreElement>, 'ch
 
 export const CodeBlock = /* @__PURE__ */ forwardRef<HTMLPreElement, CodeBlockProps>(
   function CodeBlock({ language, className, children, ...props }, ref) {
+    const messages = useMessages();
     return (
       <div className={styles.block}>
         {language ? (
@@ -40,7 +42,7 @@ export const CodeBlock = /* @__PURE__ */ forwardRef<HTMLPreElement, CodeBlockPro
           className={cx(styles.pre, className)}
           data-has-language={language ? 'true' : undefined}
           tabIndex={0}
-          aria-label={language ? `${language} code` : undefined}
+          aria-label={language ? messages.code.blockLabel(language) : undefined}
           {...props}
         >
           <code className={styles.code}>{children}</code>

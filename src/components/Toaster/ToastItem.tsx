@@ -3,6 +3,7 @@ import type { KeyboardEvent, ReactNode } from 'react';
 import { InfoIcon, CheckIcon, WarningIcon, ErrorIcon, CloseIcon } from '../../icons';
 import { pauseToast, resumeToast } from './store';
 import type { ToastRecord, ToastSeverity } from './store';
+import { useMessages } from '../../i18n';
 import styles from './Toaster.module.css';
 
 const icons: Record<ToastSeverity, ReactNode> = {
@@ -19,6 +20,7 @@ export function ToastItem({
   toast: ToastRecord;
   onDismiss: (id: string) => void;
 }) {
+  const messages = useMessages();
   // The auto-dismiss timer lives in the store (so queued toasts still expire);
   // hover/focus pause it and blur/leave resume it from the full duration.
   const clear = useCallback(() => pauseToast(toast.id), [toast.id]);
@@ -52,7 +54,7 @@ export function ToastItem({
       <button
         type="button"
         className={styles.close}
-        aria-label="Dismiss"
+        aria-label={messages.dismiss}
         onClick={() => onDismiss(toast.id)}
       >
         <CloseIcon size={18} />

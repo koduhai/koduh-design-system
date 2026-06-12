@@ -4,6 +4,7 @@ import { Checkbox } from '../Checkbox';
 import { Skeleton } from '../Skeleton';
 import { VisuallyHidden } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './Table.module.css';
 
 /**
@@ -112,6 +113,7 @@ function TableInner<Row>(
   }: TableProps<Row>,
   ref: ForwardedRef<HTMLTableElement>,
 ) {
+  const messages = useMessages();
   // Effective sort rules: explicit multi-sort wins; else derive from single sortKey/sortDir.
   const rules: SortRule[] = sort ?? (sortKey ? [{ key: sortKey, dir: sortDir ?? 'asc' }] : []);
   const ruleIndex = new Map(rules.map((r, i) => [r.key, i] as const));
@@ -178,7 +180,7 @@ function TableInner<Row>(
           {selectable ? (
             <th scope="col" className={styles.th} data-select="true">
               <Checkbox
-                aria-label="Select all rows"
+                aria-label={messages.table.selectAll}
                 checked={allSelected}
                 indeterminate={someSelected}
                 onChange={toggleAll}
@@ -249,7 +251,7 @@ function TableInner<Row>(
                 {selectable ? (
                   <td className={styles.td} data-select="true">
                     <Checkbox
-                      aria-label={`Select row ${id}`}
+                      aria-label={messages.table.selectRow(id)}
                       checked={isSelected}
                       onChange={() => toggleRow(id)}
                     />

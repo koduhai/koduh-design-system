@@ -2,6 +2,7 @@ import { forwardRef, useRef } from 'react';
 import type { HTMLAttributes, KeyboardEvent, MouseEvent, ReactNode, Ref } from 'react';
 import { CloseIcon } from '../../icons';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './Chip.module.css';
 
 export type ChipVariant = 'solid' | 'outline';
@@ -45,6 +46,7 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
   },
   ref,
 ) {
+  const messages = useMessages();
   const interactive = Boolean(onClick) && !onDelete;
   // Tracks whether Space was pressed down on this element, so activation fires on
   // keyup (native <button> semantics: press-and-release-elsewhere cancels).
@@ -67,7 +69,10 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
         <button
           type="button"
           className={styles.delete}
-          aria-label={deleteLabel ?? (typeof label === 'string' ? `Remove ${label}` : 'Remove')}
+          aria-label={
+            deleteLabel ??
+            (typeof label === 'string' ? messages.chip.remove(label) : messages.chip.removeGeneric)
+          }
           onClick={(event) => {
             event.stopPropagation();
             onDelete(event);

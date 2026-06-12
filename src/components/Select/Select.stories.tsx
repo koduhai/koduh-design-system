@@ -15,11 +15,17 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: { label: 'Country', options, placeholder: 'Choose a country' },
-  render: function DefaultStory(args) {
+  render: function DefaultStory() {
     const [value, setValue] = useState<string>();
     return (
       <div style={{ padding: 40 }}>
-        <Select {...args} value={value} onChange={(v) => setValue(v)} />
+        <Select
+          label="Country"
+          options={options}
+          placeholder="Choose a country"
+          value={value}
+          onChange={(v) => setValue(v)}
+        />
       </div>
     );
   },
@@ -45,6 +51,31 @@ export const WithFormField: Story = {
   },
 };
 
+/**
+ * `multiple`: selected values render as removable chips in the trigger, the
+ * listbox is `aria-multiselectable`, and clicking an option toggles it without
+ * closing the listbox. The reported value is a `string[]`.
+ */
+export const Multiple: Story = {
+  args: { label: 'Countries', options, multiple: true },
+  render: function MultipleStory() {
+    const [value, setValue] = useState<string[]>(['us', 'ca']);
+    return (
+      <div style={{ padding: 40, maxWidth: 360 }}>
+        <Select
+          multiple
+          label="Countries"
+          options={options}
+          placeholder="Choose countries"
+          value={value}
+          onChange={setValue}
+          clearable
+        />
+      </div>
+    );
+  },
+};
+
 export const Showcase: Story = {
   args: { label: 'Country', options },
   parameters: { layout: 'fullscreen' },
@@ -63,9 +94,9 @@ export const Showcase: Story = {
 /** `density="compact"` tightens the trigger and option padding for dense UIs. */
 export const Compact: Story = {
   args: { label: 'Country', options, density: 'compact', placeholder: 'Choose…' },
-  render: (args) => (
+  render: () => (
     <div style={{ padding: 40 }}>
-      <Select {...args} />
+      <Select label="Country" options={options} density="compact" placeholder="Choose…" />
     </div>
   ),
 };

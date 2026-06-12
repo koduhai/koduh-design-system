@@ -300,6 +300,134 @@ describe('Select', () => {
     });
   });
 
+  describe('multi-select', () => {
+    it('marks the listbox aria-multiselectable and toggles options without closing', () => {
+      const onChange = vi.fn();
+      render(<Select multiple label="Fruit" options={options} onChange={onChange} />);
+      fireEvent.click(screen.getByRole('button', { name: /Fruit/ }));
+      const listbox = screen.getByRole('listbox');
+      expect(listbox).toHaveAttribute('aria-multiselectable', 'true');
+      fireEvent.click(screen.getByRole('option', { name: 'Apple' }));
+      expect(onChange).toHaveBeenLastCalledWith(['a'], expect.anything());
+      // Stays open for further selection.
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('option', { name: 'Banana' }));
+      expect(onChange).toHaveBeenLastCalledWith(['a', 'b'], expect.anything());
+    });
+
+    it('renders selected values as removable chips and toggling off removes them', () => {
+      const onChange = vi.fn();
+      render(
+        <Select
+          multiple
+          label="Fruit"
+          options={options}
+          defaultValue={['a', 'b']}
+          onChange={onChange}
+        />,
+      );
+      // Two chips, each with a Remove control.
+      expect(screen.getByRole('button', { name: 'Remove Apple' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Remove Banana' })).toBeInTheDocument();
+      // Removing a chip reports the remaining values.
+      fireEvent.click(screen.getByRole('button', { name: 'Remove Apple' }));
+      expect(onChange).toHaveBeenLastCalledWith(['b'], expect.anything());
+    });
+
+    it('deselects an already-selected option', () => {
+      const onChange = vi.fn();
+      render(
+        <Select
+          multiple
+          label="Fruit"
+          options={options}
+          defaultValue={['a']}
+          onChange={onChange}
+        />,
+      );
+      fireEvent.click(screen.getByRole('button', { name: /Fruit/ }));
+      const apple = screen.getByRole('option', { name: 'Apple' });
+      expect(apple).toHaveAttribute('aria-selected', 'true');
+      fireEvent.click(apple);
+      expect(onChange).toHaveBeenLastCalledWith([], expect.anything());
+    });
+
+    it('Backspace on the trigger removes the last selected chip', () => {
+      const onChange = vi.fn();
+      render(
+        <Select
+          multiple
+          label="Fruit"
+          options={options}
+          defaultValue={['a', 'b']}
+          onChange={onChange}
+        />,
+      );
+      const trigger = screen.getByRole('button', { name: /Fruit/ });
+      fireEvent.keyDown(trigger, { key: 'Backspace' });
+      expect(onChange).toHaveBeenLastCalledWith(['a'], expect.anything());
+    });
+
+    it('shows the placeholder only while nothing is selected', () => {
+      const { rerender } = render(
+        <Select multiple label="Fruit" placeholder="Pick fruit" options={options} value={[]} />,
+      );
+      expect(screen.getByText('Pick fruit')).toBeInTheDocument();
+      rerender(
+        <Select multiple label="Fruit" placeholder="Pick fruit" options={options} value={['a']} />,
+      );
+      expect(screen.queryByText('Pick fruit')).toBeNull();
+    });
+
+    it('clearable: clears all selections and reports an empty array', () => {
+      const onChange = vi.fn();
+      render(
+        <Select
+          multiple
+          label="Fruit"
+          options={options}
+          defaultValue={['a', 'b']}
+          clearable
+          onChange={onChange}
+        />,
+      );
+      fireEvent.click(screen.getByRole('button', { name: /clear/i }));
+      expect(onChange).toHaveBeenLastCalledWith([], expect.anything());
+    });
+
+    it('binds to a Form with an array value', () => {
+      function Probe() {
+        const f = useFormField('fruits');
+        return <span data-testid="v">{JSON.stringify(f.value ?? null)}</span>;
+      }
+      function Wrap() {
+        const form = useForm({ defaultValues: { fruits: ['a'] } });
+        return (
+          <Form form={form} aria-label="f">
+            <FormField name="fruits" label="Fruits">
+              <Select multiple options={options} />
+            </FormField>
+            <Probe />
+          </Form>
+        );
+      }
+      render(<Wrap />);
+      expect(screen.getByTestId('v')).toHaveTextContent('["a"]');
+      fireEvent.click(screen.getByRole('button', { name: /Fruits/ }));
+      fireEvent.click(screen.getByRole('option', { name: 'Banana' }));
+      expect(screen.getByTestId('v')).toHaveTextContent('["a","b"]');
+    });
+
+    it('flows a provider removeOption override through to the chip remove label', () => {
+      render(
+        <KoduhI18nProvider messages={{ combobox: { removeOption: (l) => `Retirer ${l}` } }}>
+          <Select multiple label="Fruit" options={options} defaultValue={['a']} />
+        </KoduhI18nProvider>,
+      );
+      expect(screen.getByRole('button', { name: 'Retirer Apple' })).toBeInTheDocument();
+    });
+  });
+
   it('omits data-density by default and reflects density="compact" on the trigger + listbox', () => {
     const { rerender } = render(<Select label="Fruit" options={options} />);
     expect(screen.getByRole('button', { name: /Fruit/ })).not.toHaveAttribute('data-density');

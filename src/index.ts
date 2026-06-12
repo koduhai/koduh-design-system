@@ -107,7 +107,13 @@ export type { PopoverProps, PopoverPlacement } from './components/Popover';
 export { Tooltip } from './components/Tooltip';
 export type { TooltipProps } from './components/Tooltip';
 export { Select } from './components/Select';
-export type { SelectProps, SelectOption, SelectSize } from './components/Select';
+export type {
+  SelectProps,
+  SelectSingleProps,
+  SelectMultiProps,
+  SelectOption,
+  SelectSize,
+} from './components/Select';
 export { Menu } from './components/Menu';
 export type { MenuProps, MenuEntry, MenuItemConfig, MenuSeparator } from './components/Menu';
 export { Popconfirm } from './components/Popconfirm';

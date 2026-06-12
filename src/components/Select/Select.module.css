@@ -102,6 +102,62 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* Multi-select: a clearer selected state than font-weight alone, scoped to the
+   multiselectable listbox so single-select option styling is unchanged. */
+.listbox[aria-multiselectable='true'] .option[aria-selected='true'] {
+  background: var(--ku-color-bg-selected);
+}
+
+/* Multi-select control: selected chips wrap together with the open button inside
+   one bordered box, mirroring Combobox's multiControl. */
+.multiControl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ku-space-1);
+  min-width: 12rem;
+  padding: var(--ku-space-1);
+  background: var(--ku-color-bg-surface);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+}
+.multiControl[data-error='true'] {
+  border-color: var(--ku-color-danger);
+}
+.multiControl:focus-within {
+  border-color: var(--ku-color-primary);
+  box-shadow: 0 0 0 1px var(--ku-color-primary);
+}
+/* Reserve room so the chips never run under the clear + chevron. */
+.multiControl[data-clearable='true'] {
+  padding-inline-end: 2.5rem;
+}
+/* The open button inside the multi control is borderless and flexes to fill the
+   remaining width (so most of the box is a click target), and holds the chevron. */
+.multiTrigger {
+  flex: 1 1 4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ku-space-2);
+  min-width: 4rem;
+  padding: var(--ku-space-1) var(--ku-space-2);
+  background: transparent;
+  color: var(--ku-color-text-primary);
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.multiTrigger[data-density='compact'],
+[data-density='compact'] .multiTrigger {
+  padding: var(--ku-density-control-padding-y) var(--ku-density-control-padding-x);
+}
+.multiTrigger:disabled {
+  cursor: not-allowed;
+}
+.multiControl:has(.multiTrigger:disabled) {
+  opacity: 0.6;
+}
 .helperText {
   font-size: var(--ku-font-size-sm);
   color: var(--ku-color-text-secondary);

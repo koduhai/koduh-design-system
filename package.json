@@ -1,7 +1,7 @@
 {
   "name": "@koduhai/design-system",
   "version": "1.0.0",
-  "description": "Koduh AI Design System — custom-built, MUI-free",
+  "description": "A dependency-free, accessible React component library with zero-runtime CSS Modules styling and dark-first theming.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

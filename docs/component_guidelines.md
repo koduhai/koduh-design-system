@@ -9,8 +9,8 @@
 ## Overview
 
 Koduh AI components are **built from scratch** — they own their markup, styling,
-behavior, and accessibility. They are **not** wrappers around MUI, and there is no
-hidden vendor component to pass props through to. Each component renders native
+behavior, and accessibility. They are **not** wrappers around a third-party
+library, and there is no hidden vendor component to pass props through to. Each component renders native
 HTML, styles itself with CSS Modules driven by `--ku-*` design tokens, and exposes
 a small, explicit, fully-typed prop interface.
 
@@ -25,10 +25,10 @@ pattern, look there first; the conventions below are all demonstrated by it.
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | **Own the markup**               | Render native elements (`<button>`, `<header>`, `<nav>`) directly. No wrapped vendor component.                      |
 | **Tokens, never hardcode**       | All colors, spacing, radii, type, etc. reference `--ku-*` CSS variables. Never hardcode a hex value or pixel size.   |
-| **Zero-runtime styling**         | Styles live in a co-located `*.module.css`. No `sx`, no Emotion, no runtime style serialization.                     |
+| **Zero-runtime styling**         | Styles live in a co-located `*.module.css`. No CSS-in-JS, no runtime style serialization.                            |
 | **Variants via data-attributes** | The root element carries `data-variant`, `data-tone`, `data-size`, etc.; the CSS selects on them.                    |
 | **Explicit, typed props**        | Props are named and typed. Standard DOM attributes pass through to the root; we never forward an unbounded prop set. |
-| **Clean-break vocabulary**       | `variant` + `tone`, `solid`/`outline`/`ghost` — not MUI's `color` + `contained`/`outlined`/`text`.                   |
+| **Consistent vocabulary**        | `variant` + `tone`, with `solid`/`outline`/`ghost` styles shared across every tonal component.                       |
 | **Accessibility built in**       | Correct semantics, keyboard support, visible focus, WCAG AA contrast in both themes — verified by tests.             |
 
 ---
@@ -285,18 +285,18 @@ prop.
 
 ---
 
-## Clean-Break API Vocabulary
+## API Vocabulary
 
-The API is designed for clarity, not MUI compatibility:
+The API is designed for clarity and consistency across the library:
 
-| Concept          | Use this                                                 | Not this (MUI-era)                       |
-| ---------------- | -------------------------------------------------------- | ---------------------------------------- |
-| Visual style     | `variant`: `solid`/`outline`/`ghost`                     | `variant`: `contained`/`outlined`/`text` |
-| Semantic color   | `tone`: `primary`/`neutral`/`success`/`warning`/`danger` | `color`: `primary`/`secondary`/`error`   |
-| Overlay close    | `onOpenChange(open)` (with an `open` prop)               | `onClose()` everywhere                   |
-| Polymorphism     | `asChild` (Slot)                                         | `component` / `as`                       |
-| Stateful value   | `value` + `defaultValue` + `onChange`                    | scattered controlled-only props          |
-| Styling override | `className` + tokens / CSS Modules                       | `sx` prop                                |
+| Concept          | Convention                                               |
+| ---------------- | -------------------------------------------------------- |
+| Visual style     | `variant`: `solid`/`outline`/`ghost`                     |
+| Semantic color   | `tone`: `primary`/`neutral`/`success`/`warning`/`danger` |
+| Overlay close    | `onOpenChange(open)` (with an `open` prop)               |
+| Polymorphism     | `asChild` (Slot)                                         |
+| Stateful value   | `value` + `defaultValue` + `onChange`                    |
+| Styling override | `className` + tokens / CSS Modules                       |
 
 ---
 

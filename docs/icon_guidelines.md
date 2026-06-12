@@ -9,7 +9,7 @@
 ## Overview
 
 The design system ships a **small, vendored, in-house SVG icon set**. It does
-**not** depend on `@mui/icons-material` (or any icon library). Each icon is a
+**not** depend on any third-party icon library. Each icon is a
 standalone React component that renders an inline `<svg>` using `currentColor`, so
 it inherits the surrounding text color and is styled with the same `--ku-*` tokens
 as everything else.
@@ -124,8 +124,8 @@ Icons are square; control size with the `size` prop (default `24`). Pass a numbe
 <CheckIcon size="1.5rem" />
 ```
 
-There is no MUI-style `fontSize="small|medium|large"` prop — `size` is the single,
-explicit knob.
+There is no `fontSize="small|medium|large"` prop; `size` is the single, explicit
+knob.
 
 ### Color
 

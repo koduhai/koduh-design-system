@@ -1,0 +1,67 @@
+# Builds the Storybook docs site and deploys it to GitHub Pages on every push to
+# main. Enable Pages once in repo Settings -> Pages -> "Build and deployment" ->
+# Source: "GitHub Actions". The site publishes to
+# https://koduhai.github.io/koduh-design-system/.
+#
+# Actions are SHA-pinned (with a trailing version comment) for supply-chain
+# safety, matching ci.yml; Dependabot's github-actions group keeps the SHAs
+# current. The runner is pinned to ubuntu-24.04 to match the rest of CI.
+name: Deploy Storybook to Pages
+
+on:
+  push:
+    branches: [main]
+  # Allow a manual redeploy from the Actions tab without a new commit.
+  workflow_dispatch:
+
+# Least-privilege token plus the Pages/OIDC scopes the deploy step needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. Don't cancel an in-flight publish (a half-published
+# Pages site is worse than waiting), so let runs queue instead.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # `prebuild-storybook` runs `build:tokens` first, so dist/theme.css exists
+      # before Storybook's preview imports it. Output goes to storybook-static/.
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: storybook-static
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

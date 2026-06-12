@@ -42,6 +42,7 @@ export interface FormApi {
   getValues: () => FormValues;
   getFieldState: (name: string) => FieldState;
   setValue: (name: string, value: unknown) => void;
+  setValues: (values: FormValues) => void;
   setTouched: (name: string, touched?: boolean) => void;
   setError: (name: string, message: string | undefined) => void;
   clearErrors: (name?: string) => void;
@@ -169,6 +170,21 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
     setValue(name, value) {
       const values = setIn(state.values, name, value);
       const dirty = { ...state.dirty, [name]: !valuesEqual(value, get(defaults, name)) };
+      setState({ values, dirty });
+      void maybeValidate('change');
+    },
+    setValues(patch) {
+      // Bulk patch: merge a partial values object onto current values and update
+      // dirty per changed key, mirroring setValue (compared against defaults) but
+      // in a single state update + one validation pass. Ideal for loading a server
+      // payload without N setValue calls or a full reset (which would adopt the
+      // payload as the new defaults). Top-level keys only — nested fields keep the
+      // dotted-path setValue.
+      const values = { ...state.values, ...patch };
+      const dirty = { ...state.dirty };
+      for (const name of Object.keys(patch)) {
+        dirty[name] = !valuesEqual(values[name], get(defaults, name));
+      }
       setState({ values, dirty });
       void maybeValidate('change');
     },

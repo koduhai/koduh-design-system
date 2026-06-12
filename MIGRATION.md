@@ -29,6 +29,51 @@ All additive; no migration required. Highlights:
   (curated layout escape hatch: `padding`/`px`/`py`/`grow`/`shrink`/`minWidth`/`width`)
   and **`DescriptionList`** (`<dl>` key-value primitive).
 
+## Form: `reset` / `setValue` / `setValues` (additive)
+
+The headless `useForm` store covers the two common write patterns without N
+imperative calls. All three are on the `useForm()` return (typed on `FormApi`).
+
+- **`reset(values?)`** — restore the form. With no args it resets every field to
+  the `defaultValues` you constructed the form with. Passing an object **adopts
+  it as the new defaults** and resets to it (so a later bare `reset()` restores
+  these values, not the originals). Either way it clears errors, touched, and
+  dirty, and re-renders subscribers.
+- **`setValue(name, value)`** — update a single field by dotted path
+  (`'address.city'`, `'items.0.qty'`). Recomputes that field's `dirty` against
+  its default and runs validation per the form's `mode`.
+- **`setValues(patch)`** — bulk-patch many top-level fields in one update.
+  Merges `patch` onto the current values, recomputes `dirty` for each patched
+  key (same default comparison as `setValue`), notifies subscribers once, and
+  runs one validation pass. Use it to load a server payload **without** turning
+  it into the new defaults (which is what `reset(values)` would do).
+
+```tsx
+const form = useForm({ defaultValues: { name: '', email: '', role: 'guest' } });
+
+// Reset to the original defaults (e.g. a "Cancel" button on an edit form).
+form.reset();
+
+// Load server values WITHOUT changing the baseline — fields become dirty if
+// they differ from defaults, and a later reset() still returns to the defaults.
+useEffect(() => {
+  fetchUser(id).then((user) => form.setValues({ name: user.name, email: user.email }));
+}, [id]);
+
+// Load server values AS the new baseline — an edit form that should treat the
+// fetched record as pristine (no dirty fields, reset() returns here).
+useEffect(() => {
+  fetchUser(id).then((user) => form.reset({ name: user.name, email: user.email, role: user.role }));
+}, [id]);
+```
+
+> **`setValues` vs `reset(values)`:** both load values. `setValues` is a _patch_
+> (partial, keeps the original defaults, marks changed fields dirty);
+> `reset(values)` is a _rebaseline_ (replaces defaults, everything pristine).
+> Reach for `setValues` to merge data into a working form, `reset(values)` to
+> seed an edit form from a freshly loaded record. Nested fields still use the
+> dotted-path `setValue('address.city', …)`.
+
 ---
 
 # Migration Guide: v1 → v2

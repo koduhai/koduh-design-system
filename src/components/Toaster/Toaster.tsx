@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react';
 import type { CSSProperties } from 'react';
 import { subscribe, getSnapshot, dismissToast } from './store';
 import { ToastItem } from './ToastItem';
+import { useMessages } from '../../i18n';
 import styles from './Toaster.module.css';
 
 export type { ToastPlacement as ToasterPlacement } from './store';
@@ -17,6 +18,7 @@ export interface ToasterProps {
 }
 
 export function Toaster({ placement = 'bottom-right', max = 3, gap = 3 }: ToasterProps) {
+  const messages = useMessages();
   const all = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   // An unplaced toast renders in any Toaster (backward compatible); a placed one
   // only renders in the matching Toaster.
@@ -30,7 +32,7 @@ export function Toaster({ placement = 'bottom-right', max = 3, gap = 3 }: Toaste
       className={styles.region}
       data-placement={placement}
       role="region"
-      aria-label="Notifications"
+      aria-label={messages.toaster.label}
       style={{ ['--toaster-gap']: `var(--ku-space-${gap})` } as CSSProperties}
     >
       {ordered.map((t) => (

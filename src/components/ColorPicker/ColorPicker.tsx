@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { CSSProperties, KeyboardEvent, PointerEvent, ReactNode } from 'react';
 import { useControllableState, useId, VisuallyHidden } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import { useOptionalFieldContext } from '../FormField';
 import { parseHex, toHex, rgbToHsv, hsvToRgb } from './color';
 import type { HSV } from './color';
@@ -60,6 +61,7 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
     ref,
   ) {
     const reactId = useId('colorpicker');
+    const messages = useMessages();
     const field = useOptionalFieldContext();
     const id = field?.id ?? idProp ?? reactId;
     const hexInputId = `${id}-hex`;
@@ -378,11 +380,11 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
           className={styles.sv}
           role="slider"
           tabIndex={disabled ? -1 : 0}
-          aria-label="Saturation and brightness"
+          aria-label={messages.colorPicker.saturationBrightness}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={valPct}
-          aria-valuetext={`${satPct}% saturation, ${valPct}% brightness, ${currentDisplayHex}`}
+          aria-valuetext={messages.colorPicker.svValueText(satPct, valPct, currentDisplayHex)}
           aria-disabled={disabled || undefined}
           onPointerDown={onSvPointerDown}
           onPointerMove={onSvPointerMove}
@@ -399,11 +401,11 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
           className={styles.hue}
           role="slider"
           tabIndex={disabled ? -1 : 0}
-          aria-label="Hue"
+          aria-label={messages.colorPicker.hue}
           aria-valuemin={0}
           aria-valuemax={360}
           aria-valuenow={Math.round(hsv.h)}
-          aria-valuetext={`${Math.round(hsv.h)} degrees`}
+          aria-valuetext={messages.colorPicker.hueValueText(Math.round(hsv.h))}
           aria-disabled={disabled || undefined}
           onPointerDown={onHuePointerDown}
           onPointerMove={onHuePointerMove}
@@ -421,7 +423,7 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
             className={styles.alpha}
             role="slider"
             tabIndex={disabled ? -1 : 0}
-            aria-label="Alpha"
+            aria-label={messages.colorPicker.alpha}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={alphaPct}
@@ -444,7 +446,7 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
           <span className={styles.preview} aria-hidden style={{ background: currentDisplayHex }} />
           <div className={styles.hexField}>
             <label htmlFor={hexInputId} className={styles.hexLabel}>
-              Hex
+              {messages.colorPicker.hex}
             </label>
             <input
               id={hexInputId}
@@ -453,7 +455,7 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
               spellCheck={false}
               autoComplete="off"
               disabled={disabled}
-              aria-label={label == null ? 'Hex' : undefined}
+              aria-label={label == null ? messages.colorPicker.hex : undefined}
               value={hexDraft}
               onChange={(e) => setHexDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -480,12 +482,12 @@ export const ColorPicker = /* @__PURE__ */ forwardRef<HTMLDivElement, ColorPicke
             floods AT with a fresh full-hex announcement on every drag tick. Keep
             the text as on-demand context instead of an aria-live region.
           */}
-          <VisuallyHidden>Selected color {currentDisplayHex}</VisuallyHidden>
+          <VisuallyHidden>{messages.colorPicker.selectedColor(currentDisplayHex)}</VisuallyHidden>
         </div>
 
         {/* Swatch row */}
         {swatches.length > 0 ? (
-          <div className={styles.swatches} role="group" aria-label="Color presets">
+          <div className={styles.swatches} role="group" aria-label={messages.colorPicker.presets}>
             {swatches.map((sw) => {
               const selected = sw.toUpperCase() === currentDisplayHex.toUpperCase();
               return (

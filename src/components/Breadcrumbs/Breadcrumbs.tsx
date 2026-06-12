@@ -3,6 +3,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { ChevronDownIcon } from '../../icons';
 import { VisuallyHidden } from '../../primitives/VisuallyHidden';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './Breadcrumbs.module.css';
 
 export interface BreadcrumbItem {
@@ -26,6 +27,7 @@ const ELLIPSIS = '…';
 
 export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsProps>(
   function Breadcrumbs({ items, separator, maxItems, className, ...props }, ref) {
+    const messages = useMessages();
     const defaultSeparator = <ChevronDownIcon className={styles.chevron} size={16} aria-hidden />;
     const sep = separator ?? defaultSeparator;
 
@@ -61,7 +63,12 @@ export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsPr
     const lastIndex = rendered.length - 1;
 
     return (
-      <nav ref={ref} aria-label="Breadcrumb" className={cx(styles.root, className)} {...props}>
+      <nav
+        ref={ref}
+        aria-label={messages.breadcrumbs.label}
+        className={cx(styles.root, className)}
+        {...props}
+      >
         <ol className={styles.list}>
           {rendered.map((entry, index) => {
             const isLast = index === lastIndex;
@@ -78,11 +85,7 @@ export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsPr
                     <span className={styles.ellipsis} aria-hidden="true">
                       {ELLIPSIS}
                     </span>
-                    <VisuallyHidden>
-                      {entry.hidden === 1
-                        ? '1 more breadcrumb'
-                        : `${entry.hidden} more breadcrumbs`}
-                    </VisuallyHidden>
+                    <VisuallyHidden>{messages.breadcrumbs.more(entry.hidden)}</VisuallyHidden>
                   </li>
                   {separatorNode}
                 </Fragment>

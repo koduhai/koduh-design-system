@@ -3,6 +3,7 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import { useControllableState } from '../../primitives';
 import { MenuIcon } from '../../icons';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import styles from './Sidebar.module.css';
 
 export interface SidebarItem {
@@ -93,11 +94,12 @@ export const Sidebar = /* @__PURE__ */ forwardRef<HTMLElement, SidebarProps>(fun
     footer,
     className,
     style,
-    'aria-label': ariaLabel = 'Sidebar',
+    'aria-label': ariaLabel,
     ...props
   },
   ref,
 ) {
+  const messages = useMessages();
   const [isCollapsed, setCollapsed] = useControllableState<boolean>({
     value: collapsed,
     defaultValue: defaultCollapsed,
@@ -129,7 +131,7 @@ export const Sidebar = /* @__PURE__ */ forwardRef<HTMLElement, SidebarProps>(fun
   return (
     <nav
       ref={ref}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? messages.sidebar.label}
       className={cx(styles.root, className)}
       data-collapsed={isCollapsed ? 'true' : undefined}
       style={{ ...style, '--ku-sidebar-width': widthValue } as CSSProperties}
@@ -145,7 +147,7 @@ export const Sidebar = /* @__PURE__ */ forwardRef<HTMLElement, SidebarProps>(fun
           // use aria-pressed (toggle semantics) rather than aria-expanded/
           // aria-controls, which would imply the list is shown/hidden.
           aria-pressed={isCollapsed}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={isCollapsed ? messages.sidebar.expand : messages.sidebar.collapse}
           onClick={() => setCollapsed(!isCollapsed)}
         >
           <MenuIcon size={20} />

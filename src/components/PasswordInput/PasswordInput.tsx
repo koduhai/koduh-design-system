@@ -2,6 +2,7 @@ import { forwardRef, useState } from 'react';
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 import { useId, useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import { useOptionalFieldContext } from '../FormField';
 import { EyeIcon, EyeOffIcon } from '../../icons';
 import styles from './PasswordInput.module.css';
@@ -11,11 +12,10 @@ export type PasswordInputSize = 'sm' | 'md' | 'lg';
 /** Field density. Mirrors the `[data-density]` token mechanism (`--ku-density-*`). */
 export type Density = 'comfortable' | 'compact';
 
-export interface PasswordInputProps
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    'size' | 'value' | 'defaultValue' | 'onChange' | 'type'
-  > {
+export interface PasswordInputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'size' | 'value' | 'defaultValue' | 'onChange' | 'type'
+> {
   /** Visible label, associated with the input. Or wrap in a `<FormField>`. */
   label?: ReactNode;
   /** Controlled value. */
@@ -58,6 +58,7 @@ export const PasswordInput = /* @__PURE__ */ forwardRef<HTMLInputElement, Passwo
     ref,
   ) {
     const reactId = useId('password');
+    const messages = useMessages();
     const field = useOptionalFieldContext();
     const id = field?.id ?? idProp ?? reactId;
     const descriptionId = `${id}-description`;
@@ -125,7 +126,7 @@ export const PasswordInput = /* @__PURE__ */ forwardRef<HTMLInputElement, Passwo
           <button
             type="button"
             className={styles.toggle}
-            aria-label={visible ? 'Hide password' : 'Show password'}
+            aria-label={visible ? messages.passwordInput.hide : messages.passwordInput.show}
             aria-pressed={visible}
             disabled={disabled}
             onClick={() => setVisible((v) => !v)}

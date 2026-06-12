@@ -2,6 +2,7 @@ import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'r
 import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { mergeRefs, useId } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import { useOptionalFieldContext } from '../FormField';
 import { SearchIcon } from '../../icons';
 import styles from './CommandPalette.module.css';
@@ -53,14 +54,18 @@ export const CommandPalette = /* @__PURE__ */ forwardRef<HTMLDialogElement, Comm
       open,
       onOpenChange,
       commands,
-      placeholder = 'Type a command or search…',
-      noResultsText = 'No results',
-      'aria-label': ariaLabel = 'Command menu',
+      placeholder: placeholderProp,
+      noResultsText: noResultsTextProp,
+      'aria-label': ariaLabelProp,
       className,
       ...props
     },
     forwardedRef,
   ) {
+    const messages = useMessages();
+    const placeholder = placeholderProp ?? messages.commandPalette.placeholder;
+    const noResultsText = noResultsTextProp ?? messages.commandPalette.noResults;
+    const ariaLabel = ariaLabelProp ?? messages.commandPalette.label;
     const dialogRef = useRef<HTMLDialogElement>(null);
     const listboxRef = useRef<HTMLUListElement>(null);
     const baseId = useId('command-palette');

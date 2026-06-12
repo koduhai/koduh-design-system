@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { useControllableState, useId } from '../../primitives';
-import { useLocale } from '../../i18n';
+import { useLocale, useMessages } from '../../i18n';
 import { cx } from '../../utils/cx';
 import styles from './Calendar.module.css';
 
@@ -86,6 +86,7 @@ export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps
   // the hook) to respect the rules of hooks.
   const contextLocale = useLocale();
   const locale = localeProp ?? contextLocale;
+  const messages = useMessages();
   const [selected, setSelected] = useControllableState<Date | undefined>({
     value,
     defaultValue,
@@ -268,7 +269,7 @@ export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps
         <button
           type="button"
           className={styles.nav}
-          aria-label="Previous month"
+          aria-label={messages.calendar.previousMonth}
           onClick={() => goToMonth(-1)}
         >
           <span aria-hidden>‹</span>
@@ -285,7 +286,7 @@ export const Calendar = /* @__PURE__ */ forwardRef<HTMLDivElement, CalendarProps
         <button
           type="button"
           className={styles.nav}
-          aria-label="Next month"
+          aria-label={messages.calendar.nextMonth}
           onClick={() => goToMonth(1)}
         >
           <span aria-hidden>›</span>

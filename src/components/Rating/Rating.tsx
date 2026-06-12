@@ -2,6 +2,7 @@ import { forwardRef, useRef } from 'react';
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { useId, useControllableState } from '../../primitives';
 import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
 import { useOptionalFieldContext } from '../FormField';
 import styles from './Rating.module.css';
 
@@ -69,6 +70,7 @@ export const Rating = /* @__PURE__ */ forwardRef<HTMLDivElement, RatingProps>(fu
   ref,
 ) {
   const baseId = useId('rating');
+  const messages = useMessages();
   const field = useOptionalFieldContext();
   const starRefs = useRef<Array<HTMLDivElement | null>>([]);
 
@@ -159,7 +161,7 @@ export const Rating = /* @__PURE__ */ forwardRef<HTMLDivElement, RatingProps>(fu
             role="radio"
             id={`${baseId}-star-${rating}`}
             className={styles.star}
-            aria-label={`${rating} ${rating === 1 ? 'star' : 'stars'}`}
+            aria-label={messages.rating.starLabel(rating)}
             aria-checked={checked}
             data-filled={filled ? 'true' : undefined}
             // Roving tabindex: readOnly group is not in the tab order at all.

@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import type { HTMLAttributes } from 'react';
 import { cx } from '../../utils/cx';
 import { VisuallyHidden } from '../../primitives';
+import { useMessages } from '../../i18n';
 import styles from './Chart.module.css';
 
 export type ChartType = 'line' | 'bar';
@@ -126,6 +127,7 @@ export const Chart = /* @__PURE__ */ forwardRef<HTMLDivElement, ChartProps>(func
   },
   ref,
 ) {
+  const messages = useMessages();
   const { min, max, maxLen } = bounds(series);
   const span = max - min || 1;
 
@@ -140,7 +142,10 @@ export const Chart = /* @__PURE__ */ forwardRef<HTMLDivElement, ChartProps>(func
 
   const label =
     ariaLabel ??
-    `${type} chart with ${series.length} series: ${series.map((s) => s.name).join(', ')}`;
+    messages.chart.summary(
+      type,
+      series.map((s) => s.name),
+    );
 
   // group bars: each category gets a cluster of one bar per series.
   // The per-series stride is derived from groupW (not from a floored barW) so the
@@ -236,10 +241,10 @@ export const Chart = /* @__PURE__ */ forwardRef<HTMLDivElement, ChartProps>(func
           <caption>{label}</caption>
           <thead>
             <tr>
-              <th scope="col">Series</th>
+              <th scope="col">{messages.chart.series}</th>
               {Array.from({ length: maxLen }, (_, i) => (
                 <th scope="col" key={i}>
-                  {categories?.[i] ?? `Point ${i + 1}`}
+                  {categories?.[i] ?? messages.chart.point(i + 1)}
                 </th>
               ))}
             </tr>

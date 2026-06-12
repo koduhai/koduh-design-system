@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { TextField } from '../TextField';
 import { Popover } from '../Popover';
 import { Checkbox } from '../Checkbox';
+import { useMessages } from '../../i18n';
 import { getColumnValue } from './pipeline';
 import type { DataColumn, FilterValue } from './types';
 import styles from './DataTable.module.css';
@@ -103,6 +104,7 @@ interface SelectFilterProps<Row> {
 }
 
 function SelectFilter<Row>({ column, header, data, value, onChange }: SelectFilterProps<Row>) {
+  const messages = useMessages();
   // Popover requires controlled open state (it does not wire onClick on the trigger).
   const [open, setOpen] = useState(false);
 
@@ -127,7 +129,10 @@ function SelectFilter<Row>({ column, header, data, value, onChange }: SelectFilt
     >
       {header}
       {chosen.length > 0 ? (
-        <span className={styles.filterCount} aria-label={`${chosen.length} selected`}>
+        <span
+          className={styles.filterCount}
+          aria-label={messages.dataTable.selectedCount(chosen.length)}
+        >
           {chosen.length}
         </span>
       ) : null}

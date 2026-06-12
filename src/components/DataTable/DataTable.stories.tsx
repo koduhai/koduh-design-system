@@ -95,6 +95,34 @@ export const Empty: Story = {
   },
 };
 
+// Virtualization combined with row expansion (#89): the full set is windowed in a
+// dynamic-height viewport, and expanding a row grows its measured height so the
+// spacers/scrollbar recompute. An exact `rowHeight` is not required here.
+export const VirtualizedExpandable: Story = {
+  args: {
+    columns,
+    data: manyPeople,
+    getRowId: (r: Person) => r.id,
+    virtualized: true,
+    viewportHeight: 360,
+    stickyHeader: true,
+    defaultExpandedIds: ['2'],
+    caption: '1,000 team members (virtualized + expandable)',
+    renderExpanded: (r: Person) => (
+      <dl
+        style={{ margin: 0, display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.25rem 1rem' }}
+      >
+        <dt style={{ fontWeight: 600 }}>Name</dt>
+        <dd style={{ margin: 0 }}>{r.name}</dd>
+        <dt style={{ fontWeight: 600 }}>Role</dt>
+        <dd style={{ margin: 0 }}>{r.role}</dd>
+        <dt style={{ fontWeight: 600 }}>Joined</dt>
+        <dd style={{ margin: 0 }}>{r.joined}</dd>
+      </dl>
+    ),
+  },
+};
+
 // `empty` distinguishes a genuinely empty dataset from a filter/search miss:
 // pass a function to vary the copy, or use the `noResults` slot for the miss.
 export const EmptyVsNoResults: Story = {

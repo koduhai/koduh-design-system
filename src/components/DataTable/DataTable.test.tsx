@@ -944,17 +944,108 @@ test('virtualized is ignored in manual mode (paginated path renders)', () => {
   expect(screen.getByRole('navigation')).toBeInTheDocument();
 });
 
-test('virtualized is ignored when renderExpanded is set (expandable path renders)', () => {
+// ─── Virtualized + expandable (#89) ───────────────────────────────────────────
+
+function renderVirtualExpandable(extra?: Partial<Parameters<typeof DataTable<BigRow>>[0]>) {
+  return render(
+    <DataTable
+      virtualized
+      columns={bigColumns}
+      data={bigData}
+      getRowId={(r) => r.id}
+      rowHeight={40}
+      viewportHeight={200}
+      overscan={2}
+      renderExpanded={(r) => <span>detail for {r.name}</span>}
+      {...extra}
+    />,
+  );
+}
+
+test('virtualized + renderExpanded renders the windowed expandable variant', () => {
+  renderVirtualExpandable();
+  // aria-rowcount conveys the full set despite the partial DOM (header + 100 rows).
+  expect(screen.getByRole('table')).toHaveAttribute('aria-rowcount', '101');
+  // A windowed subset mounts (Row 0 in, Row 99 not).
+  expect(screen.getByText('Row 0')).toBeInTheDocument();
+  expect(screen.queryByText('Row 99')).toBeNull();
+  // No paginated rows-per-page Select in the (virtual) footer.
+  expect(screen.queryByRole('button', { name: /Rows per page/ })).toBeNull();
+  expect(screen.getByText('100 rows')).toBeInTheDocument();
+});
+
+test('virtualized + renderExpanded: main rows carry absolute aria-rowindex (survives scroll)', () => {
+  renderVirtualExpandable();
+  expect(screen.getByText('Row 0').closest('tr')).toHaveAttribute('aria-rowindex', '2');
+  const viewport = screen.getByRole('table').parentElement as HTMLElement;
+  // Scroll deep; estimate-driven offsets put ~row 50 in view (50 * 40px).
+  fireEvent.scroll(viewport, { target: { scrollTop: 2000 } });
+  expect(screen.queryByText('Row 0')).toBeNull();
+  const row = screen.getByText('Row 50').closest('tr') as HTMLElement;
+  expect(row).toHaveAttribute('aria-rowindex', '52');
+});
+
+test('virtualized + renderExpanded: toggle flips aria-expanded and points aria-controls at the detail cell', () => {
+  renderVirtualExpandable();
+  const toggle = screen.getByRole('button', { name: 'Expand row 0' });
+  expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  const detailId = toggle.getAttribute('aria-controls')!;
+  expect(detailId).toBe('ku-dt-detail-0');
+  fireEvent.click(toggle);
+  const toggled = screen.getByRole('button', { name: 'Collapse row 0' });
+  expect(toggled).toHaveAttribute('aria-expanded', 'true');
+  // The controlled cell exists and renders the detail content.
+  const cell = document.getElementById(detailId)!;
+  expect(cell).toBeInTheDocument();
+  expect(within(cell).getByText('detail for Row 0')).toBeInTheDocument();
+});
+
+test('virtualized + renderExpanded: controlled expandedIds + onExpandedChange', () => {
+  const onExpandedChange = vi.fn();
+  renderVirtualExpandable({ expandedIds: ['1'], onExpandedChange });
+  // Row 1 is controlled-expanded.
+  expect(screen.getByRole('button', { name: 'Collapse row 1' })).toBeInTheDocument();
+  // Toggling Row 0 reports the next set without mutating the controlled prop.
+  fireEvent.click(screen.getByRole('button', { name: 'Expand row 0' }));
+  expect(onExpandedChange).toHaveBeenCalledTimes(1);
+  expect(onExpandedChange.mock.calls[0]![0]).toEqual(['1', '0']);
+  // Still shows the controlled state (collapse for 0 not flipped without a re-prop).
+  expect(screen.getByRole('button', { name: 'Expand row 0' })).toBeInTheDocument();
+});
+
+test('virtualized + renderExpanded: select-all selects every matching row, including off-screen', () => {
+  const onSelectionChange = vi.fn();
+  renderVirtualExpandable({ onSelectionChange });
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Select all rows' }));
+  expect(onSelectionChange).toHaveBeenCalledTimes(1);
+  expect(onSelectionChange.mock.calls[0]![0]).toHaveLength(100);
+});
+
+test('virtualized + renderExpanded: sorting reorders the full set (desc brings Row 99 to top)', () => {
+  renderVirtualExpandable();
+  const header = screen.getByRole('button', { name: /Name/ });
+  fireEvent.click(header); // asc
+  fireEvent.click(header); // desc
+  // String-desc of "Row 0".."Row 99" puts "Row 99" first at aria-rowindex 2.
+  expect(screen.getByText('Row 99')).toBeInTheDocument();
+  expect(screen.getByText('Row 99').closest('tr')).toHaveAttribute('aria-rowindex', '2');
+});
+
+test('manual + virtualized + renderExpanded still ignores virtualization (manual wins)', () => {
   render(
     <DataTable
       virtualized
+      manual
+      rowCount={100}
       renderExpanded={(r) => <span>detail {r.name}</span>}
       columns={bigColumns}
-      data={bigData.slice(0, 5)}
+      data={bigData.slice(0, 10)}
       getRowId={(r) => r.id}
     />,
   );
+  // Manual short-circuits virtualization: paginated path, no aria-rowcount.
   expect(screen.getByRole('table')).not.toHaveAttribute('aria-rowcount');
+  expect(screen.getByRole('navigation')).toBeInTheDocument();
 });
 
 test('virtualized: i18n row count flows through a provider override', () => {

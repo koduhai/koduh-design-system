@@ -1,0 +1,62 @@
+# Manually regenerate the committed *-chromium-linux.png visual baselines ON the
+# GitHub hosted runner. The hosted ubuntu-24.04 image renders fonts slightly
+# differently from the mcr.microsoft.com/playwright Docker image, so baselines
+# made in Docker drift against CI; this job produces runner-accurate ones and
+# commits them back to the branch it was dispatched on.
+#
+#   gh workflow run update-baselines.yml --ref <branch>
+name: Update visual baselines
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    steps:
+      # This job has contents: write and pushes with the default token. It is
+      # meant to run on feature branches only; refuse to run against main so a
+      # stray dispatch can't push a bot commit straight to the protected branch.
+      - name: Refuse to run on main
+        run: |
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            echo "::error::update-baselines must not run on main; dispatch it on a feature branch."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # Updating snapshots reports the touched tests as failed (exit 1) on the
+      # creating run, so don't fail the job here — the PR's CI is the real gate.
+      - name: Regenerate visual baselines
+        run: npm run test:e2e -- --grep visual --update-snapshots
+        continue-on-error: true
+
+      - name: Commit updated baselines
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Stage only the regenerated baseline PNGs, never stray build output.
+          git add 'e2e/**/*-linux.png'
+          if git diff --cached --quiet; then
+            echo "No baseline changes to commit."
+          else
+            git commit -m "test(e2e): regenerate Linux visual baselines on ubuntu-24.04 runner"
+            git push
+          fi

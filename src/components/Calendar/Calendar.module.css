@@ -1,0 +1,155 @@
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-3);
+  background: var(--ku-color-bg-surface);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+  font-family: var(--ku-font-family-base);
+  color: var(--ku-color-text-primary);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ku-space-2);
+}
+
+.monthLabel {
+  flex: 1;
+  text-align: center;
+  font-size: var(--ku-font-size-md);
+  font-weight: var(--ku-font-weight-semibold);
+}
+
+.nav {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--ku-radius-md);
+  background: none;
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-lg);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+.nav:hover {
+  background: var(--ku-color-bg-default);
+}
+.nav:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 1px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+}
+
+.weekdays,
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--ku-space-1);
+}
+.days {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+}
+
+.weekday {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  font-size: var(--ku-font-size-xs);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-secondary);
+}
+
+.blank {
+  display: block;
+}
+
+.day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-inline: auto;
+  border: 1px solid transparent;
+  border-radius: var(--ku-radius-md);
+  background: none;
+  color: var(--ku-color-text-primary);
+  font-family: inherit;
+  font-size: var(--ku-font-size-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--ku-duration-fast) var(--ku-easing-standard),
+    color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+.day:hover:not(:disabled) {
+  background: var(--ku-color-bg-default);
+}
+.day:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 1px;
+}
+
+/* Today: ring so it's distinguishable by shape, not just color. */
+.day[data-today='true'] {
+  border-color: var(--ku-color-primary);
+  font-weight: var(--ku-font-weight-semibold);
+}
+
+/* Selected: filled. Wins over today's outline. */
+.day[data-selected='true'] {
+  background: var(--ku-color-primary);
+  color: var(--ku-color-primary-contrast);
+  border-color: var(--ku-color-primary);
+}
+
+.day:disabled {
+  color: var(--ku-color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Range mode: the days between the endpoints form a tinted band (square inner
+   corners so they read as one continuous span); the endpoints keep the solid
+   fill with a rounded outer edge. Higher specificity than the single-select
+   `[data-selected]` rule, so it wins for in-range middle days. */
+.root[data-mode='range'] .day[data-in-range='true'] {
+  background: var(--ku-color-bg-selected);
+  color: var(--ku-color-text-primary);
+  border-color: transparent;
+  border-radius: 0;
+}
+.root[data-mode='range'] .day[data-range-start='true'],
+.root[data-mode='range'] .day[data-range-end='true'] {
+  background: var(--ku-color-primary);
+  color: var(--ku-color-primary-contrast);
+  border-color: var(--ku-color-primary);
+}
+.root[data-mode='range'] .day[data-range-start='true'] {
+  border-start-start-radius: var(--ku-radius-md);
+  border-end-start-radius: var(--ku-radius-md);
+}
+.root[data-mode='range'] .day[data-range-end='true'] {
+  border-start-end-radius: var(--ku-radius-md);
+  border-end-end-radius: var(--ku-radius-md);
+}
+/* Tentative span shown while the end is being chosen (pointer hover). */
+.root[data-mode='range'] .day[data-preview='true']:not([data-selected='true']) {
+  background: var(--ku-color-bg-selected);
+  border-radius: 0;
+}

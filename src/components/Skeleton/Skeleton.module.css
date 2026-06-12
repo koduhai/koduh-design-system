@@ -1,0 +1,50 @@
+.root {
+  display: block;
+  /* Use the border token as the placeholder fill: it stays perceptibly different
+     from both the page (bg-default) and card (bg-surface) backgrounds in dark
+     and light themes, whereas bg-raised equals the white page in the light theme. */
+  background-color: var(--ku-color-border);
+  border-radius: var(--ku-radius-sm);
+}
+
+/* Text lines collapse to a sensible default size when none is provided. */
+.root[data-variant='text'] {
+  width: 100%;
+  height: 1em;
+  border-radius: var(--ku-radius-sm);
+}
+
+/* Default size so an omitted width/height still renders a visible box.
+   An inline width/height (set via the style prop) always overrides these. */
+.root[data-variant='rect'] {
+  width: 100%;
+  height: 1.5rem;
+  border-radius: var(--ku-radius-md);
+}
+
+/* Square default so a sizeless circle stays circular rather than collapsing. */
+.root[data-variant='circle'] {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--ku-radius-full);
+}
+
+.root[data-animation='pulse'] {
+  animation: ku-skeleton-pulse 1.5s var(--ku-easing-standard) infinite;
+}
+
+@keyframes ku-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-animation='pulse'] {
+    animation: none;
+  }
+}

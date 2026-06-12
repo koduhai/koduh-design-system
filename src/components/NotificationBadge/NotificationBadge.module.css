@@ -1,0 +1,111 @@
+.root {
+  position: relative;
+  display: inline-flex;
+}
+
+.badge {
+  position: absolute;
+  z-index: 1;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding-inline: 4px;
+  border-radius: var(--ku-radius-full);
+  font-family: var(--ku-font-family-base);
+  font-size: var(--ku-font-size-xs);
+  font-weight: var(--ku-font-weight-medium);
+  line-height: 1;
+  background-color: var(--badge-main);
+  color: var(--badge-contrast);
+}
+
+/* Tone bridge (mirrors Chip). */
+.badge[data-tone='primary'] {
+  --badge-main: var(--ku-color-primary);
+  --badge-contrast: var(--ku-color-primary-contrast);
+}
+.badge[data-tone='neutral'] {
+  --badge-main: var(--ku-color-bg-raised);
+  --badge-contrast: var(--ku-color-text-primary);
+}
+.badge[data-tone='success'] {
+  --badge-main: var(--ku-color-success);
+  --badge-contrast: var(--ku-color-bg-default);
+}
+.badge[data-tone='warning'] {
+  --badge-main: var(--ku-color-warning);
+  --badge-contrast: var(--ku-color-bg-default);
+}
+.badge[data-tone='danger'] {
+  --badge-main: var(--ku-color-danger);
+  --badge-contrast: var(--ku-color-bg-default);
+}
+.badge[data-tone='info'] {
+  --badge-main: var(--ku-color-info);
+  --badge-contrast: var(--ku-color-bg-default);
+}
+.badge[data-tone='accent'] {
+  --badge-main: var(--ku-color-accent);
+  --badge-contrast: var(--ku-color-bg-default);
+}
+
+/* Dot variant: fixed small circle, no count. */
+.badge[data-dot='true'] {
+  min-width: 0;
+  width: 8px;
+  height: 8px;
+  padding-inline: 0;
+}
+
+/*
+ * Placement via logical insets so the anchor side flips under RTL
+ * automatically. The transform's X component is keyed to the inline edge
+ * (`--badge-tx`, +50% toward the inline-end edge in LTR) and flipped for RTL;
+ * the Y component is keyed to the block edge.
+ */
+.badge[data-placement='top-end'] {
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  --badge-tx: 50%;
+  --badge-ty: -50%;
+}
+.badge[data-placement='top-start'] {
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  --badge-tx: -50%;
+  --badge-ty: -50%;
+}
+.badge[data-placement='bottom-end'] {
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  --badge-tx: 50%;
+  --badge-ty: 50%;
+}
+.badge[data-placement='bottom-start'] {
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  --badge-tx: -50%;
+  --badge-ty: 50%;
+}
+.badge[data-placement] {
+  transform: translate(var(--badge-tx), var(--badge-ty));
+}
+
+/* RTL: the inline-edge translate direction mirrors. */
+[dir='rtl'] .badge[data-placement='top-end'],
+[dir='rtl'] .badge[data-placement='bottom-end'] {
+  --badge-tx: -50%;
+}
+[dir='rtl'] .badge[data-placement='top-start'],
+[dir='rtl'] .badge[data-placement='bottom-start'] {
+  --badge-tx: 50%;
+}
+
+/* Standalone badge renders inline. */
+.root[data-standalone] .badge {
+  position: static;
+  transform: none;
+}

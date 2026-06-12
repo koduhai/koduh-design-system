@@ -1,0 +1,199 @@
+.root {
+  margin: 0;
+  padding: 0;
+  border: none;
+  max-width: none;
+  max-height: none;
+  background-color: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-primary);
+  box-shadow: var(--ku-shadow-3);
+  overflow: hidden;
+  font-family: var(--ku-font-family-base);
+}
+
+/* Inline-edge drawers: full block size, pinned to one inline edge. */
+.root[data-side='start'],
+.root[data-side='end'] {
+  block-size: 100dvh;
+  inset-block: 0;
+}
+.root[data-side='start'] {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
+.root[data-side='end'] {
+  inset-inline-end: 0;
+  inset-inline-start: auto;
+}
+.root[data-side='start'][data-size='sm'],
+.root[data-side='end'][data-size='sm'] {
+  inline-size: 320px;
+}
+.root[data-side='start'][data-size='md'],
+.root[data-side='end'][data-size='md'] {
+  inline-size: 420px;
+}
+.root[data-side='start'][data-size='lg'],
+.root[data-side='end'][data-size='lg'] {
+  inline-size: 560px;
+}
+
+/* Block-edge drawers: full inline size, pinned to top/bottom. */
+.root[data-side='top'],
+.root[data-side='bottom'] {
+  inline-size: 100dvw;
+  inset-inline: 0;
+}
+.root[data-side='top'] {
+  inset-block-start: 0;
+  inset-block-end: auto;
+}
+.root[data-side='bottom'] {
+  inset-block-end: 0;
+  inset-block-start: auto;
+}
+.root[data-side='top'][data-size='sm'],
+.root[data-side='bottom'][data-size='sm'] {
+  block-size: 200px;
+}
+.root[data-side='top'][data-size='md'],
+.root[data-side='bottom'][data-size='md'] {
+  block-size: 320px;
+}
+.root[data-side='top'][data-size='lg'],
+.root[data-side='bottom'][data-size='lg'] {
+  block-size: 60vh;
+}
+
+.root::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+/* Slide-in, gated on reduced-motion. translateX is physical; in RTL the panel
+   sits on the opposite inline edge (via inset-inline), so swap the start/end
+   keyframes with :dir() to keep the slide coming from the visible edge. */
+@media (prefers-reduced-motion: no-preference) {
+  .root[open][data-side='start'] {
+    animation: drawer-in-start var(--ku-duration-base) var(--ku-easing-standard);
+  }
+  .root[open][data-side='end'] {
+    animation: drawer-in-end var(--ku-duration-base) var(--ku-easing-standard);
+  }
+  .root[open][data-side='start']:dir(rtl) {
+    animation-name: drawer-in-end;
+  }
+  .root[open][data-side='end']:dir(rtl) {
+    animation-name: drawer-in-start;
+  }
+  .root[open][data-side='top'] {
+    animation: drawer-in-top var(--ku-duration-base) var(--ku-easing-standard);
+  }
+  .root[open][data-side='bottom'] {
+    animation: drawer-in-bottom var(--ku-duration-base) var(--ku-easing-standard);
+  }
+  .root[open]::backdrop {
+    animation: backdrop-in var(--ku-duration-base) var(--ku-easing-standard);
+  }
+}
+
+@keyframes drawer-in-start {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes drawer-in-end {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes drawer-in-top {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes drawer-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.surface {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  max-block-size: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ku-space-4);
+  padding: var(--ku-space-5) var(--ku-space-6);
+  border-block-end: 1px solid var(--ku-color-border);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ku-font-size-lg);
+  font-weight: var(--ku-font-weight-semibold);
+  line-height: var(--ku-line-height-tight);
+  color: var(--ku-color-text-primary);
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  margin: calc(var(--ku-space-1) * -1);
+  padding: 0;
+  border: none;
+  border-radius: var(--ku-radius-md);
+  background: transparent;
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+.close:hover {
+  background-color: color-mix(in srgb, var(--ku-color-text-primary) 12%, transparent);
+}
+
+.body {
+  flex: 1 1 auto;
+  padding: var(--ku-space-6);
+  overflow-y: auto;
+  color: var(--ku-color-text-primary);
+  line-height: var(--ku-line-height-base);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ku-space-3);
+  padding: var(--ku-space-5) var(--ku-space-6);
+  border-block-start: 1px solid var(--ku-color-border);
+}

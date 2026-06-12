@@ -1,0 +1,167 @@
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+}
+.label {
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+}
+.required {
+  color: var(--ku-color-danger);
+}
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ku-space-2);
+  min-width: 12rem;
+  padding: var(--ku-space-2) var(--ku-space-3);
+  background: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-primary);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+  font: inherit;
+  cursor: pointer;
+}
+.trigger[data-size='sm'] {
+  padding: var(--ku-space-1) var(--ku-space-2);
+}
+.trigger[data-size='lg'] {
+  padding: var(--ku-space-3) var(--ku-space-4);
+}
+/* Compact density tightens the trigger padding via the --ku-density-* vars,
+   on top of any size. Applies when `density='compact'` is set on the trigger
+   OR a `data-density='compact'` ancestor cascades the vars to it. */
+.trigger[data-density='compact'],
+[data-density='compact'] .trigger {
+  padding: var(--ku-density-control-padding-y) var(--ku-density-control-padding-x);
+}
+.trigger[data-error='true'] {
+  border-color: var(--ku-color-danger);
+}
+.trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.placeholder {
+  color: var(--ku-color-text-secondary);
+}
+/* Wraps just the trigger so the clear button can overlay its right edge. */
+.control {
+  position: relative;
+  display: inline-flex;
+}
+/* Reserve room so the selected label never runs under the clear + chevron. */
+.trigger[data-clearable='true'] {
+  padding-inline-end: 2.5rem;
+}
+.clear {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 1.75rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--ku-radius-full);
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  opacity: 0.8;
+}
+.clear:hover {
+  opacity: 1;
+  color: var(--ku-color-text-primary);
+}
+.listbox {
+  list-style: none;
+  margin: 0;
+  padding: var(--ku-space-1);
+  min-width: 12rem;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  padding: var(--ku-density-row-padding-y) var(--ku-density-row-padding-x);
+  border-radius: var(--ku-radius-sm);
+  cursor: pointer;
+}
+.option[data-active='true'] {
+  background: var(--ku-color-bg-raised);
+}
+.option[aria-selected='true'] {
+  font-weight: var(--ku-font-weight-semibold);
+}
+.option[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* Multi-select: a clearer selected state than font-weight alone, scoped to the
+   multiselectable listbox so single-select option styling is unchanged. */
+.listbox[aria-multiselectable='true'] .option[aria-selected='true'] {
+  background: var(--ku-color-bg-selected);
+}
+
+/* Multi-select control: selected chips wrap together with the open button inside
+   one bordered box, mirroring Combobox's multiControl. */
+.multiControl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ku-space-1);
+  min-width: 12rem;
+  padding: var(--ku-space-1);
+  background: var(--ku-color-bg-surface);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+}
+.multiControl[data-error='true'] {
+  border-color: var(--ku-color-danger);
+}
+.multiControl:focus-within {
+  border-color: var(--ku-color-primary);
+  box-shadow: 0 0 0 1px var(--ku-color-primary);
+}
+/* Reserve room so the chips never run under the clear + chevron. */
+.multiControl[data-clearable='true'] {
+  padding-inline-end: 2.5rem;
+}
+/* The open button inside the multi control is borderless and flexes to fill the
+   remaining width (so most of the box is a click target), and holds the chevron. */
+.multiTrigger {
+  flex: 1 1 4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ku-space-2);
+  min-width: 4rem;
+  padding: var(--ku-space-1) var(--ku-space-2);
+  background: transparent;
+  color: var(--ku-color-text-primary);
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.multiTrigger[data-density='compact'],
+[data-density='compact'] .multiTrigger {
+  padding: var(--ku-density-control-padding-y) var(--ku-density-control-padding-x);
+}
+.multiTrigger:disabled {
+  cursor: not-allowed;
+}
+.multiControl:has(.multiTrigger:disabled) {
+  opacity: 0.6;
+}
+.helperText {
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+}
+.helperText[data-error='true'] {
+  color: var(--ku-color-danger);
+}

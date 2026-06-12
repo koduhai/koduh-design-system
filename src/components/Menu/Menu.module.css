@@ -1,0 +1,46 @@
+/* Root class merged onto the Popover panel so consumers' className composes
+   with the scoped module class (parity with the other components). */
+.root {
+  min-width: 10rem;
+}
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: var(--ku-space-1);
+  min-width: 10rem;
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  width: 100%;
+  padding: var(--ku-density-row-padding-y) var(--ku-density-row-padding-x);
+  border: none;
+  background: none;
+  border-radius: var(--ku-radius-sm);
+  font: inherit;
+  color: var(--ku-color-text-primary);
+  text-align: start;
+  cursor: pointer;
+}
+.item[data-active='true'] {
+  /* bg-selected is the shared selected-fill token (16% primary wash) used across
+     Menu/CommandPalette/Sidebar/Tree, perceptibly distinct from the popover
+     surface in BOTH themes (unlike bg-raised, which equals bg-default in light).
+     The inset ring is a non-color signal so the highlight is never color-only. */
+  background-color: var(--ku-color-bg-selected);
+  box-shadow: inset 0 0 0 1px var(--ku-color-border);
+}
+.item[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.icon {
+  display: inline-flex;
+  width: 1rem;
+}
+.separator {
+  height: 1px;
+  margin: var(--ku-space-1) 0;
+  background: var(--ku-color-border);
+}

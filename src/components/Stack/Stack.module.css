@@ -1,0 +1,68 @@
+/* breakpoints hardcoded to --ku-breakpoint-* token px (media queries can't read CSS vars); keep in sync with tokens.ts */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack-gap-base, var(--ku-space-4));
+}
+@media (min-width: 600px) {
+  .root {
+    gap: var(--stack-gap-sm, var(--stack-gap-base, var(--ku-space-4)));
+  }
+}
+@media (min-width: 900px) {
+  .root {
+    gap: var(--stack-gap-md, var(--stack-gap-sm, var(--stack-gap-base, var(--ku-space-4))));
+  }
+}
+@media (min-width: 1200px) {
+  .root {
+    gap: var(
+      --stack-gap-lg,
+      var(--stack-gap-md, var(--stack-gap-sm, var(--stack-gap-base, var(--ku-space-4))))
+    );
+  }
+}
+@media (min-width: 1536px) {
+  .root {
+    gap: var(
+      --stack-gap-xl,
+      var(
+        --stack-gap-lg,
+        var(--stack-gap-md, var(--stack-gap-sm, var(--stack-gap-base, var(--ku-space-4))))
+      )
+    );
+  }
+}
+.root[data-align='start'] {
+  align-items: flex-start;
+}
+.root[data-align='center'] {
+  align-items: center;
+}
+.root[data-align='end'] {
+  align-items: flex-end;
+}
+.root[data-align='stretch'] {
+  align-items: stretch;
+}
+.root[data-align='baseline'] {
+  align-items: baseline;
+}
+.root[data-justify='start'] {
+  justify-content: flex-start;
+}
+.root[data-justify='center'] {
+  justify-content: center;
+}
+.root[data-justify='end'] {
+  justify-content: flex-end;
+}
+.root[data-justify='between'] {
+  justify-content: space-between;
+}
+.root[data-justify='around'] {
+  justify-content: space-around;
+}
+.root[data-wrap] {
+  flex-wrap: wrap;
+}

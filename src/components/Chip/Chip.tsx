@@ -1,0 +1,147 @@
+import { forwardRef, useRef } from 'react';
+import type { HTMLAttributes, KeyboardEvent, MouseEvent, ReactNode, Ref } from 'react';
+import { CloseIcon } from '../../icons';
+import { cx } from '../../utils/cx';
+import { useMessages } from '../../i18n';
+import styles from './Chip.module.css';
+
+export type ChipVariant = 'solid' | 'outline';
+export type ChipTone = 'primary' | 'neutral' | 'success' | 'warning' | 'danger' | 'info' | 'accent';
+export type ChipSize = 'sm' | 'md';
+
+export interface ChipProps extends Omit<HTMLAttributes<HTMLElement>, 'children' | 'onClick'> {
+  /**
+   * Content shown in the chip. A string also seeds the delete button's default
+   * accessible label (`Remove <label>`); for non-string labels pass `deleteLabel`.
+   */
+  label: ReactNode;
+  /** Visual style. Defaults to 'solid'. */
+  variant?: ChipVariant;
+  /** Semantic color. Defaults to 'neutral'. */
+  tone?: ChipTone;
+  /** Defaults to 'md'. */
+  size?: ChipSize;
+  /** Leading icon (decorative). */
+  icon?: ReactNode;
+  /** Makes the chip a clickable button. */
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
+  /** Adds a labelled delete affordance. Receives the click event. */
+  onDelete?: (event: MouseEvent<HTMLButtonElement>) => void;
+  /** Accessible label for the delete button. Defaults to "Remove <label>". */
+  deleteLabel?: string;
+}
+
+export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function Chip(
+  {
+    label,
+    variant = 'solid',
+    tone = 'neutral',
+    size = 'md',
+    icon,
+    onClick,
+    onDelete,
+    deleteLabel,
+    className,
+    ...props
+  },
+  ref,
+) {
+  const messages = useMessages();
+  const interactive = Boolean(onClick) && !onDelete;
+  // Tracks whether Space was pressed down on this element, so activation fires on
+  // keyup (native <button> semantics: press-and-release-elsewhere cancels).
+  const spaceDownRef = useRef(false);
+  const dataAttrs = {
+    'data-variant': variant,
+    'data-tone': tone,
+    'data-size': size,
+  };
+  const classes = cx(styles.root, className);
+  const content = (
+    <>
+      {icon ? (
+        <span className={styles.icon} aria-hidden>
+          {icon}
+        </span>
+      ) : null}
+      <span className={styles.label}>{label}</span>
+      {onDelete ? (
+        <button
+          type="button"
+          className={styles.delete}
+          aria-label={
+            deleteLabel ??
+            (typeof label === 'string' ? messages.chip.remove(label) : messages.chip.removeGeneric)
+          }
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete(event);
+          }}
+        >
+          <CloseIcon size={14} />
+        </button>
+      ) : null}
+    </>
+  );
+
+  if (interactive) {
+    return (
+      <button
+        ref={ref as Ref<HTMLButtonElement>}
+        type="button"
+        className={classes}
+        onClick={onClick}
+        {...dataAttrs}
+        {...props}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  // Clickable AND deletable: a real <button> here would nest the delete <button>
+  // (invalid + a11y violation), so the click target is a focusable, operable
+  // region — role/tabIndex/keydown — alongside the separate delete <button>.
+  if (onClick) {
+    return (
+      <span
+        ref={ref as Ref<HTMLSpanElement>}
+        role="button"
+        tabIndex={0}
+        className={classes}
+        onClick={onClick}
+        onKeyDown={(event: KeyboardEvent<HTMLSpanElement>) => {
+          if (event.key === 'Enter') {
+            // Enter activates on keydown, matching native <button> semantics.
+            event.preventDefault();
+            // Keyboard activation forwards to the same click handler; the
+            // consumer's onClick is typed for mouse events, so narrow here.
+            onClick(event as unknown as MouseEvent<HTMLElement>);
+          } else if (event.key === ' ') {
+            // Space activates on keyup; suppress page scroll and track the press
+            // here, ignoring auto-repeat from a held key.
+            event.preventDefault();
+            if (!event.repeat) spaceDownRef.current = true;
+          }
+        }}
+        onKeyUp={(event: KeyboardEvent<HTMLSpanElement>) => {
+          if (event.key === ' ' && spaceDownRef.current) {
+            spaceDownRef.current = false;
+            event.preventDefault();
+            onClick(event as unknown as MouseEvent<HTMLElement>);
+          }
+        }}
+        {...dataAttrs}
+        {...props}
+      >
+        {content}
+      </span>
+    );
+  }
+
+  return (
+    <span ref={ref as Ref<HTMLSpanElement>} className={classes} {...dataAttrs} {...props}>
+      {content}
+    </span>
+  );
+});

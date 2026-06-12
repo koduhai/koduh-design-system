@@ -1,0 +1,15 @@
+.root {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.axes line {
+  stroke: var(--ku-color-border);
+  stroke-width: 1;
+}

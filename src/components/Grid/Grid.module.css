@@ -1,0 +1,60 @@
+/* breakpoints hardcoded to --ku-breakpoint-* token px (media queries can't read CSS vars); keep in sync with tokens.ts */
+.root {
+  display: grid;
+  grid-template-columns: var(--grid-cols-base, repeat(auto-fit, minmax(240px, 1fr)));
+  gap: var(--grid-gap-base, var(--ku-space-4));
+}
+@media (min-width: 600px) {
+  .root {
+    grid-template-columns: var(
+      --grid-cols-sm,
+      var(--grid-cols-base, repeat(auto-fit, minmax(240px, 1fr)))
+    );
+    gap: var(--grid-gap-sm, var(--grid-gap-base, var(--ku-space-4)));
+  }
+}
+@media (min-width: 900px) {
+  .root {
+    grid-template-columns: var(
+      --grid-cols-md,
+      var(--grid-cols-sm, var(--grid-cols-base, repeat(auto-fit, minmax(240px, 1fr))))
+    );
+    gap: var(--grid-gap-md, var(--grid-gap-sm, var(--grid-gap-base, var(--ku-space-4))));
+  }
+}
+@media (min-width: 1200px) {
+  .root {
+    grid-template-columns: var(
+      --grid-cols-lg,
+      var(
+        --grid-cols-md,
+        var(--grid-cols-sm, var(--grid-cols-base, repeat(auto-fit, minmax(240px, 1fr))))
+      )
+    );
+    gap: var(
+      --grid-gap-lg,
+      var(--grid-gap-md, var(--grid-gap-sm, var(--grid-gap-base, var(--ku-space-4))))
+    );
+  }
+}
+@media (min-width: 1536px) {
+  .root {
+    grid-template-columns: var(
+      --grid-cols-xl,
+      var(
+        --grid-cols-lg,
+        var(
+          --grid-cols-md,
+          var(--grid-cols-sm, var(--grid-cols-base, repeat(auto-fit, minmax(240px, 1fr))))
+        )
+      )
+    );
+    gap: var(
+      --grid-gap-xl,
+      var(
+        --grid-gap-lg,
+        var(--grid-gap-md, var(--grid-gap-sm, var(--grid-gap-base, var(--ku-space-4))))
+      )
+    );
+  }
+}

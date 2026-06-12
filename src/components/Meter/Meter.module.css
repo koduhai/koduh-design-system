@@ -1,0 +1,70 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+  font-family: var(--ku-font-family-base);
+}
+
+.labelRow {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+}
+
+/* With a label present, label sits left and value right. */
+.labelRow[data-labelled] {
+  justify-content: space-between;
+}
+
+.label {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+
+.value {
+  font-size: var(--ku-font-size-xs);
+  color: var(--ku-color-text-secondary);
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--ku-color-border);
+  border-radius: var(--ku-radius-full);
+}
+
+.root[data-size='sm'] .track {
+  height: 4px;
+}
+.root[data-size='md'] .track {
+  height: 8px;
+}
+
+.track[data-tone='good'] {
+  --meter-fill: var(--ku-color-success);
+}
+.track[data-tone='caution'] {
+  --meter-fill: var(--ku-color-warning);
+}
+.track[data-tone='poor'] {
+  --meter-fill: var(--ku-color-danger);
+}
+.track[data-tone='neutral'] {
+  --meter-fill: var(--ku-color-primary);
+}
+
+.fill {
+  height: 100%;
+  inline-size: var(--meter-pct, 0%);
+  background-color: var(--meter-fill);
+  border-radius: inherit;
+  transition: inline-size var(--ku-duration-base) var(--ku-easing-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    transition: none;
+  }
+}

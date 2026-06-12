@@ -1,0 +1,16 @@
+.root {
+  padding: var(--box-p, 0);
+  padding-inline: var(--box-px, var(--box-p, 0));
+  padding-block: var(--box-py, var(--box-p, 0));
+  min-width: var(--box-min-width, auto);
+  width: var(--box-width, auto);
+}
+.root[data-grow] {
+  flex-grow: 1;
+}
+.root[data-shrink='false'] {
+  flex-shrink: 0;
+}
+.root[data-shrink='true'] {
+  flex-shrink: 1;
+}

@@ -1,0 +1,65 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-2);
+}
+.label {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+.track {
+  position: relative;
+  height: 6px;
+  border-radius: var(--ku-radius-full);
+  background: var(--ku-color-bg-surface);
+  cursor: pointer;
+  /* Pointer-drag owns the gesture; stop touch scroll/zoom from hijacking it. */
+  touch-action: none;
+}
+.root[data-size='sm'] .track {
+  height: 4px;
+}
+.fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: var(--slider-pct, 0%);
+  background: var(--ku-color-primary);
+  border-radius: inherit;
+}
+.thumb {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: var(--slider-pct, 0%);
+  width: 16px;
+  height: 16px;
+  /* Centre on the value point: a negative inline-start margin shifts the thumb
+     by half its width toward the start edge and flips automatically under RTL
+     (translateX would not), so only the vertical centring stays in transform. */
+  margin-inline-start: -8px;
+  transform: translateY(-50%);
+  border-radius: var(--ku-radius-full);
+  background: var(--ku-color-primary);
+}
+.root[data-size='sm'] .thumb {
+  width: 12px;
+  height: 12px;
+  margin-inline-start: -6px;
+}
+.thumb:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+.root[data-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.description {
+  margin: 0;
+  font-size: var(--ku-font-size-xs);
+  color: var(--ku-color-text-secondary);
+}
+.root[data-error='true'] .description {
+  color: var(--ku-color-danger);
+}

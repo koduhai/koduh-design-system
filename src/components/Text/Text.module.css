@@ -1,0 +1,74 @@
+.root {
+  font-family: var(--ku-font-family-base);
+  line-height: var(--ku-line-height-base);
+  margin: 0;
+  color: var(--ku-color-text-primary);
+}
+.root[data-size='xs'] {
+  font-size: var(--ku-font-size-xs);
+}
+.root[data-size='sm'] {
+  font-size: var(--ku-font-size-sm);
+}
+.root[data-size='md'] {
+  font-size: var(--ku-font-size-md);
+}
+.root[data-size='lg'] {
+  font-size: var(--ku-font-size-lg);
+}
+.root[data-size='xl'] {
+  font-size: var(--ku-font-size-xl);
+}
+.root[data-size='2xl'] {
+  font-size: var(--ku-font-size-2xl);
+}
+.root[data-weight='regular'] {
+  font-weight: var(--ku-font-weight-regular);
+}
+.root[data-weight='medium'] {
+  font-weight: var(--ku-font-weight-medium);
+}
+.root[data-weight='semibold'] {
+  font-weight: var(--ku-font-weight-semibold);
+}
+.root[data-weight='bold'] {
+  font-weight: var(--ku-font-weight-bold);
+}
+.root[data-tone='secondary'] {
+  color: var(--ku-color-text-secondary);
+}
+.root[data-leading='tight'] {
+  line-height: var(--ku-line-height-tight);
+}
+.root[data-leading='normal'] {
+  line-height: var(--ku-line-height-base);
+}
+.root[data-leading='relaxed'] {
+  line-height: var(--ku-line-height-relaxed);
+}
+.root[data-family='mono'] {
+  font-family: var(--ku-font-family-mono);
+}
+.root[data-numeric='tabular'] {
+  font-variant-numeric: tabular-nums;
+}
+.root[data-transform='uppercase'] {
+  text-transform: uppercase;
+}
+.root[data-transform='lowercase'] {
+  text-transform: lowercase;
+}
+.root[data-transform='capitalize'] {
+  text-transform: capitalize;
+}
+.root[data-truncate] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.root[data-line-clamp] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--text-line-clamp);
+  overflow: hidden;
+}

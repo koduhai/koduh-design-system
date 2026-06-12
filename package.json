@@ -1,0 +1,135 @@
+{
+  "name": "@koduhai/design-system",
+  "version": "1.0.0",
+  "description": "Koduh AI Design System — custom-built, MUI-free",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./theme": {
+      "types": "./dist/theme/index.d.ts",
+      "import": "./dist/theme/index.mjs",
+      "require": "./dist/theme/index.js"
+    },
+    "./icons": {
+      "types": "./dist/icons/index.d.ts",
+      "import": "./dist/icons/index.mjs",
+      "require": "./dist/icons/index.js"
+    },
+    "./tailwind-preset": {
+      "types": "./dist/tailwind-preset/index.d.ts",
+      "import": "./dist/tailwind-preset/index.mjs",
+      "require": "./dist/tailwind-preset/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./theme.css": "./dist/theme.css"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run build:tokens && tsup",
+    "build:tokens": "tsx scripts/generate-theme-css.ts",
+    "prestorybook": "npm run build:tokens",
+    "storybook": "storybook dev -p 6006",
+    "prebuild-storybook": "npm run build:tokens",
+    "build-storybook": "storybook build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "verify:bundle": "tsx scripts/verify-bundle.ts",
+    "verify:exports": "tsx scripts/verify-exports.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,mjs,cjs,json,css,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "@types/react": "^18.0.0 || ^19.0.0",
+    "@types/react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koduhai/koduh-design-system.git"
+  },
+  "homepage": "https://github.com/koduhai/koduh-design-system#readme",
+  "bugs": {
+    "url": "https://github.com/koduhai/koduh-design-system/issues"
+  },
+  "author": "Koduh AI",
+  "keywords": [
+    "react",
+    "design-system",
+    "component-library",
+    "ui",
+    "components",
+    "css-modules",
+    "design-tokens",
+    "accessibility",
+    "a11y",
+    "wcag",
+    "dark-mode",
+    "typescript"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
+    "@eslint/js": "^10.0.0",
+    "@playwright/test": "^1.58.2",
+    "@storybook/addon-a11y": "^10.2.16",
+    "@storybook/react-vite": "^10.2.16",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^4.1.7",
+    "eslint": "^10.0.2",
+    "husky": "^9.1.7",
+    "jsdom": "^28.1.0",
+    "lint-staged": "^17.0.5",
+    "prettier": "^3.8.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "storybook": "^10.2.16",
+    "tsup": "^8.5.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.0.18"
+  }
+}

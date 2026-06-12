@@ -1,0 +1,136 @@
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Alert } from './Alert';
+import { KoduhI18nProvider } from '../../i18n';
+
+describe('Alert', () => {
+  it('renders the body and reflects severity as a data attribute', () => {
+    render(<Alert severity="info">Heads up</Alert>);
+    const el = screen.getByText('Heads up').closest('[data-severity]')!;
+    expect(el).toHaveAttribute('data-severity', 'info');
+  });
+
+  it('renders the optional title', () => {
+    render(
+      <Alert severity="success" title="Saved">
+        Your changes were saved.
+      </Alert>,
+    );
+    expect(screen.getByText('Saved')).toBeInTheDocument();
+    expect(screen.getByText('Your changes were saved.')).toBeInTheDocument();
+  });
+
+  it('uses role="alert" for error and warning', () => {
+    const { rerender } = render(<Alert severity="error">boom</Alert>);
+    expect(screen.getByRole('alert')).toHaveAttribute('data-severity', 'error');
+
+    rerender(<Alert severity="warning">careful</Alert>);
+    expect(screen.getByRole('alert')).toHaveAttribute('data-severity', 'warning');
+  });
+
+  it('uses role="status" for info and success', () => {
+    const { rerender } = render(<Alert severity="info">fyi</Alert>);
+    expect(screen.getByRole('status')).toHaveAttribute('data-severity', 'info');
+
+    rerender(<Alert severity="success">done</Alert>);
+    expect(screen.getByRole('status')).toHaveAttribute('data-severity', 'success');
+  });
+
+  it('renders a labeled close button that fires onClose when dismissable', async () => {
+    const onClose = vi.fn();
+    render(
+      <Alert severity="info" dismissable onClose={onClose}>
+        Dismiss me
+      </Alert>,
+    );
+    const btn = screen.getByRole('button', { name: 'Dismiss' });
+    await userEvent.click(btn);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('supports a custom closeLabel on the dismiss button', () => {
+    render(
+      <Alert severity="info" dismissable closeLabel="Sluiten">
+        Localized close
+      </Alert>,
+    );
+    expect(screen.getByRole('button', { name: 'Sluiten' })).toBeInTheDocument();
+  });
+
+  it('defaults the dismiss label to the catalog English string with no provider', () => {
+    render(
+      <Alert severity="info" dismissable>
+        body
+      </Alert>,
+    );
+    expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
+  });
+
+  it('routes the dismiss label through a KoduhI18nProvider override', () => {
+    render(
+      <KoduhI18nProvider messages={{ dismiss: 'Sluiten' }}>
+        <Alert severity="info" dismissable>
+          body
+        </Alert>
+      </KoduhI18nProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Sluiten' })).toBeInTheDocument();
+  });
+
+  it('lets the closeLabel prop override the provider', () => {
+    render(
+      <KoduhI18nProvider messages={{ dismiss: 'Sluiten' }}>
+        <Alert severity="info" dismissable closeLabel="Fermer">
+          body
+        </Alert>
+      </KoduhI18nProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sluiten' })).toBeNull();
+  });
+
+  it('does not render a close button by default', () => {
+    render(<Alert severity="info">No close</Alert>);
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+
+  it('renders a custom icon and disables the icon when falsy', () => {
+    const { rerender } = render(
+      <Alert severity="info" icon={<span data-testid="custom-icon" />}>
+        body
+      </Alert>,
+    );
+    expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
+
+    rerender(
+      <Alert severity="info" icon={null}>
+        body
+      </Alert>,
+    );
+    const el = screen.getByText('body').closest('[data-severity]')!;
+    // No svg icon is rendered when icon is explicitly disabled.
+    expect(el.querySelector('svg')).toBeNull();
+  });
+
+  it('forwards a ref to the div element', () => {
+    const ref = { current: null as HTMLDivElement | null };
+    render(
+      <Alert ref={ref} severity="info">
+        x
+      </Alert>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+
+  it('passes through className and standard div attributes', () => {
+    render(
+      <Alert severity="info" className="custom" id="alert-1">
+        x
+      </Alert>,
+    );
+    const el = screen.getByText('x').closest('[data-severity]')!;
+    expect(el).toHaveClass('custom');
+    expect(el).toHaveAttribute('id', 'alert-1');
+  });
+});

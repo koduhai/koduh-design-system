@@ -1,0 +1,101 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-2);
+  font-family: var(--ku-font-family-base);
+}
+
+.groupLabel {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+
+.options {
+  display: flex;
+  gap: var(--ku-space-3);
+}
+.options[data-orientation='vertical'] {
+  flex-direction: column;
+}
+.options[data-orientation='horizontal'] {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  cursor: pointer;
+  font-family: var(--ku-font-family-base);
+  font-size: var(--ku-font-size-md);
+  color: var(--ku-color-text-primary);
+}
+
+.root[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Native input: visually hidden but accessible, overlaid on the circle. */
+.input {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.circle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-full);
+  background-color: var(--ku-color-bg-surface);
+  transition:
+    border-color var(--ku-duration-fast) var(--ku-easing-standard),
+    box-shadow var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+/* Inner dot: hidden until checked. */
+.circle::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: var(--ku-radius-full);
+  background-color: var(--ku-color-primary);
+  transform: scale(0);
+  transition: transform var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.circle[data-checked] {
+  border-color: var(--ku-color-primary);
+}
+.circle[data-checked]::after {
+  transform: scale(1);
+}
+
+/* Visible focus ring driven by the real input. */
+.input:focus-visible + .circle {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-primary) 40%, transparent);
+  border-color: var(--ku-color-primary);
+}
+
+.label {
+  line-height: var(--ku-line-height-base);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circle,
+  .circle::after {
+    transition: none;
+  }
+}

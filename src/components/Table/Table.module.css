@@ -1,0 +1,119 @@
+.root {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ku-font-family-base);
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-primary);
+}
+
+.caption {
+  text-align: start;
+  padding-bottom: var(--ku-space-2);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+}
+
+.thead {
+  border-bottom: 1px solid var(--ku-color-border);
+}
+
+.root[data-sticky='true'] .thead .th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--ku-color-bg-surface);
+}
+
+.th {
+  padding: var(--ku-density-row-padding-y) var(--ku-density-row-padding-x);
+  text-align: start;
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-secondary);
+  white-space: nowrap;
+}
+
+.th[data-align='center'],
+.td[data-align='center'] {
+  text-align: center;
+}
+.th[data-align='end'],
+.td[data-align='end'] {
+  text-align: end;
+}
+
+.th[data-select='true'],
+.td[data-select='true'] {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sortButton:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+.sortIcon {
+  width: 0;
+  height: 0;
+  border-inline-start: 4px solid transparent;
+  border-inline-end: 4px solid transparent;
+  /* neutral (unsorted) shows a faint downward caret */
+  border-top: 5px solid var(--ku-color-text-disabled);
+  opacity: 0.6;
+}
+.sortIcon[data-dir='asc'] {
+  border-top: 0;
+  border-bottom: 5px solid var(--ku-color-primary);
+  opacity: 1;
+}
+.sortIcon[data-dir='desc'] {
+  border-bottom: 0;
+  border-top: 5px solid var(--ku-color-primary);
+  opacity: 1;
+}
+
+.tr {
+  border-bottom: 1px solid var(--ku-color-border);
+}
+
+.tr[data-selected='true'] {
+  background-color: var(--ku-color-bg-raised);
+}
+
+.td {
+  padding: var(--ku-density-row-padding-y) var(--ku-density-row-padding-x);
+}
+
+.emptyCell {
+  padding: var(--ku-space-6) var(--ku-space-3);
+  text-align: center;
+  color: var(--ku-color-text-secondary);
+}
+
+.sortPriority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25em;
+  height: 1.25em;
+  margin-inline-start: var(--ku-space-1);
+  padding-inline: 0.25em;
+  border-radius: var(--ku-radius-full);
+  background: var(--ku-color-bg-raised);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-xs);
+  line-height: 1;
+}

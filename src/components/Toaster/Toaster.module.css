@@ -1,0 +1,114 @@
+.region {
+  position: fixed;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: var(--toaster-gap, var(--ku-space-3));
+  max-width: min(420px, calc(100vw - var(--ku-space-8)));
+  pointer-events: none;
+}
+.region[data-placement='bottom-right'] {
+  inset-inline-end: var(--ku-space-6);
+  bottom: var(--ku-space-6);
+  align-items: flex-end;
+}
+.region[data-placement='bottom-left'] {
+  inset-inline-start: var(--ku-space-6);
+  bottom: var(--ku-space-6);
+  align-items: flex-start;
+}
+.region[data-placement='bottom-center'] {
+  left: 50%;
+  bottom: var(--ku-space-6);
+  transform: translateX(-50%);
+  align-items: center;
+}
+.region[data-placement='top-right'] {
+  inset-inline-end: var(--ku-space-6);
+  top: var(--ku-space-6);
+  align-items: flex-end;
+}
+.region[data-placement='top-left'] {
+  inset-inline-start: var(--ku-space-6);
+  top: var(--ku-space-6);
+  align-items: flex-start;
+}
+.region[data-placement='top-center'] {
+  left: 50%;
+  top: var(--ku-space-6);
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+.item {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ku-space-3);
+  width: 100%;
+  padding: var(--ku-space-3) var(--ku-space-4);
+  border-radius: var(--ku-radius-md);
+  background: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-primary);
+  box-shadow: var(--ku-shadow-3);
+  border-inline-start: 3px solid var(--toast-accent);
+}
+.item[data-severity='info'] {
+  --toast-accent: var(--ku-color-info);
+}
+.item[data-severity='success'] {
+  --toast-accent: var(--ku-color-success);
+}
+.item[data-severity='warning'] {
+  --toast-accent: var(--ku-color-warning);
+}
+.item[data-severity='error'] {
+  --toast-accent: var(--ku-color-danger);
+}
+.icon {
+  flex: none;
+  color: var(--toast-accent);
+  display: inline-flex;
+}
+.content {
+  flex: 1;
+  min-width: 0;
+}
+.title {
+  font-weight: var(--ku-font-weight-semibold);
+}
+.description {
+  color: var(--ku-color-text-primary);
+}
+.action {
+  flex: none;
+}
+.close {
+  flex: none;
+  background: none;
+  border: none;
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  border-radius: var(--ku-radius-sm);
+}
+.close:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .item {
+    animation: toast-in var(--ku-duration-base) var(--ku-easing-standard);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

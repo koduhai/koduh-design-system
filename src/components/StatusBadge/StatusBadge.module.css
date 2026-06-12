@@ -1,0 +1,59 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  font-family: var(--ku-font-family-base);
+  font-weight: var(--ku-font-weight-medium);
+  font-size: var(--ku-font-size-sm);
+  line-height: 1.2;
+  padding: var(--ku-space-1) var(--ku-space-3);
+  border-radius: var(--ku-radius-full);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.root[data-status='active'] {
+  --badge-main: var(--ku-color-success);
+}
+.root[data-status='inactive'] {
+  --badge-main: var(--ku-color-text-secondary);
+}
+.root[data-status='pending'] {
+  --badge-main: var(--ku-color-warning);
+}
+.root[data-status='error'] {
+  --badge-main: var(--ku-color-danger);
+}
+
+.root[data-variant='solid'] {
+  background-color: var(--badge-main);
+  color: var(--ku-color-bg-default);
+}
+.root[data-variant='subtle'] {
+  background-color: color-mix(in srgb, var(--badge-main) 16%, transparent);
+  /* Label uses text-primary (not the status hue) to guarantee WCAG AA on the
+     tinted background in both themes; the colored dot, tint, and border carry
+     the status signal. */
+  color: var(--ku-color-text-primary);
+  border-color: color-mix(in srgb, var(--badge-main) 40%, transparent);
+}
+
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--ku-radius-full);
+  background-color: currentColor;
+}
+
+.root[data-variant='subtle'] .dot {
+  background-color: var(--badge-main);
+}
+
+.root[data-variant='solid'] .dot {
+  background-color: var(--ku-color-bg-default);
+}
+
+.label {
+  line-height: 1.2;
+}

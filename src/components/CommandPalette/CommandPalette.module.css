@@ -1,0 +1,116 @@
+.root {
+  margin-block-start: 12vh;
+  margin-inline: auto;
+  padding: 0;
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-lg);
+  background-color: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-primary);
+  box-shadow: var(--ku-shadow-3);
+  width: calc(100vw - var(--ku-space-8));
+  max-width: 560px;
+  max-height: 60vh;
+  overflow: hidden;
+  font-family: var(--ku-font-family-base);
+}
+
+.root::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .root[open] {
+    animation: palette-in var(--ku-duration-base) var(--ku-easing-standard);
+  }
+}
+
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.surface {
+  display: flex;
+  flex-direction: column;
+  max-height: 60vh;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-3);
+  padding-inline: var(--ku-space-5);
+  border-bottom: 1px solid var(--ku-color-border);
+}
+
+.searchIcon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--ku-color-text-secondary);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding-block: var(--ku-space-4);
+  border: none;
+  background: transparent;
+  color: var(--ku-color-text-primary);
+  font-family: inherit;
+  font-size: var(--ku-font-size-md);
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--ku-color-text-secondary);
+}
+
+.listbox {
+  margin: 0;
+  padding: var(--ku-space-2);
+  list-style: none;
+  overflow-y: auto;
+}
+
+.groupList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.groupHeading {
+  padding: var(--ku-space-2) var(--ku-space-3);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.option {
+  padding: var(--ku-space-2) var(--ku-space-3);
+  border-radius: var(--ku-radius-md);
+  color: var(--ku-color-text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.option[data-active='true'] {
+  background-color: var(--ku-color-bg-selected);
+}
+
+.noResults {
+  padding: var(--ku-space-4) var(--ku-space-3);
+  color: var(--ku-color-text-secondary);
+  text-align: center;
+}

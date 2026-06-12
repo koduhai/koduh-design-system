@@ -1,0 +1,61 @@
+.root {
+  /* Local vars keep the scrollbar styling in one place for both engines. */
+  --scroll-thumb: color-mix(in srgb, var(--ku-color-text-primary) 28%, transparent);
+  --scroll-thumb-hover: color-mix(in srgb, var(--ku-color-text-primary) 45%, transparent);
+  --scroll-track: transparent;
+
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  font-family: var(--ku-font-family-base);
+  color: var(--ku-color-text-primary);
+
+  /* Firefox / standards scrollbar styling (theme-aware via tokens). */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}
+
+.root[data-orientation='vertical'] {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.root[data-orientation='horizontal'] {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.root[data-orientation='both'] {
+  overflow: auto;
+}
+
+/* WebKit / Blink scrollbar styling. */
+.root::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.root::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
+.root::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-thumb);
+  border-radius: var(--ku-radius-full);
+  /* Inset the thumb from the track edges. */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.root::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scroll-thumb-hover);
+}
+
+.root::-webkit-scrollbar-corner {
+  background: var(--scroll-track);
+}

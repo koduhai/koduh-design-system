@@ -1,0 +1,170 @@
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+  font-family: var(--ku-font-family-base);
+}
+.label {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+.required {
+  color: var(--ku-color-danger);
+}
+
+/* Wraps the input so the Popover panel anchors to the field and the clear
+   button can overlay its right edge. */
+.control {
+  position: relative;
+  display: inline-flex;
+}
+/* Reserve room so the typed text never runs under the clear button. */
+.control[data-clearable='true'] .input {
+  padding-inline-end: 2.25rem;
+}
+.clear {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: var(--ku-space-2);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--ku-radius-full);
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  opacity: 0.8;
+}
+.clear:hover {
+  opacity: 1;
+  color: var(--ku-color-text-primary);
+}
+
+.input {
+  min-width: 12rem;
+  padding: var(--ku-space-2) var(--ku-space-3);
+  background: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-primary);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+  font: inherit;
+}
+.root[data-size='sm'] .input {
+  padding: var(--ku-space-1) var(--ku-space-2);
+  font-size: var(--ku-font-size-sm);
+}
+.root[data-size='lg'] .input {
+  padding: var(--ku-space-3) var(--ku-space-4);
+}
+.input:focus-visible {
+  outline: none;
+  border-color: var(--ku-color-primary);
+  box-shadow: 0 0 0 1px var(--ku-color-primary);
+}
+.input[aria-invalid='true'] {
+  border-color: var(--ku-color-danger);
+}
+.input::placeholder {
+  color: var(--ku-color-text-disabled);
+}
+
+.listbox {
+  list-style: none;
+  margin: 0;
+  padding: var(--ku-space-1);
+  min-width: 12rem;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-2) var(--ku-space-3);
+  border-radius: var(--ku-radius-sm);
+  cursor: pointer;
+}
+.option[data-active='true'] {
+  background: var(--ku-color-bg-raised);
+}
+.option[aria-selected='true'] {
+  font-weight: var(--ku-font-weight-semibold);
+}
+.option[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.noResults {
+  padding: var(--ku-space-2) var(--ku-space-3);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+}
+
+/* Multi-select: selected chips wrap together with the input inside one control. */
+.multiControl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ku-space-1);
+  min-width: 12rem;
+  padding: var(--ku-space-1);
+  background: var(--ku-color-bg-surface);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+}
+.multiControl:focus-within {
+  border-color: var(--ku-color-primary);
+  box-shadow: 0 0 0 1px var(--ku-color-primary);
+}
+/* The editable input inside the multi control is borderless and flexes to fill. */
+.multiControl .input {
+  flex: 1 1 6rem;
+  min-width: 6rem;
+  border: 0;
+  background: transparent;
+  padding: var(--ku-space-1) var(--ku-space-2);
+}
+.multiControl .input:focus-visible {
+  box-shadow: none;
+  border-color: transparent;
+}
+.root[data-multiple='true'][data-error='true'] .multiControl {
+  border-color: var(--ku-color-danger);
+}
+.control[data-clearable='true'] .multiControl {
+  padding-inline-end: 2.25rem;
+}
+
+/* Loading and "create option" rows. */
+.loading {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-2) var(--ku-space-3);
+  color: var(--ku-color-text-secondary);
+  font-size: var(--ku-font-size-sm);
+}
+.create {
+  display: flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  padding: var(--ku-space-2) var(--ku-space-3);
+  border-radius: var(--ku-radius-sm);
+  cursor: pointer;
+  color: var(--ku-color-primary);
+}
+.create[data-active='true'] {
+  background: var(--ku-color-bg-selected);
+}
+
+.description {
+  font-size: var(--ku-font-size-xs);
+  color: var(--ku-color-text-secondary);
+}
+.description[data-error='true'] {
+  color: var(--ku-color-danger);
+}

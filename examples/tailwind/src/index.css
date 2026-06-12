@@ -1,0 +1,12 @@
+/* Design-system token variables (defines every `--ku-*`). Must come before the
+   Tailwind layers so the preset's `var(--ku-color-*)` utilities resolve. The
+   dark/light overrides here also key off `.dark`/`.light` on <html>. */
+@import '@koduhai/design-system/theme.css';
+
+/* Design-system component CSS (the hashed CSS Modules for Button, Card, etc.)
+   plus the library's minimal global reset. Load after the token vars. */
+@import '@koduhai/design-system/styles.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

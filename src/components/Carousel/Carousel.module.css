@@ -1,0 +1,110 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-3);
+  font-family: var(--ku-font-family-base);
+  color: var(--ku-color-text-primary);
+}
+
+.viewport {
+  position: relative;
+  display: grid;
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-lg);
+  background-color: var(--ku-color-bg-surface);
+  overflow: hidden;
+}
+
+/* Stack all slides; only the active one is visible. Grid keeps the viewport
+   sized to the tallest slide so navigation does not shift layout. */
+.slide {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ku-space-6);
+  min-height: 160px;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--ku-duration-base) var(--ku-easing-standard),
+    visibility var(--ku-duration-base) var(--ku-easing-standard);
+}
+
+.slide[data-active='true'] {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide {
+    transition: none;
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ku-space-4);
+}
+
+.nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-full);
+  background-color: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-primary);
+  cursor: pointer;
+  transition: background-color var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.nav:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--ku-color-text-primary) 12%, transparent);
+}
+
+.nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.indicators {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-full);
+  background-color: transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--ku-duration-fast) var(--ku-easing-standard),
+    transform var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.indicator:hover {
+  background-color: color-mix(in srgb, var(--ku-color-text-primary) 24%, transparent);
+}
+
+.indicator[data-active='true'] {
+  background-color: var(--ku-color-primary);
+  border-color: var(--ku-color-primary);
+  transform: scale(1.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator {
+    transition: none;
+  }
+}

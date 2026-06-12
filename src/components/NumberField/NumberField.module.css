@@ -1,0 +1,103 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+  font-family: var(--ku-font-family-base);
+}
+
+.label {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+
+.required {
+  color: var(--ku-color-danger);
+}
+
+.field {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+  background: var(--ku-color-bg-default);
+  transition:
+    border-color var(--ku-duration-fast) var(--ku-easing-standard),
+    box-shadow var(--ku-duration-fast) var(--ku-easing-standard);
+}
+
+.field:focus-within {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 1px;
+}
+
+.root[data-error='true'] .field {
+  border-color: var(--ku-color-danger);
+}
+.root[data-error='true'] .field:focus-within {
+  outline-color: var(--ku-color-danger);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  color: var(--ku-color-text-primary);
+  font-family: inherit;
+  font-size: var(--ku-font-size-md);
+  padding: var(--ku-space-2) var(--ku-space-3);
+  text-align: center;
+  /* Hide native number spinners so only the custom steppers show. */
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.input:focus {
+  outline: none;
+}
+.input::-webkit-outer-spin-button,
+.input::-webkit-inner-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.root[data-size='sm'] .input {
+  font-size: var(--ku-font-size-sm);
+  padding: var(--ku-space-1) var(--ku-space-2);
+}
+.root[data-size='lg'] .input {
+  font-size: var(--ku-font-size-lg);
+  padding: var(--ku-space-3) var(--ku-space-4);
+}
+
+.step {
+  flex: none;
+  border: none;
+  background: none;
+  color: var(--ku-color-text-secondary);
+  cursor: pointer;
+  padding: 0 var(--ku-space-2);
+  font-size: var(--ku-font-size-lg);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.step:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.step:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: -2px;
+}
+
+.description {
+  margin: 0;
+  font-size: var(--ku-font-size-xs);
+  color: var(--ku-color-text-secondary);
+}
+.root[data-error='true'] .description {
+  color: var(--ku-color-danger);
+}

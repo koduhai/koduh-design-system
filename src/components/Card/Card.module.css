@@ -1,0 +1,49 @@
+.root {
+  display: block;
+  background-color: var(--ku-color-bg-surface);
+  border-radius: var(--ku-radius-lg);
+  border: 1px solid transparent;
+  color: var(--ku-color-text-primary);
+}
+
+.root[data-variant='outline'] {
+  border-color: var(--ku-color-border);
+}
+.root[data-variant='elevated'] {
+  box-shadow: var(--ku-shadow-2);
+}
+.root[data-variant='flat'] {
+  background-color: var(--ku-color-bg-raised);
+}
+
+.root[data-padding='none'] {
+  padding: 0;
+}
+.root[data-padding='sm'] {
+  padding: var(--ku-space-3);
+}
+.root[data-padding='md'] {
+  padding: var(--ku-space-4);
+}
+.root[data-padding='lg'] {
+  padding: var(--ku-space-6);
+}
+
+/* Slot subcomponents — designed for use inside a `padding="none"` Card so each
+   slot owns its own padding. */
+.header {
+  display: block;
+  padding: var(--ku-space-4);
+  border-bottom: 1px solid var(--ku-color-border);
+}
+
+.body {
+  display: block;
+  padding: var(--ku-space-4);
+}
+
+.footer {
+  display: block;
+  padding: var(--ku-space-4);
+  border-top: 1px solid var(--ku-color-border);
+}

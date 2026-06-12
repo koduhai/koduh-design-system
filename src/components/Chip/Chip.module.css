@@ -1,0 +1,108 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ku-space-2);
+  font-family: var(--ku-font-family-base);
+  font-weight: var(--ku-font-weight-medium);
+  border-radius: var(--ku-radius-full);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/*
+ * Per tone we bridge three CSS-local custom properties:
+ *   --chip-main      the solid fill + the outline border color (saturated tone)
+ *   --chip-contrast  text color for the solid fill (sits on --chip-main)
+ *   --chip-fg        text color for the outline variant (sits on the page)
+ * The outline text must clear AA against the page surface, so colored tones use
+ * the AA-tuned `*-fg` tokens (verified in contrast.test.ts) rather than the
+ * brighter fill colors. neutral keeps the default border + text; primary reuses
+ * the same primary color Link uses as on-page text.
+ */
+.root[data-tone='primary'] {
+  --chip-main: var(--ku-color-primary);
+  --chip-contrast: var(--ku-color-primary-contrast);
+  --chip-fg: var(--ku-color-primary);
+}
+.root[data-tone='neutral'] {
+  --chip-main: var(--ku-color-bg-raised);
+  --chip-contrast: var(--ku-color-text-primary);
+  --chip-border: var(--ku-color-border);
+  --chip-fg: var(--ku-color-text-primary);
+}
+.root[data-tone='success'] {
+  --chip-main: var(--ku-color-success);
+  --chip-contrast: var(--ku-color-bg-default);
+  --chip-fg: var(--ku-color-success-fg);
+}
+.root[data-tone='warning'] {
+  --chip-main: var(--ku-color-warning);
+  --chip-contrast: var(--ku-color-bg-default);
+  --chip-fg: var(--ku-color-warning-fg);
+}
+.root[data-tone='danger'] {
+  --chip-main: var(--ku-color-danger);
+  --chip-contrast: var(--ku-color-bg-default);
+  --chip-fg: var(--ku-color-danger-fg);
+}
+.root[data-tone='info'] {
+  --chip-main: var(--ku-color-info);
+  --chip-contrast: var(--ku-color-bg-default);
+  --chip-fg: var(--ku-color-info-fg);
+}
+.root[data-tone='accent'] {
+  --chip-main: var(--ku-color-accent);
+  --chip-contrast: var(--ku-color-bg-default);
+  --chip-fg: var(--ku-color-accent-fg);
+}
+
+.root[data-variant='solid'] {
+  background-color: var(--chip-main);
+  color: var(--chip-contrast);
+}
+.root[data-variant='outline'] {
+  background-color: transparent;
+  color: var(--chip-fg);
+  /* Border follows the tone's fill color; neutral overrides to the subtle
+     default border via --chip-border. */
+  border-color: var(--chip-border, var(--chip-main));
+}
+
+.root[data-size='sm'] {
+  padding: 2px var(--ku-space-2);
+  font-size: var(--ku-font-size-xs);
+}
+.root[data-size='md'] {
+  padding: var(--ku-space-1) var(--ku-space-3);
+  font-size: var(--ku-font-size-sm);
+}
+
+button.root {
+  cursor: pointer;
+}
+
+.label {
+  line-height: 1.2;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-inline-start: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--ku-radius-full);
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.delete:hover {
+  opacity: 1;
+}

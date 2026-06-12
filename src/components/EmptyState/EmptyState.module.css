@@ -1,0 +1,33 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--ku-space-3);
+  padding: var(--ku-space-8) var(--ku-space-4);
+  font-family: var(--ku-font-family-base);
+  color: var(--ku-color-text-primary);
+}
+
+.icon {
+  display: inline-flex;
+  color: var(--ku-color-text-secondary);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ku-font-size-lg);
+  font-weight: var(--ku-font-weight-semibold);
+}
+
+.description {
+  margin: 0;
+  max-width: 40ch;
+  font-size: var(--ku-font-size-sm);
+  color: var(--ku-color-text-secondary);
+  line-height: var(--ku-line-height-base);
+}
+
+.action {
+  margin-top: var(--ku-space-2);
+}

@@ -1,0 +1,9 @@
+.root {
+  /* The cluster geometry is owned by ButtonGroup; nothing extra needed here. */
+}
+
+/* Tighten the caret button so it reads as an attached affordance, not a full
+   button. Logical inline padding flips under RTL. */
+.caret {
+  padding-inline: var(--ku-space-2);
+}

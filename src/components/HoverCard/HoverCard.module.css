@@ -1,0 +1,18 @@
+.root {
+  /* Richer than a tooltip: room for arbitrary content. */
+  padding: var(--ku-space-3) var(--ku-space-4);
+  max-inline-size: 20rem;
+  font-size: var(--ku-font-size-sm);
+  line-height: var(--ku-line-height-base);
+  color: var(--ku-color-text-primary);
+  /* WCAG 1.4.13: the card must be hoverable, so the panel accepts pointer
+     events and keeps itself open while hovered (see HoverCard.tsx). */
+  pointer-events: auto;
+  transition: opacity 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+  }
+}

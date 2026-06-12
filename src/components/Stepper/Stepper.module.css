@@ -142,3 +142,9 @@
 .step[data-state='complete'] .connector {
   background-color: var(--ku-color-primary);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .label {
+    transition: none;
+  }
+}

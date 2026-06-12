@@ -123,3 +123,33 @@
   color: var(--ku-color-text-disabled);
   cursor: not-allowed;
 }
+
+/* Range mode: the days between the endpoints form a tinted band (square inner
+   corners so they read as one continuous span); the endpoints keep the solid
+   fill with a rounded outer edge. Higher specificity than the single-select
+   `[data-selected]` rule, so it wins for in-range middle days. */
+.root[data-mode='range'] .day[data-in-range='true'] {
+  background: var(--ku-color-bg-selected);
+  color: var(--ku-color-text-primary);
+  border-color: transparent;
+  border-radius: 0;
+}
+.root[data-mode='range'] .day[data-range-start='true'],
+.root[data-mode='range'] .day[data-range-end='true'] {
+  background: var(--ku-color-primary);
+  color: var(--ku-color-primary-contrast);
+  border-color: var(--ku-color-primary);
+}
+.root[data-mode='range'] .day[data-range-start='true'] {
+  border-start-start-radius: var(--ku-radius-md);
+  border-end-start-radius: var(--ku-radius-md);
+}
+.root[data-mode='range'] .day[data-range-end='true'] {
+  border-start-end-radius: var(--ku-radius-md);
+  border-end-end-radius: var(--ku-radius-md);
+}
+/* Tentative span shown while the end is being chosen (pointer hover). */
+.root[data-mode='range'] .day[data-preview='true']:not([data-selected='true']) {
+  background: var(--ku-color-bg-selected);
+  border-radius: 0;
+}

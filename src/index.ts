@@ -248,11 +248,18 @@ export type { DrawerProps, DrawerSide, DrawerSize } from './components/Drawer';
 
 // issues #27/#28/#31/#32 — date input, data-viz, P2 components
 export { Calendar } from './components/Calendar';
-export type { CalendarProps } from './components/Calendar';
+export type {
+  CalendarProps,
+  CalendarSingleProps,
+  CalendarRangeProps,
+  DateRange,
+} from './components/Calendar';
 export { DatePicker } from './components/DatePicker';
 export type { DatePickerProps, DatePickerSize } from './components/DatePicker';
 export { TimePicker } from './components/TimePicker';
 export type { TimePickerProps, TimePickerSize } from './components/TimePicker';
+export { DateRangePicker } from './components/DateRangePicker';
+export type { DateRangePickerProps, DateRangePickerSize } from './components/DateRangePicker';
 export { Sparkline } from './components/Sparkline';
 export type { SparklineProps, SparklineType } from './components/Sparkline';
 export { Chart } from './components/Chart';

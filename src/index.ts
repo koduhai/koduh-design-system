@@ -251,6 +251,8 @@ export { Calendar } from './components/Calendar';
 export type { CalendarProps } from './components/Calendar';
 export { DatePicker } from './components/DatePicker';
 export type { DatePickerProps, DatePickerSize } from './components/DatePicker';
+export { TimePicker } from './components/TimePicker';
+export type { TimePickerProps, TimePickerSize } from './components/TimePicker';
 export { Sparkline } from './components/Sparkline';
 export type { SparklineProps, SparklineType } from './components/Sparkline';
 export { Chart } from './components/Chart';

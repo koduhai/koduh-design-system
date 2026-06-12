@@ -155,6 +155,18 @@ export interface Messages {
     /** Accessible label for the calendar popover dialog. */
     dialogLabel: string;
   };
+  timePicker: {
+    /** aria-label for the hour segment. */
+    hour: string;
+    /** aria-label for the minute segment. */
+    minute: string;
+    /** aria-label for the seconds segment. */
+    second: string;
+    /** aria-label for the AM/PM segment. */
+    dayPeriod: string;
+    /** aria-valuetext for an unset segment. */
+    empty: string;
+  };
   numberField: {
     decrement: string;
     increment: string;
@@ -297,6 +309,13 @@ export const defaultMessages: Messages = {
     placeholder: 'Select a date…',
     triggerLabel: 'Open calendar',
     dialogLabel: 'Choose date',
+  },
+  timePicker: {
+    hour: 'Hour',
+    minute: 'Minute',
+    second: 'Second',
+    dayPeriod: 'AM/PM',
+    empty: 'Empty',
   },
   numberField: {
     decrement: 'Decrement',

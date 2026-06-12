@@ -1,0 +1,96 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ku-space-1);
+  font-family: var(--ku-font-family-base);
+}
+
+.label {
+  font-size: var(--ku-font-size-sm);
+  font-weight: var(--ku-font-weight-medium);
+  color: var(--ku-color-text-primary);
+}
+
+.required {
+  color: var(--ku-color-danger);
+}
+
+/* The segmented field. Mirrors DatePicker's `.field` chrome so the two read as a
+   matched pair, but holds spinbutton segments instead of a single input. */
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  width: fit-content;
+  padding: var(--ku-space-2) var(--ku-space-3);
+  border: 1px solid var(--ku-color-border);
+  border-radius: var(--ku-radius-md);
+  background: var(--ku-color-bg-default);
+  color: var(--ku-color-text-primary);
+  font-size: var(--ku-font-size-md);
+  font-variant-numeric: tabular-nums;
+  transition:
+    border-color var(--ku-duration-fast) var(--ku-easing-standard),
+    box-shadow var(--ku-duration-fast) var(--ku-easing-standard);
+}
+.control:focus-within {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 1px;
+}
+.control[data-error='true'] {
+  border-color: var(--ku-color-danger);
+}
+.control[data-error='true']:focus-within {
+  outline-color: var(--ku-color-danger);
+}
+.control[data-disabled='true'] {
+  background: var(--ku-color-bg-surface);
+  color: var(--ku-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.root[data-size='sm'] .control {
+  font-size: var(--ku-font-size-sm);
+  padding: var(--ku-space-1) var(--ku-space-2);
+}
+.root[data-size='lg'] .control {
+  font-size: var(--ku-font-size-lg);
+  padding: var(--ku-space-3) var(--ku-space-4);
+}
+
+.segment {
+  min-width: 2ch;
+  padding: 0 var(--ku-space-1);
+  border-radius: var(--ku-radius-sm);
+  text-align: center;
+  cursor: default;
+  caret-color: transparent;
+}
+.segment[data-empty='true'] {
+  color: var(--ku-color-text-secondary);
+}
+.segment:focus {
+  outline: none;
+  background: var(--ku-color-primary);
+  color: var(--ku-color-primary-contrast);
+}
+.control[data-disabled='true'] .segment {
+  cursor: not-allowed;
+}
+
+.period {
+  min-width: 3ch;
+  text-transform: uppercase;
+}
+
+.colon {
+  color: var(--ku-color-text-secondary);
+}
+
+.description {
+  font-size: var(--ku-font-size-xs);
+  color: var(--ku-color-text-secondary);
+}
+.description[data-error='true'] {
+  color: var(--ku-color-danger);
+}

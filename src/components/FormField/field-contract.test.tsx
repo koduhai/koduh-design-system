@@ -17,6 +17,7 @@ import { FileUpload } from '../FileUpload';
 import { ColorPicker } from '../ColorPicker';
 import { PinInput } from '../PinInput';
 import { Slider } from '../Slider';
+import { TimePicker } from '../TimePicker';
 
 // The contract every FormField-aware control must keep (audit follow-up #64): a
 // control composed inside a <FormField> must associate the field's error text and
@@ -117,6 +118,7 @@ const cases: Array<{ name: string; node: ReactNode }> = [
   { name: 'ColorPicker', node: <ColorPicker value="#1B5FCC" onChange={() => {}} /> },
   { name: 'PinInput', node: <PinInput /> },
   { name: 'Slider', node: <Slider defaultValue={1} min={0} max={2} /> },
+  { name: 'TimePicker', node: <TimePicker /> },
 ];
 
 describe('FormField control contract', () => {

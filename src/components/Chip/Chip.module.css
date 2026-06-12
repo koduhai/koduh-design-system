@@ -77,8 +77,29 @@
   font-size: var(--ku-font-size-sm);
 }
 
-button.root {
+button.root,
+.root[role='button'] {
   cursor: pointer;
+}
+
+/* Pointer affordance for clickable chips only (real <button> or role="button").
+   Static chips have no hover/active feedback. A subtle dim/brighten reads on top
+   of any tone + variant without introducing a new color. */
+button.root:hover,
+.root[role='button']:hover {
+  background-color: color-mix(in srgb, var(--ku-color-text-primary) 8%, var(--chip-main));
+}
+.root[data-variant='outline']:hover[role='button'],
+button.root[data-variant='outline']:hover {
+  background-color: color-mix(in srgb, var(--chip-fg) 8%, transparent);
+}
+button.root:active,
+.root[role='button']:active {
+  background-color: color-mix(in srgb, var(--ku-color-text-primary) 16%, var(--chip-main));
+}
+.root[data-variant='outline']:active[role='button'],
+button.root[data-variant='outline']:active {
+  background-color: color-mix(in srgb, var(--chip-fg) 16%, transparent);
 }
 
 .label {

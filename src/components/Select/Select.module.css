@@ -40,6 +40,11 @@
 .trigger[data-error='true'] {
   border-color: var(--ku-color-danger);
 }
+.trigger:focus-visible {
+  outline: none;
+  border-color: var(--ku-color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-primary) 25%, transparent);
+}
 .trigger:disabled {
   opacity: 0.6;
   cursor: not-allowed;

@@ -153,5 +153,17 @@ describe('FileUpload', () => {
     // linking the FormField error text through aria-describedby instead.
     expect(zone).not.toHaveAttribute('aria-invalid');
     expect(zone.getAttribute('aria-describedby')).toContain(screen.getByText('Required').id);
+    // The error border is driven off data-invalid (a valid attribute on the
+    // role="button" wrapper) since aria-invalid cannot be used here.
+    expect(zone).toHaveAttribute('data-invalid', 'true');
+  });
+
+  it('does not set data-invalid when the field is valid', () => {
+    render(
+      <FormField label="Attachment" helperText="PDF only">
+        <FileUpload onFiles={() => {}} />
+      </FormField>,
+    );
+    expect(screen.getByRole('button')).not.toHaveAttribute('data-invalid');
   });
 });

@@ -217,4 +217,31 @@ describe('useForm', () => {
     });
     expect(onValid).toHaveBeenCalledTimes(1);
   });
+
+  it('handleSubmit passes a stable values snapshot taken before the async onValid', async () => {
+    let resolve!: () => void;
+    let seenAtResolve: unknown;
+    const onValid = vi.fn(
+      (values: Record<string, unknown>) =>
+        new Promise<void>((r) => {
+          resolve = () => {
+            // Read the captured argument at the moment the handler completes; it
+            // must reflect the pre-await snapshot, not later edits.
+            seenAtResolve = values.a;
+            r();
+          };
+        }),
+    );
+    const { result } = renderHook(() => useForm({ defaultValues: { a: 1 } }));
+    await act(async () => {
+      void result.current.handleSubmit(onValid)({ preventDefault: () => {} });
+      await Promise.resolve();
+      // Edit a field while the submit is in flight.
+      result.current.setValue('a', 999);
+      await Promise.resolve();
+      resolve();
+    });
+    expect(onValid).toHaveBeenCalledWith({ a: 1 });
+    expect(seenAtResolve).toBe(1);
+  });
 });

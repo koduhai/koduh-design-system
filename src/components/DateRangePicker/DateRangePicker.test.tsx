@@ -89,13 +89,30 @@ describe('DateRangePicker', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('i18n: flows provider overrides through to placeholders and the dialog label', async () => {
+  it('keeps the accessible name stable when the placeholder is customized', () => {
+    render(
+      <DateRangePicker label="Stay" startPlaceholder="mm/dd/yyyy" endPlaceholder="mm/dd/yyyy" />,
+    );
+    // The accessible name comes from the dedicated label, not the placeholder.
+    expect(screen.getByLabelText('Start date')).toHaveAttribute('placeholder', 'mm/dd/yyyy');
+    expect(screen.getByLabelText('End date')).toHaveAttribute('placeholder', 'mm/dd/yyyy');
+  });
+
+  it('accepts startLabel/endLabel prop overrides for the accessible name', () => {
+    render(<DateRangePicker label="Stay" startLabel="Check-in" endLabel="Check-out" />);
+    expect(screen.getByLabelText('Check-in')).toBeInTheDocument();
+    expect(screen.getByLabelText('Check-out')).toBeInTheDocument();
+  });
+
+  it('i18n: flows provider overrides through to labels, placeholders, and the dialog label', async () => {
     render(
       <KoduhI18nProvider
         messages={{
           dateRangePicker: {
-            startPlaceholder: 'Début',
-            endPlaceholder: 'Fin',
+            startLabel: 'Début',
+            endLabel: 'Fin',
+            startPlaceholder: 'jj/mm/aaaa',
+            endPlaceholder: 'jj/mm/aaaa',
             dialogLabel: 'Plage',
           },
         }}

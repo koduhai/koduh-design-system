@@ -26,14 +26,14 @@
     box-shadow var(--ku-duration-fast) var(--ku-easing-standard);
 }
 .field:focus-within {
-  outline: 2px solid var(--ku-color-primary);
-  outline-offset: 1px;
+  border-color: var(--ku-color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-primary) 25%, transparent);
 }
 .field[data-error='true'] {
   border-color: var(--ku-color-danger);
 }
 .field[data-error='true']:focus-within {
-  outline-color: var(--ku-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-danger) 25%, transparent);
 }
 
 .input {

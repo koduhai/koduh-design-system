@@ -8,7 +8,7 @@
   /* WCAG 1.4.13: the card must be hoverable, so the panel accepts pointer
      events and keeps itself open while hovered (see HoverCard.tsx). */
   pointer-events: auto;
-  transition: opacity 120ms ease;
+  transition: opacity var(--ku-duration-fast) var(--ku-easing-standard);
 }
 
 @media (prefers-reduced-motion: reduce) {

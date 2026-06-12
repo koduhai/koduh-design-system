@@ -13,7 +13,7 @@
   color: var(--ku-color-text-primary);
   border: 1px solid var(--ku-color-border);
   border-radius: var(--ku-radius-md);
-  box-shadow: var(--ku-shadow-2);
+  box-shadow: var(--ku-shadow-md);
   font-family: var(--ku-font-family-base);
   padding: 0;
 }

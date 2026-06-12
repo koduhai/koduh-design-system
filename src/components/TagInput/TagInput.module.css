@@ -30,15 +30,15 @@
 }
 
 .field:focus-within {
-  outline: 2px solid var(--ku-color-primary);
-  outline-offset: 1px;
+  border-color: var(--ku-color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-primary) 25%, transparent);
 }
 
 .root[data-error='true'] .field {
   border-color: var(--ku-color-danger);
 }
 .root[data-error='true'] .field:focus-within {
-  outline-color: var(--ku-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-danger) 25%, transparent);
 }
 
 .input {

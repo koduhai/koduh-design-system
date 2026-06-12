@@ -162,10 +162,14 @@ export interface Messages {
     timeLabel: string;
   };
   dateRangePicker: {
-    /** Placeholder + aria-label for the start-date field. */
+    /** Placeholder for the start-date field. */
     startPlaceholder: string;
-    /** Placeholder + aria-label for the end-date field. */
+    /** Placeholder for the end-date field. */
     endPlaceholder: string;
+    /** Accessible name for the start-date field (stable, independent of placeholder). */
+    startLabel: string;
+    /** Accessible name for the end-date field (stable, independent of placeholder). */
+    endLabel: string;
     /** Accessible label for the range popover dialog. */
     dialogLabel: string;
   };
@@ -330,6 +334,8 @@ export const defaultMessages: Messages = {
   dateRangePicker: {
     startPlaceholder: 'Start date',
     endPlaceholder: 'End date',
+    startLabel: 'Start date',
+    endLabel: 'End date',
     dialogLabel: 'Choose date range',
   },
   timePicker: {

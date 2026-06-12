@@ -40,7 +40,7 @@
   position: absolute;
   border-radius: var(--ku-radius-full);
   background-color: var(--ku-color-bg-default);
-  box-shadow: var(--ku-shadow-1);
+  box-shadow: var(--ku-shadow-sm);
   transition: transform var(--ku-duration-fast) var(--ku-easing-standard);
 }
 

@@ -19,7 +19,7 @@
 
 .root[data-elevation='true'] {
   border-bottom-color: var(--ku-color-border);
-  box-shadow: var(--ku-shadow-1);
+  box-shadow: var(--ku-shadow-sm);
 }
 
 .start {

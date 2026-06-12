@@ -39,7 +39,7 @@
   opacity: 0.5;
 }
 
-.root[aria-invalid='true'] {
+.root[data-invalid='true'] {
   border-color: var(--ku-color-danger);
 }
 

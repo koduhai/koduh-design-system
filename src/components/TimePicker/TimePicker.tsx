@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useState } from 'react';
-import type { KeyboardEvent, ReactNode } from 'react';
+import type { HTMLAttributes, KeyboardEvent, ReactNode } from 'react';
 import { useControllableState, useId } from '../../primitives';
 import { useOptionalFieldContext } from '../FormField';
 import { useLocale, useMessages } from '../../i18n';
@@ -8,7 +8,10 @@ import styles from './TimePicker.module.css';
 
 export type TimePickerSize = 'sm' | 'md' | 'lg';
 
-export interface TimePickerProps {
+export interface TimePickerProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'onChange' | 'defaultValue'
+> {
   /** Controlled value; only the time-of-day (hours/minutes/seconds) is read. */
   value?: Date;
   /** Initial value when uncontrolled. */
@@ -91,6 +94,7 @@ export const TimePicker = /* @__PURE__ */ forwardRef<HTMLDivElement, TimePickerP
       locale: localeProp,
       className,
       id: idProp,
+      ...rest
     },
     ref,
   ) {
@@ -352,7 +356,7 @@ export const TimePicker = /* @__PURE__ */ forwardRef<HTMLDivElement, TimePickerP
     const periodValue = parts.hour == null ? '––' : isPm ? periods.pm : periods.am;
 
     return (
-      <div className={cx(styles.root, className)} data-size={size}>
+      <div className={cx(styles.root, className)} data-size={size} {...rest}>
         {showOwnLabel && label != null ? (
           <span id={labelId} className={styles.label}>
             {label}

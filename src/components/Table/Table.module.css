@@ -65,6 +65,12 @@
   outline-offset: 2px;
 }
 
+/* The active (currently-sorted) column header reads in the primary text color,
+   reinforcing the caret direction beyond color alone via the aria-sort caret. */
+.sortButton[data-active='true'] {
+  color: var(--ku-color-primary);
+}
+
 .sortIcon {
   width: 0;
   height: 0;
@@ -89,7 +95,13 @@
   border-bottom: 1px solid var(--ku-color-border);
 }
 
-.tr[data-selected='true'] {
+.tr:hover {
+  background-color: var(--ku-color-bg-surface);
+}
+
+/* Selected wins over hover so a selected row stays visibly selected on hover. */
+.tr[data-selected='true'],
+.tr[data-selected='true']:hover {
   background-color: var(--ku-color-bg-raised);
 }
 

@@ -36,6 +36,17 @@ describe('NumberField', () => {
     expect(onChange).toHaveBeenLastCalledWith(null, expect.anything());
   });
 
+  it('forwards disabled to the input so the field wrapper can dim it', () => {
+    const { container } = render(<NumberField label="Qty" disabled />);
+    const input = screen.getByLabelText('Qty') as HTMLInputElement;
+    expect(input).toBeDisabled();
+    // The disabled input lives inside the .field wrapper that the
+    // `:has(input:disabled)` rule dims, so the wrapper contains a disabled input.
+    const field = container.querySelector('input:disabled')?.parentElement;
+    expect(field).not.toBeNull();
+    expect(field?.querySelector('input:disabled')).toBe(input);
+  });
+
   it('reaches a decimal like "1.5" while editing (controlled)', async () => {
     // Previously the display was derived as String(parse(text)); with the parent
     // echoing the parsed number back, the trailing-decimal text was clobbered so

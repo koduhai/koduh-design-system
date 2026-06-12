@@ -22,6 +22,22 @@ describe('Breadcrumbs', () => {
     expect(current).toHaveAttribute('aria-current', 'page');
   });
 
+  it('marks only the last crumb as current even when a middle item lacks an href', () => {
+    const withGap = [
+      { label: 'Home', href: '/' },
+      { label: 'Library' }, // middle item without an href
+      { label: 'Current' },
+    ];
+    render(<Breadcrumbs items={withGap} />);
+    const currents = screen
+      .getAllByText(/Home|Library|Current/)
+      .filter((el) => el.getAttribute('aria-current') === 'page');
+    expect(currents).toHaveLength(1);
+    expect(currents[0]).toHaveTextContent('Current');
+    // The href-less middle item is a plain span, not aria-current.
+    expect(screen.getByText('Library')).not.toHaveAttribute('aria-current');
+  });
+
   it('collapses middle items when over maxItems', () => {
     render(<Breadcrumbs items={items} maxItems={3} />);
     expect(screen.getByText('…')).toBeInTheDocument();

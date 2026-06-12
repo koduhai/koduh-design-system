@@ -302,8 +302,12 @@ export function createFormStore(options: UseFormOptions = {}): FormApi {
           return;
         }
         setState({ errors: {} });
+        // Snapshot the submitted values BEFORE awaiting: field edits during an
+        // in-flight async onValid must not mutate which values the handler sees.
+        // (The isSubmitting guard above already blocks a concurrent re-submit.)
+        const submitted = state.values;
         try {
-          await onValid(state.values);
+          await onValid(submitted);
         } finally {
           setState({ isSubmitting: false });
         }

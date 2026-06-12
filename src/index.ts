@@ -30,8 +30,16 @@ export type {
 } from './primitives';
 
 // Theme tokens
-export { tokens, themes, density } from './theme';
-export type { ColorMode, ColorScheme, ColorTokenName, Tokens, Density } from './theme';
+export { primitives, tokens, themes, density } from './theme';
+export type {
+  ColorMode,
+  ColorScheme,
+  ColorTokenName,
+  Tokens,
+  Density,
+  Primitives,
+  PrimitiveRamp,
+} from './theme';
 
 // Utilities
 export { cx } from './utils/cx';

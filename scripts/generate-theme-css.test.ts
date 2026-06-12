@@ -133,6 +133,52 @@ describe('buildThemeCss', () => {
     expect(css).not.toMatch(/\[data-theme="dark"\][^{]*\{[^}]*--ku-brand-600/s);
   });
 
+  it('emits the tier-1 primitive color ramps on :root, not in the theme blocks', () => {
+    // Primitives are theme-independent, so they live on :root once (like brand).
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-neutral-500: #7B8598;/s);
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-blue-600: #1B5FCC;/s);
+    expect(css).toContain('--ku-color-blue-450: #6E90E0;');
+    expect(css).toContain('--ku-color-neutral-950: #0A0E1A;');
+    // Every ramp is present.
+    for (const ramp of [
+      'neutral',
+      'blue',
+      'green',
+      'amber',
+      'red',
+      'violet',
+      'cyan',
+      'pink',
+      'lime',
+    ]) {
+      expect(css).toContain(`--ku-color-${ramp}-`);
+    }
+    // They must NOT be duplicated into the per-theme override blocks.
+    expect(css).not.toMatch(/\[data-theme="dark"\][^{]*\{[^}]*--ku-color-neutral-/s);
+    expect(css).not.toMatch(/\[data-theme="light"\][^{]*\{[^}]*--ku-color-blue-/s);
+  });
+
+  it('semantic color roles still emit their exact pre-3-tier values (no visual drift)', () => {
+    // The semantic tier now references primitives, so the resolved hex must be
+    // byte-identical to the old raw literals. Guards the no-visual-change contract.
+    // Dark is the :root default.
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-primary: #6E90E0;/s);
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-bg-default: #0A0E1A;/s);
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-text-primary: #F5F7FA;/s);
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-border: #2A3346;/s);
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-danger: #EE7B7B;/s);
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-accent: #B488E6;/s);
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-color-chart-4: #FF6B6B;/s);
+    // Light overrides.
+    const lightBlock = /\[data-theme="light"\][^{]*\{([^}]*)\}/s.exec(css)?.[1] ?? '';
+    expect(lightBlock).toContain('--ku-color-primary: #1B5FCC;');
+    expect(lightBlock).toContain('--ku-color-bg-default: #FFFFFF;');
+    expect(lightBlock).toContain('--ku-color-text-primary: #10141F;');
+    expect(lightBlock).toContain('--ku-color-border: #D4DAE5;');
+    expect(lightBlock).toContain('--ku-color-warning-fg: #7A4F00;');
+    expect(lightBlock).toContain('--ku-color-chart-3: #B45309;');
+  });
+
   it('emits back-compat aliases for renamed v1 colour tokens on :root (#47)', () => {
     // Aliases delegate to the replacement via var(), so they resolve per theme.
     expect(css).toMatch(/:root\s*\{[^}]*--ku-color-bg-subtle: var\(--ku-color-bg-surface\);/s);

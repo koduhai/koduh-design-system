@@ -1,7 +1,163 @@
 // Single source of truth for all design tokens.
-// Theme-independent scales live in `tokens`; color values that change between
-// dark/light live in `themes`. The generate-theme-css script turns these into
-// CSS custom properties; components only ever read the CSS variables.
+//
+// The color system is a formal 3-tier pipeline (see docs/theme_specification.md):
+//   1. PRIMITIVES (`primitives`)  — raw, theme-independent color ramps. No
+//      semantics; just real scales (neutral, blue, green, amber, red, violet,
+//      cyan, pink, lime). Emitted as `--ku-color-{ramp}-{stop}` on :root.
+//   2. SEMANTIC ALIASES (`themes`) — per-mode color *roles* (primary, danger,
+//      bgDefault, textPrimary, chart1 …). Each value REFERENCES a primitive
+//      stop instead of a raw literal, so the emitted hex equals its primitive.
+//   3. COMPONENT  — CSS-local custom properties inside each `*.module.css`
+//      (e.g. `--btn-main`). Nothing lives in this file; components read the
+//      semantic `--ku-color-*` vars.
+//
+// Theme-independent scales (spacing, radii, type, etc.) live in `tokens`; color
+// roles that change between dark/light live in `themes`. The generate-theme-css
+// script turns these into CSS custom properties; components only ever read the
+// CSS variables.
+
+// ---------------------------------------------------------------------------
+// Tier 1: PRIMITIVES — raw color ramps, theme-independent (identical in dark and
+// light, like a Tailwind palette). These carry no meaning on their own; the
+// semantic tier (`themes`) picks stops from here. Each ramp is authored so its
+// stops INCLUDE the exact hex values the semantic tier needs (so output is
+// byte-identical to the pre-refactor literals), with interpolated intermediate
+// stops so each ramp reads as a real light -> dark scale. Some ramps carry an
+// extra half-stop (e.g. `450`, `650`) where two distinct semantic values fall
+// in the same lightness band and both must be referenced verbatim.
+// -> --ku-color-{ramp}-{stop}  (e.g. --ku-color-blue-400, --ku-color-neutral-600)
+//
+// Note: the separate fixed `brand` ramp (in `tokens`, -> --ku-brand-*) is a
+// distinct brand-blue scale kept as-is for Tailwind consumers; `blue` here is
+// the primitive backing the semantic `primary`/`info`/chart-blue roles. They
+// share a family but are intentionally separate scales.
+export const primitives = {
+  // Cool grays — backs every surface, border and text role in both themes.
+  neutral: {
+    0: '#FFFFFF', // primaryContrast (light) / bgDefault + bgRaised (light)
+    50: '#F5F7FA', // textPrimary (dark)
+    100: '#F4F6FA', // bgSurface (light)
+    200: '#D4DAE5', // border (light)
+    300: '#BEC6D5',
+    400: '#A8B2C4', // textSecondary (dark)
+    450: '#9AA3B5', // textDisabled (light)
+    500: '#7B8598',
+    600: '#5C667A', // textDisabled (dark)
+    650: '#4A5468', // textSecondary (light)
+    700: '#3A4457',
+    750: '#2A3346', // border (dark)
+    800: '#1C2438', // bgRaised (dark)
+    850: '#141A2A', // bgSurface (dark)
+    900: '#10141F', // textPrimary (light)
+    950: '#0A0E1A', // bgDefault + primaryContrast (dark)
+  },
+  // Blue — primary / info / chart-blue.
+  blue: {
+    50: '#F5F9FF',
+    100: '#E8F1FF',
+    200: '#C7DEFF',
+    300: '#93BEFF',
+    400: '#5B9DFF', // chart1 (dark)
+    450: '#6E90E0', // primary / info (dark)
+    500: '#4578D6',
+    600: '#1B5FCC', // primary / info / chart1 (light)
+    700: '#174DA5',
+    800: '#143B7E',
+    900: '#102A57',
+  },
+  // Green — success / chart-green.
+  green: {
+    50: '#F1FCF5',
+    100: '#DEF9E8',
+    200: '#AEF0C6',
+    300: '#4ADE80', // chart2 (dark)
+    400: '#57C98B', // success / successFg (dark)
+    500: '#39A463',
+    600: '#1B7F3B', // success / chart2 (light)
+    650: '#147A37', // successFg (light)
+    700: '#125F30',
+    800: '#0F4429',
+    900: '#0D2C22',
+  },
+  // Amber — warning / chart-amber.
+  amber: {
+    50: '#FFFAED',
+    100: '#FEF2D3',
+    200: '#FDDF92',
+    300: '#FBBF24', // chart3 (dark)
+    400: '#E4B24A', // warning / warningFg (dark)
+    500: '#CC832A',
+    600: '#B45309', // chart3 (light)
+    650: '#9A6700', // warning (light)
+    750: '#7A4F00', // warningFg (light)
+    800: '#583C08',
+    900: '#372810',
+  },
+  // Red — danger / chart-red.
+  red: {
+    50: '#FFF5F5',
+    100: '#FFE7E7',
+    200: '#FFC1C1',
+    300: '#EE7B7B', // danger / dangerFg (dark)
+    350: '#FF6B6B', // chart4 (dark)
+    400: '#DE5A5A',
+    500: '#D03D3D',
+    600: '#C62828', // danger / chart4 (light)
+    650: '#BE2626', // dangerFg (light)
+    700: '#912023',
+    800: '#641A20',
+    900: '#3C151D',
+  },
+  // Violet — accent / chart-purple.
+  violet: {
+    50: '#FAF5FF',
+    100: '#F2E6FE',
+    200: '#E0C2FE',
+    300: '#C084FC', // chart5 (dark)
+    400: '#B488E6', // accent / accentFg (dark)
+    500: '#9861EA',
+    600: '#7C3AED', // accent / accentFg / chart5 (light)
+    700: '#602FB8',
+    800: '#432484',
+    900: '#2A1A55',
+  },
+  // Cyan — chart-cyan only (no semantic role yet).
+  cyan: {
+    50: '#EDFBFE',
+    100: '#D3F6FC',
+    200: '#91E9F7',
+    300: '#22D3EE', // chart6 (dark)
+    400: '#1AADC8',
+    500: '#1491AC',
+    600: '#0E7490', // chart6 (light)
+    700: '#0D556D',
+    800: '#0C3749',
+  },
+  // Pink — chart-pink only.
+  pink: {
+    50: '#FEF4F9',
+    100: '#FDE3F0',
+    200: '#FAB9DB',
+    300: '#F472B6', // chart7 (dark)
+    400: '#DE4E92',
+    500: '#CE3378',
+    600: '#BE185D', // chart7 (light)
+    700: '#881549',
+    800: '#521235',
+  },
+  // Lime — chart-lime only.
+  lime: {
+    50: '#F8FDEF',
+    100: '#EDFAD7',
+    200: '#D1F39A',
+    300: '#A3E635', // chart8 (dark)
+    400: '#81BC26',
+    500: '#679C1A',
+    600: '#4D7C0F', // chart8 (light)
+    700: '#395B12',
+    800: '#253A16',
+  },
+} as const;
 
 export const tokens = {
   space: {
@@ -115,29 +271,33 @@ export const density = {
   },
 } as const;
 
-// Color tokens per theme. Values chosen to meet WCAG AA (verified at the
-// component level via axe-core e2e tests).
+// Tier 2: SEMANTIC ALIASES — per-theme color *roles*. Each value REFERENCES a
+// `primitives` stop (never a raw literal) so the role's meaning is decoupled from
+// its raw color; the generator still emits the resolved hex, so output is
+// unchanged. Values were chosen to meet WCAG AA (verified at the component level
+// via axe-core e2e tests, and at the token level in contrast.test.ts). The
+// theme-aware `shadow` block stays raw (it is not a flat color ramp).
 export const themes = {
   dark: {
     color: {
-      primary: '#6E90E0',
-      primaryContrast: '#0A0E1A',
-      danger: '#EE7B7B',
-      success: '#57C98B',
-      warning: '#E4B24A',
-      info: '#6E90E0',
-      accent: '#B488E6',
+      primary: primitives.blue[450],
+      primaryContrast: primitives.neutral[950],
+      danger: primitives.red[300],
+      success: primitives.green[400],
+      warning: primitives.amber[400],
+      info: primitives.blue[450],
+      accent: primitives.violet[400],
       // Foreground variants tuned for AA text contrast on bg surfaces (the
       // *fill* colors above are bright enough on dark surfaces to double as
       // text, so fg == fill here; verified in contrast.test.ts).
-      successFg: '#57C98B',
-      warningFg: '#E4B24A',
-      dangerFg: '#EE7B7B',
-      infoFg: '#6E90E0',
-      accentFg: '#B488E6',
-      bgDefault: '#0A0E1A',
-      bgSurface: '#141A2A',
-      bgRaised: '#1C2438',
+      successFg: primitives.green[400],
+      warningFg: primitives.amber[400],
+      dangerFg: primitives.red[300],
+      infoFg: primitives.blue[450],
+      accentFg: primitives.violet[400],
+      bgDefault: primitives.neutral[950],
+      bgSurface: primitives.neutral[850],
+      bgRaised: primitives.neutral[800],
       // Selected/active list-row fill: a translucent brand wash (16% primary).
       // Because it is semi-transparent it tints whatever surface it sits on and
       // stays perceptibly distinct from it in BOTH themes (unlike bg-raised, which
@@ -145,21 +305,21 @@ export const themes = {
       // color-mix rules so selection looks the same across Menu/CommandPalette/
       // Sidebar/Tabs/Tree. Text legibility on the tint is guarded in contrast.test.ts.
       bgSelected: 'color-mix(in srgb, var(--ku-color-primary) 16%, transparent)',
-      border: '#2A3346',
-      textPrimary: '#F5F7FA',
-      textSecondary: '#A8B2C4',
-      textDisabled: '#5C667A',
+      border: primitives.neutral[750],
+      textPrimary: primitives.neutral[50],
+      textSecondary: primitives.neutral[400],
+      textDisabled: primitives.neutral[600],
       // Categorical chart palette — 8 distinct hues tuned to be bright/saturated
       // enough to read on the dark bgSurface (#141A2A). Ordered for maximal
       // separation between adjacent series. → --ku-color-chart-1 … chart-8
-      chart1: '#5B9DFF', // blue
-      chart2: '#4ADE80', // green
-      chart3: '#FBBF24', // amber
-      chart4: '#FF6B6B', // red
-      chart5: '#C084FC', // purple
-      chart6: '#22D3EE', // cyan
-      chart7: '#F472B6', // pink
-      chart8: '#A3E635', // lime
+      chart1: primitives.blue[400], // blue
+      chart2: primitives.green[300], // green
+      chart3: primitives.amber[300], // amber
+      chart4: primitives.red[350], // red
+      chart5: primitives.violet[300], // purple
+      chart6: primitives.cyan[300], // cyan
+      chart7: primitives.pink[300], // pink
+      chart8: primitives.lime[300], // lime
     },
     // Theme-aware elevation. Dark surfaces need deeper shadows to read; each level
     // layers a tight contact shadow under a softer ambient one. `highlight` is a
@@ -175,42 +335,42 @@ export const themes = {
   },
   light: {
     color: {
-      primary: '#1B5FCC',
-      primaryContrast: '#FFFFFF',
-      danger: '#C62828',
-      success: '#1B7F3B',
-      warning: '#9A6700',
-      info: '#1B5FCC',
-      accent: '#7C3AED',
+      primary: primitives.blue[600],
+      primaryContrast: primitives.neutral[0],
+      danger: primitives.red[600],
+      success: primitives.green[600],
+      warning: primitives.amber[650],
+      info: primitives.blue[600],
+      accent: primitives.violet[600],
       // Foreground variants: darker than the fill colors so colored status text
       // clears AA on the off-white bgSurface (the worst light-theme case).
       // Verified in contrast.test.ts.
-      successFg: '#147A37',
-      warningFg: '#7A4F00',
-      dangerFg: '#BE2626',
-      infoFg: '#1B5FCC',
-      accentFg: '#7C3AED',
-      bgDefault: '#FFFFFF',
-      bgSurface: '#F4F6FA',
-      bgRaised: '#FFFFFF',
+      successFg: primitives.green[650],
+      warningFg: primitives.amber[750],
+      dangerFg: primitives.red[650],
+      infoFg: primitives.blue[600],
+      accentFg: primitives.violet[600],
+      bgDefault: primitives.neutral[0],
+      bgSurface: primitives.neutral[100],
+      bgRaised: primitives.neutral[0],
       // See dark theme: the same translucent 16% primary wash, theme-adaptive via
       // --ku-color-primary, so selection stays visible on the white page.
       bgSelected: 'color-mix(in srgb, var(--ku-color-primary) 16%, transparent)',
-      border: '#D4DAE5',
-      textPrimary: '#10141F',
-      textSecondary: '#4A5468',
-      textDisabled: '#9AA3B5',
+      border: primitives.neutral[200],
+      textPrimary: primitives.neutral[900],
+      textSecondary: primitives.neutral[650],
+      textDisabled: primitives.neutral[450],
       // Categorical chart palette — 8 distinct hues darkened/saturated to read
       // on the off-white light bgSurface (#F4F6FA), mirroring the dark hue
       // order. → --ku-color-chart-1 … chart-8
-      chart1: '#1B5FCC', // blue
-      chart2: '#1B7F3B', // green
-      chart3: '#B45309', // amber
-      chart4: '#C62828', // red
-      chart5: '#7C3AED', // purple
-      chart6: '#0E7490', // cyan
-      chart7: '#BE185D', // pink
-      chart8: '#4D7C0F', // lime
+      chart1: primitives.blue[600], // blue
+      chart2: primitives.green[600], // green
+      chart3: primitives.amber[600], // amber
+      chart4: primitives.red[600], // red
+      chart5: primitives.violet[600], // purple
+      chart6: primitives.cyan[600], // cyan
+      chart7: primitives.pink[600], // pink
+      chart8: primitives.lime[600], // lime
     },
     // Theme-aware elevation. Light shadows are soft and low-alpha, tinted with the
     // near-black text color (16,20,31) for a cooler, less harsh cast than pure black.
@@ -236,3 +396,7 @@ export type ColorScheme = ColorMode | 'system';
 export type ColorTokenName = keyof (typeof themes)['dark']['color'];
 export type Tokens = typeof tokens;
 export type Density = keyof typeof density;
+/** The raw, theme-independent primitive color ramps (tier 1). */
+export type Primitives = typeof primitives;
+/** A primitive color-ramp name (e.g. `'neutral'`, `'blue'`). */
+export type PrimitiveRamp = keyof Primitives;

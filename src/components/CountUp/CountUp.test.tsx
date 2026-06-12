@@ -26,6 +26,21 @@ describe('CountUp', () => {
     expect(screen.getByText('1234')).toBeInTheDocument();
   });
 
+  it('snaps to the final value without animating when reduced motion is preferred', () => {
+    mockReducedMotion(true);
+    // The CSS reduced-motion guards cannot stop JS-driven tweening, so CountUp
+    // must check matchMedia itself and skip rAF entirely. Assert no frame is
+    // ever scheduled (i.e. it jumps straight to the target rather than easing).
+    const raf = vi.fn(() => 0 as number);
+    vi.stubGlobal('requestAnimationFrame', raf);
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+
+    render(<CountUp value={5000} from={0} duration={5000} />);
+
+    expect(screen.getByText('5000')).toBeInTheDocument();
+    expect(raf).not.toHaveBeenCalled();
+  });
+
   it('renders the final value immediately when duration is 0', () => {
     mockReducedMotion(false);
     render(<CountUp value={42} duration={0} />);

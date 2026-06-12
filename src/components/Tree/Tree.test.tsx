@@ -31,6 +31,27 @@ describe('Tree', () => {
     expect(screen.queryByRole('treeitem', { name: 'Button.tsx' })).not.toBeInTheDocument();
   });
 
+  it('declares aria-multiselectable=false on the tree (single-select model)', () => {
+    render(<Tree nodes={nodes} />);
+    expect(screen.getByRole('tree')).toHaveAttribute('aria-multiselectable', 'false');
+  });
+
+  it('keeps aria-selected on at most one node when selection moves', async () => {
+    render(<Tree nodes={nodes} defaultExpanded={['src']} defaultSelectedId="button" />);
+    const button = screen.getByRole('treeitem', { name: 'Button.tsx' });
+    const tree = screen.getByRole('treeitem', { name: 'Tree.tsx' });
+    expect(button).toHaveAttribute('aria-selected', 'true');
+    expect(tree).toHaveAttribute('aria-selected', 'false');
+    // Selecting another node moves selection rather than accumulating it.
+    await userEvent.click(tree);
+    expect(button).toHaveAttribute('aria-selected', 'false');
+    expect(tree).toHaveAttribute('aria-selected', 'true');
+    const selectedItems = screen
+      .getAllByRole('treeitem')
+      .filter((el) => el.getAttribute('aria-selected') === 'true');
+    expect(selectedItems).toHaveLength(1);
+  });
+
   it('reveals children via a nested role=group when expanded', () => {
     render(<Tree nodes={nodes} defaultExpanded={['src']} />);
     expect(screen.getByRole('group')).toBeInTheDocument();

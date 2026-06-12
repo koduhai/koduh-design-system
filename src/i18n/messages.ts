@@ -154,6 +154,10 @@ export interface Messages {
     triggerLabel: string;
     /** Accessible label for the calendar popover dialog. */
     dialogLabel: string;
+    /** Label for the confirm/close button in date+time mode. */
+    done: string;
+    /** Visible label for the time field in date+time mode. */
+    timeLabel: string;
   };
   dateRangePicker: {
     /** Placeholder + aria-label for the start-date field. */
@@ -317,6 +321,8 @@ export const defaultMessages: Messages = {
     placeholder: 'Select a date…',
     triggerLabel: 'Open calendar',
     dialogLabel: 'Choose date',
+    done: 'Done',
+    timeLabel: 'Time',
   },
   dateRangePicker: {
     startPlaceholder: 'Start date',

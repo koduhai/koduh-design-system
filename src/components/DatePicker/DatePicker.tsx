@@ -2,6 +2,7 @@ import { forwardRef, useRef, useState } from 'react';
 import type { InputHTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { Popover } from '../Popover';
 import { Calendar } from '../Calendar';
+import { TimePicker } from '../TimePicker';
 import { useOptionalFieldContext } from '../FormField';
 import { useLocale, useMessages } from '../../i18n';
 import { composeEventHandlers, mergeRefs, useControllableState, useId } from '../../primitives';
@@ -20,9 +21,21 @@ export interface DatePickerProps extends Omit<
   defaultValue?: Date;
   /** Fires with the chosen date, or `null` when the field is cleared. */
   onChange?: (date: Date | null) => void;
-  /** Earliest selectable date (inclusive). */
+  /**
+   * Selection precision. `'day'` (default) picks a calendar day and truncates the
+   * time. `'minute'` adds a time field to the popover and carries the full date +
+   * time in `value`/`onChange`, honoring `min`/`max` at minute resolution.
+   */
+  granularity?: 'day' | 'minute';
+  /** Time field: 12- or 24-hour display (only when `granularity='minute'`). Default 24. */
+  hourCycle?: 12 | 24;
+  /** Time field: show a seconds segment (only when `granularity='minute'`). */
+  withSeconds?: boolean;
+  /** Time field: minute step for arrow stepping (only when `granularity='minute'`). */
+  minuteStep?: number;
+  /** Earliest selectable date (inclusive; minute resolution when `granularity='minute'`). */
   min?: Date;
-  /** Latest selectable date (inclusive). */
+  /** Latest selectable date (inclusive; minute resolution when `granularity='minute'`). */
   max?: Date;
   /** Text shown when no date is selected. */
   placeholder?: string;
@@ -54,6 +67,25 @@ function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
+/** Combine a day's calendar fields with a time's hour/minute/second fields. */
+function combineDateTime(day: Date, time: Date): Date {
+  return new Date(
+    day.getFullYear(),
+    day.getMonth(),
+    day.getDate(),
+    time.getHours(),
+    time.getMinutes(),
+    time.getSeconds(),
+  );
+}
+
+/** Clamp a full datetime into [min, max] (minute resolution). */
+function clampDateTime(d: Date, min?: Date, max?: Date): Date {
+  if (min && d.getTime() < min.getTime()) return new Date(min);
+  if (max && d.getTime() > max.getTime()) return new Date(max);
+  return d;
+}
+
 /** `ref` forwards to the text `<input>`, not the trigger or calendar. */
 export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePickerProps>(
   function DatePicker(
@@ -63,6 +95,10 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
       onChange,
       min,
       max,
+      granularity = 'day',
+      hourCycle,
+      withSeconds,
+      minuteStep,
       placeholder: placeholderProp,
       size = 'md',
       disabled,
@@ -78,6 +114,7 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
     ref,
   ) {
     const messages = useMessages();
+    const withTime = granularity === 'minute';
     const placeholder = placeholderProp ?? messages.datePicker.placeholder;
     const triggerLabel = triggerLabelProp ?? messages.datePicker.triggerLabel;
     const [selected, setSelected] = useControllableState<Date | undefined>({
@@ -113,16 +150,50 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
           day: 'numeric',
           month: 'long',
           year: 'numeric',
+          ...(withTime
+            ? {
+                hour: 'numeric',
+                minute: '2-digit',
+                ...(withSeconds ? { second: '2-digit' } : null),
+                hour12: hourCycle === 12,
+              }
+            : null),
         }).format(currentValue)
       : '';
 
-    const choose = (date: Date) => {
-      const day = startOfDay(date);
-      if (bound) bound.onChange(day);
-      else setSelected(day);
-      onChange?.(day);
+    const commit = (next: Date) => {
+      if (bound) bound.onChange(next);
+      else setSelected(next);
+      onChange?.(next);
+    };
+
+    const close = () => {
       setOpen(false);
       inputRef.current?.focus();
+    };
+
+    const choose = (date: Date) => {
+      if (withTime) {
+        // Keep the existing time-of-day (or midnight); honor min/max at minute
+        // resolution; leave the popover open so the time field can be adjusted.
+        const next = clampDateTime(
+          combineDateTime(date, currentValue ?? startOfDay(date)),
+          min,
+          max,
+        );
+        commit(next);
+      } else {
+        commit(startOfDay(date));
+        close();
+      }
+    };
+
+    // Time field changed (granularity='minute'): merge the new time onto the
+    // selected day (or today if none yet), clamped to [min, max].
+    const chooseTime = (time: Date | null) => {
+      if (!time) return;
+      const day = currentValue ?? new Date();
+      commit(clampDateTime(combineDateTime(day, time), min, max));
     };
 
     // Clear the selection. The input is readOnly, so Backspace/Delete are the
@@ -218,6 +289,23 @@ export const DatePicker = /* @__PURE__ */ forwardRef<HTMLInputElement, DatePicke
         >
           <div className={styles.popover}>
             <Calendar value={currentValue} onChange={choose} min={min} max={max} locale={locale} />
+            {withTime ? (
+              <div className={styles.timeRow}>
+                <TimePicker
+                  label={messages.datePicker.timeLabel}
+                  value={currentValue}
+                  onChange={chooseTime}
+                  hourCycle={hourCycle}
+                  withSeconds={withSeconds}
+                  minuteStep={minuteStep}
+                  locale={locale}
+                  size={size}
+                />
+                <button type="button" className={styles.done} onClick={close}>
+                  {messages.datePicker.done}
+                </button>
+              </div>
+            ) : null}
           </div>
         </Popover>
       </div>

@@ -1,6 +1,10 @@
 // Provider + hooks
-export { KoduhThemeProvider, useColorMode } from './provider';
-export type { KoduhThemeProviderProps, ColorModeContextValue } from './provider';
+export { KoduhThemeProvider, KoduhThemeScript, useColorMode } from './provider';
+export type {
+  KoduhThemeProviderProps,
+  KoduhThemeScriptProps,
+  ColorModeContextValue,
+} from './provider';
 
 // Internationalization (built-in UI strings + Intl locale)
 export { KoduhI18nProvider, useMessages, useLocale, defaultMessages, mergeMessages } from './i18n';

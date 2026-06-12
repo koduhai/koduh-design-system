@@ -1,6 +1,6 @@
-# Publishes the package to GitHub Packages when a GitHub Release is published.
-# Trigger: create a Release in the GitHub UI (tag like v1.0.0). This builds,
-# runs the gates, and publishes — the maintainer controls the trigger.
+# Publishes the package to the public npm registry when a GitHub Release is
+# published. Trigger: create a Release in the GitHub UI (tag like v1.0.0). This
+# builds, runs the gates, and publishes; the maintainer controls the trigger.
 name: Release
 
 on:
@@ -9,7 +9,8 @@ on:
 
 permissions:
   contents: read
-  packages: write
+  # id-token: write enables npm publish --provenance (signed build provenance).
+  id-token: write
 
 jobs:
   publish:
@@ -26,7 +27,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          registry-url: https://npm.pkg.github.com
+          registry-url: https://registry.npmjs.org
 
       # Guard: the published artifact is whatever package.json says, so the
       # release tag (vX.Y.Z) must match package.json's version exactly. Without
@@ -77,11 +78,11 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-      - name: Publish to GitHub Packages
-        run: npm publish
-        # GITHUB_TOKEN often can't create a *new* package under a personal-account
-        # namespace (E403 permission_denied: write_package). Set an NPM_TOKEN repo
-        # secret — a classic PAT with write:packages — to publish; falls back to
-        # GITHUB_TOKEN (works once the package exists / for org-owned repos).
+      - name: Publish to npm
+        # --access public is required for a scoped package (@koduhai/*) to publish
+        # publicly; --provenance attaches signed build provenance (needs the
+        # id-token: write permission above). Requires an NPM_TOKEN repo secret: an
+        # npm automation token for an account with publish rights on @koduhai.
+        run: npm publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

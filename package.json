@@ -78,13 +78,32 @@
     }
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/koduhai/koduh-design-system.git"
   },
-  "license": "UNLICENSED",
+  "homepage": "https://github.com/koduhai/koduh-design-system#readme",
+  "bugs": {
+    "url": "https://github.com/koduhai/koduh-design-system/issues"
+  },
+  "author": "Koduh AI",
+  "keywords": [
+    "react",
+    "design-system",
+    "component-library",
+    "ui",
+    "components",
+    "css-modules",
+    "design-tokens",
+    "accessibility",
+    "a11y",
+    "wcag",
+    "dark-mode",
+    "typescript"
+  ],
+  "license": "MIT",
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@eslint/js": "^10.0.0",

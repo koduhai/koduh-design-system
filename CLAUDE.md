@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `@koduhai/design-system` v1 — a from-scratch React component library that deliberately has **zero dependency on MUI, Emotion, or any third-party component/styling library** (it replaces an older MUI-wrapper-based v0.x). Styling is zero-runtime: design tokens compile to CSS custom properties, component styles are CSS Modules. React 18/19 are peer dependencies; there are no runtime dependencies. WCAG AA is a hard requirement.
 
-The full design spec is `docs/superpowers/specs/2026-05-21-custom-design-system-design.md` — read it before non-trivial work. Delivery is phased (§15 of the spec): Phase 0 foundations are done and components have shipped through Phases 1–9 plus the v2 issue follow-ups (81 components — layout/typography primitives, a `Toaster`/`useToast` notification layer, a `FormField`-led form layer with a `Form`/`useForm` orchestration layer (values, validation via a Standard-Schema resolver, field arrays, error summary — #38), the #12 gap-fill batch, and the #27–#35 batch: a `Calendar`/`DatePicker` date layer, `Sparkline`/`Chart` data-viz, density modes, DataTable row-expansion/column-resize/server-side hooks (and opt-in row virtualization — #37), and a wave of P2 components — `Kbd`, `AspectRatio`, `Code`, `Collapsible`, `ScrollArea`, `Rating`, `Stepper`, `Timeline`, `HoverCard`, `PinInput`, `FileUpload`, `Tree`, `Carousel`, `CommandPalette`), and a Tailwind-consumer compatibility batch (class-based theming, a `tailwind-preset` entry point, a fixed brand tint ramp, `PasswordInput`, `CountUp` — see `docs/tailwind-consumer-compatibility.md`), and the #43 component round-out (`Banner`, `ButtonGroup`, `SplitButton`, `Meter`, `NotificationBadge`, `Popconfirm`, `ColorPicker`), and the date/time-layer expansion (#42/#61 — a segmented `TimePicker`, `Calendar` range mode + `DateRangePicker`, and `DatePicker` date+time via `granularity='minute'`, which also serves as the date-time picker). `src/index.ts` is the source of truth for which components are shipped; it grows as each component lands. The component count below (81) is verified against `src/index.ts` by `verify:exports`.
+Delivery is phased: Phase 0 foundations are done and components have shipped through Phases 1–9 plus the v2 issue follow-ups (81 components — layout/typography primitives, a `Toaster`/`useToast` notification layer, a `FormField`-led form layer with a `Form`/`useForm` orchestration layer (values, validation via a Standard-Schema resolver, field arrays, error summary — #38), the #12 gap-fill batch, and the #27–#35 batch: a `Calendar`/`DatePicker` date layer, `Sparkline`/`Chart` data-viz, density modes, DataTable row-expansion/column-resize/server-side hooks (and opt-in row virtualization — #37), and a wave of P2 components — `Kbd`, `AspectRatio`, `Code`, `Collapsible`, `ScrollArea`, `Rating`, `Stepper`, `Timeline`, `HoverCard`, `PinInput`, `FileUpload`, `Tree`, `Carousel`, `CommandPalette`), and a Tailwind-consumer compatibility batch (class-based theming, a `tailwind-preset` entry point, a fixed brand tint ramp, `PasswordInput`, `CountUp` — see `docs/tailwind-consumer-compatibility.md`), and the #43 component round-out (`Banner`, `ButtonGroup`, `SplitButton`, `Meter`, `NotificationBadge`, `Popconfirm`, `ColorPicker`), and the date/time-layer expansion (#42/#61 — a segmented `TimePicker`, `Calendar` range mode + `DateRangePicker`, and `DatePicker` date+time via `granularity='minute'`, which also serves as the date-time picker). `src/index.ts` is the source of truth for which components are shipped; it grows as each component lands. The component count below (81) is verified against `src/index.ts` by `verify:exports`.
 
 ## Commands
 
@@ -28,17 +28,6 @@ Run a single unit test file or test:
 npx vitest run src/components/Button/Button.test.tsx
 npx vitest run -t "renders solid variant"
 ```
-
-## Workflows (slash commands)
-
-Two recurring maintainer flows are encoded as slash commands in `.claude/commands/`:
-
-- **`/ship-issue <n>`** — take issue #n end-to-end: triage → implement (superpowers + parallel
-  subagents for build work) → feature branch → PR → release → close the issue → file follow-ups.
-  Full steps in `.claude/commands/ship-issue.md`.
-- **`/audit-components [name]`** — sweep components for naming/convention consistency (tone/size
-  vocab, `data-*` variant styling, prop conventions, overlay API, exports, folder shape, token
-  usage, a11y/RTL). Reports first; edits only on approval. See `.claude/commands/audit-components.md`.
 
 ## Architecture
 
@@ -88,7 +77,7 @@ Three layers, all expected to pass before merge: Vitest + Testing Library for be
 - **`main` is branch-protected.** All changes — including releases — land via a PR, never a direct
   push. A release is: a `chore/release-X.Y.Z` PR bumping `package.json`/`package-lock.json` +
   `CHANGELOG.md`, then a `vX.Y.Z` GitHub Release, which triggers `release.yml` (full gate + publish
-  to GitHub Packages). `package.json` can already hold an unreleased version a prior batch bumped.
+  to the public npm registry). `package.json` can already hold an unreleased version a prior batch bumped.
 - **Visual e2e baselines are Linux-runner-specific.** The committed `*-chromium-linux.png`
   snapshots are generated on the `ubuntu-24.04` runner via the `update-baselines` workflow
   (`gh workflow run update-baselines.yml --ref <branch>`); a local Windows/Docker render won't

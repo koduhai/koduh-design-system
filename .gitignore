@@ -7,3 +7,9 @@ coverage/
 *.log
 .DS_Store
 test-output.txt
+
+# Secrets / local env (never commit on a public repo)
+.env
+.env.*
+!.env.example
+.npmrc

@@ -39,6 +39,70 @@ describe('useForm', () => {
     expect(result.current.getFieldState('a').touched).toBe(false);
   });
 
+  it('reset(values) loads given values and clears stale errors/touched/dirty', () => {
+    const { result } = renderHook(() => useForm({ defaultValues: { a: 1, b: 2 } }));
+    act(() => {
+      result.current.setValue('a', 9);
+      result.current.setError('a', 'stale');
+      result.current.setTouched('a');
+    });
+    expect(result.current.getFieldState('a').error).toBe('stale');
+
+    act(() => result.current.reset({ a: 10, b: 20 }));
+    // Adopts the passed object as the new defaults: values load, dirty is false.
+    expect(result.current.getFieldState('a').value).toBe(10);
+    expect(result.current.getFieldState('b').value).toBe(20);
+    expect(result.current.getFieldState('a').error).toBeUndefined();
+    expect(result.current.getFieldState('a').touched).toBe(false);
+    expect(result.current.getFieldState('a').dirty).toBe(false);
+
+    // Calling reset() with no args now restores the loaded values, not the originals.
+    act(() => result.current.setValue('a', 99));
+    act(() => result.current.reset());
+    expect(result.current.getFieldState('a').value).toBe(10);
+  });
+
+  it('setValues bulk-patches many fields (load server values) in one pass', () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { name: '', email: '', role: 'guest' } }),
+    );
+    act(() => result.current.setValues({ name: 'Ada', email: 'ada@x.dev' }));
+    expect(result.current.getFieldState('name').value).toBe('Ada');
+    expect(result.current.getFieldState('email').value).toBe('ada@x.dev');
+    // Untouched key keeps its default.
+    expect(result.current.getFieldState('role').value).toBe('guest');
+    // Patched keys that differ from their default are dirty.
+    expect(result.current.getFieldState('name').dirty).toBe(true);
+    expect(result.current.getFieldState('email').dirty).toBe(true);
+    expect(result.current.getFieldState('role').dirty).toBe(false);
+  });
+
+  it('setValues marks a key dirty=false when the patched value equals its default', () => {
+    const { result } = renderHook(() => useForm({ defaultValues: { a: 1, b: 2 } }));
+    act(() => result.current.setValue('a', 5)); // make a dirty first
+    expect(result.current.getFieldState('a').dirty).toBe(true);
+    act(() => result.current.setValues({ a: 1 })); // patch back to default
+    expect(result.current.getFieldState('a').value).toBe(1);
+    expect(result.current.getFieldState('a').dirty).toBe(false);
+  });
+
+  it('setValues makes a single synchronous state update and triggers onChange validation', async () => {
+    const resolver = vi.fn(async (v: Record<string, unknown>) => ({
+      values: v,
+      errors: (v.a ? {} : { a: 'required' }) as Record<string, string>,
+    }));
+    const { result } = renderHook(() => useForm({ mode: 'onChange', resolver }));
+    const listener = vi.fn();
+    act(() => {
+      result.current.subscribe(listener);
+    });
+    // The bulk patch is one synchronous emit (not one per key), even for two keys.
+    act(() => result.current.setValues({ a: '', b: 'x' }));
+    expect(listener).toHaveBeenCalledTimes(1);
+    // The async validation pass emits separately once it resolves.
+    await waitFor(() => expect(result.current.getFieldState('a').error).toBe('required'));
+  });
+
   it('handleSubmit calls onValid with values when valid', async () => {
     const onValid = vi.fn();
     const { result } = renderHook(() => useForm({ defaultValues: { name: 'Ada' } }));

@@ -61,6 +61,8 @@ export interface Messages {
     searchLabel: string;
     /** Selected-rows count, e.g. "2 selected" (toolbar text + filter badge). */
     selectedCount: (count: number) => string;
+    /** Total row count shown in the footer when virtualized, e.g. "1,000 rows". */
+    rowCount: (count: number) => string;
     /** Text for the clear-selection button. */
     clear: string;
     /** aria-label for the select-all-rows checkbox. */
@@ -259,6 +261,7 @@ export const defaultMessages: Messages = {
     search: 'Search…',
     searchLabel: 'Search',
     selectedCount: (count) => `${count} selected`,
+    rowCount: (count) => `${count.toLocaleString()} ${count === 1 ? 'row' : 'rows'}`,
     clear: 'Clear',
     selectAll: 'Select all rows',
     selectRow: (label) => `Select ${label}`,

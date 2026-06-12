@@ -176,4 +176,27 @@ export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>
    * and the range readout when `manual` is true; ignored otherwise.
    */
   rowCount?: number;
+
+  // ─── Virtualization ──────────────────────────────────────────────────────────
+  /**
+   * Opt-in row virtualization for large client-side datasets: instead of
+   * paginating, renders the full sorted/filtered result windowed inside a
+   * fixed-height scroll viewport (only the visible rows plus overscan mount).
+   * Requires a fixed `rowHeight` that matches the actual rendered row height.
+   *
+   * Coexists with sort, filter/search, selection, sticky header, and column
+   * resize. It is **not** combined with `renderExpanded` (variable-height detail
+   * rows break fixed-height windowing) or `manual` mode — in either case the
+   * flag is ignored and the normal paginated path renders.
+   */
+  virtualized?: boolean;
+  /**
+   * Fixed row height in px used for windowing math. Must match the actual
+   * rendered row height (set cells to a single line / matching height). Default 44.
+   */
+  rowHeight?: number;
+  /** Height in px of the scroll viewport when virtualized. Default 400. */
+  viewportHeight?: number;
+  /** Extra rows rendered above/below the viewport to smooth fast scrolling. Default 6. */
+  overscan?: number;
 }

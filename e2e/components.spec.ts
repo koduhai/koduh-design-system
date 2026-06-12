@@ -48,6 +48,7 @@ const COMPONENTS = [
   { name: 'Pagination', storyId: 'components-pagination--showcase' },
   { name: 'Table', storyId: 'components-table--showcase' },
   { name: 'DataTable', storyId: 'components-datatable--showcase' },
+  { name: 'DataTableVirtualized', storyId: 'components-datatable--virtualized' },
   // v2 issues #13/#14/#15
   { name: 'Stack', storyId: 'components-stack--showcase' },
   { name: 'Inline', storyId: 'components-inline--showcase' },

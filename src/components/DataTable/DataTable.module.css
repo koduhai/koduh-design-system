@@ -11,6 +11,15 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Virtualization viewport: a fixed-height scroll container so the windowed body
+   scrolls internally. It is the sole scroll container in the virtual path (the
+   horizontal `.tableWrap` is skipped), and the sticky header sticks to its top. */
+.virtualViewport {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
 .footer {
   display: flex;
   align-items: center;

@@ -45,6 +45,34 @@ export const Showcase: Story = {
   args: { columns, data: people, getRowId: (r: Person) => r.id, caption: 'Team members' },
 };
 
+/**
+ * `virtualized`: for very large client-side datasets, the full sorted/filtered
+ * result is windowed inside a fixed-height scroll viewport (only the visible rows
+ * mount) instead of paginating. Requires a fixed `rowHeight`. Sort, search,
+ * selection, and a sticky header all still work; `aria-rowcount`/`aria-rowindex`
+ * keep the true row count for assistive tech.
+ */
+const manyPeople: Person[] = Array.from({ length: 1000 }, (_, i) => ({
+  id: String(i + 1),
+  name: ['Ann', 'Bob', 'Cy', 'Dee', 'Eli'][i % 5] + ` ${i + 1}`,
+  role: i % 2 ? 'admin' : 'user',
+  age: 22 + (i % 40),
+  joined: `20${20 + (i % 5)}-0${(i % 9) + 1}-1${i % 9}`,
+}));
+
+export const Virtualized: Story = {
+  args: {
+    columns,
+    data: manyPeople,
+    getRowId: (r: Person) => r.id,
+    virtualized: true,
+    rowHeight: 44,
+    viewportHeight: 360,
+    stickyHeader: true,
+    caption: '1,000 team members (virtualized)',
+  },
+};
+
 export const WithSelection: Story = {
   args: {
     columns,

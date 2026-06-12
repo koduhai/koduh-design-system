@@ -19,6 +19,7 @@ import type {
   SortRule,
 } from './types';
 import { ColumnFilter } from './ColumnFilter';
+import { VirtualizedTable } from './VirtualizedTable';
 import styles from './DataTable.module.css';
 
 const DEFAULT_MIN_WIDTH = 48;
@@ -82,6 +83,10 @@ function DataTableInner<Row>(
     onStateChange,
     manual = false,
     rowCount,
+    virtualized = false,
+    rowHeight = 44,
+    viewportHeight = 400,
+    overscan = 6,
     className,
     ...props
   }: DataTableProps<Row>,
@@ -398,7 +403,18 @@ function DataTableInner<Row>(
       </div>
     ) : null;
 
-  const footer = (
+  // Virtualization is a client-side alternative to pagination, so it can't combine
+  // with `manual` (server-paged) mode, and fixed-height windowing can't host the
+  // variable-height detail rows of `renderExpanded` — in either case it is ignored.
+  const useVirtual = virtualized && !manual && !renderExpanded;
+
+  const footer = useVirtual ? (
+    <div className={styles.footer}>
+      <span className={styles.range} aria-live="polite">
+        {messages.dataTable.rowCount(total)}
+      </span>
+    </div>
+  ) : (
     <div className={styles.footer}>
       <Select
         className={styles.pageSize}
@@ -415,7 +431,28 @@ function DataTableInner<Row>(
     </div>
   );
 
-  const tableEl = renderExpanded ? (
+  const tableEl = useVirtual ? (
+    <VirtualizedTable
+      columns={tableColumns}
+      getRowId={getRowId}
+      // The full sorted/filtered result (not the page slice) is windowed here.
+      data={sorted}
+      caption={caption}
+      captionVisible={captionVisible}
+      stickyHeader={stickyHeader}
+      loading={loading}
+      loadingRows={loadingRows ?? Math.ceil(viewportHeight / rowHeight)}
+      empty={emptyContent}
+      sort={sortState}
+      onSortChange={handleSortChange}
+      selectedIds={selected}
+      selectAllIds={matchingIds}
+      onSelectionChange={setSelected}
+      rowHeight={rowHeight}
+      viewportHeight={viewportHeight}
+      overscan={overscan}
+    />
+  ) : renderExpanded ? (
     <ExpandableTable
       columns={tableColumns}
       dataColumns={columns}
@@ -463,8 +500,10 @@ function DataTableInner<Row>(
       {/* Horizontal-scroll container: wide tables (many columns on a narrow
           viewport) scroll internally instead of overflowing the page. Note this
           establishes a scroll container, so a sticky header needs the wrapper
-          height bounded (e.g. max-height) to stick within it. */}
-      <div className={styles.tableWrap}>{tableEl}</div>
+          height bounded (e.g. max-height) to stick within it. The virtualized
+          path owns its own (vertical + horizontal) scroll viewport, so the extra
+          wrapper is skipped there. */}
+      {useVirtual ? tableEl : <div className={styles.tableWrap}>{tableEl}</div>}
       {footer}
     </div>
   );

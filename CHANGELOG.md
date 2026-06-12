@@ -7,8 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [1.0.0] - 2026-06-12
 
 First public release. `@koduhai/design-system` is a from-scratch React component
-library with zero runtime dependencies and no Material UI, Emotion, or other
-third-party component/styling library. Styling is zero-runtime: design tokens
+library with zero runtime dependencies and no third-party component or styling
+library. Styling is zero-runtime: design tokens
 compile to CSS custom properties and component styles are CSS Modules. WCAG AA is
 a hard requirement, verified with axe in both themes.
 

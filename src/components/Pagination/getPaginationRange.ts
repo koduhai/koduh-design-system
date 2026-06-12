@@ -16,8 +16,8 @@ const range = (start: number, end: number): number[] =>
 
 /**
  * Computes the ordered list of page numbers and ellipsis markers to render.
- * Mirrors the well-known MUI usePagination algorithm: a one-page gap is
- * rendered as the page itself rather than an ellipsis.
+ * Uses the common pagination-range algorithm: a one-page gap is rendered as the
+ * page itself rather than an ellipsis.
  */
 export function getPaginationRange({
   count,

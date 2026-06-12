@@ -11,7 +11,7 @@
 This document defines the Koduh AI design tokens — color, typography, spacing,
 radii, shadows, z-index, breakpoints, and motion — and how they reach the screen.
 
-There is **no MUI `createTheme` / `ThemeProvider`** and no `theme` object threaded
+There is **no `createTheme` / `ThemeProvider`** and no `theme` object threaded
 through React context for styling. Instead:
 
 1. A **single TypeScript source of truth** (`src/theme/tokens.ts`) declares every

@@ -44,8 +44,8 @@ npm run build-storybook  # static build
 | **Addons**    | `@storybook/addon-a11y` (axe in-canvas) |
 | **Format**    | CSF3 (`Meta` + `StoryObj`)              |
 
-There is no MUI Dark Mode addon or `ThemeProvider` decorator — theming is done via
-a `data-theme` attribute and a custom toolbar (below).
+Theming is driven by a `data-theme` attribute and a custom toolbar (below), not a
+`ThemeProvider` decorator.
 
 ---
 

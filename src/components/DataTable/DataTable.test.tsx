@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest';
 import { vi } from 'vitest';
 import { useState } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DataTable } from './DataTable';
 import type { DataColumn } from './types';
@@ -847,4 +847,128 @@ test('the noResults prop still overrides the provider default for the filter-mis
   await user.type(screen.getByRole('textbox', { name: 'Name' }), 'zzz no such row');
   expect(screen.getByText('No matches, clear your filters')).toBeInTheDocument();
   expect(screen.queryByText('Aucun résultat')).not.toBeInTheDocument();
+});
+
+// ─── Virtualization (#37) ─────────────────────────────────────────────────────
+
+interface BigRow {
+  id: string;
+  name: string;
+}
+const bigData: BigRow[] = Array.from({ length: 100 }, (_, i) => ({
+  id: String(i),
+  name: `Row ${i}`,
+}));
+const bigColumns: DataColumn<BigRow>[] = [{ key: 'name', header: 'Name', sortable: true }];
+
+function renderVirtual(extra?: Partial<Parameters<typeof DataTable<BigRow>>[0]>) {
+  return render(
+    <DataTable
+      virtualized
+      columns={bigColumns}
+      data={bigData}
+      getRowId={(r) => r.id}
+      rowHeight={40}
+      viewportHeight={200}
+      overscan={2}
+      {...extra}
+    />,
+  );
+}
+
+test('virtualized: renders only a windowed subset with aria-rowcount over the full set', () => {
+  renderVirtual();
+  // visibleCount = ceil(200/40) + 2*2 = 5 + 4 = 9 → rows 0..8 mount at scrollTop 0.
+  expect(screen.getByText('Row 0')).toBeInTheDocument();
+  expect(screen.queryByText('Row 50')).toBeNull();
+  expect(screen.queryByText('Row 99')).toBeNull();
+  // aria-rowcount = header (1) + 100 data rows.
+  expect(screen.getByRole('table')).toHaveAttribute('aria-rowcount', '101');
+});
+
+test('virtualized: data rows carry the absolute aria-rowindex (header is 1)', () => {
+  renderVirtual();
+  expect(screen.getByText('Row 0').closest('tr')).toHaveAttribute('aria-rowindex', '2');
+  expect(screen.getByText('Row 1').closest('tr')).toHaveAttribute('aria-rowindex', '3');
+});
+
+test('virtualized: scrolling renders later rows and unmounts earlier ones', () => {
+  renderVirtual();
+  const viewport = screen.getByRole('table').parentElement as HTMLElement;
+  // Scroll so row ~50 is in view (50 * 40px).
+  fireEvent.scroll(viewport, { target: { scrollTop: 2000 } });
+  expect(screen.getByText('Row 50')).toBeInTheDocument();
+  expect(screen.queryByText('Row 0')).toBeNull();
+  // The absolute aria-rowindex still reflects the real position.
+  expect(screen.getByText('Row 50').closest('tr')).toHaveAttribute('aria-rowindex', '52');
+});
+
+test('virtualized: footer shows the total row count, not pagination', () => {
+  renderVirtual();
+  expect(screen.getByText('100 rows')).toBeInTheDocument();
+  // No pagination nav / rows-per-page select in the virtual footer.
+  expect(screen.queryByRole('navigation')).toBeNull();
+  expect(screen.queryByRole('button', { name: /Rows per page/ })).toBeNull();
+});
+
+test('virtualized: select-all selects every matching row, including off-screen', () => {
+  const onSelectionChange = vi.fn();
+  renderVirtual({ onSelectionChange });
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Select all rows' }));
+  expect(onSelectionChange).toHaveBeenCalledTimes(1);
+  expect(onSelectionChange.mock.calls[0]![0]).toHaveLength(100);
+});
+
+test('virtualized: sorting reorders the full dataset (desc brings Row 99 into view)', () => {
+  renderVirtual();
+  const header = screen.getByRole('button', { name: /Name/ });
+  fireEvent.click(header); // asc
+  fireEvent.click(header); // desc
+  // String-desc of "Row 0".."Row 99" puts "Row 99" first.
+  expect(screen.getByText('Row 99')).toBeInTheDocument();
+  expect(screen.getByText('Row 99').closest('tr')).toHaveAttribute('aria-rowindex', '2');
+});
+
+test('virtualized is ignored in manual mode (paginated path renders)', () => {
+  render(
+    <DataTable
+      virtualized
+      manual
+      rowCount={100}
+      columns={bigColumns}
+      data={bigData.slice(0, 10)}
+      getRowId={(r) => r.id}
+    />,
+  );
+  expect(screen.getByRole('table')).not.toHaveAttribute('aria-rowcount');
+  expect(screen.getByRole('navigation')).toBeInTheDocument();
+});
+
+test('virtualized is ignored when renderExpanded is set (expandable path renders)', () => {
+  render(
+    <DataTable
+      virtualized
+      renderExpanded={(r) => <span>detail {r.name}</span>}
+      columns={bigColumns}
+      data={bigData.slice(0, 5)}
+      getRowId={(r) => r.id}
+    />,
+  );
+  expect(screen.getByRole('table')).not.toHaveAttribute('aria-rowcount');
+});
+
+test('virtualized: i18n row count flows through a provider override', () => {
+  render(
+    <KoduhI18nProvider messages={{ dataTable: { rowCount: (n) => `${n} lignes` } }}>
+      <DataTable
+        virtualized
+        columns={bigColumns}
+        data={bigData}
+        getRowId={(r) => r.id}
+        rowHeight={40}
+        viewportHeight={200}
+      />
+    </KoduhI18nProvider>,
+  );
+  expect(screen.getByText('100 lignes')).toBeInTheDocument();
 });

@@ -4,6 +4,51 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.10.0] - 2026-06-11
+
+Additive feature release: a shared live-region announcer primitive, a central
+i18n layer for all built-in UI strings, and a substantially expanded `Combobox`
+(multi-select, async/loading, create-option). No breaking changes; default
+output and behavior are unchanged out of the box.
+
+### Added
+
+- **Live-region announcer** (#40): `<LiveRegion politeness atomic>` for
+  declarative, state-driven announcements (a visually-hidden `role=status`/`alert`
+  region rendering the current message as children), plus `useAnnouncer()` /
+  `announce(message, politeness)` for imperative, fire-and-forget announcements
+  via a lazily-created, SSR-safe shared region (one element per politeness level).
+  The ad-hoc invisible regions in `Carousel` and `TagInput` migrate onto
+  `<LiveRegion>`, and `Combobox` now announces its live result count as the list
+  filters.
+- **Central i18n layer** (#41): `KoduhI18nProvider` (`messages` + `locale`),
+  `useMessages()`, `useLocale()`, and a typed `Messages` catalog with English
+  `defaultMessages`. With no provider, components fall back to English defaults
+  (behavior unchanged); per-component string props still win over the provider.
+  The built-in strings of `Pagination`, `Dialog`, `Drawer`, `AvatarGroup`,
+  `Combobox`, `Carousel`, `DataTable`, `Alert`, `Snackbar`, and `Select` now route
+  through the catalog, and `Calendar` / `DatePicker` fall back to the provider's
+  `Intl` locale (the `locale` prop still wins). Catalog defaults match the prior
+  hardcoded strings exactly, so default output is byte-identical.
+- **`Combobox` multi-select, async, and create-option** (#39): a `multiple` mode
+  (discriminated-union props: single → `string`, multi → `string[]`) that renders
+  selected values as removable chips, toggles options while keeping the listbox
+  open, removes the last chip on Backspace in an empty input, and marks the
+  listbox `aria-multiselectable`; a `loading` affordance row plus a debounced
+  `onQueryChange(query)` for server-side fetching (providing it disables
+  client-side filtering); and `creatable` + `onCreate` for an `Add "{query}"`
+  entry when nothing matches. Single-select sync behavior, controlled/uncontrolled
+  symmetry, and FormField composition are unchanged.
+
+### Changed
+
+- `Chip.onDelete` now forwards its click event (non-breaking: a `() => void`
+  handler still fits), so chip removal reports a real event.
+- Cross-browser e2e: the cross-browser interaction spec (`interactions.spec.ts`,
+  including the #34 overlay-anchoring guard that exercises the JS positioning
+  fallback) now runs on WebKit and Firefox in addition to Chromium; axe and visual
+  snapshots stay Chromium-only. CI/release install chromium + webkit + firefox.
+
 ## [2.9.0] - 2026-06-11
 
 Quality and hardening release from a full multi-dimension code review of the

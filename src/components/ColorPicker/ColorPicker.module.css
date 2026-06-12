@@ -160,10 +160,16 @@
   background: var(--ku-color-bg-default);
   border: 1px solid var(--ku-color-border-default);
   border-radius: var(--ku-radius-sm);
+  transition:
+    border-color var(--ku-duration-fast) var(--ku-easing-standard),
+    box-shadow var(--ku-duration-fast) var(--ku-easing-standard);
 }
 .hexInput:focus-visible {
-  outline: 2px solid var(--ku-color-primary);
-  outline-offset: 1px;
+  border-color: var(--ku-color-primary);
+  outline: none;
+  /* Soft focus glow: a solid border plus a translucent 3px halo, a clearer and
+     more modern indicator than a hard ring (still well above the AA floor). */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-primary) 25%, transparent);
 }
 
 /* ---- Swatches ---- */

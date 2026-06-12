@@ -115,6 +115,9 @@ export const FileUpload = /* @__PURE__ */ forwardRef<HTMLInputElement, FileUploa
         className={cx(styles.root, className)}
         data-dragover={dragover ? 'true' : undefined}
         data-disabled={disabled ? 'true' : undefined}
+        // aria-invalid is not allowed on role="button" (axe), so the error state
+        // is surfaced for styling via data-invalid driven by the field's validity.
+        data-invalid={field?.invalid ? 'true' : undefined}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         onDragEnter={handleDragOver}

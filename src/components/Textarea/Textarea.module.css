@@ -45,7 +45,7 @@
 .input:focus-visible {
   outline: none;
   border-color: var(--ku-color-primary);
-  box-shadow: 0 0 0 1px var(--ku-color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-primary) 25%, transparent);
 }
 
 .input::placeholder {
@@ -56,7 +56,7 @@
   border-color: var(--ku-color-danger);
 }
 .root[data-error='true'] .input:focus-visible {
-  box-shadow: 0 0 0 1px var(--ku-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ku-color-danger) 25%, transparent);
 }
 
 .description {

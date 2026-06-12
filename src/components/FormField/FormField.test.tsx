@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
@@ -221,6 +221,44 @@ describe('FormField bound to a Form', () => {
     // Drop required without touching the field: the error clears.
     fireEvent.click(screen.getByText('relax'));
     await waitFor(() => expect(screen.queryByText('This field is required')).toBeNull());
+  });
+
+  it('keeps the child input mounted (no remount) when binding via `name` toggles', () => {
+    const mounts = vi.fn();
+    function TrackedInput() {
+      const ctx = useOptionalFieldContext();
+      useEffect(() => {
+        mounts();
+      }, []);
+      return (
+        <input
+          aria-label="tracked"
+          value={String(ctx?.binding?.value ?? '')}
+          onChange={(e) => ctx?.binding?.onChange(e.target.value, e)}
+        />
+      );
+    }
+    function Wrap() {
+      const form = useForm({ defaultValues: { city: 'Paris' } });
+      const [bound, setBound] = useState(false);
+      return (
+        <Form form={form} aria-label="f">
+          <FormField name={bound ? 'city' : undefined} label="City">
+            <TrackedInput />
+          </FormField>
+          <button type="button" onClick={() => setBound(true)}>
+            bind
+          </button>
+        </Form>
+      );
+    }
+    render(<Wrap />);
+    expect(mounts).toHaveBeenCalledTimes(1);
+    // Toggle from standalone to bound: the input must NOT remount (would reset focus).
+    fireEvent.click(screen.getByText('bind'));
+    expect(mounts).toHaveBeenCalledTimes(1);
+    // And it is now actually bound, reading the form value.
+    expect((screen.getByLabelText('tracked') as HTMLInputElement).value).toBe('Paris');
   });
 
   it('does not surface a required error before submit when required toggles on', async () => {

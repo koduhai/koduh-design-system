@@ -93,17 +93,24 @@ export const Breadcrumbs = /* @__PURE__ */ forwardRef<HTMLElement, BreadcrumbsPr
             }
 
             const { item } = entry;
-            const isCurrent = isLast || item.href == null;
+            // Render as a link when the item has an href, else a span. Only the
+            // last crumb carries aria-current="page" so a trail never claims two
+            // current pages (invalid ARIA).
+            const hasHref = item.href != null;
 
             return (
               <Fragment key={index}>
                 <li className={styles.item}>
-                  {!isCurrent ? (
-                    <a className={styles.link} href={item.href}>
+                  {hasHref ? (
+                    <a
+                      className={styles.link}
+                      href={item.href}
+                      aria-current={isLast ? 'page' : undefined}
+                    >
                       {item.label}
                     </a>
                   ) : (
-                    <span className={styles.current} aria-current="page">
+                    <span className={styles.current} aria-current={isLast ? 'page' : undefined}>
                       {item.label}
                     </span>
                   )}

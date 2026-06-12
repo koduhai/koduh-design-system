@@ -99,7 +99,7 @@ export const TextField = /* @__PURE__ */ forwardRef<HTMLInputElement, TextFieldP
         data-density={density}
         data-error={invalid ? 'true' : undefined}
       >
-        {showOwnLabel ? (
+        {showOwnLabel && label != null ? (
           <label className={styles.label} htmlFor={id}>
             {label}
             {isRequired ? (

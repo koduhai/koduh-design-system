@@ -5,7 +5,7 @@
   border-radius: var(--ku-radius-lg);
   background-color: var(--ku-color-bg-surface);
   color: var(--ku-color-text-primary);
-  box-shadow: var(--ku-shadow-3);
+  box-shadow: var(--ku-shadow-lg);
   width: calc(100vw - var(--ku-space-8));
   max-height: calc(100vh - var(--ku-space-8));
   overflow: hidden;

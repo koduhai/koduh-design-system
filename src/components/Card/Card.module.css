@@ -9,8 +9,12 @@
 .root[data-variant='outline'] {
   border-color: var(--ku-color-border);
 }
+/* A hairline border under the shadow gives the card a crisp edge so it reads on
+   surfaces close to its own color (and keeps definition in the light theme, where
+   the soft shadow alone is subtle). */
 .root[data-variant='elevated'] {
-  box-shadow: var(--ku-shadow-2);
+  border-color: var(--ku-color-border);
+  box-shadow: var(--ku-shadow-md);
 }
 .root[data-variant='flat'] {
   background-color: var(--ku-color-bg-raised);

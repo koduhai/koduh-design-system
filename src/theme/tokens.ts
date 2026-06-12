@@ -19,6 +19,7 @@ export const tokens = {
     sm: '4px',
     md: '8px',
     lg: '12px',
+    xl: '16px',
     full: '9999px',
   },
   fontFamily: {
@@ -43,11 +44,6 @@ export const tokens = {
     tight: '1.25',
     base: '1.5',
     relaxed: '1.7',
-  },
-  shadow: {
-    1: '0 1px 2px rgba(0,0,0,0.4)',
-    2: '0 2px 8px rgba(0,0,0,0.45)',
-    3: '0 8px 24px rgba(0,0,0,0.5)',
   },
   zIndex: {
     appbar: '1100',
@@ -124,21 +120,21 @@ export const density = {
 export const themes = {
   dark: {
     color: {
-      primary: '#5B9DFF',
+      primary: '#6E90E0',
       primaryContrast: '#0A0E1A',
-      danger: '#FF6B6B',
-      success: '#4ADE80',
-      warning: '#FBBF24',
-      info: '#5B9DFF',
-      accent: '#C084FC',
+      danger: '#EE7B7B',
+      success: '#57C98B',
+      warning: '#E4B24A',
+      info: '#6E90E0',
+      accent: '#B488E6',
       // Foreground variants tuned for AA text contrast on bg surfaces (the
       // *fill* colors above are bright enough on dark surfaces to double as
       // text, so fg == fill here; verified in contrast.test.ts).
-      successFg: '#4ADE80',
-      warningFg: '#FBBF24',
-      dangerFg: '#FF6B6B',
-      infoFg: '#5B9DFF',
-      accentFg: '#C084FC',
+      successFg: '#57C98B',
+      warningFg: '#E4B24A',
+      dangerFg: '#EE7B7B',
+      infoFg: '#6E90E0',
+      accentFg: '#B488E6',
       bgDefault: '#0A0E1A',
       bgSurface: '#141A2A',
       bgRaised: '#1C2438',
@@ -164,6 +160,17 @@ export const themes = {
       chart6: '#22D3EE', // cyan
       chart7: '#F472B6', // pink
       chart8: '#A3E635', // lime
+    },
+    // Theme-aware elevation. Dark surfaces need deeper shadows to read; each level
+    // layers a tight contact shadow under a softer ambient one. `highlight` is a
+    // subtle top inset used as a sheen on solid (colored) surfaces.
+    shadow: {
+      xs: '0 1px 2px rgba(0, 0, 0, 0.35)',
+      sm: '0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(0, 0, 0, 0.3)',
+      md: '0 4px 10px -2px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4)',
+      lg: '0 14px 28px -6px rgba(0, 0, 0, 0.55), 0 4px 10px -4px rgba(0, 0, 0, 0.45)',
+      xl: '0 28px 56px -12px rgba(0, 0, 0, 0.6), 0 10px 20px -8px rgba(0, 0, 0, 0.5)',
+      highlight: 'inset 0 1px 0 rgba(255, 255, 255, 0.08)',
     },
   },
   light: {
@@ -204,6 +211,16 @@ export const themes = {
       chart6: '#0E7490', // cyan
       chart7: '#BE185D', // pink
       chart8: '#4D7C0F', // lime
+    },
+    // Theme-aware elevation. Light shadows are soft and low-alpha, tinted with the
+    // near-black text color (16,20,31) for a cooler, less harsh cast than pure black.
+    shadow: {
+      xs: '0 1px 2px rgba(16, 20, 31, 0.06)',
+      sm: '0 1px 2px rgba(16, 20, 31, 0.06), 0 1px 1px rgba(16, 20, 31, 0.04)',
+      md: '0 4px 8px -2px rgba(16, 20, 31, 0.1), 0 2px 4px -2px rgba(16, 20, 31, 0.06)',
+      lg: '0 12px 24px -6px rgba(16, 20, 31, 0.14), 0 4px 8px -4px rgba(16, 20, 31, 0.08)',
+      xl: '0 24px 48px -12px rgba(16, 20, 31, 0.18), 0 8px 16px -8px rgba(16, 20, 31, 0.1)',
+      highlight: 'inset 0 1px 0 rgba(255, 255, 255, 0.18)',
     },
   },
 } as const;

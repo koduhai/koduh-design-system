@@ -39,6 +39,10 @@ export interface DateRangePickerProps {
   startPlaceholder?: string;
   /** Placeholder for the end field. Defaults to `dateRangePicker.endPlaceholder`. */
   endPlaceholder?: string;
+  /** Accessible name for the start field. Defaults to `dateRangePicker.startLabel`. */
+  startLabel?: string;
+  /** Accessible name for the end field. Defaults to `dateRangePicker.endLabel`. */
+  endLabel?: string;
   /** BCP 47 locale for the formatted values and the calendar. */
   locale?: string;
   /** Accessible label for the calendar trigger button. Defaults to `datePicker.triggerLabel`. */
@@ -71,6 +75,8 @@ export const DateRangePicker = /* @__PURE__ */ forwardRef<HTMLDivElement, DateRa
       label,
       startPlaceholder: startPlaceholderProp,
       endPlaceholder: endPlaceholderProp,
+      startLabel: startLabelProp,
+      endLabel: endLabelProp,
       locale: localeProp,
       triggerLabel: triggerLabelProp,
       className,
@@ -83,6 +89,8 @@ export const DateRangePicker = /* @__PURE__ */ forwardRef<HTMLDivElement, DateRa
     const locale = localeProp ?? contextLocale;
     const startPlaceholder = startPlaceholderProp ?? messages.dateRangePicker.startPlaceholder;
     const endPlaceholder = endPlaceholderProp ?? messages.dateRangePicker.endPlaceholder;
+    const startLabel = startLabelProp ?? messages.dateRangePicker.startLabel;
+    const endLabel = endLabelProp ?? messages.dateRangePicker.endLabel;
     const triggerLabel = triggerLabelProp ?? messages.datePicker.triggerLabel;
 
     const [selected, setSelected] = useControllableState<DateRange | undefined>({
@@ -180,7 +188,7 @@ export const DateRangePicker = /* @__PURE__ */ forwardRef<HTMLDivElement, DateRa
           className={styles.input}
           value={fmt(range.start)}
           placeholder={startPlaceholder}
-          aria-label={startPlaceholder}
+          aria-label={startLabel}
           disabled={disabled}
           onClick={() => !disabled && setOpen((o) => !o)}
           onKeyDown={onInputKeyDown}
@@ -194,7 +202,7 @@ export const DateRangePicker = /* @__PURE__ */ forwardRef<HTMLDivElement, DateRa
           className={styles.input}
           value={fmt(orderedEnd)}
           placeholder={endPlaceholder}
-          aria-label={endPlaceholder}
+          aria-label={endLabel}
           disabled={disabled}
           onClick={() => !disabled && setOpen((o) => !o)}
           onKeyDown={onInputKeyDown}

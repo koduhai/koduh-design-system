@@ -141,6 +141,20 @@ describe('buildThemeCss', () => {
     // Aliases are theme-independent — not duplicated into the override blocks.
     expect(css).not.toMatch(/\[data-theme="dark"\][^{]*\{[^}]*--ku-color-bg-subtle/s);
   });
+
+  it('emits a theme-aware elevation scale with back-compat numbered aliases', () => {
+    // Named, theme-aware scale: emitted, and softer/low-alpha under the light theme.
+    expect(css).toContain('--ku-shadow-md:');
+    expect(css).toContain('--ku-shadow-xl:');
+    expect(css).toMatch(
+      /\[data-theme="light"\][^{]*\{[^}]*--ku-shadow-sm: 0 1px 2px rgba\(16, 20, 31/s,
+    );
+    // The old numbered tokens become aliases that delegate via var(), so the
+    // components still reading --ku-shadow-{1,2,3} resolve to the new scale.
+    expect(css).toMatch(/:root\s*\{[^}]*--ku-shadow-1: var\(--ku-shadow-sm\);/s);
+    expect(css).toContain('--ku-shadow-2: var(--ku-shadow-md);');
+    expect(css).toContain('--ku-shadow-3: var(--ku-shadow-lg);');
+  });
 });
 
 describe('component CSS token references stay in sync with the pipeline', () => {

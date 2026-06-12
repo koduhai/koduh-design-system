@@ -1,11 +1,11 @@
-import { forwardRef, useEffect } from 'react';
-import type { HTMLAttributes, ReactNode, Ref } from 'react';
+import { forwardRef, useEffect, useRef, useSyncExternalStore } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { useId } from '../../primitives';
 import { cx } from '../../utils/cx';
 import { useOptionalFormContext } from '../Form/FormContext';
-import { useFormField } from '../Form/useFormField';
+import type { FieldRules, FieldState, FormApi } from '../Form/useForm';
 import { FieldContext } from './useField';
-import type { FieldContextValue } from './useField';
+import type { FieldBinding, FieldContextValue } from './useField';
 import styles from './FormField.module.css';
 
 export interface FormFieldProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
@@ -21,61 +21,96 @@ export interface FormFieldProps extends Omit<HTMLAttributes<HTMLDivElement>, 'ch
   children: ReactNode;
 }
 
-interface ViewProps {
-  id: string;
-  ctx: FieldContextValue;
-  label: ReactNode;
-  required: boolean;
-  error: boolean;
-  description: ReactNode;
-  className?: string;
-  rest: HTMLAttributes<HTMLDivElement>;
-  forwardedRef: Ref<HTMLDivElement>;
-  children: ReactNode;
+/** Field state returned for an unbound field (no enclosing <Form>). */
+const UNBOUND_STATE: FieldState = {
+  value: undefined,
+  error: undefined,
+  touched: false,
+  dirty: false,
+};
+
+interface BindingResult {
+  /** Present only when the field is bound to a <Form>. */
+  binding: FieldBinding | undefined;
+  /** The form-supplied error, when bound. */
+  formError: string | undefined;
 }
 
-function FormFieldView({
-  id,
-  ctx,
-  label,
-  required,
-  error,
-  description,
-  className,
-  rest,
-  forwardedRef,
-  children,
-}: ViewProps) {
-  return (
-    <div
-      ref={forwardedRef}
-      className={cx(styles.root, className)}
-      data-error={error ? 'true' : undefined}
-      {...rest}
-    >
-      <label id={ctx.labelId} className={styles.label} htmlFor={id}>
-        {label}
-        {required ? (
-          <span className={styles.required} aria-hidden>
-            {' '}
-            *
-          </span>
-        ) : null}
-      </label>
-      <FieldContext.Provider value={ctx}>{children}</FieldContext.Provider>
-      {description != null ? (
-        <p id={ctx.describedById} className={styles.description}>
-          {description}
-        </p>
-      ) : null}
-    </div>
+/**
+ * Drives the optional binding of a FormField to an enclosing <Form>. This always
+ * calls the same hooks (so hook order is stable even as `name`/the <Form> provider
+ * appears or disappears), and simply no-ops every form interaction when there is no
+ * binding. Unifying the bound and standalone paths into ONE component this way keeps
+ * the child subtree mounted across that transition, so toggling `name` or a
+ * late-mounting <Form> no longer remounts the input (which would lose focus/cursor).
+ *
+ * It mirrors useFormField's registration + subscription, but tolerates a null api so
+ * it can run on a standalone field. useFormField itself is left unchanged (it is part
+ * of the public API and requires a <Form>).
+ */
+function useOptionalBinding(
+  name: string | undefined,
+  required: boolean,
+  api: FormApi | null,
+): BindingResult {
+  const bound = name != null && api != null;
+
+  // Keep the latest rules in a ref so a `required` that toggles at runtime is read
+  // at validation time without re-registering. Mirrors useFormField.
+  const rulesRef = useRef<FieldRules | undefined>(undefined);
+  rulesRef.current = required ? { required: true } : undefined;
+
+  useEffect(() => {
+    if (!bound || !api) return;
+    const proxy: FieldRules = {
+      get required() {
+        return rulesRef.current?.required;
+      },
+      get validate() {
+        return rulesRef.current?.validate;
+      },
+    };
+    api.register(name, proxy);
+    return () => api.unregister(name);
+  }, [api, name, bound]);
+
+  // Revalidate when `required` toggles at runtime so an on-screen error reflects the
+  // new rule immediately. The store no-ops this before the first submit, so it never
+  // surfaces errors early. Skip the first run (registration already covers it).
+  const firstRulesRun = useRef(true);
+  useEffect(() => {
+    if (firstRulesRun.current) {
+      firstRulesRun.current = false;
+      return;
+    }
+    if (bound && api) api.revalidate();
+  }, [api, bound, required]);
+
+  const fieldState = useSyncExternalStore(
+    (listener) => (bound && api ? api.subscribe(listener) : () => {}),
+    () => (bound && api ? api.getFieldState(name) : UNBOUND_STATE),
+    () => (bound && api ? api.getFieldState(name) : UNBOUND_STATE),
   );
+
+  if (!bound || !api || name == null) {
+    return { binding: undefined, formError: undefined };
+  }
+  return {
+    binding: {
+      name,
+      value: fieldState.value,
+      onChange: (value) => api.setValue(name, value),
+      onBlur: () => api.setTouched(name),
+    },
+    formError: fieldState.error,
+  };
 }
 
-const StandaloneFormField = forwardRef<HTMLDivElement, FormFieldProps>(
-  function StandaloneFormField(
+export const FormField = /* @__PURE__ */ forwardRef<HTMLDivElement, FormFieldProps>(
+  function FormField(
     {
       label,
+      name,
       required = false,
       error = false,
       errorText,
@@ -83,7 +118,6 @@ const StandaloneFormField = forwardRef<HTMLDivElement, FormFieldProps>(
       id: idProp,
       className,
       children,
-      name: _name,
       ...rest
     },
     ref,
@@ -92,67 +126,28 @@ const StandaloneFormField = forwardRef<HTMLDivElement, FormFieldProps>(
     const id = idProp ?? reactId;
     const labelId = `${id}-label`;
     const descriptionId = `${id}-description`;
-    const description = error ? errorText : helperText;
-    const ctx: FieldContextValue = {
-      id,
-      labelId,
-      describedById: description != null ? descriptionId : undefined,
-      invalid: error,
-      required,
-    };
-    return (
-      <FormFieldView
-        id={id}
-        ctx={ctx}
-        label={label}
-        required={required}
-        error={error}
-        description={description}
-        className={className}
-        rest={rest}
-        forwardedRef={ref}
-      >
-        {children}
-      </FormFieldView>
-    );
-  },
-);
-
-const BoundFormField = forwardRef<HTMLDivElement, FormFieldProps & { name: string }>(
-  function BoundFormField(
-    {
-      label,
-      required = false,
-      helperText,
-      id: idProp,
-      className,
-      children,
-      name,
-      error: _e,
-      errorText: _et,
-      ...rest
-    },
-    ref,
-  ) {
-    const reactId = useId('field');
-    const id = idProp ?? reactId;
-    const labelId = `${id}-label`;
-    const descriptionId = `${id}-description`;
-    // Forward `required` as a field-level rule so a bound `<FormField required>`
-    // actually validates (not just the visual asterisk). A resolver error for the
-    // same field still wins (resolver merges last in the store).
-    const field = useFormField(name, required ? { required: true } : undefined);
-    const formError = field.error;
-    const hasError = Boolean(formError);
-    const description = hasError ? formError : helperText;
 
     const api = useOptionalFormContext();
+    const { binding, formError } = useOptionalBinding(name, required, api);
+    const isBound = binding !== undefined;
+
+    // Register the field's control id with the form so error focus can target it.
     useEffect(() => {
-      if (api) {
+      if (isBound && api && name != null) {
         api.setFieldId(name, id);
         return () => api.setFieldId(name, undefined);
       }
-    }, [api, name, id]);
+    }, [api, isBound, name, id]);
+
+    // Bound fields take their error from the form; standalone fields from props.
+    const hasError = isBound ? Boolean(formError) : error;
+    const description = isBound
+      ? hasError
+        ? formError
+        : helperText
+      : hasError
+        ? errorText
+        : helperText;
 
     const ctx: FieldContextValue = {
       id,
@@ -160,37 +155,32 @@ const BoundFormField = forwardRef<HTMLDivElement, FormFieldProps & { name: strin
       describedById: description != null ? descriptionId : undefined,
       invalid: hasError,
       required,
-      binding: {
-        name,
-        value: field.value,
-        onChange: field.onChange,
-        onBlur: field.onBlur,
-      },
+      binding,
     };
-    return (
-      <FormFieldView
-        id={id}
-        ctx={ctx}
-        label={label}
-        required={required}
-        error={hasError}
-        description={description}
-        className={className}
-        rest={rest}
-        forwardedRef={ref}
-      >
-        {children}
-      </FormFieldView>
-    );
-  },
-);
 
-export const FormField = /* @__PURE__ */ forwardRef<HTMLDivElement, FormFieldProps>(
-  function FormField(props, ref) {
-    const form = useOptionalFormContext();
-    if (props.name != null && form) {
-      return <BoundFormField ref={ref} {...(props as FormFieldProps & { name: string })} />;
-    }
-    return <StandaloneFormField ref={ref} {...props} />;
+    return (
+      <div
+        ref={ref}
+        className={cx(styles.root, className)}
+        data-error={hasError ? 'true' : undefined}
+        {...rest}
+      >
+        <label id={labelId} className={styles.label} htmlFor={id}>
+          {label}
+          {required ? (
+            <span className={styles.required} aria-hidden>
+              {' '}
+              *
+            </span>
+          ) : null}
+        </label>
+        <FieldContext.Provider value={ctx}>{children}</FieldContext.Provider>
+        {description != null ? (
+          <p id={descriptionId} className={styles.description}>
+            {description}
+          </p>
+        ) : null}
+      </div>
+    );
   },
 );

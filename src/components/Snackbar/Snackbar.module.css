@@ -31,7 +31,7 @@
   border: 1px solid color-mix(in srgb, var(--snack-main) 40%, transparent);
   border-inline-start: 3px solid var(--snack-main);
   border-radius: var(--ku-radius-md);
-  box-shadow: var(--ku-shadow-3);
+  box-shadow: var(--ku-shadow-lg);
   z-index: var(--ku-z-index-snackbar, 1400);
 }
 

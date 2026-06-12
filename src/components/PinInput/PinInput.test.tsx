@@ -131,6 +131,25 @@ describe('PinInput', () => {
     expect(onComplete).toHaveBeenCalledWith('123');
   });
 
+  it('fires onComplete only on the incomplete -> complete transition, not on later edits', () => {
+    const onComplete = vi.fn();
+    render(<PinInput length={3} onComplete={onComplete} aria-label="Code" />);
+    const [c0, c1, c2] = cells();
+    fireEvent.change(c0!, { target: { value: '1' } });
+    fireEvent.change(c1!, { target: { value: '2' } });
+    fireEvent.change(c2!, { target: { value: '3' } });
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    // Overwriting an already-filled cell keeps the PIN full but must not re-fire.
+    fireEvent.change(c0!, { target: { value: '9' } });
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    // Clearing a cell (incomplete) then refilling it re-fires exactly once more.
+    fireEvent.keyDown(c2!, { key: 'Backspace' });
+    expect(cells()[2]!.value).toBe('');
+    fireEvent.change(cells()[2]!, { target: { value: '7' } });
+    expect(onComplete).toHaveBeenCalledTimes(2);
+    expect(onComplete).toHaveBeenLastCalledWith('927');
+  });
+
   it('works as a controlled component', () => {
     function Controlled() {
       const [v, setV] = useState('12');

@@ -38,6 +38,9 @@ export const Progress = /* @__PURE__ */ forwardRef<HTMLDivElement, ProgressProps
     size = 'md',
     tone = 'primary',
     className,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledby,
+    'aria-describedby': ariaDescribedby,
     ...props
   },
   ref,
@@ -69,8 +72,9 @@ export const Progress = /* @__PURE__ */ forwardRef<HTMLDivElement, ProgressProps
         aria-valuemax={max}
         aria-valuenow={indeterminate ? undefined : clamped}
         aria-valuetext={indeterminate ? undefined : `${Math.round(pct)}%`}
-        aria-label={showLabelBlock ? undefined : label}
-        aria-labelledby={showLabelBlock ? labelId : undefined}
+        aria-label={ariaLabel ?? (showLabelBlock ? undefined : label)}
+        aria-labelledby={ariaLabelledby ?? (showLabelBlock ? labelId : undefined)}
+        aria-describedby={ariaDescribedby}
       >
         <div
           className={styles.bar}

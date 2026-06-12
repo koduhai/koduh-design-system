@@ -74,6 +74,11 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
   const bound = value === undefined ? field?.binding : undefined;
   const currentVal = bound ? ((bound.value as string) ?? '') : val;
 
+  // Track the previously-committed filled length so onComplete fires only on the
+  // incomplete -> complete transition, not on every keystroke while already full
+  // (overwriting a filled cell keeps length === length and must not re-fire).
+  const prevFilledRef = useRef(currentVal.slice(0, length).length);
+
   // Char array, fixed to `length`, padded with empty strings.
   const chars = Array.from({ length }, (_, i) => currentVal[i] ?? '');
 
@@ -84,7 +89,12 @@ export const PinInput = /* @__PURE__ */ forwardRef<HTMLDivElement, PinInputProps
     if (bound) bound.onChange(trimmed);
     else setVal(trimmed);
     onChange?.(trimmed);
-    if (trimmed.length === length) onComplete?.(trimmed);
+    // Fire onComplete only when crossing from incomplete (< length) to complete
+    // (=== length). Editing an already-full PIN keeps the length at `length` and
+    // must not re-fire (which would duplicate-submit).
+    const prevFilled = prevFilledRef.current;
+    prevFilledRef.current = trimmed.length;
+    if (trimmed.length === length && prevFilled < length) onComplete?.(trimmed);
   };
 
   const focusCell = (index: number) => {

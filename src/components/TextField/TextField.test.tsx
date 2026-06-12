@@ -100,6 +100,11 @@ describe('TextField', () => {
     expect(screen.getByLabelText(/Name/)).toBeRequired();
   });
 
+  it('standalone without a label: emits no empty <label> element', () => {
+    const { container } = render(<TextField aria-label="Name" />);
+    expect(container.querySelector('label')).toBeNull();
+  });
+
   it('forwards disabled to the input so the field wrapper can dim it', () => {
     const { container } = render(<TextField label="Email" disabled />);
     const input = screen.getByLabelText('Email') as HTMLInputElement;

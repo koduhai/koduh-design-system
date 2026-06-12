@@ -129,6 +129,14 @@ describe('TimePicker', () => {
     expect(screen.getByRole('spinbutton', { name: 'Heure' })).toBeInTheDocument();
   });
 
+  it('forwards data-* and className to the root wrapper', () => {
+    render(<TimePicker label="Time" className="my-tp" data-testid="tp-root" />);
+    const root = screen.getByTestId('tp-root');
+    // The root is the [data-size] wrapper.
+    expect(root).toHaveAttribute('data-size', 'md');
+    expect(root).toHaveClass('my-tp');
+  });
+
   it('does not step when disabled', () => {
     const onChange = vi.fn();
     render(

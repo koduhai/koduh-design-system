@@ -6,7 +6,7 @@
   max-height: none;
   background-color: var(--ku-color-bg-surface);
   color: var(--ku-color-text-primary);
-  box-shadow: var(--ku-shadow-3);
+  box-shadow: var(--ku-shadow-lg);
   overflow: hidden;
   font-family: var(--ku-font-family-base);
 }

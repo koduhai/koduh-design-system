@@ -11,6 +11,15 @@ describe('Progress', () => {
     expect(bar).toHaveAttribute('aria-valuemax', '100');
   });
 
+  it('forwards a consumer aria-label to the progressbar element, not the root', () => {
+    render(<Progress value={40} aria-label="Upload progress" />);
+    // The accessible name resolves the progressbar, proving aria-label lands on it.
+    const bar = screen.getByRole('progressbar', { name: 'Upload progress' });
+    expect(bar).toHaveAttribute('aria-label', 'Upload progress');
+    // The outer root (the [data-size] wrapper) must not carry the label.
+    expect(bar.closest('[data-size]')).not.toHaveAttribute('aria-label');
+  });
+
   it('respects a custom max', () => {
     render(<Progress value={3} max={5} label="Steps" />);
     expect(screen.getByRole('progressbar', { name: 'Steps' })).toHaveAttribute(

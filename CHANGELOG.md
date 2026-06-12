@@ -4,6 +4,60 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.11.0] - 2026-06-12
+
+Additive feature release: `Select` multi-select, a full i18n string sweep, a
+date/time input layer (`TimePicker`, `Calendar` range mode, `DateRangePicker`,
+`DatePicker` date+time), and opt-in `DataTable` row virtualization. No breaking
+changes; default output and existing behavior are unchanged. Component count 79
+→ 81.
+
+### Added
+
+- **`Select` multi-select** (#81): a `multiple` mode mirroring Combobox —
+  discriminated-union props (single → `string`, multi → `string[]`), selected
+  values render as removable chips, clicking an option toggles it and keeps the
+  listbox open, the listbox is `aria-multiselectable`, and Backspace on the
+  trigger removes the last chip. Single-select behavior is unchanged.
+- **Date/time layer** (#42 + #61):
+  - **`TimePicker`** — a from-scratch segmented control (a `role="group"` of
+    `role="spinbutton"` hour/minute(/second) segments): 24h or 12h with a
+    localized AM/PM segment, optional seconds, full keyboard (arrow step with
+    `minuteStep`, segment navigation, digit entry with auto-advance, Backspace
+    clear), and FormField composition.
+  - **`Calendar` range mode** — a discriminated-union `mode` (`'single'`
+    default); range mode picks a start then an end with an in-range band, pointer
+    hover preview, and keyboard selection.
+  - **`DateRangePicker`** — two date fields + a calendar trigger over the range
+    Calendar.
+  - **`DatePicker` date+time** — `granularity='minute'` adds a `TimePicker` to the
+    popover; `value`/`onChange` then carry the full date + time and `min`/`max`
+    are honored at minute resolution (also serves as the date-time picker).
+- **`DataTable` row virtualization** (#37): opt-in `virtualized` windows the full
+  sorted/filtered result inside a fixed-height scroll viewport (only the visible
+  rows mount, between spacer rows), as an alternative to pagination. Coexists
+  with sort, filter/search, selection, sticky header, and column resize.
+  `aria-rowcount`/`aria-rowindex` convey the true count to assistive tech.
+  Configurable `rowHeight` / `viewportHeight` / `overscan`. (Not combined with
+  `renderExpanded` or `manual` mode — those render the paginated path.)
+- **i18n: full string sweep** (#79): extended the central `Messages` catalog and
+  migrated every remaining hardcoded user-facing string onto `useMessages()`
+  (FileUpload, PasswordInput, ColorPicker, PinInput, Rating, Stepper, Banner,
+  Calendar, Breadcrumbs, Chip, Sidebar, Carousel, CommandPalette, DatePicker,
+  DataTable + ColumnFilter, NumberField, Table, Toaster, Code, Chart). Defaults
+  are byte-identical, so default output is unchanged.
+
+### Changed
+
+- `Chip.onDelete` now forwards its click event (non-breaking: a `() => void`
+  handler still fits), so chip removal reports a real event.
+- `Banner` gained a `closeLabel` prop (overrides the i18n `dismiss` default).
+- New exported types: `SelectSingleProps` / `SelectMultiProps`,
+  `TimePickerProps` / `TimePickerSize`, `DateRangePickerProps` /
+  `DateRangePickerSize`, `CalendarSingleProps` / `CalendarRangeProps` /
+  `DateRange`, and `DatePicker`'s `granularity` / `hourCycle` / `withSeconds` /
+  `minuteStep` props.
+
 ## [2.10.0] - 2026-06-11
 
 Additive feature release: a shared live-region announcer primitive, a central

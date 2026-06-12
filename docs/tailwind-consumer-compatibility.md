@@ -41,6 +41,11 @@ to a `data-theme` **attribute**. A dropped-in `<Button>` would have ignored thei
 
 So our tokens now follow Tailwind's `darkMode: 'class'` signal automatically.
 
+**SSR / no-flash.** On a server-rendered app (Next.js/Remix), `KoduhThemeProvider`
+only sets the theme after hydration, which flashes the wrong theme on first paint.
+Drop a `<KoduhThemeScript />` into the document `<head>` to apply the persisted
+preference synchronously before paint. See [`docs/ssr.md`](./ssr.md).
+
 **One caveat — the default.** `:root` is **dark by default** (unchanged, so existing
 consumers aren't affected). Tailwind's class strategy treats _absence_ of `.dark` as
 light. mail-web's `applyClass()` only toggles `.dark`, so in light mode (no class) our

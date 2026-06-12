@@ -217,7 +217,13 @@ export type { SliderProps, SliderSize } from './components/Slider';
 export { TagInput } from './components/TagInput';
 export type { TagInputProps, TagInputSize } from './components/TagInput';
 export { Combobox } from './components/Combobox';
-export type { ComboboxProps, ComboboxOption, ComboboxSize } from './components/Combobox';
+export type {
+  ComboboxProps,
+  ComboboxSingleProps,
+  ComboboxMultiProps,
+  ComboboxOption,
+  ComboboxSize,
+} from './components/Combobox';
 
 // issue #12 — AvatarGroup, Stat, ToggleGroup, Drawer
 export { AvatarGroup } from './components/AvatarGroup';

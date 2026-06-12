@@ -24,8 +24,8 @@ export interface ChipProps extends Omit<HTMLAttributes<HTMLElement>, 'children' 
   icon?: ReactNode;
   /** Makes the chip a clickable button. */
   onClick?: (event: MouseEvent<HTMLElement>) => void;
-  /** Adds a labelled delete affordance. */
-  onDelete?: () => void;
+  /** Adds a labelled delete affordance. Receives the click event. */
+  onDelete?: (event: MouseEvent<HTMLButtonElement>) => void;
   /** Accessible label for the delete button. Defaults to "Remove <label>". */
   deleteLabel?: string;
 }
@@ -70,7 +70,7 @@ export const Chip = /* @__PURE__ */ forwardRef<HTMLElement, ChipProps>(function 
           aria-label={deleteLabel ?? (typeof label === 'string' ? `Remove ${label}` : 'Remove')}
           onClick={(event) => {
             event.stopPropagation();
-            onDelete();
+            onDelete(event);
           }}
         >
           <CloseIcon size={14} />

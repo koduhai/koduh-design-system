@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DatePicker } from './DatePicker';
 import { KoduhI18nProvider } from '../../i18n';
@@ -301,5 +301,113 @@ describe('DatePicker', () => {
     expect(input).toHaveAttribute('aria-describedby', screen.getByText('Bad').id);
     // No duplicate label rendered by the control.
     expect(screen.getAllByText('Event date')).toHaveLength(1);
+  });
+
+  describe('date + time (granularity="minute")', () => {
+    const fmtDT = (d: Date) =>
+      new Intl.DateTimeFormat(undefined, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: false,
+      }).format(d);
+
+    it('day mode (default) renders no time field; minute mode does', async () => {
+      const { rerender } = render(<DatePicker label="When" />);
+      await userEvent.click(screen.getByLabelText('Open calendar'));
+      expect(screen.queryByRole('spinbutton', { name: 'Hour' })).toBeNull();
+      rerender(<DatePicker label="When" granularity="minute" />);
+      expect(screen.getByRole('spinbutton', { name: 'Hour' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Done' })).toBeInTheDocument();
+    });
+
+    it('formats the input with date and time', () => {
+      const when = new Date(2026, 5, 15, 14, 30);
+      render(<DatePicker label="When" granularity="minute" defaultValue={when} />);
+      expect(screen.getByLabelText('When')).toHaveValue(fmtDT(when));
+    });
+
+    it('selecting a day preserves the time and keeps the popover open', async () => {
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          label="When"
+          granularity="minute"
+          defaultValue={new Date(2026, 5, 15, 14, 30)}
+          onChange={onChange}
+        />,
+      );
+      await userEvent.click(screen.getByLabelText('Open calendar'));
+      await userEvent.click(day(20));
+      const last = onChange.mock.calls[onChange.mock.calls.length - 1]![0] as Date;
+      expect(last.getDate()).toBe(20);
+      expect(last.getHours()).toBe(14);
+      expect(last.getMinutes()).toBe(30);
+      // Stays open so the time can still be adjusted.
+      expect(screen.getByLabelText('Open calendar')).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('changing the time updates the value, preserving the day', async () => {
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          label="When"
+          granularity="minute"
+          defaultValue={new Date(2026, 5, 15, 14, 30)}
+          onChange={onChange}
+        />,
+      );
+      await userEvent.click(screen.getByLabelText('Open calendar'));
+      fireEvent.keyDown(screen.getByRole('spinbutton', { name: 'Hour' }), { key: 'ArrowUp' });
+      const last = onChange.mock.calls[onChange.mock.calls.length - 1]![0] as Date;
+      expect(last.getDate()).toBe(15);
+      expect(last.getHours()).toBe(15);
+    });
+
+    it('honors min at minute resolution (clamps a too-early time)', () => {
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          label="When"
+          granularity="minute"
+          value={new Date(2026, 5, 15, 12, 0)}
+          min={new Date(2026, 5, 15, 9, 0)}
+          onChange={onChange}
+        />,
+      );
+      // Type hour 8 (08:00 < 09:00 min) → clamped to the min.
+      fireEvent.keyDown(screen.getByRole('spinbutton', { name: 'Hour' }), { key: '8' });
+      const last = onChange.mock.calls[onChange.mock.calls.length - 1]![0] as Date;
+      expect(last.getHours()).toBe(9);
+      expect(last.getMinutes()).toBe(0);
+    });
+
+    it('Done closes the popover and returns focus to the input', async () => {
+      render(
+        <DatePicker label="When" granularity="minute" defaultValue={new Date(2026, 5, 15, 9, 0)} />,
+      );
+      await userEvent.click(screen.getByLabelText('Open calendar'));
+      await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+      expect(screen.getByLabelText('Open calendar')).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getByLabelText('When')).toHaveFocus();
+    });
+
+    it('day mode truncates the time to midnight', async () => {
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          label="When"
+          defaultValue={new Date(2026, 5, 15, 14, 30)}
+          onChange={onChange}
+        />,
+      );
+      await userEvent.click(screen.getByLabelText('Open calendar'));
+      await userEvent.click(day(20));
+      const last = onChange.mock.calls[onChange.mock.calls.length - 1]![0] as Date;
+      expect(last.getHours()).toBe(0);
+      expect(last.getMinutes()).toBe(0);
+    });
   });
 });

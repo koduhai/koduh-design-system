@@ -53,6 +53,31 @@ export const Showcase: Story = {
   },
 };
 
+/**
+ * `granularity="minute"` adds a time field to the popover; `value`/`onChange`
+ * carry the full date + time. `min`/`max` are honored at minute resolution.
+ */
+export const DateAndTime: Story = {
+  args: { label: 'Send at' },
+  render: function DateAndTimeStory() {
+    const [when, setWhen] = useState<Date | null>(new Date(2026, 5, 15, 9, 30));
+    return (
+      <div style={{ padding: 40, maxWidth: 360 }}>
+        <DatePicker
+          label="Send at"
+          granularity="minute"
+          hourCycle={12}
+          value={when ?? undefined}
+          onChange={setWhen}
+        />
+        <p style={{ fontSize: 12, color: 'var(--ku-color-text-secondary)' }}>
+          {when ? when.toString() : '—'}
+        </p>
+      </div>
+    );
+  },
+};
+
 /** Inside a `<FormField>`: pass no `label` — the field supplies label + aria. */
 export const WithFormField: Story = {
   args: { label: 'Event date' },

@@ -93,3 +93,28 @@
 .popover {
   padding: 0;
 }
+
+/* Date+time mode: a time field + Done button below the calendar. */
+.timeRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--ku-space-3);
+  padding: var(--ku-space-3);
+  border-block-start: 1px solid var(--ku-color-border);
+}
+.done {
+  flex: none;
+  padding: var(--ku-space-2) var(--ku-space-3);
+  border: none;
+  border-radius: var(--ku-radius-md);
+  background: var(--ku-color-primary);
+  color: var(--ku-color-primary-contrast);
+  font: inherit;
+  font-weight: var(--ku-font-weight-medium);
+  cursor: pointer;
+}
+.done:focus-visible {
+  outline: 2px solid var(--ku-color-primary);
+  outline-offset: 2px;
+}

@@ -254,7 +254,17 @@ export const Tree = /* @__PURE__ */ forwardRef<HTMLUListElement, TreeProps>(func
   };
 
   return (
-    <ul ref={ref} role="tree" className={cx(styles.root, className)} {...props}>
+    // Selection is single-node only (one `selectedId`, so at most one item carries
+    // `aria-selected="true"`). Per WAI-ARIA, a `tree` that does not allow multiple
+    // simultaneous selection should advertise that explicitly, so we set
+    // `aria-multiselectable="false"` rather than omitting it.
+    <ul
+      ref={ref}
+      role="tree"
+      aria-multiselectable={false}
+      className={cx(styles.root, className)}
+      {...props}
+    >
       {renderLevel(nodes, 0)}
     </ul>
   );

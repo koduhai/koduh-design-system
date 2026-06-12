@@ -150,6 +150,88 @@ describe('Calendar', () => {
     expect(day(14)).toHaveAttribute('tabindex', '-1');
   });
 
+  describe('range mode', () => {
+    it('first click sets the start; second click (after start) completes the range', async () => {
+      const onChange = vi.fn();
+      render(
+        <Calendar mode="range" defaultValue={{ start: null, end: null }} onChange={onChange} />,
+      );
+      // Seed view to June 2026 by paging is unnecessary — default view is today's
+      // month; drive selection by clicking days in whatever month is shown.
+      await userEvent.click(day(10));
+      expect(onChange).toHaveBeenLastCalledWith({ start: expect.any(Date), end: null });
+      expect((onChange.mock.calls[0]![0] as { start: Date }).start.getDate()).toBe(10);
+      await userEvent.click(day(15));
+      const last = onChange.mock.calls[onChange.mock.calls.length - 1]![0] as {
+        start: Date;
+        end: Date;
+      };
+      expect(last.start.getDate()).toBe(10);
+      expect(last.end.getDate()).toBe(15);
+    });
+
+    it('highlights endpoints and the in-between days', () => {
+      render(
+        <Calendar
+          mode="range"
+          value={{ start: new Date(2026, 5, 10), end: new Date(2026, 5, 13) }}
+          defaultValue={undefined}
+        />,
+      );
+      expect(day(10)).toHaveAttribute('data-range-start', 'true');
+      expect(day(13)).toHaveAttribute('data-range-end', 'true');
+      expect(day(11)).toHaveAttribute('data-in-range', 'true');
+      expect(day(12)).toHaveAttribute('data-in-range', 'true');
+      expect(day(11)).toHaveAttribute('aria-selected', 'true');
+      expect(day(9)).toHaveAttribute('aria-selected', 'false');
+    });
+
+    it('clicking a day before the pending start restarts the range from that day', async () => {
+      const onChange = vi.fn();
+      render(<Calendar mode="range" onChange={onChange} />);
+      await userEvent.click(day(20));
+      await userEvent.click(day(8)); // before the start → restart
+      const last = onChange.mock.calls[onChange.mock.calls.length - 1]![0] as {
+        start: Date;
+        end: Date | null;
+      };
+      expect(last.start.getDate()).toBe(8);
+      expect(last.end).toBeNull();
+    });
+
+    it('clicking again after a complete range begins a fresh range', async () => {
+      const onChange = vi.fn();
+      render(<Calendar mode="range" onChange={onChange} />);
+      await userEvent.click(day(10));
+      await userEvent.click(day(15)); // complete
+      await userEvent.click(day(20)); // fresh start
+      const last = onChange.mock.calls[onChange.mock.calls.length - 1]![0] as {
+        start: Date;
+        end: Date | null;
+      };
+      expect(last.start.getDate()).toBe(20);
+      expect(last.end).toBeNull();
+    });
+
+    it('keyboard: Enter picks the start, then the end', async () => {
+      const onChange = vi.fn();
+      // Today is June 2026, so the default view shows June without a seed value.
+      render(
+        <Calendar mode="range" defaultValue={{ start: null, end: null }} onChange={onChange} />,
+      );
+      day(15).focus();
+      await userEvent.keyboard('{Enter}'); // start = 15
+      await userEvent.keyboard('{ArrowRight}{ArrowRight}'); // → 17
+      await userEvent.keyboard('{Enter}'); // end = 17
+      const last = onChange.mock.calls[onChange.mock.calls.length - 1]![0] as {
+        start: Date;
+        end: Date;
+      };
+      expect(last.start.getDate()).toBe(15);
+      expect(last.end.getDate()).toBe(17);
+    });
+  });
+
   describe('i18n', () => {
     it('formats the month label in English by default (no provider)', () => {
       render(<Calendar defaultValue={JUNE_2026} />);

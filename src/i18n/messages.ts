@@ -155,6 +155,14 @@ export interface Messages {
     /** Accessible label for the calendar popover dialog. */
     dialogLabel: string;
   };
+  dateRangePicker: {
+    /** Placeholder + aria-label for the start-date field. */
+    startPlaceholder: string;
+    /** Placeholder + aria-label for the end-date field. */
+    endPlaceholder: string;
+    /** Accessible label for the range popover dialog. */
+    dialogLabel: string;
+  };
   timePicker: {
     /** aria-label for the hour segment. */
     hour: string;
@@ -309,6 +317,11 @@ export const defaultMessages: Messages = {
     placeholder: 'Select a date…',
     triggerLabel: 'Open calendar',
     dialogLabel: 'Choose date',
+  },
+  dateRangePicker: {
+    startPlaceholder: 'Start date',
+    endPlaceholder: 'End date',
+    dialogLabel: 'Choose date range',
   },
   timePicker: {
     hour: 'Hour',

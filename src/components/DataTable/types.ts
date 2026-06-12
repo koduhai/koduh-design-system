@@ -133,6 +133,12 @@ export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>
    * When set, each row gets an expand/collapse toggle and an expanded detail row
    * (spanning every column) rendering the returned content. Enabling this opts
    * the table into the expandable render path.
+   *
+   * Combines with `virtualized`: with both set (and not `manual`), the table uses
+   * a dynamic-height windowing variant that measures rows as they mount, so the
+   * variable height of expanded detail rows is handled automatically and an exact
+   * `rowHeight` is not required (it just seeds the estimate; see
+   * `estimateRowHeight`).
    */
   renderExpanded?: (row: Row) => ReactNode;
   /** Controlled set of expanded row ids. */
@@ -182,19 +188,33 @@ export interface DataTableProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>
    * Opt-in row virtualization for large client-side datasets: instead of
    * paginating, renders the full sorted/filtered result windowed inside a
    * fixed-height scroll viewport (only the visible rows plus overscan mount).
-   * Requires a fixed `rowHeight` that matches the actual rendered row height.
+   *
+   * Without `renderExpanded`, fixed-height windowing is used and `rowHeight` must
+   * match the actual rendered row height. **With** `renderExpanded`, the two
+   * combine: a dynamic-height (measured) windowing variant hosts the
+   * variable-height detail rows, so an exact `rowHeight` is not required — heights
+   * are measured as rows mount (`rowHeight`/`estimateRowHeight` only seed the
+   * pre-measurement estimate).
    *
    * Coexists with sort, filter/search, selection, sticky header, and column
-   * resize. It is **not** combined with `renderExpanded` (variable-height detail
-   * rows break fixed-height windowing) or `manual` mode — in either case the
-   * flag is ignored and the normal paginated path renders.
+   * resize. It is **not** combined with `manual` mode — there the flag is ignored
+   * and the normal paginated path renders.
    */
   virtualized?: boolean;
   /**
-   * Fixed row height in px used for windowing math. Must match the actual
-   * rendered row height (set cells to a single line / matching height). Default 44.
+   * Row height in px used for windowing math. For fixed-height virtualization
+   * (without `renderExpanded`) this must match the actual rendered row height (set
+   * cells to a single line / matching height). For the dynamic-height variant
+   * (`virtualized` + `renderExpanded`) heights are measured, so this is only the
+   * pre-measurement estimate. Default 44.
    */
   rowHeight?: number;
+  /**
+   * Pre-measurement per-row height estimate (px) for the dynamic-height variant
+   * (`virtualized` + `renderExpanded`). Defaults to `rowHeight`. A closer estimate
+   * reduces scroll-position jitter before measured heights land.
+   */
+  estimateRowHeight?: number;
   /** Height in px of the scroll viewport when virtualized. Default 400. */
   viewportHeight?: number;
   /** Extra rows rendered above/below the viewport to smooth fast scrolling. Default 6. */

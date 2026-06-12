@@ -4,6 +4,44 @@ All notable changes to `@koduhai/design-system` are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.12.0] - 2026-06-12
+
+Additive feature release: SSR no-flash theming (`KoduhThemeScript`) and a
+`DataTable` virtualization path that now combines with `renderExpanded`. No
+breaking changes; default output and existing behavior are unchanged. Component
+count is unchanged at 81.
+
+### Added
+
+- **`KoduhThemeScript`** (#96): a synchronous, ES5-safe inline `<script>` for the
+  document `<head>` that resolves the persisted color-mode preference and sets
+  `data-theme` before first paint, eliminating the theme flash on server-rendered
+  pages (Next.js, Remix). It mirrors `KoduhThemeProvider`'s resolution exactly
+  (stored-value validation, `'system'` via `matchMedia` with a `'dark'` fallback,
+  try/catch around `localStorage`) and supports `storageKey`, `defaultMode`, and a
+  CSP `nonce`. See `docs/ssr.md` for usage.
+- **`DataTable` virtualization + row expansion** (#89): `virtualized` now combines
+  with `renderExpanded`. A measure-based (dynamic-height) windowing path measures
+  each row group (main row + detail) by stable row id and feeds the heights back
+  into the scroll spacers, so expanded rows are accounted for. The fixed-height
+  fast path (#37) is unchanged and remains the default; the new `estimateRowHeight`
+  prop sets the pre-measurement estimate. The `aria-rowcount`/`aria-rowindex`
+  contract is preserved.
+- **`Form` bulk `setValues`** (#92): set multiple field values in one call;
+  `reset`/`setValue`/`setValues` are now documented.
+
+### Fixed
+
+- **`Tree`** (#91): single-select trees now declare `aria-multiselectable="false"`
+  rather than omitting the attribute.
+- **`Stepper`** (#93): the label transition now honors `prefers-reduced-motion`.
+
+### Docs
+
+- Backfilled `ACCESSIBILITY.md` to cover all 81 components (#94).
+- Added a runnable Tailwind-preset example app under `examples/tailwind/` (#97),
+  proving `@koduhai/design-system/tailwind-preset` works end-to-end.
+
 ## [2.11.0] - 2026-06-12
 
 Additive feature release: `Select` multi-select, a full i18n string sweep, a

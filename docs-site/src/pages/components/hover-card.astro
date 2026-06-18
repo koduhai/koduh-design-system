@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import HoverCardDemo from '../../components/demos/HoverCardDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="HoverCard" description="hover-triggered floating card (#32)">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>HoverCard</h1>
+  <p class="doc-lede">hover-triggered floating card (#32).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="HoverCard" />
+
+  <h2>Examples</h2>
+  <HoverCardDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; HoverCard &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>trigger</code></td>
+        <td><code>ReactElement&lt;HTMLAttributes&lt;HTMLElement&gt;&gt;</code></td>
+        <td><em>required</em></td>
+        <td>The single trigger element (hover/focus target).</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>Arbitrary card content.</td>
+      </tr>
+      <tr>
+        <td><code>placement</code></td>
+        <td><code>PopoverPlacement</code></td>
+        <td><code>'bottom'</code></td>
+        <td>Anchored placement.</td>
+      </tr>
+      <tr>
+        <td><code>openDelay</code></td>
+        <td><code>number</code></td>
+        <td><code>300</code></td>
+        <td>Delay (ms) before opening on hover/focus.</td>
+      </tr>
+      <tr>
+        <td><code>closeDelay</code></td>
+        <td><code>number</code></td>
+        <td><code>150</code></td>
+        <td>Delay (ms) before closing on leave/blur.</td>
+      </tr>
+      <tr>
+        <td><code>className</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Extra class on the floating card panel.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import CheckboxDemo from '../../components/demos/CheckboxDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Checkbox" description="(+ `indeterminate`)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Checkbox</h1>
+  <p class="doc-lede">(+ <code>indeterminate</code>).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Checkbox" />
+
+  <h2>Examples</h2>
+  <CheckboxDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Checkbox &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Label rendered next to the box; the whole label is the click target.</td>
+      </tr>
+      <tr>
+        <td><code>checked</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Controlled checked state.</td>
+      </tr>
+      <tr>
+        <td><code>defaultChecked</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Initial checked state when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>indeterminate</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Visually + a11y indeterminate; set on the DOM node via ref, not an attribute.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(checked: boolean, event: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the new checked state (and the native event).</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>CheckboxSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Puts the control in the error state (aria-invalid).</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

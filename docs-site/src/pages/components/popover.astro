@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import PopoverDemo from '../../components/demos/PopoverDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Popover" description="Popover API + CSS anchor positioning, JS fallback">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>Popover</h1>
+  <p class="doc-lede">Popover API + CSS anchor positioning, JS fallback.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Popover" />
+
+  <h2>Examples</h2>
+  <PopoverDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Popover &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>open</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Controlled open state.</td>
+      </tr>
+      <tr>
+        <td><code>defaultOpen</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Initial open state when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onOpenChange</code></td>
+        <td><code>(open: boolean) =&gt; void</code></td>
+        <td>—</td>
+        <td>Called with the requested next open state (trigger toggle, Esc, outside click).</td>
+      </tr>
+      <tr>
+        <td><code>trigger</code></td>
+        <td><code>ReactElement</code></td>
+        <td><em>required</em></td>
+        <td>The anchor element. Rendered via <code>Slot</code>, which merges only the anchor wiring
+(anchor-name custom property + ref) onto your element.
+
+Opening/closing is the CALLER's responsibility: wire your own <code>onClick</code>
+(or hover/focus) on this element to drive <code>open</code>/<code>onOpenChange</code>. Likewise,
+trigger ARIA (<code>aria-expanded</code>, <code>aria-haspopup</code>, <code>aria-controls</code>, or
+<code>aria-describedby</code>) lives on your element, not here — it is intentionally
+consumer-specific because the correct <code>haspopup</code> value and the
+controls-vs-describedby choice differ per pattern (listbox/menu/tooltip).
+The composing components (<code>Select</code>, <code>Menu</code>, <code>Tooltip</code>) each supply it.</td>
+      </tr>
+      <tr>
+        <td><code>placement</code></td>
+        <td><code>PopoverPlacement</code></td>
+        <td><code>'bottom'</code></td>
+        <td>Anchored placement.</td>
+      </tr>
+      <tr>
+        <td><code>offset</code></td>
+        <td><code>number</code></td>
+        <td><code>8</code></td>
+        <td>Gap (px) between anchor and panel.</td>
+      </tr>
+      <tr>
+        <td><code>dismissable</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Allow Esc / outside-click to request close. Default true.</td>
+      </tr>
+      <tr>
+        <td><code>role</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>ARIA role for the floating panel; consumers set 'listbox' | 'menu' | 'tooltip' | 'dialog'.</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

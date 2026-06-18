@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import TextDemo from '../../components/demos/TextDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Text" description="`size`/`weight`/`tone` (typographic axis: `default`/`secondary`) × `family`/`numeric`/`transform`/`leading`/`truncate`/`lineClamp`">
+  <p class="doc-eyebrow">Typography</p>
+  <h1>Text</h1>
+  <p class="doc-lede"><code>size</code>/<code>weight</code>/<code>tone</code> (typographic axis: <code>default</code>/<code>secondary</code>) × <code>family</code>/<code>numeric</code>/<code>transform</code>/<code>leading</code>/<code>truncate</code>/<code>lineClamp</code>.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Text" />
+
+  <h2>Examples</h2>
+  <TextDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Text &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>TextSize</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>weight</code></td>
+        <td><code>TextWeight</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>tone</code></td>
+        <td><code>TextTone</code></td>
+        <td>—</td>
+        <td>'default' → primary text color; 'secondary' → secondary.</td>
+      </tr>
+      <tr>
+        <td><code>leading</code></td>
+        <td><code>TextLeading</code></td>
+        <td>—</td>
+        <td>Line height: 'tight' | 'normal' | 'relaxed'.</td>
+      </tr>
+      <tr>
+        <td><code>family</code></td>
+        <td><code>TextFamily</code></td>
+        <td>—</td>
+        <td>Font family: 'base' (default) | 'mono'.</td>
+      </tr>
+      <tr>
+        <td><code>numeric</code></td>
+        <td><code>TextNumeric</code></td>
+        <td>—</td>
+        <td>'tabular' enables tabular-nums for aligned figures.</td>
+      </tr>
+      <tr>
+        <td><code>transform</code></td>
+        <td><code>TextTransform</code></td>
+        <td>—</td>
+        <td>Text casing transform. 'none' (default) emits no attribute.</td>
+      </tr>
+      <tr>
+        <td><code>truncate</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Single-line truncation with an ellipsis. Wins over <code>lineClamp</code> when both are set.</td>
+      </tr>
+      <tr>
+        <td><code>lineClamp</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Clamp to N lines with an ellipsis. Ignored when <code>truncate</code> is set.</td>
+      </tr>
+      <tr>
+        <td><code>as</code></td>
+        <td><code>ElementType</code></td>
+        <td><code>'span'</code></td>
+        <td>Element to render. Ignored when asChild.</td>
+      </tr>
+      <tr>
+        <td><code>asChild</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

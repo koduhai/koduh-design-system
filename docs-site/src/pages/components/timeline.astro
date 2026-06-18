@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TimelineDemo from '../../components/demos/TimelineDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Timeline" description="vertical/horizontal event list (#32)">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>Timeline</h1>
+  <p class="doc-lede">vertical/horizontal event list (#32).</p>
+
+  <h2>Examples</h2>
+  <TimelineDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Timeline &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>TimelineItem[]</code></td>
+        <td><em>required</em></td>
+        <td>The ordered set of events, newest-first by convention.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

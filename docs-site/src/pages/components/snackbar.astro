@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import SnackbarDemo from '../../components/demos/SnackbarDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Snackbar" description="controlled primitive (transient feedback)">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>Snackbar</h1>
+  <p class="doc-lede">controlled primitive (transient feedback).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Snackbar" />
+
+  <h2>Examples</h2>
+  <SnackbarDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Snackbar &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>open</code></td>
+        <td><code>boolean</code></td>
+        <td><em>required</em></td>
+        <td>Controls visibility.</td>
+      </tr>
+      <tr>
+        <td><code>onOpenChange</code></td>
+        <td><code>(open: boolean) =&gt; void</code></td>
+        <td><em>required</em></td>
+        <td>Called with <code>false</code> when the snackbar requests to close (close button,
+auto-hide, or Esc). Named to match Popover/Dialog for a consistent API.</td>
+      </tr>
+      <tr>
+        <td><code>severity</code></td>
+        <td><code>SnackbarSeverity</code></td>
+        <td><code>'info'</code></td>
+        <td>Semantic severity. Drives color, icon, and ARIA role.</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>The message content.</td>
+      </tr>
+      <tr>
+        <td><code>action</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Optional action element, e.g. an "Undo" button.</td>
+      </tr>
+      <tr>
+        <td><code>autoHideDuration</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Auto-dismiss after N ms. 0/undefined disables auto-hide.</td>
+      </tr>
+      <tr>
+        <td><code>placement</code></td>
+        <td><code>SnackbarPlacement</code></td>
+        <td><code>'bottom-center'</code></td>
+        <td>Fixed-position placement.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

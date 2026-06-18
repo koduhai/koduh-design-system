@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import RatingDemo from '../../components/demos/RatingDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Rating" description="keyboard-operable star rating (#32)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Rating</h1>
+  <p class="doc-lede">keyboard-operable star rating (#32).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Rating" />
+
+  <h2>Examples</h2>
+  <RatingDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Rating &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Controlled rating value (0..max).</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>number</code></td>
+        <td><code>0</code></td>
+        <td>Initial value when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: number) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the newly selected rating.</td>
+      </tr>
+      <tr>
+        <td><code>max</code></td>
+        <td><code>number</code></td>
+        <td><code>5</code></td>
+        <td>Number of stars.</td>
+      </tr>
+      <tr>
+        <td><code>readOnly</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Renders a non-interactive display of the value.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>RatingSize</code></td>
+        <td><code>'md'</code></td>
+        <td>Star size.</td>
+      </tr>
+      <tr>
+        <td><code>'aria-label'</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Accessible name for the rating group.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

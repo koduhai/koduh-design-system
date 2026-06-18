@@ -1,0 +1,15 @@
+---
+// Spectrum-style preview surface: a bordered region with the live component on
+// a subtle backdrop and an optional caption. Drop islands inside via <slot/>.
+interface Props {
+  caption?: string;
+}
+const { caption } = Astro.props;
+---
+
+<div class="doc-example">
+  <div class="doc-example-preview">
+    <slot />
+  </div>
+  {caption && <p class="doc-example-caption">{caption}</p>}
+</div>

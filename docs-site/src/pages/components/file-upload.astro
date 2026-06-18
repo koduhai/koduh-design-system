@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import FileUploadDemo from '../../components/demos/FileUploadDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="FileUpload" description="drag-and-drop dropzone (#32)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>FileUpload</h1>
+  <p class="doc-lede">drag-and-drop dropzone (#32).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="FileUpload" />
+
+  <h2>Examples</h2>
+  <FileUploadDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; FileUpload &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>onFiles</code></td>
+        <td><code>(files: File[]) =&gt; void</code></td>
+        <td><em>required</em></td>
+        <td>Fires with the dropped or selected files.</td>
+      </tr>
+      <tr>
+        <td><code>accept</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Native input <code>accept</code> (e.g. 'image/*,.pdf').</td>
+      </tr>
+      <tr>
+        <td><code>multiple</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>Allow selecting/dropping more than one file.</td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Disables interaction.</td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td><code>a sensible string</code></td>
+        <td>Primary prompt shown in the dropzone.</td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Base id for the input; derives the instructions id.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

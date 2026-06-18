@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SelectDemo from '../../components/demos/SelectDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Select" description="`options`-driven, `clearable`, `required`, single or `multiple` (chips, #81)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Select</h1>
+  <p class="doc-lede"><code>options</code>-driven, <code>clearable</code>, <code>required</code>, single or <code>multiple</code> (chips, #81).</p>
+
+  <h2>Examples</h2>
+  <SelectDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Select &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <p>
+    The props for <code>Select</code> are defined as a union type, so they don't
+    reduce to a single table. See the exported <code>SelectProps</code> type and the
+    <a href="https://github.com/koduhai/koduh-design-system/blob/main/src/components/Select/Select.tsx">source</a>.
+  </p>
+</BaseLayout>

@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import TextFieldDemo from '../../components/demos/TextFieldDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="TextField" description="labelled text input, density-aware, `FormField`-composing">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>TextField</h1>
+  <p class="doc-lede">labelled text input, density-aware, <code>FormField</code>-composing.</p>
+
+  <p>Also exported from this module: <code>FormField</code>.</p>
+  <h2>Playground</h2>
+  <Playground client:visible name="TextField" />
+
+  <h2>Examples</h2>
+  <TextFieldDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; TextField, FormField &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Visible label, associated with the input via htmlFor/id. Provide <code>label</code>, or wrap the control in a <code>&lt;FormField&gt;</code> which supplies it.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Controlled value.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Initial value when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: string, event: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires on every keystroke with the new value (and the native event).</td>
+      </tr>
+      <tr>
+        <td><code>helperText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Hint shown below the field. Hidden when an error is shown.</td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Puts the field in the error state (aria-invalid).</td>
+      </tr>
+      <tr>
+        <td><code>errorText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Message shown below the field when <code>error</code> is set; replaces helperText.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>TextFieldSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>density</code></td>
+        <td><code>Density</code></td>
+        <td><code>comfortable); set explicitly to set `data-density`</code></td>
+        <td>Field density. <code>compact</code> tightens the field's vertical/horizontal padding
+via the <code>--ku-density-*</code> vars. Omit to inherit a <code>data-density</code> set on an
+ancestor (</td>
+      </tr>
+      <tr>
+        <td><code>startAdornment</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Content rendered inside the field, before the input (decorative).</td>
+      </tr>
+      <tr>
+        <td><code>endAdornment</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Content rendered inside the field, after the input (decorative).</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

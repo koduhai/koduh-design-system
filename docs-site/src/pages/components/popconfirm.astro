@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import PopconfirmDemo from '../../components/demos/PopconfirmDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Popconfirm" description="inline confirmation popover (#43)">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>Popconfirm</h1>
+  <p class="doc-lede">inline confirmation popover (#43).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Popconfirm" />
+
+  <h2>Examples</h2>
+  <PopconfirmDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Popconfirm &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>trigger</code></td>
+        <td><code>ReactElement</code></td>
+        <td><em>required</em></td>
+        <td>The element that opens the confirmation. Popconfirm wires open/close + ARIA onto it.</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Optional heading shown above the message.</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>The confirmation message.</td>
+      </tr>
+      <tr>
+        <td><code>onConfirm</code></td>
+        <td><code>() =&gt; void</code></td>
+        <td><em>required</em></td>
+        <td>Called when the user presses confirm; the popover then closes.</td>
+      </tr>
+      <tr>
+        <td><code>onCancel</code></td>
+        <td><code>() =&gt; void</code></td>
+        <td>—</td>
+        <td>Called when the user presses cancel.</td>
+      </tr>
+      <tr>
+        <td><code>confirmLabel</code></td>
+        <td><code>string</code></td>
+        <td><code>'Confirm'</code></td>
+        <td>Confirm button label.</td>
+      </tr>
+      <tr>
+        <td><code>cancelLabel</code></td>
+        <td><code>string</code></td>
+        <td><code>'Cancel'</code></td>
+        <td>Cancel button label.</td>
+      </tr>
+      <tr>
+        <td><code>confirmTone</code></td>
+        <td><code>ButtonTone</code></td>
+        <td><code>'primary'</code></td>
+        <td>Confirm button tone.</td>
+      </tr>
+      <tr>
+        <td><code>open</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Controlled open state.</td>
+      </tr>
+      <tr>
+        <td><code>onOpenChange</code></td>
+        <td><code>(open: boolean) =&gt; void</code></td>
+        <td>—</td>
+        <td>Called with the requested next open state (trigger toggle, Esc, outside click, confirm/cancel).</td>
+      </tr>
+      <tr>
+        <td><code>placement</code></td>
+        <td><code>PopoverPlacement</code></td>
+        <td><code>'top'</code></td>
+        <td>Anchored placement of the panel.</td>
+      </tr>
+      <tr>
+        <td><code>className</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

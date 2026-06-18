@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GridDemo from '../../components/demos/GridDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Grid" description="`columns` or `minItemWidth` auto-fit + track ratios (#19)">
+  <p class="doc-eyebrow">Layout &amp; primitives</p>
+  <h1>Grid</h1>
+  <p class="doc-lede"><code>columns</code> or <code>minItemWidth</code> auto-fit + track ratios (#19).</p>
+
+  <h2>Examples</h2>
+  <GridDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Grid &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>columns</code></td>
+        <td><code>ResponsiveValue&lt;GridColumns&gt;</code></td>
+        <td>—</td>
+        <td>Fixed track count: <code>repeat(columns, minmax(0, 1fr))</code>. Wins over <code>minItemWidth</code>.
+Accepts a number, an fr-ratio array (<code>[1.1, 1]</code> → <code>1.1fr 1fr</code>), or a responsive
+object (<code>&#123; base, sm, md, lg, xl &#125;</code>) whose values are either of those.</td>
+      </tr>
+      <tr>
+        <td><code>minItemWidth</code></td>
+        <td><code>ResponsiveValue&lt;string&gt;</code></td>
+        <td>—</td>
+        <td>Auto-fit tracks: <code>repeat(auto-fit, minmax(minItemWidth, 1fr))</code>. Accepts a single
+length or a responsive object. Only used at a breakpoint where <code>columns</code> is unset.</td>
+      </tr>
+      <tr>
+        <td><code>gap</code></td>
+        <td><code>ResponsiveValue&lt;SpaceToken&gt;</code></td>
+        <td><code>4</code></td>
+        <td>Space between cells. Accepts a token or a responsive object.</td>
+      </tr>
+      <tr>
+        <td><code>asChild</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

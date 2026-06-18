@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import LinkDemo from '../../components/demos/LinkDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Link" description="defaults to `underline=&quot;always&quot;` for in-text use">
+  <p class="doc-eyebrow">Navigation</p>
+  <h1>Link</h1>
+  <p class="doc-lede">defaults to <code>underline="always"</code> for in-text use.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Link" />
+
+  <h2>Examples</h2>
+  <LinkDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Link &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>tone</code></td>
+        <td><code>LinkTone</code></td>
+        <td><code>'primary'</code></td>
+        <td>Semantic color.</td>
+      </tr>
+      <tr>
+        <td><code>underline</code></td>
+        <td><code>LinkUnderline</code></td>
+        <td><code>'always' so links embedded in body
+text stay distinguishable without relying on color (WCAG 1</code></td>
+        <td>When the underline shows. 4.1 /
+link-in-text-block). Use 'hover'/'none' for standalone links (nav, lists)
+where surrounding prose isn't present.</td>
+      </tr>
+      <tr>
+        <td><code>asChild</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Render the consumer element (e.g. a router &lt;Link&gt;), merging props.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import ToasterDemo from '../../components/demos/ToasterDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Toaster" description="singleton FIFO toast region; `toast.promise()`; per-toast id/placement; multi-`&lt;Toaster&gt;` (#14/#18)">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>Toaster</h1>
+  <p class="doc-lede">singleton FIFO toast region; <code>toast.promise()</code>; per-toast id/placement; multi-<code>&lt;Toaster&gt;</code> (#14/#18).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Toaster" />
+
+  <h2>Examples</h2>
+  <ToasterDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Toaster &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>placement</code></td>
+        <td><code>ToasterPlacement</code></td>
+        <td><code>'bottom-right'</code></td>
+        <td>Where the stack anchors.</td>
+      </tr>
+      <tr>
+        <td><code>max</code></td>
+        <td><code>number</code></td>
+        <td><code>3</code></td>
+        <td>Max simultaneously visible; overflow waits FIFO.</td>
+      </tr>
+      <tr>
+        <td><code>gap</code></td>
+        <td><code>1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12</code></td>
+        <td><code>3</code></td>
+        <td>Space between stacked toasts (--ku-space scale).</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

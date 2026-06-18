@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import SplitButtonDemo from '../../components/demos/SplitButtonDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="SplitButton" description="primary action + attached dropdown menu (#43)">
+  <p class="doc-eyebrow">Actions</p>
+  <h1>SplitButton</h1>
+  <p class="doc-lede">primary action + attached dropdown menu (#43).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="SplitButton" />
+
+  <h2>Examples</h2>
+  <SplitButtonDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; SplitButton &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>Primary action label.</td>
+      </tr>
+      <tr>
+        <td><code>onClick</code></td>
+        <td><code>() =&gt; void</code></td>
+        <td>—</td>
+        <td>Primary action handler.</td>
+      </tr>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>MenuEntry[]</code></td>
+        <td><em>required</em></td>
+        <td>Secondary actions for the caret menu.</td>
+      </tr>
+      <tr>
+        <td><code>tone</code></td>
+        <td><code>ButtonTone</code></td>
+        <td><code>'primary'</code></td>
+        <td>Shared tone for both buttons.</td>
+      </tr>
+      <tr>
+        <td><code>variant</code></td>
+        <td><code>ButtonVariant</code></td>
+        <td><code>'solid'</code></td>
+        <td>Shared variant for both buttons.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>ButtonSize</code></td>
+        <td><code>'md'</code></td>
+        <td>Shared size for both buttons.</td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Disables both the primary action and the caret.</td>
+      </tr>
+      <tr>
+        <td><code>startIcon</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Leading icon on the primary button.</td>
+      </tr>
+      <tr>
+        <td><code>menuPlacement</code></td>
+        <td><code>PopoverPlacement</code></td>
+        <td><code>'bottom-end'</code></td>
+        <td>Anchored placement of the menu panel.</td>
+      </tr>
+      <tr>
+        <td><code>menuLabel</code></td>
+        <td><code>string</code></td>
+        <td><code>'More actions'</code></td>
+        <td>Accessible label for the caret button.</td>
+      </tr>
+      <tr>
+        <td><code>className</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

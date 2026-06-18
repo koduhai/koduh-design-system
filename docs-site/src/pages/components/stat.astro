@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import StatDemo from '../../components/demos/StatDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Stat" description="dashboard metric block with `trend`/`delta` + arrow + SR direction text (#12)">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>Stat</h1>
+  <p class="doc-lede">dashboard metric block with <code>trend</code>/<code>delta</code> + arrow + SR direction text (#12).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Stat" />
+
+  <h2>Examples</h2>
+  <StatDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Stat &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>The metric name.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>The metric value; rendered with tabular numerals.</td>
+      </tr>
+      <tr>
+        <td><code>delta</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Change indicator text, e.g. "12%".</td>
+      </tr>
+      <tr>
+        <td><code>trend</code></td>
+        <td><code>StatTrend</code></td>
+        <td><code>'neutral'</code></td>
+        <td>Drives the delta colour and direction arrow.</td>
+      </tr>
+      <tr>
+        <td><code>icon</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Optional accent icon shown beside the label.</td>
+      </tr>
+      <tr>
+        <td><code>helpText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Sub-label rendered alongside the delta.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

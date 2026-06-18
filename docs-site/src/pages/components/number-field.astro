@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import NumberFieldDemo from '../../components/demos/NumberFieldDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="NumberField" description="steppers + `min`/`max`/`step`, reports `null` on empty">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>NumberField</h1>
+  <p class="doc-lede">steppers + <code>min</code>/<code>max</code>/<code>step</code>, reports <code>null</code> on empty.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="NumberField" />
+
+  <h2>Examples</h2>
+  <NumberFieldDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; NumberField &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Visible label, associated with the input via htmlFor/id. Provide <code>label</code>,
+or wrap the control in a <code>&lt;FormField&gt;</code> which supplies it.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Controlled value.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Initial value when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: number | null, event?: SyntheticEvent) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the parsed value, or <code>null</code> when the field is empty.</td>
+      </tr>
+      <tr>
+        <td><code>min</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>max</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>step</code></td>
+        <td><code>number</code></td>
+        <td><code>1</code></td>
+        <td>Increment for steppers/arrow keys.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>NumberFieldSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>required</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Puts the field in the error state (aria-invalid).</td>
+      </tr>
+      <tr>
+        <td><code>helperText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Hint shown below the field. Hidden when an error is shown.</td>
+      </tr>
+      <tr>
+        <td><code>errorText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Message shown below the field when <code>error</code> is set; replaces helperText.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

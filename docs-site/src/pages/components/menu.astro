@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import MenuDemo from '../../components/demos/MenuDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Menu" description="array-driven items with separators">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>Menu</h1>
+  <p class="doc-lede">array-driven items with separators.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Menu" />
+
+  <h2>Examples</h2>
+  <MenuDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Menu &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>trigger</code></td>
+        <td><code>ReactElement</code></td>
+        <td><em>required</em></td>
+        <td>The element that toggles the menu. Rendered via Popover's Slot; Menu wires open/close + ARIA onto it.</td>
+      </tr>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>MenuEntry[]</code></td>
+        <td><em>required</em></td>
+        <td>Menu entries — actionable items and separators, in order.</td>
+      </tr>
+      <tr>
+        <td><code>placement</code></td>
+        <td><code>PopoverPlacement</code></td>
+        <td><code>'bottom-start'</code></td>
+        <td>Anchored placement of the menu panel.</td>
+      </tr>
+      <tr>
+        <td><code>density</code></td>
+        <td><code>Density</code></td>
+        <td><code>comfortable); set
+explicitly to set `data-density` on the menu list</code></td>
+        <td>Menu density. <code>compact</code> tightens item padding via the <code>--ku-density-*</code> vars.
+Omit to inherit a <code>data-density</code> ancestor (</td>
+      </tr>
+      <tr>
+        <td><code>className</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import SliderDemo from '../../components/demos/SliderDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Slider" description="WAI-ARIA slider, density">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Slider</h1>
+  <p class="doc-lede">WAI-ARIA slider, density.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Slider" />
+
+  <h2>Examples</h2>
+  <SliderDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Slider &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Visible label, rendered as a <code>&lt;span&gt;</code> referenced by aria-labelledby. Required
+standalone; optional (and not rendered) inside a <code>&lt;FormField&gt;</code>, which supplies it.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: number, event?: SyntheticEvent) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the new value and the originating keyboard/pointer event.</td>
+      </tr>
+      <tr>
+        <td><code>min</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>max</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>step</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>SliderSize</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>formatValue</code></td>
+        <td><code>(value: number) =&gt; string</code></td>
+        <td>—</td>
+        <td>Produces aria-valuetext (and any visible value readout).</td>
+      </tr>
+      <tr>
+        <td><code>helperText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Hint shown below the track. Hidden when an error is shown.</td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Puts the slider in the error state (aria-invalid).</td>
+      </tr>
+      <tr>
+        <td><code>errorText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Message shown below the track when <code>error</code> is set; replaces helperText.</td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

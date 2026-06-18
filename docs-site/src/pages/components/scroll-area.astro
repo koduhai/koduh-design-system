@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import ScrollAreaDemo from '../../components/demos/ScrollAreaDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="ScrollArea" description="styled scroll viewport, horizontal/vertical (#32)">
+  <p class="doc-eyebrow">Layout &amp; primitives</p>
+  <h1>ScrollArea</h1>
+  <p class="doc-lede">styled scroll viewport, horizontal/vertical (#32).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="ScrollArea" />
+
+  <h2>Examples</h2>
+  <ScrollAreaDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; ScrollArea &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>Content that may overflow the area.</td>
+      </tr>
+      <tr>
+        <td><code>maxHeight</code></td>
+        <td><code>number | string</code></td>
+        <td>—</td>
+        <td>Caps the area height; a number is treated as px.</td>
+      </tr>
+      <tr>
+        <td><code>orientation</code></td>
+        <td><code>ScrollAreaOrientation</code></td>
+        <td><code>'vertical'</code></td>
+        <td>Scroll axis the area allows.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

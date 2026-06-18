@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import BannerDemo from '../../components/demos/BannerDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Banner" description="page-level notice (info/success/warning/danger) (#43)">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>Banner</h1>
+  <p class="doc-lede">page-level notice (info/success/warning/danger) (#43).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Banner" />
+
+  <h2>Examples</h2>
+  <BannerDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Banner &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>severity</code></td>
+        <td><code>BannerSeverity</code></td>
+        <td><em>required</em></td>
+        <td>Semantic severity. Drives color, default icon, and ARIA role.</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Optional bold heading shown above the body.</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>The notice message body.</td>
+      </tr>
+      <tr>
+        <td><code>icon</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Custom leading icon. Overrides the severity default.
+Pass <code>null</code> to hide the icon entirely.</td>
+      </tr>
+      <tr>
+        <td><code>dismissable</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>When true, shows a labeled dismiss button.</td>
+      </tr>
+      <tr>
+        <td><code>onClose</code></td>
+        <td><code>() =&gt; void</code></td>
+        <td>—</td>
+        <td>Called when the dismiss button is pressed.</td>
+      </tr>
+      <tr>
+        <td><code>closeLabel</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Accessible label for the dismiss button. Overrides the i18n catalog's
+<code>dismiss</code> (default 'Dismiss').</td>
+      </tr>
+      <tr>
+        <td><code>action</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Trailing call-to-action slot (e.g. a Button or Link).</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

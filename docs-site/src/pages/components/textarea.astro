@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import TextareaDemo from '../../components/demos/TextareaDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Textarea" description="`autoResize`, density">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Textarea</h1>
+  <p class="doc-lede"><code>autoResize</code>, density.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Textarea" />
+
+  <h2>Examples</h2>
+  <TextareaDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Textarea &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Visible label, associated with the textarea via htmlFor/id.
+Provide <code>label</code>, or wrap the control in a <code>&lt;FormField&gt;</code> which supplies it.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Controlled value.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Initial value when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: string, event: ChangeEvent&lt;HTMLTextAreaElement&gt;) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires on every keystroke with the new value (and the native event).</td>
+      </tr>
+      <tr>
+        <td><code>helperText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Hint shown below the field. Hidden when an error is shown.</td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Puts the field in the error state (aria-invalid).</td>
+      </tr>
+      <tr>
+        <td><code>errorText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Message shown below the field when <code>error</code> is set; replaces helperText.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>TextareaSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>autoResize</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Grow the height to fit content. Default false.</td>
+      </tr>
+      <tr>
+        <td><code>minRows</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Minimum rows when autoResize is on. Default 2.</td>
+      </tr>
+      <tr>
+        <td><code>maxRows</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Maximum rows when autoResize is on; scrolls beyond.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

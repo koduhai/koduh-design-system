@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import AppBarDemo from '../../components/demos/AppBarDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="AppBar" description="top bar with `position`">
+  <p class="doc-eyebrow">Navigation</p>
+  <h1>AppBar</h1>
+  <p class="doc-lede">top bar with <code>position</code>.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="AppBar" />
+
+  <h2>Examples</h2>
+  <AppBarDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; AppBar &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>logo</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Brand mark shown at the start.</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>App or page title shown next to the logo.</td>
+      </tr>
+      <tr>
+        <td><code>actions</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Right-aligned actions (buttons, avatar, menu).</td>
+      </tr>
+      <tr>
+        <td><code>position</code></td>
+        <td><code>AppBarPosition</code></td>
+        <td><code>'static'</code></td>
+        <td>Scroll behavior.</td>
+      </tr>
+      <tr>
+        <td><code>elevation</code></td>
+        <td><code>boolean</code></td>
+        <td><code>true</code></td>
+        <td>Adds a bottom border + shadow.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

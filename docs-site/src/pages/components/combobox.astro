@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ComboboxDemo from '../../components/demos/ComboboxDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Combobox" description="searchable, `clearable`, single or `multiple`, async/loading + create-option (#39)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Combobox</h1>
+  <p class="doc-lede">searchable, <code>clearable</code>, single or <code>multiple</code>, async/loading + create-option (#39).</p>
+
+  <h2>Examples</h2>
+  <ComboboxDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Combobox &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <p>
+    The props for <code>Combobox</code> are defined as a union type, so they don't
+    reduce to a single table. See the exported <code>ComboboxProps</code> type and the
+    <a href="https://github.com/koduhai/koduh-design-system/blob/main/src/components/Combobox/Combobox.tsx">source</a>.
+  </p>
+</BaseLayout>

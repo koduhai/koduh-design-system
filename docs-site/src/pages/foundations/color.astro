@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Swatches reference the live --ku-* variables, so they re-render per theme when
+// the header toggle flips data-theme. Names match scripts/generate-theme-css.ts.
+const brandRamp = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+
+const semantic = [
+  '--ku-color-bg-default',
+  '--ku-color-bg-subtle',
+  '--ku-color-text-primary',
+  '--ku-color-text-secondary',
+  '--ku-color-border-default',
+  '--ku-color-success-fg',
+  '--ku-color-warning-fg',
+  '--ku-color-danger-fg',
+  '--ku-color-info-fg',
+];
+---
+
+<BaseLayout title="Color" description="Token-backed palette and brand ramp.">
+  <p class="doc-eyebrow">Foundations</p>
+  <h1>Color</h1>
+  <p class="doc-lede">
+    Every color is a <code>--ku-*</code> CSS custom property emitted from <code>tokens.ts</code>.
+    Theme-varying values are scoped under <code>data-theme</code>, so flipping the header toggle
+    re-renders these swatches live.
+  </p>
+
+  <h2>Brand ramp</h2>
+  <p>A fixed tint ramp anchored on <code>#1B5FCC</code>, theme-independent.</p>
+  <div class="doc-grid">
+    {
+      brandRamp.map((step) => (
+        <div class="doc-swatch">
+          <div class="doc-swatch-color" style={`background: var(--ku-brand-${step})`} />
+          <div class="doc-swatch-label">--ku-brand-{step}</div>
+        </div>
+      ))
+    }
+  </div>
+
+  <h2>Semantic tokens</h2>
+  <p>These resolve differently per theme. Toggle the header to compare dark and light.</p>
+  <div class="doc-grid">
+    {
+      semantic.map((name) => (
+        <div class="doc-swatch">
+          <div
+            class="doc-swatch-color"
+            style={`background: var(${name}); border-bottom: 1px solid var(--ku-color-border-default)`}
+          />
+          <div class="doc-swatch-label">{name}</div>
+        </div>
+      ))
+    }
+  </div>
+</BaseLayout>

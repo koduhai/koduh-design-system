@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import StackDemo from '../../components/demos/StackDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Stack" description="flex column, responsive `gap`/`align`/`justify` (#13)">
+  <p class="doc-eyebrow">Layout &amp; primitives</p>
+  <h1>Stack</h1>
+  <p class="doc-lede">flex column, responsive <code>gap</code>/<code>align</code>/<code>justify</code> (#13).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Stack" />
+
+  <h2>Examples</h2>
+  <StackDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Stack &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>gap</code></td>
+        <td><code>ResponsiveValue&lt;SpaceToken&gt;</code></td>
+        <td><code>4</code></td>
+        <td>Space between children, from the --ku-space scale. Scalar or per-breakpoint.</td>
+      </tr>
+      <tr>
+        <td><code>align</code></td>
+        <td><code>StackAlign</code></td>
+        <td>—</td>
+        <td>align-items.</td>
+      </tr>
+      <tr>
+        <td><code>justify</code></td>
+        <td><code>StackJustify</code></td>
+        <td>—</td>
+        <td>justify-content.</td>
+      </tr>
+      <tr>
+        <td><code>wrap</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Allow children to wrap.</td>
+      </tr>
+      <tr>
+        <td><code>as</code></td>
+        <td><code>ElementType</code></td>
+        <td><code>'div'</code></td>
+        <td>Element to render. Ignored when asChild.</td>
+      </tr>
+      <tr>
+        <td><code>asChild</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Render the single child instead of a &lt;div&gt;, merging props.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

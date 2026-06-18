@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import ContainerDemo from '../../components/demos/ContainerDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Container" description="max-width + padding, `py`">
+  <p class="doc-eyebrow">Layout &amp; primitives</p>
+  <h1>Container</h1>
+  <p class="doc-lede">max-width + padding, <code>py</code>.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Container" />
+
+  <h2>Examples</h2>
+  <ContainerDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Container &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>ContainerSize</code></td>
+        <td><code>'lg'</code></td>
+        <td>Max-width preset off the breakpoint scale.</td>
+      </tr>
+      <tr>
+        <td><code>padded</code></td>
+        <td><code>boolean</code></td>
+        <td><code>true</code></td>
+        <td>Horizontal padding.</td>
+      </tr>
+      <tr>
+        <td><code>py</code></td>
+        <td><code>SpaceToken</code></td>
+        <td>—</td>
+        <td>Vertical padding (space token). Omitted by default (no vertical padding).</td>
+      </tr>
+      <tr>
+        <td><code>asChild</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Render the single child instead of a &lt;div&gt;, merging props.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

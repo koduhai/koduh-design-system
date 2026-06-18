@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import AspectRatioDemo from '../../components/demos/AspectRatioDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="AspectRatio" description="fixed-ratio wrapper (#32)">
+  <p class="doc-eyebrow">Layout &amp; primitives</p>
+  <h1>AspectRatio</h1>
+  <p class="doc-lede">fixed-ratio wrapper (#32).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="AspectRatio" />
+
+  <h2>Examples</h2>
+  <AspectRatioDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; AspectRatio &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>ratio</code></td>
+        <td><code>number</code></td>
+        <td><code>16 / 9</code></td>
+        <td>Width-to-height ratio (e.g. 16 / 9).</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>The content to constrain. Fills the box.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

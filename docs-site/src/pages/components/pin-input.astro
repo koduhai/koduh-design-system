@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import PinInputDemo from '../../components/demos/PinInputDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="PinInput" description="fixed-length one-time-code input">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>PinInput</h1>
+  <p class="doc-lede">fixed-length one-time-code input.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="PinInput" />
+
+  <h2>Examples</h2>
+  <PinInputDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; PinInput &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>length</code></td>
+        <td><code>number</code></td>
+        <td><code>6</code></td>
+        <td>Number of cells.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Controlled value.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Uncontrolled initial value.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: string) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the full string whenever any cell changes.</td>
+      </tr>
+      <tr>
+        <td><code>onComplete</code></td>
+        <td><code>(value: string) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires once the last cell is filled (value length === length).</td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td><code>'number' | 'text'</code></td>
+        <td><code>'number'</code></td>
+        <td>Constrains accepted characters.</td>
+      </tr>
+      <tr>
+        <td><code>mask</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Render cells as password dots.</td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>PinInputSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>'aria-label'</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Accessible name for the group (when not inside a &lt;FormField&gt;).</td>
+      </tr>
+      <tr>
+        <td><code>onBlur</code></td>
+        <td><code>(event: FocusEvent&lt;HTMLInputElement&gt;) =&gt; void</code></td>
+        <td>—</td>
+        <td>Called when any cell loses focus.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

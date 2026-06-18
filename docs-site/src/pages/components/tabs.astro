@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import TabsDemo from '../../components/demos/TabsDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Tabs" description="`lazy` + `keepMounted` panel content (#31)">
+  <p class="doc-eyebrow">Navigation</p>
+  <h1>Tabs</h1>
+  <p class="doc-lede"><code>lazy</code> + <code>keepMounted</code> panel content (#31).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Tabs" />
+
+  <h2>Examples</h2>
+  <TabsDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Tabs &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>TabItem[]</code></td>
+        <td><em>required</em></td>
+        <td>Tab definitions — each item produces one trigger + one panel pair.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Controlled selected tab id.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>string</code></td>
+        <td><code>the first non-disabled item</code></td>
+        <td>Initial selected tab id when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: string) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the newly selected tab id.</td>
+      </tr>
+      <tr>
+        <td><code>orientation</code></td>
+        <td><code>'horizontal' | 'vertical'</code></td>
+        <td><code>'horizontal'</code></td>
+        <td>Layout/keyboard axis.</td>
+      </tr>
+      <tr>
+        <td><code>lazy</code></td>
+        <td><code>boolean</code></td>
+        <td><code>`false` (eager — every panel's content is rendered up front)</code></td>
+        <td>Defer rendering an inactive panel's content until it is first activated.</td>
+      </tr>
+      <tr>
+        <td><code>keepMounted</code></td>
+        <td><code>boolean</code></td>
+        <td><code>`false`</code></td>
+        <td>Once a panel has been shown, keep it mounted (hidden via <code>hidden</code>/CSS)
+instead of unmounting it when it becomes inactive.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

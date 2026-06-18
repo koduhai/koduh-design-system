@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import CarouselDemo from '../../components/demos/CarouselDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Carousel" description="keyboard-paginated slide carousel (#32)">
+  <p class="doc-eyebrow">Layout &amp; primitives</p>
+  <h1>Carousel</h1>
+  <p class="doc-lede">keyboard-paginated slide carousel (#32).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Carousel" />
+
+  <h2>Examples</h2>
+  <CarouselDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Carousel &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>CarouselItem[]</code></td>
+        <td><em>required</em></td>
+        <td>Slides, in display order.</td>
+      </tr>
+      <tr>
+        <td><code>defaultIndex</code></td>
+        <td><code>number</code></td>
+        <td><code>0</code></td>
+        <td>Initial slide index when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>index</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Controlled active slide index.</td>
+      </tr>
+      <tr>
+        <td><code>onIndexChange</code></td>
+        <td><code>(index: number) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the next active index on navigation.</td>
+      </tr>
+      <tr>
+        <td><code>loop</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>Wrap around past the first/last slide.</td>
+      </tr>
+      <tr>
+        <td><code>'aria-label'</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Accessible name for the carousel region.</td>
+      </tr>
+      <tr>
+        <td><code>prevLabel</code></td>
+        <td><code>string</code></td>
+        <td><code>the i18n catalog ('Previous slide')</code></td>
+        <td>Label for the previous-slide control.</td>
+      </tr>
+      <tr>
+        <td><code>nextLabel</code></td>
+        <td><code>string</code></td>
+        <td><code>the i18n catalog ('Next slide')</code></td>
+        <td>Label for the next-slide control.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

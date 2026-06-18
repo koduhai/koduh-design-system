@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import BoxDemo from '../../components/demos/BoxDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Box" description="curated layout escape hatch (`padding`/`grow`/`minWidth`/`as`)">
+  <p class="doc-eyebrow">Layout &amp; primitives</p>
+  <h1>Box</h1>
+  <p class="doc-lede">curated layout escape hatch (<code>padding</code>/<code>grow</code>/<code>minWidth</code>/<code>as</code>).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Box" />
+
+  <h2>Examples</h2>
+  <BoxDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Box &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>padding</code></td>
+        <td><code>SpaceToken</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>px</code></td>
+        <td><code>SpaceToken</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>py</code></td>
+        <td><code>SpaceToken</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>grow</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>shrink</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>minWidth</code></td>
+        <td><code>0 | string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>width</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>as</code></td>
+        <td><code>ElementType</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>asChild</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

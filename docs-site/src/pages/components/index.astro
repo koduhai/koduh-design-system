@@ -1,0 +1,366 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Components" description="Browse the @koduhai/design-system component surface.">
+  <p class="doc-eyebrow">Components</p>
+  <h1>Components</h1>
+  <p class="doc-lede">
+    Live, interactive examples for the flagship components and reference pages (description +
+    prop table) for the full surface. Grouped by category, mirroring the library taxonomy.
+  </p>
+
+  <h2>Actions</h2>
+  <div class="doc-grid">
+    <a class="doc-card" href={base + '/components/button/'}>
+      <div class="doc-card-title">Button</div>
+      <div class="doc-card-desc">solid/outline/ghost variants × shared tone vocab × <code>asChild</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/loading-button/'}>
+      <div class="doc-card-title">LoadingButton</div>
+      <div class="doc-card-desc"><code>Button</code> + <code>loading</code> + <code>aria-busy</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/button-group/'}>
+      <div class="doc-card-title">ButtonGroup</div>
+      <div class="doc-card-desc">segmented attached cluster sharing one border (#43).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/split-button/'}>
+      <div class="doc-card-title">SplitButton</div>
+      <div class="doc-card-desc">primary action + attached dropdown menu (#43).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/toggle-group/'}>
+      <div class="doc-card-title">ToggleGroup</div>
+      <div class="doc-card-desc">single/multi roving-focus segmented selector (#12).</div>
+    </a>
+  </div>
+
+  <h2>Form controls</h2>
+  <div class="doc-grid">
+    <a class="doc-card" href={base + '/components/text-field/'}>
+      <div class="doc-card-title">TextField</div>
+      <div class="doc-card-desc">labelled text input, density-aware, <code>FormField</code>-composing.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/password-input/'}>
+      <div class="doc-card-title">PasswordInput</div>
+      <div class="doc-card-desc">labelled password input with show/hide toggle (#tailwind).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/textarea/'}>
+      <div class="doc-card-title">Textarea</div>
+      <div class="doc-card-desc"><code>autoResize</code>, density.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/number-field/'}>
+      <div class="doc-card-title">NumberField</div>
+      <div class="doc-card-desc">steppers + <code>min</code>/<code>max</code>/<code>step</code>, reports <code>null</code> on empty.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/pin-input/'}>
+      <div class="doc-card-title">PinInput</div>
+      <div class="doc-card-desc">fixed-length one-time-code input.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/checkbox/'}>
+      <div class="doc-card-title">Checkbox</div>
+      <div class="doc-card-desc">(+ <code>indeterminate</code>).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/radio/'}>
+      <div class="doc-card-title">Radio</div>
+      <div class="doc-card-desc">+ <code>RadioGroup</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/switch/'}>
+      <div class="doc-card-title">Switch</div>
+      <div class="doc-card-desc">Part of the Form controls set.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/select/'}>
+      <div class="doc-card-title">Select</div>
+      <div class="doc-card-desc"><code>options</code>-driven, <code>clearable</code>, <code>required</code>, single or <code>multiple</code> (chips, #81).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/combobox/'}>
+      <div class="doc-card-title">Combobox</div>
+      <div class="doc-card-desc">searchable, <code>clearable</code>, single or <code>multiple</code>, async/loading + create-option (#39).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/tag-input/'}>
+      <div class="doc-card-title">TagInput</div>
+      <div class="doc-card-desc">chip-rendering token input.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/slider/'}>
+      <div class="doc-card-title">Slider</div>
+      <div class="doc-card-desc">WAI-ARIA slider, density.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/rating/'}>
+      <div class="doc-card-title">Rating</div>
+      <div class="doc-card-desc">keyboard-operable star rating (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/file-upload/'}>
+      <div class="doc-card-title">FileUpload</div>
+      <div class="doc-card-desc">drag-and-drop dropzone (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/color-picker/'}>
+      <div class="doc-card-title">ColorPicker</div>
+      <div class="doc-card-desc">saturation/value + hue + alpha + hex + swatch (#43).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/date-picker/'}>
+      <div class="doc-card-title">DatePicker</div>
+      <div class="doc-card-desc">input + popover calendar; <code>granularity='minute'</code> adds a time field for date+time (#27/#61).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/date-range-picker/'}>
+      <div class="doc-card-title">DateRangePicker</div>
+      <div class="doc-card-desc">two-field range input over the range calendar (#42).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/time-picker/'}>
+      <div class="doc-card-title">TimePicker</div>
+      <div class="doc-card-desc">segmented hour/minute(/second) spinbuttons, 12/24h, <code>FormField</code>-composing (#42).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/calendar/'}>
+      <div class="doc-card-title">Calendar</div>
+      <div class="doc-card-desc">standalone month grid, full keyboard nav, single or <code>mode='range'</code> (#27/#42).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/form-field/'}>
+      <div class="doc-card-title">FormField</div>
+      <div class="doc-card-desc">label/required/<code>aria-*</code> wiring.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/form/'}>
+      <div class="doc-card-title">Form</div>
+      <div class="doc-card-desc">headless form store with per-field subscriptions, Standard Schema validation, focus-on-error (#38).</div>
+    </a>
+  </div>
+
+  <h2>Data display &amp; feedback</h2>
+  <div class="doc-grid">
+    <a class="doc-card" href={base + '/components/chip/'}>
+      <div class="doc-card-title">Chip</div>
+      <div class="doc-card-desc">variants × tones, optional delete, <code>ReactNode</code> label.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/avatar/'}>
+      <div class="doc-card-title">Avatar</div>
+      <div class="doc-card-desc">image + initials fallback, sizes/shapes.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/avatar-group/'}>
+      <div class="doc-card-title">AvatarGroup</div>
+      <div class="doc-card-desc">stacked overlapping avatars + <code>+N</code> overflow (#12).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/status-badge/'}>
+      <div class="doc-card-title">StatusBadge</div>
+      <div class="doc-card-desc">text + dot + color (never color-only).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/notification-badge/'}>
+      <div class="doc-card-title">NotificationBadge</div>
+      <div class="doc-card-desc">count/dot overlay anchored to a child (#43).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/alert/'}>
+      <div class="doc-card-title">Alert</div>
+      <div class="doc-card-desc"><code>role="alert"</code>/<code>role="status"</code>, <code>dismissable</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/banner/'}>
+      <div class="doc-card-title">Banner</div>
+      <div class="doc-card-desc">page-level notice (info/success/warning/danger) (#43).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/card/'}>
+      <div class="doc-card-title">Card</div>
+      <div class="doc-card-desc">(+ <code>CardHeader</code> / <code>CardBody</code> / <code>CardFooter</code> slots).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/empty-state/'}>
+      <div class="doc-card-title">EmptyState</div>
+      <div class="doc-card-desc">Part of the Data display &amp; feedback set.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/progress/'}>
+      <div class="doc-card-title">Progress</div>
+      <div class="doc-card-desc">bar with shared tone vocab.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/meter/'}>
+      <div class="doc-card-title">Meter</div>
+      <div class="doc-card-desc"><code>role="meter"</code> measurement gauge with threshold tones (#43).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/spinner/'}>
+      <div class="doc-card-title">Spinner</div>
+      <div class="doc-card-desc">tone subset, sizes.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/skeleton/'}>
+      <div class="doc-card-title">Skeleton</div>
+      <div class="doc-card-desc">variants for text/circle/rect, dark-aware.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/stat/'}>
+      <div class="doc-card-title">Stat</div>
+      <div class="doc-card-desc">dashboard metric block with <code>trend</code>/<code>delta</code> + arrow + SR direction text (#12).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/count-up/'}>
+      <div class="doc-card-title">CountUp</div>
+      <div class="doc-card-desc">animated count-up to target, honors reduced motion (#tailwind).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/sparkline/'}>
+      <div class="doc-card-title">Sparkline</div>
+      <div class="doc-card-desc">line/area/bar microchart (#28).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/chart/'}>
+      <div class="doc-card-title">Chart</div>
+      <div class="doc-card-desc">minimal line/bar chart with categorical palette tokens (#28).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/table/'}>
+      <div class="doc-card-title">Table</div>
+      <div class="doc-card-desc">sortable headers, multi-column sort, <code>selectAllIds</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/data-table/'}>
+      <div class="doc-card-title">DataTable</div>
+      <div class="doc-card-desc">stateful Table orchestrator: pagination, search, per-column filters, row selection, row expansion, column resize, server-side <code>manual</code> hook, opt-in row virtualization (#9/#30/#37).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/description-list/'}>
+      <div class="doc-card-title">DescriptionList</div>
+      <div class="doc-card-desc"><code>&lt;dl&gt;</code> key-value primitive.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/tree/'}>
+      <div class="doc-card-title">Tree</div>
+      <div class="doc-card-desc">keyboard-navigable tree (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/timeline/'}>
+      <div class="doc-card-title">Timeline</div>
+      <div class="doc-card-desc">vertical/horizontal event list (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/code/'}>
+      <div class="doc-card-title">Code</div>
+      <div class="doc-card-desc">inline + block code surfaces (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/kbd/'}>
+      <div class="doc-card-title">Kbd</div>
+      <div class="doc-card-desc">keyboard-key chip (#32).</div>
+    </a>
+  </div>
+
+  <h2>Overlays &amp; floating</h2>
+  <div class="doc-grid">
+    <a class="doc-card" href={base + '/components/dialog/'}>
+      <div class="doc-card-title">Dialog</div>
+      <div class="doc-card-desc">native <code>&lt;dialog&gt;</code> + <code>showModal()</code>, <code>initialFocus</code>, pending/loading confirm, warning tone (#57).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/drawer/'}>
+      <div class="doc-card-title">Drawer</div>
+      <div class="doc-card-desc">edge slide-in built on <code>&lt;dialog&gt;</code> (#12).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/snackbar/'}>
+      <div class="doc-card-title">Snackbar</div>
+      <div class="doc-card-desc">controlled primitive (transient feedback).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/toaster/'}>
+      <div class="doc-card-title">Toaster</div>
+      <div class="doc-card-desc">singleton FIFO toast region; <code>toast.promise()</code>; per-toast id/placement; multi-<code>&lt;Toaster&gt;</code> (#14/#18).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/popover/'}>
+      <div class="doc-card-title">Popover</div>
+      <div class="doc-card-desc">Popover API + CSS anchor positioning, JS fallback.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/popconfirm/'}>
+      <div class="doc-card-title">Popconfirm</div>
+      <div class="doc-card-desc">inline confirmation popover (#43).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/hover-card/'}>
+      <div class="doc-card-title">HoverCard</div>
+      <div class="doc-card-desc">hover-triggered floating card (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/tooltip/'}>
+      <div class="doc-card-title">Tooltip</div>
+      <div class="doc-card-desc">Part of the Overlays &amp; floating set.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/menu/'}>
+      <div class="doc-card-title">Menu</div>
+      <div class="doc-card-desc">array-driven items with separators.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/command-palette/'}>
+      <div class="doc-card-title">CommandPalette</div>
+      <div class="doc-card-desc">searchable command launcher (#32).</div>
+    </a>
+  </div>
+
+  <h2>Navigation</h2>
+  <div class="doc-grid">
+    <a class="doc-card" href={base + '/components/app-bar/'}>
+      <div class="doc-card-title">AppBar</div>
+      <div class="doc-card-desc">top bar with <code>position</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/sidebar/'}>
+      <div class="doc-card-title">Sidebar</div>
+      <div class="doc-card-desc"><code>items</code>-driven, <code>collapseBelow</code> matchMedia auto-collapse (#22).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/breadcrumbs/'}>
+      <div class="doc-card-title">Breadcrumbs</div>
+      <div class="doc-card-desc">Part of the Navigation set.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/tabs/'}>
+      <div class="doc-card-title">Tabs</div>
+      <div class="doc-card-desc"><code>lazy</code> + <code>keepMounted</code> panel content (#31).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/pagination/'}>
+      <div class="doc-card-title">Pagination</div>
+      <div class="doc-card-desc">(+ exported <code>getPaginationRange</code>).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/stepper/'}>
+      <div class="doc-card-title">Stepper</div>
+      <div class="doc-card-desc">vertical/horizontal step progress (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/page-header/'}>
+      <div class="doc-card-title">PageHeader</div>
+      <div class="doc-card-desc">title + breadcrumbs + actions, <code>BreadcrumbItem[]</code> accepted.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/link/'}>
+      <div class="doc-card-title">Link</div>
+      <div class="doc-card-desc">defaults to <code>underline="always"</code> for in-text use.</div>
+    </a>
+  </div>
+
+  <h2>Layout &amp; primitives</h2>
+  <div class="doc-grid">
+    <a class="doc-card" href={base + '/components/stack/'}>
+      <div class="doc-card-title">Stack</div>
+      <div class="doc-card-desc">flex column, responsive <code>gap</code>/<code>align</code>/<code>justify</code> (#13).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/inline/'}>
+      <div class="doc-card-title">Inline</div>
+      <div class="doc-card-desc">flex row, responsive props (#13).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/grid/'}>
+      <div class="doc-card-title">Grid</div>
+      <div class="doc-card-desc"><code>columns</code> or <code>minItemWidth</code> auto-fit + track ratios (#19).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/container/'}>
+      <div class="doc-card-title">Container</div>
+      <div class="doc-card-desc">max-width + padding, <code>py</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/box/'}>
+      <div class="doc-card-title">Box</div>
+      <div class="doc-card-desc">curated layout escape hatch (<code>padding</code>/<code>grow</code>/<code>minWidth</code>/<code>as</code>).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/accordion/'}>
+      <div class="doc-card-title">Accordion</div>
+      <div class="doc-card-desc"><code>lazy</code> + <code>keepMounted</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/collapsible/'}>
+      <div class="doc-card-title">Collapsible</div>
+      <div class="doc-card-desc">single expandable region (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/scroll-area/'}>
+      <div class="doc-card-title">ScrollArea</div>
+      <div class="doc-card-desc">styled scroll viewport, horizontal/vertical (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/carousel/'}>
+      <div class="doc-card-title">Carousel</div>
+      <div class="doc-card-desc">keyboard-paginated slide carousel (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/aspect-ratio/'}>
+      <div class="doc-card-title">AspectRatio</div>
+      <div class="doc-card-desc">fixed-ratio wrapper (#32).</div>
+    </a>
+    <a class="doc-card" href={base + '/components/divider/'}>
+      <div class="doc-card-title">Divider</div>
+      <div class="doc-card-desc">Part of the Layout &amp; primitives set.</div>
+    </a>
+  </div>
+
+  <h2>Typography</h2>
+  <div class="doc-grid">
+    <a class="doc-card" href={base + '/components/text/'}>
+      <div class="doc-card-title">Text</div>
+      <div class="doc-card-desc"><code>size</code>/<code>weight</code>/<code>tone</code> (typographic axis: <code>default</code>/<code>secondary</code>) × <code>family</code>/<code>numeric</code>/<code>transform</code>/<code>leading</code>/<code>truncate</code>/<code>lineClamp</code>.</div>
+    </a>
+    <a class="doc-card" href={base + '/components/heading/'}>
+      <div class="doc-card-title">Heading</div>
+      <div class="doc-card-desc">semantic <code>level</code> decoupled from visual <code>size</code>.</div>
+    </a>
+  </div>
+</BaseLayout>

@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import RadioDemo from '../../components/demos/RadioDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Radio" description="+ `RadioGroup`">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Radio</h1>
+  <p class="doc-lede">+ <code>RadioGroup</code>.</p>
+
+  <p>Also exported from this module: <code>RadioGroup</code>.</p>
+  <h2>Playground</h2>
+  <Playground client:visible name="Radio" />
+
+  <h2>Examples</h2>
+  <RadioDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Radio, RadioGroup &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td><em>required</em></td>
+        <td>Value submitted/compared when this radio is selected.</td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Visible label, wraps the control so its text is part of the click target.</td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Disable this single option.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

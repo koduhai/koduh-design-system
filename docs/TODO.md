@@ -2,11 +2,12 @@
 
 Working backlog for the design system itself. Consumer-app gaps surfaced
 while dogfooding `@koduhai/design-system` get filed as issues here; the doc
-captures the live state. Current released version: **v2.10.0** (79 components —
-published; #40 announcer + #41 i18n + #39 Combobox multi-select). **v2.11.0** is
-in progress on `main` (unreleased, 81 components: #81 Select multi-select, #79
-i18n sweep, the #42/#61 date/time layer — TimePicker, Calendar range +
-DateRangePicker, DatePicker date+time — and #37 DataTable virtualization).
+captures the live state. Current released version: **v1.0.0** (81 components —
+first public release on the public npm registry, 2026-06-12). The 1.0.0 surface
+folds in everything from the pre-1.0.0 GitHub Packages prerelease line: #81
+Select multi-select, #79 i18n sweep, the #42/#61 date/time layer (TimePicker,
+Calendar range + DateRangePicker, DatePicker date+time), and #37 DataTable
+virtualization.
 
 Legend: `[x]` done · `[ ]` open · `[!]` blocked / on hold
 
@@ -14,13 +15,8 @@ Legend: `[x]` done · `[ ]` open · `[!]` blocked / on hold
 
 ## In flight
 
-- [ ] **Cut the 2.11.0 release** — #81, #79, #42, #61, #37 are merged/landing on
-      `main` unreleased (batched to release less often). Make one
-      `chore/release-2.11.0` PR (bump `package.json` + `package-lock.json` +
-      `CHANGELOG.md` covering all five), then a `v2.11.0` GitHub Release to publish.
-      Minor bump: all additive/non-breaking.
 - [ ] **Downstream adoption: koduh-mail-web** — track the consumer PR migrating to
-      v2.x; convert findings (anchored-overlay regressions, RTL spots, density
+      v1.x; convert findings (anchored-overlay regressions, RTL spots, density
       mismatches) into issues here. The scheduled-send / reschedule / datetime-range
       fields can now move off native inputs onto `DatePicker granularity="minute"`
       (#61).
@@ -28,10 +24,10 @@ Legend: `[x]` done · `[ ]` open · `[!]` blocked / on hold
       `gh workflow run update-baselines.yml --ref <branch>` after any visible
       change. Documented in `CLAUDE.md`.
 
-## Docs site & MCP (new, on `refactor/3-tier-tokens`, uncommitted)
+## Docs site & MCP (on `feat/docs-site-and-mcp`)
 
-Two new top-level workspaces were added alongside the library (not published; not
-yet committed):
+Two top-level workspaces alongside the library, committed on this branch (neither
+is published to npm):
 
 - [x] **`docs-site/`** (Astro) — public documentation site, Spectrum-style. All 81
       components have a generated reference page (description + prop table + import),
@@ -42,14 +38,18 @@ yet committed):
       the component sources. `astro build` clean (84 pages). `base` set for GitHub Pages.
 - [ ] **Playground coverage for all components** — playground started on a curated
       set; extending seeds to the full surface (this is the active task).
-- [ ] **Deploy the docs site** — add a GitHub Pages workflow building `docs-site/`.
+- [x] **Deploy the docs site** — `.github/workflows/pages.yml` builds the library
+      then `docs-site/` and deploys to GitHub Pages on push to `main` (replacing the
+      old Storybook deploy). Enable once in Settings → Pages → Source: GitHub Actions.
 - [x] **`mcp/`** — version-pinned MCP server (stdio, `@modelcontextprotocol/sdk`).
       `scripts/build-metadata.ts` snapshots component props + tokens into
       `mcp/data/<version>/`; `src/server.ts` serves tools `list_versions`,
       `list_components`, `get_component`, `get_tokens`, `search` (each version-pinned)
       plus per-component resources. Smoke-tested end to end.
-- [ ] **Reconcile `package.json` version** — root `package.json` still reads `1.0.0`
-      while the surface is v2.x; the MCP snapshot keys off it, so fix before release.
+- [x] **Reconcile `package.json` version** — settled: `1.0.0` is canonical (the
+      public npm release; the `2.x` tags were the pre-1.0.0 GitHub Packages prerelease
+      line). The MCP snapshot correctly pins to `1.0.0`; FEATURES/TODO/guidelines
+      reconciled to match.
 
 ## Near-term (gaps & polish)
 
@@ -92,9 +92,9 @@ yet committed):
 
 ### Documentation
 
-- [~] **No hosted Storybook** — superseded by the new `docs-site/` (Astro): live
-  demos + props playground + prop tables for all 81 components. Still needs a
-  deploy workflow to be publicly hosted (see "Docs site & MCP" above).
+- [x] **No hosted Storybook** — superseded by the new `docs-site/` (Astro): live
+      demos + props playground + prop tables for all 81 components. The `pages.yml`
+      deploy workflow now publishes it to GitHub Pages (enable the Pages source once).
 - [ ] **Tailwind preset example app** — a tiny runnable example would prevent
       regressions on the preset surface.
 
@@ -117,6 +117,11 @@ yet committed):
   DS (`@koduhai/email`). File DS issues only if shared component needs surface.
 
 ## Deferred / shipped
+
+> Version tags below (`v2.x`, `→ 2.x.0`, "GitHub Packages") are pre-1.0.0
+> development milestones on the internal GitHub Packages prerelease line. They all
+> ship in the **v1.0.0** first public release on npm; the public version history
+> starts at 1.0.0 (see `CHANGELOG.md`).
 
 - [x] **Select multi-select** (#81) — `Select` multi-select parity with Combobox
       (chips, `aria-multiselectable`, toggle-keeps-open). On `main` (→ 2.11.0).

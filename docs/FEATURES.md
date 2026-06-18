@@ -1,14 +1,14 @@
 # `@koduhai/design-system` — Features
 
-Snapshot of the current `main` surface (**81 components**), heading into
-**v2.11.0**. Published on GitHub Packages: **v2.10.0** (79 components). Zero
+Snapshot of the current `main` surface (**81 components**), published as
+**v1.0.0** on the public npm registry (first public release, 2026-06-12). Zero
 runtime dependencies, WCAG 2.1 AA enforced via axe-core in both dark and light
 themes. Source of truth for the public surface is `src/index.ts`.
 
-Unreleased on `main` since v2.10.0 (→ v2.11.0): `Select` multi-select (#81), a
-full i18n string sweep (#79), the date/time layer (#42/#61 — `TimePicker`,
-`Calendar` range mode, `DateRangePicker`, `DatePicker` date+time), and opt-in
-`DataTable` row virtualization (#37).
+The 1.0.0 surface includes `Select` multi-select (#81), a full i18n string
+sweep (#79), the date/time layer (#42/#61 — `TimePicker`, `Calendar` range
+mode, `DateRangePicker`, `DatePicker` date+time), and opt-in `DataTable` row
+virtualization (#37).
 
 ---
 
@@ -161,7 +161,7 @@ full i18n string sweep (#79), the date/time layer (#42/#61 — `TimePicker`,
 
 ## Build & Distribution
 
-- **Package:** `@koduhai/design-system@2.10.0` on GitHub Packages (`https://npm.pkg.github.com`); `main` is at 2.11.0-in-progress. `package.json`
+- **Package:** `@koduhai/design-system@1.0.0` on the public npm registry. `package.json`
 - **Peer deps:** `react ^18 || ^19`, `react-dom ^18 || ^19`. **Zero runtime deps.**
 - **Dual ESM + CJS + `.d.ts`** via `tsup`. `tsup.config.ts`
 - **Entry points (`package.json` `exports`):**

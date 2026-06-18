@@ -36,7 +36,7 @@ pattern, look there first; the conventions below are all demonstrated by it.
 ## Component Set
 
 The library has grown well past its original scope; **`src/index.ts` is the
-authoritative list** of what's shipped (69 components as of v2.5.0), spanning
+authoritative list** of what's shipped (81 components as of v1.0.0), spanning
 actions, forms, overlays, navigation, feedback, layout/typography, data display,
 data-viz, and date inputs. `Button` remains the **reference implementation** for
 the patterns below. (Earlier revisions of this doc listed a 12-component scope and

@@ -13,3 +13,6 @@ test-output.txt
 .env.*
 !.env.example
 .npmrc
+
+# Playwright MCP browser session artifacts
+.playwright-mcp/

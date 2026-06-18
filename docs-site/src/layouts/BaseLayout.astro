@@ -56,6 +56,28 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </header>
 
       <Sidebar />
+      {/* The sidebar is its own scroll container, and each nav click is a full
+          MPA page load, so a fresh sidebar would render scrolled to the top.
+          Persist its scroll position across navigations (restored before paint
+          since this runs right after the nav is parsed). */}
+      <script is:inline>
+        (function () {
+          var KEY = 'koduh-sidebar-scroll';
+          var nav = document.querySelector('.doc-sidebar');
+          if (!nav) return;
+          try {
+            var saved = sessionStorage.getItem(KEY);
+            if (saved) nav.scrollTop = parseInt(saved, 10) || 0;
+          } catch (e) {}
+          var save = function () {
+            try {
+              sessionStorage.setItem(KEY, String(nav.scrollTop));
+            } catch (e) {}
+          };
+          nav.addEventListener('scroll', save, { passive: true });
+          window.addEventListener('pagehide', save);
+        })();
+      </script>
 
       <main class="doc-main">
         <article class="doc-content">

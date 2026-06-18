@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import CommandPaletteDemo from '../../components/demos/CommandPaletteDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="CommandPalette" description="searchable command launcher (#32)">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>CommandPalette</h1>
+  <p class="doc-lede">searchable command launcher (#32).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="CommandPalette" />
+
+  <h2>Examples</h2>
+  <CommandPaletteDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; CommandPalette &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>open</code></td>
+        <td><code>boolean</code></td>
+        <td><em>required</em></td>
+        <td>Whether the palette is shown modally.</td>
+      </tr>
+      <tr>
+        <td><code>onOpenChange</code></td>
+        <td><code>(open: boolean) =&gt; void</code></td>
+        <td><em>required</em></td>
+        <td>Called with the requested next open state. Fires with <code>false</code> on Esc,
+backdrop click, or after a command runs. Matches the Dialog overlay API.</td>
+      </tr>
+      <tr>
+        <td><code>commands</code></td>
+        <td><code>CommandPaletteCommand[]</code></td>
+        <td><em>required</em></td>
+        <td>The available commands.</td>
+      </tr>
+      <tr>
+        <td><code>placeholder</code></td>
+        <td><code>string</code></td>
+        <td><code>'Type a command or search…'</code></td>
+        <td>Search input placeholder.</td>
+      </tr>
+      <tr>
+        <td><code>noResultsText</code></td>
+        <td><code>string</code></td>
+        <td><code>'No results'</code></td>
+        <td>Shown when no command matches.</td>
+      </tr>
+      <tr>
+        <td><code>'aria-label'</code></td>
+        <td><code>string</code></td>
+        <td><code>'Command menu'</code></td>
+        <td>Accessible label for the search input.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

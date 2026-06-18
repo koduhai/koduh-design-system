@@ -1,12 +1,19 @@
-# Builds the Storybook docs site and deploys it to GitHub Pages on every push to
-# main. Enable Pages once in repo Settings -> Pages -> "Build and deployment" ->
-# Source: "GitHub Actions". The site publishes to
-# https://koduhai.github.io/koduh-design-system/.
+# Builds the Astro docs site (docs-site/) and deploys it to GitHub Pages on every
+# push to main. Enable Pages once in repo Settings -> Pages -> "Build and
+# deployment" -> Source: "GitHub Actions". The site publishes to
+# https://koduhai.github.io/koduh-design-system/ (matches docs-site `base`).
+#
+# The docs site consumes the library as a built package (`file:..` dep), so the
+# library's dist/ must exist before Astro builds — we run the root `npm run build`
+# (build:tokens + tsup) first. The component reference pages are generated and
+# committed (docs-site/scripts/generate-pages.ts), so CI only builds, it does not
+# regenerate; re-run the generator locally and commit when props/tokens/FEATURES
+# change.
 #
 # Actions are SHA-pinned (with a trailing version comment) for supply-chain
 # safety, matching ci.yml; Dependabot's github-actions group keeps the SHAs
 # current. The runner is pinned to ubuntu-24.04 to match the rest of CI.
-name: Deploy Storybook to Pages
+name: Deploy docs site to Pages
 
 on:
   push:
@@ -38,14 +45,26 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            docs-site/package-lock.json
 
-      - name: Install dependencies
+      - name: Install library dependencies
         run: npm ci
 
-      # `prebuild-storybook` runs `build:tokens` first, so dist/theme.css exists
-      # before Storybook's preview imports it. Output goes to storybook-static/.
-      - name: Build Storybook
-        run: npm run build-storybook
+      # build:tokens writes dist/theme.css, then tsup emits the CJS/ESM/.d.ts the
+      # docs site imports via its `file:..` dependency. Must run before Astro.
+      - name: Build library
+        run: npm run build
+
+      - name: Install docs-site dependencies
+        run: npm ci
+        working-directory: docs-site
+
+      # Static output lands in docs-site/dist/. `base` is already /koduh-design-system.
+      - name: Build docs site
+        run: npm run build
+        working-directory: docs-site
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
@@ -53,7 +72,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
-          path: storybook-static
+          path: docs-site/dist
 
   deploy:
     needs: build

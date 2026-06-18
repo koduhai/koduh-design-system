@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import SidebarDemo from '../../components/demos/SidebarDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Sidebar" description="`items`-driven, `collapseBelow` matchMedia auto-collapse (#22)">
+  <p class="doc-eyebrow">Navigation</p>
+  <h1>Sidebar</h1>
+  <p class="doc-lede"><code>items</code>-driven, <code>collapseBelow</code> matchMedia auto-collapse (#22).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Sidebar" />
+
+  <h2>Examples</h2>
+  <SidebarDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Sidebar &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>SidebarItem[]</code></td>
+        <td><em>required</em></td>
+        <td>Flat list of navigation items.</td>
+      </tr>
+      <tr>
+        <td><code>collapsed</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Controlled collapsed state.</td>
+      </tr>
+      <tr>
+        <td><code>defaultCollapsed</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>Initial collapsed state when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onCollapsedChange</code></td>
+        <td><code>(collapsed: boolean) =&gt; void</code></td>
+        <td>—</td>
+        <td>Called with the next collapsed value when the toggle is pressed.</td>
+      </tr>
+      <tr>
+        <td><code>collapseBelow</code></td>
+        <td><code>number | string</code></td>
+        <td>—</td>
+        <td>Auto-collapse to the icon rail at or below this viewport width (number → px,
+or any media width like <code>'48rem'</code>), via <code>matchMedia</code>. Opt-in: omit to keep
+the sidebar width fixed. The toggle still works to expand; resizing back
+below the breakpoint re-collapses. In controlled mode this drives
+<code>onCollapsedChange</code> so the parent stays the source of truth.</td>
+      </tr>
+      <tr>
+        <td><code>width</code></td>
+        <td><code>number | string</code></td>
+        <td><code>240</code></td>
+        <td>Expanded width (number → px).</td>
+      </tr>
+      <tr>
+        <td><code>header</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Content above the item list (e.g. brand).</td>
+      </tr>
+      <tr>
+        <td><code>footer</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Content pinned below the item list (e.g. user menu).</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

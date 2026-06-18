@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "componentCount": 81,
+  "categories": [
+    "Actions",
+    "Form controls",
+    "Data display & feedback",
+    "Overlays & floating",
+    "Navigation",
+    "Layout & primitives",
+    "Typography"
+  ],
+  "hasTokens": true
+}

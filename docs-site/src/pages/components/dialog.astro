@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import DialogDemo from '../../components/demos/DialogDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Dialog" description="native `&lt;dialog&gt;` + `showModal()`, `initialFocus`, pending/loading confirm, warning tone (#57)">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>Dialog</h1>
+  <p class="doc-lede">native <code>&lt;dialog&gt;</code> + <code>showModal()</code>, <code>initialFocus</code>, pending/loading confirm, warning tone (#57).</p>
+
+  <p>Also exported from this module: <code>ConfirmDialog</code>.</p>
+  <h2>Playground</h2>
+  <Playground client:visible name="Dialog" />
+
+  <h2>Examples</h2>
+  <DialogDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Dialog, ConfirmDialog &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>open</code></td>
+        <td><code>boolean</code></td>
+        <td><em>required</em></td>
+        <td>Whether the dialog is shown modally.</td>
+      </tr>
+      <tr>
+        <td><code>onOpenChange</code></td>
+        <td><code>(open: boolean) =&gt; void</code></td>
+        <td><em>required</em></td>
+        <td>Called with the requested next open state. The dialog only ever requests to
+close (close button, Esc, backdrop), so this fires with <code>false</code>. Named to
+match Popover/Select for a consistent overlay API.</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Heading rendered in the dialog header and used as its accessible name.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>DialogSize</code></td>
+        <td><code>'md'</code></td>
+        <td>Max-width preset.</td>
+      </tr>
+      <tr>
+        <td><code>dismissable</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Allow Esc and backdrop click to close. Default true.</td>
+      </tr>
+      <tr>
+        <td><code>initialFocus</code></td>
+        <td><code>RefObject&lt;HTMLElement | null&gt; | string</code></td>
+        <td>—</td>
+        <td>Where to send focus when the dialog opens, overriding the native default
+(the first focusable descendant — usually the Close button). A ref to an
+element, or a CSS selector queried within the dialog.</td>
+      </tr>
+      <tr>
+        <td><code>footer</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Actions rendered in the dialog footer.</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

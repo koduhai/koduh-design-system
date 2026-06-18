@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import ButtonDemo from '../../components/demos/ButtonDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Button" description="solid/outline/ghost variants × shared tone vocab × `asChild`">
+  <p class="doc-eyebrow">Actions</p>
+  <h1>Button</h1>
+  <p class="doc-lede">solid/outline/ghost variants × shared tone vocab × <code>asChild</code>.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Button" />
+
+  <h2>Examples</h2>
+  <ButtonDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Button &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>variant</code></td>
+        <td><code>ButtonVariant</code></td>
+        <td><code>'solid'</code></td>
+        <td>Visual style.</td>
+      </tr>
+      <tr>
+        <td><code>tone</code></td>
+        <td><code>ButtonTone</code></td>
+        <td><code>'primary'</code></td>
+        <td>Semantic color.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>ButtonSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>fullWidth</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Stretch to fill the container width.</td>
+      </tr>
+      <tr>
+        <td><code>startIcon</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Icon before the label (ignored when asChild).</td>
+      </tr>
+      <tr>
+        <td><code>endIcon</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Icon after the label (ignored when asChild).</td>
+      </tr>
+      <tr>
+        <td><code>asChild</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Render the single child element instead of a &lt;button&gt;, merging button props onto it.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

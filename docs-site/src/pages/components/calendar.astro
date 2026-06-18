@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CalendarDemo from '../../components/demos/CalendarDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Calendar" description="standalone month grid, full keyboard nav, single or `mode='range'` (#27/#42)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Calendar</h1>
+  <p class="doc-lede">standalone month grid, full keyboard nav, single or <code>mode='range'</code> (#27/#42).</p>
+
+  <h2>Examples</h2>
+  <CalendarDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Calendar &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <p>
+    The props for <code>Calendar</code> are defined as a union type, so they don't
+    reduce to a single table. See the exported <code>CalendarProps</code> type and the
+    <a href="https://github.com/koduhai/koduh-design-system/blob/main/src/components/Calendar/Calendar.tsx">source</a>.
+  </p>
+</BaseLayout>

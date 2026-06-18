@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import ToggleGroupDemo from '../../components/demos/ToggleGroupDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="ToggleGroup" description="single/multi roving-focus segmented selector (#12)">
+  <p class="doc-eyebrow">Actions</p>
+  <h1>ToggleGroup</h1>
+  <p class="doc-lede">single/multi roving-focus segmented selector (#12).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="ToggleGroup" />
+
+  <h2>Examples</h2>
+  <ToggleGroupDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; ToggleGroup &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>ToggleGroupItem[]</code></td>
+        <td><em>required</em></td>
+        <td>Item definitions.</td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td><code>'single' | 'multiple'</code></td>
+        <td><code>'single'</code></td>
+        <td>Selection mode. 'single' → radiogroup; 'multiple' → toggle-button group.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string | string[]</code></td>
+        <td>—</td>
+        <td>Controlled value: a string for 'single', a string[] for 'multiple'.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>string | string[]</code></td>
+        <td>—</td>
+        <td>Uncontrolled initial value.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: string | string[]) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the next selection (string for 'single', string[] for 'multiple').</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>ToggleGroupSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>tone</code></td>
+        <td><code>ToggleGroupTone</code></td>
+        <td><code>'primary'</code></td>
+        <td>Shared tone vocabulary.</td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Disables every item.</td>
+      </tr>
+      <tr>
+        <td><code>orientation</code></td>
+        <td><code>'horizontal' | 'vertical'</code></td>
+        <td><code>'horizontal'</code></td>
+        <td>Layout/keyboard axis.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

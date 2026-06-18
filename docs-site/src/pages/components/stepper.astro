@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import StepperDemo from '../../components/demos/StepperDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Stepper" description="vertical/horizontal step progress (#32)">
+  <p class="doc-eyebrow">Navigation</p>
+  <h1>Stepper</h1>
+  <p class="doc-lede">vertical/horizontal step progress (#32).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Stepper" />
+
+  <h2>Examples</h2>
+  <StepperDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Stepper &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>steps</code></td>
+        <td><code>StepperStep[]</code></td>
+        <td><em>required</em></td>
+        <td>The ordered set of steps to render.</td>
+      </tr>
+      <tr>
+        <td><code>activeStep</code></td>
+        <td><code>number</code></td>
+        <td><em>required</em></td>
+        <td>Zero-based index of the active step.</td>
+      </tr>
+      <tr>
+        <td><code>orientation</code></td>
+        <td><code>StepperOrientation</code></td>
+        <td><code>'horizontal'</code></td>
+        <td>Layout direction.</td>
+      </tr>
+      <tr>
+        <td><code>onStepClick</code></td>
+        <td><code>(index: number) =&gt; void</code></td>
+        <td>—</td>
+        <td>When provided, completed and visited steps render as buttons that call this
+with the step index. Upcoming (future) steps stay non-interactive.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

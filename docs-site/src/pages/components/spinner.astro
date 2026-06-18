@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import SpinnerDemo from '../../components/demos/SpinnerDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Spinner" description="tone subset, sizes">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>Spinner</h1>
+  <p class="doc-lede">tone subset, sizes.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Spinner" />
+
+  <h2>Examples</h2>
+  <SpinnerDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Spinner &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>SpinnerSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>tone</code></td>
+        <td><code>SpinnerTone</code></td>
+        <td><code>'primary'</code></td>
+        <td>Semantic color.</td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Accessible label. When provided, the root is <code>role="status"</code> with visually-hidden
+text so screen readers announce it. When omitted, the spinner is decorative
+(<code>aria-hidden</code>).</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

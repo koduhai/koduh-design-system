@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import TagInputDemo from '../../components/demos/TagInputDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="TagInput" description="chip-rendering token input">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>TagInput</h1>
+  <p class="doc-lede">chip-rendering token input.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="TagInput" />
+
+  <h2>Examples</h2>
+  <TagInputDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; TagInput &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Provide <code>label</code>, or wrap the control in a <code>&lt;FormField&gt;</code> which supplies it.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string[]</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>string[]</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(tags: string[], event?: SyntheticEvent) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the next tags array and, where available, the originating event.</td>
+      </tr>
+      <tr>
+        <td><code>placeholder</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>max</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Cap the number of tags.</td>
+      </tr>
+      <tr>
+        <td><code>allowDuplicates</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>Allow duplicate tags.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>TagInputSize</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>name</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>When set, the committed tags are submitted with a native <code>&lt;form&gt;</code> as one
+hidden input per tag under this name (standard multi-value encoding). The
+visible text input, whose value is the in-progress draft, never carries
+<code>name</code>, so the draft string is never posted.</td>
+      </tr>
+      <tr>
+        <td><code>required</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>helperText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>errorText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>className</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

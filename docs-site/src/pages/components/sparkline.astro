@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import SparklineDemo from '../../components/demos/SparklineDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Sparkline" description="line/area/bar microchart (#28)">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>Sparkline</h1>
+  <p class="doc-lede">line/area/bar microchart (#28).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Sparkline" />
+
+  <h2>Examples</h2>
+  <SparklineDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Sparkline &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>data</code></td>
+        <td><code>number[]</code></td>
+        <td><em>required</em></td>
+        <td>Numeric series to plot. An empty array renders an empty (but labeled) svg.</td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td><code>SparklineType</code></td>
+        <td><code>'line'</code></td>
+        <td>Shape to draw.</td>
+      </tr>
+      <tr>
+        <td><code>width</code></td>
+        <td><code>number</code></td>
+        <td><code>120</code></td>
+        <td>SVG width in px.</td>
+      </tr>
+      <tr>
+        <td><code>height</code></td>
+        <td><code>number</code></td>
+        <td><code>32</code></td>
+        <td>SVG height in px.</td>
+      </tr>
+      <tr>
+        <td><code>color</code></td>
+        <td><code>string</code></td>
+        <td><code>the first categorical chart color</code></td>
+        <td>Stroke/fill color.</td>
+      </tr>
+      <tr>
+        <td><code>'aria-label'</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Accessible label. When omitted, a generic summary is generated from the
+data so the graphic is never unlabeled.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

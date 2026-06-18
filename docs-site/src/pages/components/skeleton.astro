@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import SkeletonDemo from '../../components/demos/SkeletonDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Skeleton" description="variants for text/circle/rect, dark-aware">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>Skeleton</h1>
+  <p class="doc-lede">variants for text/circle/rect, dark-aware.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Skeleton" />
+
+  <h2>Examples</h2>
+  <SkeletonDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Skeleton &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>variant</code></td>
+        <td><code>SkeletonVariant</code></td>
+        <td><code>'text'</code></td>
+        <td>Shape of the placeholder.</td>
+      </tr>
+      <tr>
+        <td><code>width</code></td>
+        <td><code>number | string</code></td>
+        <td>—</td>
+        <td>Width. Numbers are treated as px; strings are used verbatim.</td>
+      </tr>
+      <tr>
+        <td><code>height</code></td>
+        <td><code>number | string</code></td>
+        <td>—</td>
+        <td>Height. Numbers are treated as px; strings are used verbatim.</td>
+      </tr>
+      <tr>
+        <td><code>animation</code></td>
+        <td><code>'pulse' | 'none'</code></td>
+        <td><code>'pulse'</code></td>
+        <td>Animation style.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

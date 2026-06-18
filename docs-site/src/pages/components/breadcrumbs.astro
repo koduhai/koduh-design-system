@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import BreadcrumbsDemo from '../../components/demos/BreadcrumbsDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Breadcrumbs" description="Breadcrumbs component">
+  <p class="doc-eyebrow">Navigation</p>
+  <h1>Breadcrumbs</h1>
+  <p class="doc-lede">Part of the Navigation set.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Breadcrumbs" />
+
+  <h2>Examples</h2>
+  <BreadcrumbsDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Breadcrumbs &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>BreadcrumbItem[]</code></td>
+        <td><em>required</em></td>
+        <td>Ordered list of breadcrumb steps, first → last (current page).</td>
+      </tr>
+      <tr>
+        <td><code>separator</code></td>
+        <td><code>ReactNode</code></td>
+        <td><code>a chevron icon</code></td>
+        <td>Separator between items.</td>
+      </tr>
+      <tr>
+        <td><code>maxItems</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Collapse middle items when more than this many.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

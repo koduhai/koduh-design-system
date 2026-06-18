@@ -1,0 +1,31 @@
+---
+import { nav } from '../data/nav';
+
+const { pathname } = Astro.url;
+// Normalize against the configured base so aria-current matches in prod too.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const strip = (p: string) => p.replace(base, '') || '/';
+const here = strip(pathname);
+
+const withBase = (href: string) => `${base}${href}`;
+const isCurrent = (href: string) => strip(withBase(href)) === here;
+---
+
+<nav class="doc-sidebar" aria-label="Documentation">
+  {
+    nav.map((group) => (
+      <div class="doc-nav-group">
+        <p class="doc-nav-title">{group.title}</p>
+        {group.links.map((link) => (
+          <a
+            class="doc-nav-link"
+            href={withBase(link.href)}
+            aria-current={isCurrent(link.href) ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    ))
+  }
+</nav>

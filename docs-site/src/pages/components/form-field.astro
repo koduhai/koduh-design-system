@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import FormFieldDemo from '../../components/demos/FormFieldDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="FormField" description="label/required/`aria-*` wiring">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>FormField</h1>
+  <p class="doc-lede">label/required/<code>aria-*</code> wiring.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="FormField" />
+
+  <h2>Examples</h2>
+  <FormFieldDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; FormField &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>name</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Bind this field to an enclosing &lt;Form&gt; by name (form supplies value + error).</td>
+      </tr>
+      <tr>
+        <td><code>required</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>errorText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Shown when <code>error</code>; replaces helperText. Ignored for bound fields (the form supplies it).</td>
+      </tr>
+      <tr>
+        <td><code>helperText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

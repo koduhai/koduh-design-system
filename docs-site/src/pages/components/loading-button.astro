@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import LoadingButtonDemo from '../../components/demos/LoadingButtonDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="LoadingButton" description="`Button` + `loading` + `aria-busy`">
+  <p class="doc-eyebrow">Actions</p>
+  <h1>LoadingButton</h1>
+  <p class="doc-lede"><code>Button</code> + <code>loading</code> + <code>aria-busy</code>.</p>
+
+  <p>Also exported from this module: <code>Button</code>.</p>
+  <h2>Playground</h2>
+  <Playground client:visible name="LoadingButton" />
+
+  <h2>Examples</h2>
+  <LoadingButtonDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; LoadingButton, Button &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>loading</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Show a spinner, set aria-busy, and disable interaction.</td>
+      </tr>
+      <tr>
+        <td><code>loadingText</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Screen-reader-only text announced while loading (e.g. "Saving…").</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

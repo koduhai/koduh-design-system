@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import DrawerDemo from '../../components/demos/DrawerDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Drawer" description="edge slide-in built on `&lt;dialog&gt;` (#12)">
+  <p class="doc-eyebrow">Overlays &amp; floating</p>
+  <h1>Drawer</h1>
+  <p class="doc-lede">edge slide-in built on <code>&lt;dialog&gt;</code> (#12).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Drawer" />
+
+  <h2>Examples</h2>
+  <DrawerDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Drawer &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>open</code></td>
+        <td><code>boolean</code></td>
+        <td><em>required</em></td>
+        <td>Whether the drawer is shown modally.</td>
+      </tr>
+      <tr>
+        <td><code>onOpenChange</code></td>
+        <td><code>(open: boolean) =&gt; void</code></td>
+        <td><em>required</em></td>
+        <td>Called with the requested next open state (the drawer only requests <code>false</code>).</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Heading rendered in the header and used as the accessible name. When omitted,
+supply an <code>aria-label</code> (or <code>aria-labelledby</code>) so the modal still has an
+accessible name (WCAG 4.1.2); both are forwarded to the underlying dialog.</td>
+      </tr>
+      <tr>
+        <td><code>side</code></td>
+        <td><code>DrawerSide</code></td>
+        <td><code>'end'</code></td>
+        <td>Edge the panel is pinned to. Logical, so 'start'/'end' flip in <code>dir="rtl"</code>.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>DrawerSize</code></td>
+        <td><code>'md'</code></td>
+        <td>Panel width (inline sides) or height (block sides).</td>
+      </tr>
+      <tr>
+        <td><code>dismissable</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Allow Esc and backdrop click to close. Default true.</td>
+      </tr>
+      <tr>
+        <td><code>initialFocus</code></td>
+        <td><code>RefObject&lt;HTMLElement | null&gt; | string</code></td>
+        <td>—</td>
+        <td>Where to send focus when the drawer opens, overriding the native default.</td>
+      </tr>
+      <tr>
+        <td><code>footer</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Actions rendered in the footer.</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

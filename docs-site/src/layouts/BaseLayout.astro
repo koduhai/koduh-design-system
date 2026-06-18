@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+import Sidebar from '../components/Sidebar.astro';
+import ThemeToggle from '../components/ThemeToggle.tsx';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Koduh Design System</title>
+    {description && <meta name="description" content={description} />}
+    {/* No-flash theme: resolve the persisted/system theme before first paint. */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('koduh-color-mode');
+          var mode = stored;
+          // Dark-first, matching KoduhThemeProvider's default. We only follow
+          // the OS scheme when the visitor has explicitly chosen 'system'.
+          if (mode === 'system') {
+            mode =
+              window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark';
+          } else if (mode !== 'light' && mode !== 'dark') {
+            mode = 'dark';
+          }
+          document.documentElement.dataset.theme = mode;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="doc-shell">
+      <a class="doc-brand" href={base + '/'}>
+        <span class="doc-brand-mark">K</span>
+        <span>Koduh DS</span>
+      </a>
+
+      <header class="doc-header">
+        <span class="doc-header-meta">@koduhai/design-system · 81 components</span>
+        <ThemeToggle client:load />
+      </header>
+
+      <Sidebar />
+
+      <main class="doc-main">
+        <article class="doc-content">
+          <slot />
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

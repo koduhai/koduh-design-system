@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Example from '../components/Example.astro';
+import { Button } from '@koduhai/design-system';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const tones = ['primary', 'neutral', 'success', 'warning', 'danger', 'info', 'accent'] as const;
+---
+
+<BaseLayout
+  title="Introduction"
+  description="A dependency-free, accessible React component library with zero-runtime CSS styling."
+>
+  <p class="doc-eyebrow">@koduhai/design-system</p>
+  <h1>Koduh Design System</h1>
+  <p class="doc-lede">
+    A from-scratch React component library with <strong>zero dependency</strong> on any third-party
+    component or styling library. Design tokens compile to CSS custom properties, component styles
+    are CSS Modules, and WCAG&nbsp;AA is a hard requirement. 81 components, dark-first theming.
+  </p>
+
+  <Example caption="Buttons across the shared tone vocabulary, rendered straight from the package">
+    {tones.map((tone) => <Button tone={tone}>{tone}</Button>)}
+  </Example>
+
+  <h2>Install</h2>
+  <p>The package is published to GitHub Packages. React 18 or 19 is a peer dependency.</p>
+  <p><code>npm install @koduhai/design-system</code></p>
+
+  <h2>Quick start</h2>
+  <p>
+    Wrap your app in <code>KoduhThemeProvider</code> and import the stylesheet once. The provider sets
+    <code>data-theme</code> on <code>&lt;html&gt;</code>; every token resolves from there.
+  </p>
+
+  <h2>Why it exists</h2>
+  <p>
+    Most component libraries pull in a styling runtime and a tree of transitive dependencies. This
+    one ships zero runtime dependencies: tokens become <code>--ku-*</code> CSS variables at build
+    time, so theming is just a stylesheet and an attribute. This very site is themed by the same
+    variables, which is why the toggle in the header re-themes the docs and the live demos together.
+  </p>
+
+  <h2>Explore</h2>
+  <div class="doc-grid">
+    <a class="doc-card" href={base + '/components/'}>
+      <div class="doc-card-title">Components →</div>
+      <div class="doc-card-desc">Browse the component surface with live, interactive examples.</div>
+    </a>
+    <a class="doc-card" href={base + '/foundations/color/'}>
+      <div class="doc-card-title">Color →</div>
+      <div class="doc-card-desc">The token-backed palette and brand ramp, per theme.</div>
+    </a>
+  </div>
+</BaseLayout>

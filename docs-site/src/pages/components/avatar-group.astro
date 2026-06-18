@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import AvatarGroupDemo from '../../components/demos/AvatarGroupDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="AvatarGroup" description="stacked overlapping avatars + `+N` overflow (#12)">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>AvatarGroup</h1>
+  <p class="doc-lede">stacked overlapping avatars + <code>+N</code> overflow (#12).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="AvatarGroup" />
+
+  <h2>Examples</h2>
+  <AvatarGroupDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; AvatarGroup &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>max</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Cap the number of visible avatars; the remainder collapses into a +N chip.</td>
+      </tr>
+      <tr>
+        <td><code>total</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Logical total when more avatars exist than are rendered (server-truncated lists).</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>AvatarSize</code></td>
+        <td><code>'md'</code></td>
+        <td>Propagated to every child Avatar and the overflow chip.</td>
+      </tr>
+      <tr>
+        <td><code>shape</code></td>
+        <td><code>AvatarShape</code></td>
+        <td><code>'circle'</code></td>
+        <td>Propagated to every child Avatar and the overflow chip.</td>
+      </tr>
+      <tr>
+        <td><code>spacing</code></td>
+        <td><code>'tight' | 'normal'</code></td>
+        <td><code>'normal'</code></td>
+        <td>Overlap amount.</td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Accessible name for the group, announced by assistive tech as the label of
+the avatar stack (e.g. "Project collaborators"). Maps to aria-label. Omit to
+pass aria-label / aria-labelledby directly via props instead.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

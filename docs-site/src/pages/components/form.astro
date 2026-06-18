@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FormDemo from '../../components/demos/FormDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Form" description="headless form store with per-field subscriptions, Standard Schema validation, focus-on-error (#38)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>Form</h1>
+  <p class="doc-lede">headless form store with per-field subscriptions, Standard Schema validation, focus-on-error (#38).</p>
+
+  <p>Also exported from this module: <code>FormErrorSummary</code>.</p>
+  <h2>Examples</h2>
+  <FormDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Form, FormErrorSummary &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>form</code></td>
+        <td><code>FormApi</code></td>
+        <td><em>required</em></td>
+        <td>The form instance from useForm().</td>
+      </tr>
+      <tr>
+        <td><code>onValid</code></td>
+        <td><code>(values: FormValues) =&gt; void | Promise&lt;void&gt;</code></td>
+        <td>—</td>
+        <td>Called with validated values on a successful submit.</td>
+      </tr>
+      <tr>
+        <td><code>onInvalid</code></td>
+        <td><code>(errors: FormErrors) =&gt; void</code></td>
+        <td>—</td>
+        <td>Called with the error map when submit fails validation.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

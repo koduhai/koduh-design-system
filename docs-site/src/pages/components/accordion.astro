@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import AccordionDemo from '../../components/demos/AccordionDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Accordion" description="`lazy` + `keepMounted`">
+  <p class="doc-eyebrow">Layout &amp; primitives</p>
+  <h1>Accordion</h1>
+  <p class="doc-lede"><code>lazy</code> + <code>keepMounted</code>.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Accordion" />
+
+  <h2>Examples</h2>
+  <AccordionDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Accordion &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>items</code></td>
+        <td><code>AccordionItemData[]</code></td>
+        <td><em>required</em></td>
+        <td>The sections to render.</td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string | string[]</code></td>
+        <td>—</td>
+        <td>Expanded item id(s). string for single-mode, string[] for multiple.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>string | string[]</code></td>
+        <td>—</td>
+        <td>Initial expanded id(s) when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(value: string | string[]) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the new expanded id (single) or ids (multiple).</td>
+      </tr>
+      <tr>
+        <td><code>multiple</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>Allow multiple panels open at once.</td>
+      </tr>
+      <tr>
+        <td><code>collapsible</code></td>
+        <td><code>boolean</code></td>
+        <td><code>true</code></td>
+        <td>Single-mode: allow closing the open item.</td>
+      </tr>
+      <tr>
+        <td><code>lazy</code></td>
+        <td><code>boolean</code></td>
+        <td><code>`false` (eager — every panel's content is rendered up front)</code></td>
+        <td>Defer rendering a collapsed panel's content until it is first expanded.</td>
+      </tr>
+      <tr>
+        <td><code>keepMounted</code></td>
+        <td><code>boolean</code></td>
+        <td><code>`false`</code></td>
+        <td>Once a panel has been expanded, keep its content mounted (hidden via
+<code>hidden</code>/CSS) instead of unmounting it when collapsed again.</td>
+      </tr>
+      <tr>
+        <td><code>headingLevel</code></td>
+        <td><code>HeadingLevel</code></td>
+        <td><code>`3`</code></td>
+        <td>Semantic heading level (<code>&lt;h2&gt;</code>–<code>&lt;h6&gt;</code>) wrapping each trigger, so the
+accordion aligns with the surrounding document outline.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

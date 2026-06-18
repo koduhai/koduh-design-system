@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import PageHeaderDemo from '../../components/demos/PageHeaderDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="PageHeader" description="title + breadcrumbs + actions, `BreadcrumbItem[]` accepted">
+  <p class="doc-eyebrow">Navigation</p>
+  <h1>PageHeader</h1>
+  <p class="doc-lede">title + breadcrumbs + actions, <code>BreadcrumbItem[]</code> accepted.</p>
+
+  <p>Also exported from this module: <code>BreadcrumbItem[]</code>.</p>
+  <h2>Playground</h2>
+  <Playground client:visible name="PageHeader" />
+
+  <h2>Examples</h2>
+  <PageHeaderDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; PageHeader, BreadcrumbItem[] &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>title</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>Page or section title. Required.</td>
+      </tr>
+      <tr>
+        <td><code>subtitle</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Supporting line shown beneath the title.</td>
+      </tr>
+      <tr>
+        <td><code>breadcrumbs</code></td>
+        <td><code>BreadcrumbItem[] | ReactNode</code></td>
+        <td>—</td>
+        <td>Breadcrumb trail. An array of <code>BreadcrumbItem</code> renders a single internal
+<code>&lt;Breadcrumbs&gt;</code> (one nav landmark). A <code>ReactNode</code> is rendered as-is — it
+owns its own landmark and is NOT wrapped in a <code>&lt;nav&gt;</code> (so passing your own
+<code>&lt;Breadcrumbs&gt;</code> won't create a nested duplicate nav).</td>
+      </tr>
+      <tr>
+        <td><code>actions</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Right-aligned actions (buttons, menus).</td>
+      </tr>
+      <tr>
+        <td><code>headingLevel</code></td>
+        <td><code>HeadingLevel</code></td>
+        <td><code>1</code></td>
+        <td>Semantic heading level for the title.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import ButtonGroupDemo from '../../components/demos/ButtonGroupDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="ButtonGroup" description="segmented attached cluster sharing one border (#43)">
+  <p class="doc-eyebrow">Actions</p>
+  <h1>ButtonGroup</h1>
+  <p class="doc-lede">segmented attached cluster sharing one border (#43).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="ButtonGroup" />
+
+  <h2>Examples</h2>
+  <ButtonGroupDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; ButtonGroup &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>orientation</code></td>
+        <td><code>ButtonGroupOrientation</code></td>
+        <td><code>'horizontal'</code></td>
+        <td>Layout direction.</td>
+      </tr>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td><em>required</em></td>
+        <td>Expects Button elements; they are joined into a segmented cluster.
+
+The root renders with <code>role="group"</code>, which only conveys useful grouping
+semantics to assistive tech when it has an accessible name. Pass an
+<code>aria-label</code> (or <code>aria-labelledby</code>) describing the cluster, e.g.
+<code>&lt;ButtonGroup aria-label="Text style"&gt;</code>. Both forward to the root via the
+spread DOM props.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

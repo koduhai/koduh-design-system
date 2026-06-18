@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import TableDemo from '../../components/demos/TableDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Table" description="sortable headers, multi-column sort, `selectAllIds`">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>Table</h1>
+  <p class="doc-lede">sortable headers, multi-column sort, <code>selectAllIds</code>.</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Table" />
+
+  <h2>Examples</h2>
+  <TableDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Table &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>columns</code></td>
+        <td><code>Column&lt;Row&gt;[]</code></td>
+        <td><em>required</em></td>
+        <td>Column definitions; order matches the rendered column order.</td>
+      </tr>
+      <tr>
+        <td><code>data</code></td>
+        <td><code>Row[]</code></td>
+        <td><em>required</em></td>
+        <td>Rows to render. An empty array triggers the <code>empty</code> slot.</td>
+      </tr>
+      <tr>
+        <td><code>getRowId</code></td>
+        <td><code>(row: Row) =&gt; string</code></td>
+        <td><em>required</em></td>
+        <td>Returns a stable unique string id for each row (used as React key and selection id).</td>
+      </tr>
+      <tr>
+        <td><code>caption</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Accessible name; visually hidden unless <code>captionVisible</code>.</td>
+      </tr>
+      <tr>
+        <td><code>captionVisible</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>When true, renders the caption visibly above the table.</td>
+      </tr>
+      <tr>
+        <td><code>sortKey</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Controlled sort key.</td>
+      </tr>
+      <tr>
+        <td><code>sortDir</code></td>
+        <td><code>SortDirection</code></td>
+        <td>—</td>
+        <td>Controlled sort direction.</td>
+      </tr>
+      <tr>
+        <td><code>onSortChange</code></td>
+        <td><code>(key: string, dir: SortDirection, event?: MouseEvent) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the requested sort key, toggled direction, and the originating event.</td>
+      </tr>
+      <tr>
+        <td><code>sort</code></td>
+        <td><code>SortRule[]</code></td>
+        <td>—</td>
+        <td>Multi-column sort rules in priority order. When provided, takes precedence
+over <code>sortKey</code>/<code>sortDir</code> and renders an <code>aria-sort</code> + priority badge per
+sorted column. Omit to keep the single-column <code>sortKey</code>/<code>sortDir</code> behavior.</td>
+      </tr>
+      <tr>
+        <td><code>selectedIds</code></td>
+        <td><code>string[]</code></td>
+        <td>—</td>
+        <td>Controlled selected row ids.</td>
+      </tr>
+      <tr>
+        <td><code>onSelectionChange</code></td>
+        <td><code>(ids: string[]) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the next selected id set. When <code>selectAllIds</code> is omitted, select-all
+emits the current page's row ids; when <code>selectAllIds</code> is provided it emits that
+set instead — so a paginated consumer can select across pages.</td>
+      </tr>
+      <tr>
+        <td><code>selectAllIds</code></td>
+        <td><code>string[]</code></td>
+        <td>—</td>
+        <td>When provided, the header select-all checkbox reflects/toggles THIS id set
+(e.g. all rows across pages) instead of only the rendered <code>data</code>.</td>
+      </tr>
+      <tr>
+        <td><code>loading</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Renders skeleton rows in place of data.</td>
+      </tr>
+      <tr>
+        <td><code>loadingRows</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Number of skeleton rows. Default 5.</td>
+      </tr>
+      <tr>
+        <td><code>empty</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Shown when <code>data</code> is empty and not loading.</td>
+      </tr>
+      <tr>
+        <td><code>stickyHeader</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Sticky header for scroll-in-container.</td>
+      </tr>
+      <tr>
+        <td><code>density</code></td>
+        <td><code>Density</code></td>
+        <td><code>comfortable)</code></td>
+        <td>Row/cell density. <code>compact</code> tightens cell padding via the <code>--ku-density-*</code>
+vars. Omit to inherit a <code>data-density</code> set on an ancestor (Setting it explicitly sets <code>data-density</code> on the table.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

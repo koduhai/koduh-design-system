@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import ColorPickerDemo from '../../components/demos/ColorPickerDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="ColorPicker" description="saturation/value + hue + alpha + hex + swatch (#43)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>ColorPicker</h1>
+  <p class="doc-lede">saturation/value + hue + alpha + hex + swatch (#43).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="ColorPicker" />
+
+  <h2>Examples</h2>
+  <ColorPickerDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; ColorPicker &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Controlled hex value (#RGB / #RRGGBB / #RRGGBBAA).</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>string</code></td>
+        <td><code>'#1B5FCC'</code></td>
+        <td>Initial value when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(hex: string) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the new hex string whenever the color changes.</td>
+      </tr>
+      <tr>
+        <td><code>alpha</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Enable the alpha channel + slider, and #RRGGBBAA output. Default false.</td>
+      </tr>
+      <tr>
+        <td><code>swatches</code></td>
+        <td><code>string[]</code></td>
+        <td>—</td>
+        <td>Preset swatch row. A small DS palette is used when omitted.</td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Visible label; deferred to an enclosing <code>&lt;FormField&gt;</code> when present.</td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>className</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

@@ -29,12 +29,41 @@ multi-theme / white-label support.
 
 ## The Token Source of Truth
 
-All tokens live in `src/theme/tokens.ts`, split into two exports:
+All tokens live in `src/theme/tokens.ts`, split into these exports:
 
+- **`primitives`** — the raw, theme-independent color ramps (tier 1; see the
+  3-tier section below). Identical in both themes.
 - **`tokens`** — theme-independent scales (spacing, radii, type, shadows,
   z-index, breakpoints, motion). Identical in both themes.
-- **`themes`** — the per-mode color values that differ between `dark` and
-  `light`.
+- **`themes`** — the per-mode color _roles_ (tier 2) that differ between `dark`
+  and `light`. Each role references a `primitives` stop.
+
+### The 3-tier color system
+
+Color follows a formal **primitives -> semantic aliases -> component** pipeline,
+so a role's meaning is decoupled from its raw value:
+
+1. **Primitives (tier 1).** Raw color ramps in `primitives` — `neutral`, `blue`,
+   `green`, `amber`, `red`, `violet`, `cyan`, `pink`, `lime`. They are
+   theme-independent (the same in dark and light, like a Tailwind palette) and
+   carry no semantics. Each is emitted **once on `:root`** as
+   `--ku-color-{ramp}-{stop}` (e.g. `--ku-color-blue-600`,
+   `--ku-color-neutral-500`), never duplicated into the per-theme blocks. Stops
+   mostly follow a standard `50…900` scale, with the occasional half-stop (e.g.
+   `450`, `650`) where two distinct roles fall in the same lightness band.
+2. **Semantic aliases (tier 2).** The per-theme roles in `themes` (`primary`,
+   `danger`, `bgDefault`, `textPrimary`, `chart1` …). Each value **references a
+   primitive stop** (e.g. `primary: primitives.blue[450]` in dark) rather than a
+   raw literal. The generator still emits the resolved hex under `--ku-color-*`,
+   so the rendered colors are unchanged. The theme-aware `shadow` block stays raw
+   (it is not a flat color ramp).
+3. **Component (tier 3).** CSS-local custom properties inside each component's
+   `*.module.css` (e.g. `--btn-main`). Nothing lives in `tokens.ts`; components
+   read the semantic `--ku-color-*` vars.
+
+The fixed `brand` ramp (in `tokens`, emitted as `--ku-brand-*`) is a separate
+brand-blue scale kept for Tailwind consumers; it is distinct from the `blue`
+primitive that backs `primary`/`info`.
 
 To change any value — a color, a spacing step, a radius — **edit `tokens.ts`
 only**. Never hand-edit `dist/theme.css`; it carries a "do not edit" banner and is

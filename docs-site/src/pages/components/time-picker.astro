@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import TimePickerDemo from '../../components/demos/TimePickerDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="TimePicker" description="segmented hour/minute(/second) spinbuttons, 12/24h, `FormField`-composing (#42)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>TimePicker</h1>
+  <p class="doc-lede">segmented hour/minute(/second) spinbuttons, 12/24h, <code>FormField</code>-composing (#42).</p>
+
+  <p>Also exported from this module: <code>FormField</code>.</p>
+  <h2>Playground</h2>
+  <Playground client:visible name="TimePicker" />
+
+  <h2>Examples</h2>
+  <TimePickerDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; TimePicker, FormField &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>Date</code></td>
+        <td>—</td>
+        <td>Controlled value; only the time-of-day (hours/minutes/seconds) is read.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>Date</code></td>
+        <td>—</td>
+        <td>Initial value when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(date: Date | null) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with a Date carrying the chosen time, or <code>null</code> when fully cleared.</td>
+      </tr>
+      <tr>
+        <td><code>hourCycle</code></td>
+        <td><code>12 | 24</code></td>
+        <td><code>24</code></td>
+        <td>12- or 24-hour display.</td>
+      </tr>
+      <tr>
+        <td><code>withSeconds</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>Show a seconds segment.</td>
+      </tr>
+      <tr>
+        <td><code>minuteStep</code></td>
+        <td><code>number</code></td>
+        <td><code>1</code></td>
+        <td>Step (minutes) applied when arrow-stepping the minute segment.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>TimePickerSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Disables the control.</td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Puts the control in the error state.</td>
+      </tr>
+      <tr>
+        <td><code>required</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Marks the field required.</td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Visible label. Omit it (and wrap the control in a <code>&lt;FormField&gt;</code>) to defer the
+label and aria wiring to the field.</td>
+      </tr>
+      <tr>
+        <td><code>helperText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Hint shown below the control. Hidden when an error is shown.</td>
+      </tr>
+      <tr>
+        <td><code>errorText</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Message shown below the control when <code>error</code> is set; replaces helperText.</td>
+      </tr>
+      <tr>
+        <td><code>locale</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>BCP 47 locale for the AM/PM names.</td>
+      </tr>
+      <tr>
+        <td><code>className</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Class applied to the root wrapper.</td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Base id for the control; label/description ids derive from it.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import PaginationDemo from '../../components/demos/PaginationDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Pagination" description="(+ exported `getPaginationRange`)">
+  <p class="doc-eyebrow">Navigation</p>
+  <h1>Pagination</h1>
+  <p class="doc-lede">(+ exported <code>getPaginationRange</code>).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="Pagination" />
+
+  <h2>Examples</h2>
+  <PaginationDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; Pagination &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>count</code></td>
+        <td><code>number</code></td>
+        <td><em>required</em></td>
+        <td>Total number of pages (&gt;= 1).</td>
+      </tr>
+      <tr>
+        <td><code>page</code></td>
+        <td><code>number</code></td>
+        <td><em>required</em></td>
+        <td>Current page, 1-based.</td>
+      </tr>
+      <tr>
+        <td><code>onPageChange</code></td>
+        <td><code>(page: number) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the requested page.</td>
+      </tr>
+      <tr>
+        <td><code>siblingCount</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Pages shown on each side of the current page. Default 1.</td>
+      </tr>
+      <tr>
+        <td><code>boundaryCount</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Pages shown at each end. Default 1.</td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Disables all controls.</td>
+      </tr>
+      <tr>
+        <td><code>previousLabel</code></td>
+        <td><code>string</code></td>
+        <td><code>the i18n catalog's `pagination</code></td>
+        <td>Accessible label for the Previous control. previous` ('Previous page').</td>
+      </tr>
+      <tr>
+        <td><code>nextLabel</code></td>
+        <td><code>string</code></td>
+        <td><code>the i18n catalog's `pagination</code></td>
+        <td>Accessible label for the Next control. next` ('Next page').</td>
+      </tr>
+      <tr>
+        <td><code>getItemAriaLabel</code></td>
+        <td><code>(type: PaginationItemType, page: number) =&gt; string</code></td>
+        <td>—</td>
+        <td>Formats the accessible label for each control, for localization. When
+omitted, the i18n catalog defaults are used (<code>pagination.page</code>/<code>current</code>
+for page buttons, <code>pagination.previous</code>/<code>next</code> for the arrows). For
+<code>'previous'</code>/<code>'next'</code>, <code>page</code> is the target page the control navigates to.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

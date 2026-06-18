@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import NotificationBadgeDemo from '../../components/demos/NotificationBadgeDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="NotificationBadge" description="count/dot overlay anchored to a child (#43)">
+  <p class="doc-eyebrow">Data display &amp; feedback</p>
+  <h1>NotificationBadge</h1>
+  <p class="doc-lede">count/dot overlay anchored to a child (#43).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="NotificationBadge" />
+
+  <h2>Examples</h2>
+  <NotificationBadgeDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; NotificationBadge &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>children</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>The anchored element (icon/avatar/button). Omit for a standalone badge.</td>
+      </tr>
+      <tr>
+        <td><code>count</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Numeric badge value.</td>
+      </tr>
+      <tr>
+        <td><code>max</code></td>
+        <td><code>number</code></td>
+        <td><code>99</code></td>
+        <td>Cap before rendering <code>$&#123;max&#125;+</code>.</td>
+      </tr>
+      <tr>
+        <td><code>dot</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Show a dot instead of a count.</td>
+      </tr>
+      <tr>
+        <td><code>showZero</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>Keep the badge visible when count===0.</td>
+      </tr>
+      <tr>
+        <td><code>tone</code></td>
+        <td><code>ChipTone</code></td>
+        <td><code>'danger'</code></td>
+        <td>Semantic color, reusing the shared tone vocabulary.</td>
+      </tr>
+      <tr>
+        <td><code>placement</code></td>
+        <td><code>NotificationBadgePlacement</code></td>
+        <td><code>'top-end'</code></td>
+        <td>Where the badge sits relative to the child.</td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Accessible text, e.g. "3 unread notifications".</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

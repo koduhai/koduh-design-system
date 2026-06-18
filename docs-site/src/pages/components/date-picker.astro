@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Playground from '../../components/playground/Playground';
+import DatePickerDemo from '../../components/demos/DatePickerDemo';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="DatePicker" description="input + popover calendar; `granularity='minute'` adds a time field for date+time (#27/#61)">
+  <p class="doc-eyebrow">Form controls</p>
+  <h1>DatePicker</h1>
+  <p class="doc-lede">input + popover calendar; <code>granularity='minute'</code> adds a time field for date+time (#27/#61).</p>
+
+  <h2>Playground</h2>
+  <Playground client:visible name="DatePicker" />
+
+  <h2>Examples</h2>
+  <DatePickerDemo client:visible />
+
+  <h2>Import</h2>
+  <p><code>import &#123; DatePicker &#125; from '@koduhai/design-system';</code></p>
+
+  <h2>Props</h2>
+  <table class="doc-table">
+    <thead>
+      <tr><th>Prop</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>Date</code></td>
+        <td>—</td>
+        <td>Controlled selected date.</td>
+      </tr>
+      <tr>
+        <td><code>defaultValue</code></td>
+        <td><code>Date</code></td>
+        <td>—</td>
+        <td>Initial selected date when uncontrolled.</td>
+      </tr>
+      <tr>
+        <td><code>onChange</code></td>
+        <td><code>(date: Date | null) =&gt; void</code></td>
+        <td>—</td>
+        <td>Fires with the chosen date, or <code>null</code> when the field is cleared.</td>
+      </tr>
+      <tr>
+        <td><code>granularity</code></td>
+        <td><code>'day' | 'minute'</code></td>
+        <td>—</td>
+        <td>Selection precision. <code>'day'</code> (default) picks a calendar day and truncates the
+time. <code>'minute'</code> adds a time field to the popover and carries the full date +
+time in <code>value</code>/<code>onChange</code>, honoring <code>min</code>/<code>max</code> at minute resolution.</td>
+      </tr>
+      <tr>
+        <td><code>hourCycle</code></td>
+        <td><code>12 | 24</code></td>
+        <td>—</td>
+        <td>Time field: 12- or 24-hour display (only when <code>granularity='minute'</code>). Default 24.</td>
+      </tr>
+      <tr>
+        <td><code>withSeconds</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Time field: show a seconds segment (only when <code>granularity='minute'</code>).</td>
+      </tr>
+      <tr>
+        <td><code>minuteStep</code></td>
+        <td><code>number</code></td>
+        <td>—</td>
+        <td>Time field: minute step for arrow stepping (only when <code>granularity='minute'</code>).</td>
+      </tr>
+      <tr>
+        <td><code>min</code></td>
+        <td><code>Date</code></td>
+        <td>—</td>
+        <td>Earliest selectable date (inclusive; minute resolution when <code>granularity='minute'</code>).</td>
+      </tr>
+      <tr>
+        <td><code>max</code></td>
+        <td><code>Date</code></td>
+        <td>—</td>
+        <td>Latest selectable date (inclusive; minute resolution when <code>granularity='minute'</code>).</td>
+      </tr>
+      <tr>
+        <td><code>placeholder</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Text shown when no date is selected.</td>
+      </tr>
+      <tr>
+        <td><code>size</code></td>
+        <td><code>DatePickerSize</code></td>
+        <td><code>'md'</code></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Disables the input and trigger.</td>
+      </tr>
+      <tr>
+        <td><code>error</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Puts the control in the error state (aria-invalid).</td>
+      </tr>
+      <tr>
+        <td><code>required</code></td>
+        <td><code>boolean</code></td>
+        <td>—</td>
+        <td>Marks the field required.</td>
+      </tr>
+      <tr>
+        <td><code>label</code></td>
+        <td><code>ReactNode</code></td>
+        <td>—</td>
+        <td>Visible label, associated via htmlFor/id. Omit it (and wrap the control in a
+<code>&lt;FormField&gt;</code>) to defer the label and aria wiring to the field.</td>
+      </tr>
+      <tr>
+        <td><code>locale</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>BCP 47 locale for the formatted value and the calendar.</td>
+      </tr>
+      <tr>
+        <td><code>triggerLabel</code></td>
+        <td><code>string</code></td>
+        <td><code>'Open calendar'</code></td>
+        <td>Accessible label for the calendar trigger button.</td>
+      </tr>
+      <tr>
+        <td><code>className</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Class applied to the root wrapper.</td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td><code>string</code></td>
+        <td>—</td>
+        <td>Base id for the control; the calendar/label ids derive from it.</td>
+      </tr>
+    </tbody>
+  </table>
+</BaseLayout>

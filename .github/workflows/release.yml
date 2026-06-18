@@ -66,6 +66,7 @@ jobs:
           npm run build
           npm run verify:bundle
           npm run verify:exports
+          npm run verify:docs
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium webkit firefox

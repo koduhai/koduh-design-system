@@ -47,6 +47,13 @@ jobs:
       - name: Verify export surface + docs
         run: npm run verify:exports
 
+      # Guard the documentation surfaces: every component must be present in
+      # Storybook, the docs site, and the MCP snapshot, AND the generated MCP/
+      # docs-site artifacts must still match current sources (re-runs the
+      # generators and fails on drift). See docs/RELEASE.md.
+      - name: Verify docs surfaces + freshness (MCP, docs-site, Storybook)
+        run: npm run verify:docs
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium webkit firefox
 

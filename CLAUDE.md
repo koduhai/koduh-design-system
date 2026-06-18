@@ -78,6 +78,12 @@ Three layers, all expected to pass before merge: Vitest + Testing Library for be
   push. A release is: a `chore/release-X.Y.Z` PR bumping `package.json`/`package-lock.json` +
   `CHANGELOG.md`, then a `vX.Y.Z` GitHub Release, which triggers `release.yml` (full gate + publish
   to the public npm registry). `package.json` can already hold an unreleased version a prior batch bumped.
+  Full step-by-step (incl. the deprecation process) is in `docs/RELEASE.md`.
+- **Docs surfaces must move with a component.** Storybook, the docs site, and the MCP snapshot are
+  guarded by `npm run verify:docs` (`verify:docs-sync` = every component has a story/demo/page/MCP
+  entry; `verify:docs-fresh` = the generated MCP + docs-site artifacts match current sources). Both
+  run in CI and the release gate. After any prop/token/`FEATURES.md` change, re-run the generators
+  (`npx tsx mcp/scripts/build-metadata.ts`, `npx tsx docs-site/scripts/generate-pages.ts`) + `npm run format`.
 - **Visual e2e baselines are Linux-runner-specific.** The committed `*-chromium-linux.png`
   snapshots are generated on the `ubuntu-24.04` runner via the `update-baselines` workflow
   (`gh workflow run update-baselines.yml --ref <branch>`); a local Windows/Docker render won't

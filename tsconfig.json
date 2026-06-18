@@ -6,6 +6,7 @@
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "strict": true,
+    "ignoreDeprecations": "6.0",
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -15,7 +16,8 @@
     "declaration": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "types": ["node", "vitest/globals"]
   },
   "include": ["src", "scripts", "e2e", "*.config.ts", ".storybook", "vitest.setup.ts"]
 }

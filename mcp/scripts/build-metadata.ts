@@ -18,7 +18,11 @@ import ts from 'typescript';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, '..', '..');
-const read = (p: string) => readFileSync(resolve(repoRoot, p), 'utf8');
+// Normalize CRLF -> LF on every source read so generated output is identical on
+// Windows and Linux checkouts. Without this, multi-line JSDoc text extracted via
+// the TS compiler API bakes the source's `\r\n` into string values, so a snapshot
+// generated on Windows differs from one regenerated in CI (see verify:docs-fresh).
+const read = (p: string) => readFileSync(resolve(repoRoot, p), 'utf8').replace(/\r\n/g, '\n');
 
 const version = JSON.parse(read('package.json')).version as string;
 
@@ -123,7 +127,7 @@ function parseDefault(doc: string): string | null {
 function extractProps(sourcePath: string, interfaceName: string): PropMeta[] | null {
   const abs = resolve(repoRoot, sourcePath);
   if (!existsSync(abs)) return null;
-  const src = readFileSync(abs, 'utf8');
+  const src = readFileSync(abs, 'utf8').replace(/\r\n/g, '\n');
   const sf = ts.createSourceFile(abs, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 
   let iface: ts.InterfaceDeclaration | undefined;

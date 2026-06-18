@@ -1401,7 +1401,7 @@ export const controlsByName: Record<string, Control[]> = {
       name: 'density',
       kind: 'enum',
       options: ['comfortable', 'compact'],
-      def: 'comfortable); set\r\nexplicitly to set `data-density` on the menu list',
+      def: 'comfortable); set\nexplicitly to set `data-density` on the menu list',
     },
   ],
   CommandPalette: [
@@ -1581,7 +1581,7 @@ export const controlsByName: Record<string, Control[]> = {
       name: 'underline',
       kind: 'enum',
       options: ['always', 'hover', 'none'],
-      def: "always' so links embedded in body\r\ntext stay distinguishable without relying on color (WCAG 1",
+      def: "always' so links embedded in body\ntext stay distinguishable without relying on color (WCAG 1",
     },
   ],
   Stack: [

@@ -108,7 +108,7 @@
           "type": "ReactNode",
           "required": true,
           "default": null,
-          "description": "Expects Button elements; they are joined into a segmented cluster.\r\n\r\nThe root renders with `role=\"group\"`, which only conveys useful grouping\r\nsemantics to assistive tech when it has an accessible name. Pass an\r\n`aria-label` (or `aria-labelledby`) describing the cluster, e.g.\r\n`<ButtonGroup aria-label=\"Text style\">`. Both forward to the root via the\r\nspread DOM props."
+          "description": "Expects Button elements; they are joined into a segmented cluster.\n\nThe root renders with `role=\"group\"`, which only conveys useful grouping\nsemantics to assistive tech when it has an accessible name. Pass an\n`aria-label` (or `aria-labelledby`) describing the cluster, e.g.\n`<ButtonGroup aria-label=\"Text style\">`. Both forward to the root via the\nspread DOM props."
         }
       ]
     },
@@ -344,7 +344,7 @@
           "type": "Density",
           "required": false,
           "default": "comfortable); set explicitly to set `data-density`",
-          "description": "Field density. `compact` tightens the field's vertical/horizontal padding\r\nvia the `--ku-density-*` vars. Omit to inherit a `data-density` set on an\r\nancestor ("
+          "description": "Field density. `compact` tightens the field's vertical/horizontal padding\nvia the `--ku-density-*` vars. Omit to inherit a `data-density` set on an\nancestor ("
         },
         {
           "name": "startAdornment",
@@ -450,7 +450,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Visible label, associated with the textarea via htmlFor/id.\r\nProvide `label`, or wrap the control in a `<FormField>` which supplies it."
+          "description": "Visible label, associated with the textarea via htmlFor/id.\nProvide `label`, or wrap the control in a `<FormField>` which supplies it."
         },
         {
           "name": "value",
@@ -538,7 +538,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Visible label, associated with the input via htmlFor/id. Provide `label`,\r\nor wrap the control in a `<FormField>` which supplies it."
+          "description": "Visible label, associated with the input via htmlFor/id. Provide `label`,\nor wrap the control in a `<FormField>` which supplies it."
         },
         {
           "name": "value",
@@ -942,7 +942,7 @@
           "type": "string",
           "required": false,
           "default": null,
-          "description": "When set, the committed tags are submitted with a native `<form>` as one\r\nhidden input per tag under this name (standard multi-value encoding). The\r\nvisible text input, whose value is the in-progress draft, never carries\r\n`name`, so the draft string is never posted."
+          "description": "When set, the committed tags are submitted with a native `<form>` as one\nhidden input per tag under this name (standard multi-value encoding). The\nvisible text input, whose value is the in-progress draft, never carries\n`name`, so the draft string is never posted."
         },
         {
           "name": "required",
@@ -1002,7 +1002,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Visible label, rendered as a `<span>` referenced by aria-labelledby. Required\r\nstandalone; optional (and not rendered) inside a `<FormField>`, which supplies it."
+          "description": "Visible label, rendered as a `<span>` referenced by aria-labelledby. Required\nstandalone; optional (and not rendered) inside a `<FormField>`, which supplies it."
         },
         {
           "name": "value",
@@ -1319,7 +1319,7 @@
           "type": "'day' | 'minute'",
           "required": false,
           "default": null,
-          "description": "Selection precision. `'day'` (default) picks a calendar day and truncates the\r\ntime. `'minute'` adds a time field to the popover and carries the full date +\r\ntime in `value`/`onChange`, honoring `min`/`max` at minute resolution."
+          "description": "Selection precision. `'day'` (default) picks a calendar day and truncates the\ntime. `'minute'` adds a time field to the popover and carries the full date +\ntime in `value`/`onChange`, honoring `min`/`max` at minute resolution."
         },
         {
           "name": "hourCycle",
@@ -1396,7 +1396,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Visible label, associated via htmlFor/id. Omit it (and wrap the control in a\r\n`<FormField>`) to defer the label and aria wiring to the field."
+          "description": "Visible label, associated via htmlFor/id. Omit it (and wrap the control in a\n`<FormField>`) to defer the label and aria wiring to the field."
         },
         {
           "name": "locale",
@@ -1505,7 +1505,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Visible label. Omit it (and wrap the control in a `<FormField>`) to defer the\r\nlabel and aria wiring to the field."
+          "description": "Visible label. Omit it (and wrap the control in a `<FormField>`) to defer the\nlabel and aria wiring to the field."
         },
         {
           "name": "startPlaceholder",
@@ -1649,7 +1649,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Visible label. Omit it (and wrap the control in a `<FormField>`) to defer the\r\nlabel and aria wiring to the field."
+          "description": "Visible label. Omit it (and wrap the control in a `<FormField>`) to defer the\nlabel and aria wiring to the field."
         },
         {
           "name": "helperText",
@@ -1811,7 +1811,7 @@
           "type": "ReactNode",
           "required": true,
           "default": null,
-          "description": "Content shown in the chip. A string also seeds the delete button's default\r\naccessible label (`Remove <label>`); for non-string labels pass `deleteLabel`."
+          "description": "Content shown in the chip. A string also seeds the delete button's default\naccessible label (`Remove <label>`); for non-string labels pass `deleteLabel`."
         },
         {
           "name": "variant",
@@ -1959,7 +1959,7 @@
           "type": "string",
           "required": false,
           "default": null,
-          "description": "Accessible name for the group, announced by assistive tech as the label of\r\nthe avatar stack (e.g. \"Project collaborators\"). Maps to aria-label. Omit to\r\npass aria-label / aria-labelledby directly via props instead."
+          "description": "Accessible name for the group, announced by assistive tech as the label of\nthe avatar stack (e.g. \"Project collaborators\"). Maps to aria-label. Omit to\npass aria-label / aria-labelledby directly via props instead."
         }
       ]
     },
@@ -2111,7 +2111,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Custom leading icon. Overrides the severity default.\r\nPass a falsy value (e.g. `null`) to disable the icon entirely."
+          "description": "Custom leading icon. Overrides the severity default.\nPass a falsy value (e.g. `null`) to disable the icon entirely."
         }
       ]
     },
@@ -2150,7 +2150,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Custom leading icon. Overrides the severity default.\r\nPass `null` to hide the icon entirely."
+          "description": "Custom leading icon. Overrides the severity default.\nPass `null` to hide the icon entirely."
         },
         {
           "name": "dismissable",
@@ -2171,7 +2171,7 @@
           "type": "string",
           "required": false,
           "default": null,
-          "description": "Accessible label for the dismiss button. Overrides the i18n catalog's\r\n`dismiss` (default 'Dismiss')."
+          "description": "Accessible label for the dismiss button. Overrides the i18n catalog's\n`dismiss` (default 'Dismiss')."
         },
         {
           "name": "action",
@@ -2422,7 +2422,7 @@
           "type": "string",
           "required": false,
           "default": null,
-          "description": "Accessible label. When provided, the root is `role=\"status\"` with visually-hidden\r\ntext so screen readers announce it. When omitted, the spinner is decorative\r\n(`aria-hidden`)."
+          "description": "Accessible label. When provided, the root is `role=\"status\"` with visually-hidden\ntext so screen readers announce it. When omitted, the spinner is decorative\n(`aria-hidden`)."
         }
       ]
     },
@@ -2613,7 +2613,7 @@
           "type": "string",
           "required": false,
           "default": null,
-          "description": "Accessible label. When omitted, a generic summary is generated from the\r\ndata so the graphic is never unlabeled."
+          "description": "Accessible label. When omitted, a generic summary is generated from the\ndata so the graphic is never unlabeled."
         }
       ]
     },
@@ -2747,7 +2747,7 @@
           "type": "SortRule[]",
           "required": false,
           "default": null,
-          "description": "Multi-column sort rules in priority order. When provided, takes precedence\r\nover `sortKey`/`sortDir` and renders an `aria-sort` + priority badge per\r\nsorted column. Omit to keep the single-column `sortKey`/`sortDir` behavior."
+          "description": "Multi-column sort rules in priority order. When provided, takes precedence\nover `sortKey`/`sortDir` and renders an `aria-sort` + priority badge per\nsorted column. Omit to keep the single-column `sortKey`/`sortDir` behavior."
         },
         {
           "name": "selectedIds",
@@ -2761,14 +2761,14 @@
           "type": "(ids: string[]) => void",
           "required": false,
           "default": null,
-          "description": "Fires with the next selected id set. When `selectAllIds` is omitted, select-all\r\nemits the current page's row ids; when `selectAllIds` is provided it emits that\r\nset instead — so a paginated consumer can select across pages."
+          "description": "Fires with the next selected id set. When `selectAllIds` is omitted, select-all\nemits the current page's row ids; when `selectAllIds` is provided it emits that\nset instead — so a paginated consumer can select across pages."
         },
         {
           "name": "selectAllIds",
           "type": "string[]",
           "required": false,
           "default": null,
-          "description": "When provided, the header select-all checkbox reflects/toggles THIS id set\r\n(e.g. all rows across pages) instead of only the rendered `data`."
+          "description": "When provided, the header select-all checkbox reflects/toggles THIS id set\n(e.g. all rows across pages) instead of only the rendered `data`."
         },
         {
           "name": "loading",
@@ -2803,7 +2803,7 @@
           "type": "Density",
           "required": false,
           "default": "comfortable)",
-          "description": "Row/cell density. `compact` tightens cell padding via the `--ku-density-*`\r\nvars. Omit to inherit a `data-density` set on an ancestor (Setting it explicitly sets `data-density` on the table."
+          "description": "Row/cell density. `compact` tightens cell padding via the `--ku-density-*`\nvars. Omit to inherit a `data-density` set on an ancestor (Setting it explicitly sets `data-density` on the table."
         }
       ]
     },
@@ -2991,7 +2991,7 @@
           "type": "(open: boolean) => void",
           "required": true,
           "default": null,
-          "description": "Called with the requested next open state. The dialog only ever requests to\r\nclose (close button, Esc, backdrop), so this fires with `false`. Named to\r\nmatch Popover/Select for a consistent overlay API."
+          "description": "Called with the requested next open state. The dialog only ever requests to\nclose (close button, Esc, backdrop), so this fires with `false`. Named to\nmatch Popover/Select for a consistent overlay API."
         },
         {
           "name": "title",
@@ -3019,7 +3019,7 @@
           "type": "RefObject<HTMLElement | null> | string",
           "required": false,
           "default": null,
-          "description": "Where to send focus when the dialog opens, overriding the native default\r\n(the first focusable descendant — usually the Close button). A ref to an\r\nelement, or a CSS selector queried within the dialog."
+          "description": "Where to send focus when the dialog opens, overriding the native default\n(the first focusable descendant — usually the Close button). A ref to an\nelement, or a CSS selector queried within the dialog."
         },
         {
           "name": "footer",
@@ -3065,7 +3065,7 @@
           "type": "ReactNode",
           "required": false,
           "default": null,
-          "description": "Heading rendered in the header and used as the accessible name. When omitted,\r\nsupply an `aria-label` (or `aria-labelledby`) so the modal still has an\r\naccessible name (WCAG 4.1.2); both are forwarded to the underlying dialog."
+          "description": "Heading rendered in the header and used as the accessible name. When omitted,\nsupply an `aria-label` (or `aria-labelledby`) so the modal still has an\naccessible name (WCAG 4.1.2); both are forwarded to the underlying dialog."
         },
         {
           "name": "side",
@@ -3132,7 +3132,7 @@
           "type": "(open: boolean) => void",
           "required": true,
           "default": null,
-          "description": "Called with `false` when the snackbar requests to close (close button,\r\nauto-hide, or Esc). Named to match Popover/Dialog for a consistent API."
+          "description": "Called with `false` when the snackbar requests to close (close button,\nauto-hide, or Esc). Named to match Popover/Dialog for a consistent API."
         },
         {
           "name": "severity",
@@ -3238,7 +3238,7 @@
           "type": "ReactElement",
           "required": true,
           "default": null,
-          "description": "The anchor element. Rendered via `Slot`, which merges only the anchor wiring\r\n(anchor-name custom property + ref) onto your element.\r\n\r\nOpening/closing is the CALLER's responsibility: wire your own `onClick`\r\n(or hover/focus) on this element to drive `open`/`onOpenChange`. Likewise,\r\ntrigger ARIA (`aria-expanded`, `aria-haspopup`, `aria-controls`, or\r\n`aria-describedby`) lives on your element, not here — it is intentionally\r\nconsumer-specific because the correct `haspopup` value and the\r\ncontrols-vs-describedby choice differ per pattern (listbox/menu/tooltip).\r\nThe composing components (`Select`, `Menu`, `Tooltip`) each supply it."
+          "description": "The anchor element. Rendered via `Slot`, which merges only the anchor wiring\n(anchor-name custom property + ref) onto your element.\n\nOpening/closing is the CALLER's responsibility: wire your own `onClick`\n(or hover/focus) on this element to drive `open`/`onOpenChange`. Likewise,\ntrigger ARIA (`aria-expanded`, `aria-haspopup`, `aria-controls`, or\n`aria-describedby`) lives on your element, not here — it is intentionally\nconsumer-specific because the correct `haspopup` value and the\ncontrols-vs-describedby choice differ per pattern (listbox/menu/tooltip).\nThe composing components (`Select`, `Menu`, `Tooltip`) each supply it."
         },
         {
           "name": "placement",
@@ -3505,8 +3505,8 @@
           "name": "density",
           "type": "Density",
           "required": false,
-          "default": "comfortable); set\r\nexplicitly to set `data-density` on the menu list",
-          "description": "Menu density. `compact` tightens item padding via the `--ku-density-*` vars.\r\nOmit to inherit a `data-density` ancestor ("
+          "default": "comfortable); set\nexplicitly to set `data-density` on the menu list",
+          "description": "Menu density. `compact` tightens item padding via the `--ku-density-*` vars.\nOmit to inherit a `data-density` ancestor ("
         },
         {
           "name": "className",
@@ -3538,7 +3538,7 @@
           "type": "(open: boolean) => void",
           "required": true,
           "default": null,
-          "description": "Called with the requested next open state. Fires with `false` on Esc,\r\nbackdrop click, or after a command runs. Matches the Dialog overlay API."
+          "description": "Called with the requested next open state. Fires with `false` on Esc,\nbackdrop click, or after a command runs. Matches the Dialog overlay API."
         },
         {
           "name": "commands",
@@ -3658,7 +3658,7 @@
           "type": "number | string",
           "required": false,
           "default": null,
-          "description": "Auto-collapse to the icon rail at or below this viewport width (number → px,\r\nor any media width like `'48rem'`), via `matchMedia`. Opt-in: omit to keep\r\nthe sidebar width fixed. The toggle still works to expand; resizing back\r\nbelow the breakpoint re-collapses. In controlled mode this drives\r\n`onCollapsedChange` so the parent stays the source of truth."
+          "description": "Auto-collapse to the icon rail at or below this viewport width (number → px,\nor any media width like `'48rem'`), via `matchMedia`. Opt-in: omit to keep\nthe sidebar width fixed. The toggle still works to expand; resizing back\nbelow the breakpoint re-collapses. In controlled mode this drives\n`onCollapsedChange` so the parent stays the source of truth."
         },
         {
           "name": "width",
@@ -3771,7 +3771,7 @@
           "type": "boolean",
           "required": false,
           "default": "`false`",
-          "description": "Once a panel has been shown, keep it mounted (hidden via `hidden`/CSS)\r\ninstead of unmounting it when it becomes inactive."
+          "description": "Once a panel has been shown, keep it mounted (hidden via `hidden`/CSS)\ninstead of unmounting it when it becomes inactive."
         }
       ]
     },
@@ -3845,7 +3845,7 @@
           "type": "(type: PaginationItemType, page: number) => string",
           "required": false,
           "default": null,
-          "description": "Formats the accessible label for each control, for localization. When\r\nomitted, the i18n catalog defaults are used (`pagination.page`/`current`\r\nfor page buttons, `pagination.previous`/`next` for the arrows). For\r\n`'previous'`/`'next'`, `page` is the target page the control navigates to."
+          "description": "Formats the accessible label for each control, for localization. When\nomitted, the i18n catalog defaults are used (`pagination.page`/`current`\nfor page buttons, `pagination.previous`/`next` for the arrows). For\n`'previous'`/`'next'`, `page` is the target page the control navigates to."
         }
       ]
     },
@@ -3884,7 +3884,7 @@
           "type": "(index: number) => void",
           "required": false,
           "default": null,
-          "description": "When provided, completed and visited steps render as buttons that call this\r\nwith the step index. Upcoming (future) steps stay non-interactive."
+          "description": "When provided, completed and visited steps render as buttons that call this\nwith the step index. Upcoming (future) steps stay non-interactive."
         }
       ]
     },
@@ -3916,7 +3916,7 @@
           "type": "BreadcrumbItem[] | ReactNode",
           "required": false,
           "default": null,
-          "description": "Breadcrumb trail. An array of `BreadcrumbItem` renders a single internal\r\n`<Breadcrumbs>` (one nav landmark). A `ReactNode` is rendered as-is — it\r\nowns its own landmark and is NOT wrapped in a `<nav>` (so passing your own\r\n`<Breadcrumbs>` won't create a nested duplicate nav)."
+          "description": "Breadcrumb trail. An array of `BreadcrumbItem` renders a single internal\n`<Breadcrumbs>` (one nav landmark). A `ReactNode` is rendered as-is — it\nowns its own landmark and is NOT wrapped in a `<nav>` (so passing your own\n`<Breadcrumbs>` won't create a nested duplicate nav)."
         },
         {
           "name": "actions",
@@ -3954,8 +3954,8 @@
           "name": "underline",
           "type": "LinkUnderline",
           "required": false,
-          "default": "'always' so links embedded in body\r\ntext stay distinguishable without relying on color (WCAG 1",
-          "description": "When the underline shows. 4.1 /\r\nlink-in-text-block). Use 'hover'/'none' for standalone links (nav, lists)\r\nwhere surrounding prose isn't present."
+          "default": "'always' so links embedded in body\ntext stay distinguishable without relying on color (WCAG 1",
+          "description": "When the underline shows. 4.1 /\nlink-in-text-block). Use 'hover'/'none' for standalone links (nav, lists)\nwhere surrounding prose isn't present."
         },
         {
           "name": "asChild",
@@ -4086,14 +4086,14 @@
           "type": "ResponsiveValue<GridColumns>",
           "required": false,
           "default": null,
-          "description": "Fixed track count: `repeat(columns, minmax(0, 1fr))`. Wins over `minItemWidth`.\r\nAccepts a number, an fr-ratio array (`[1.1, 1]` → `1.1fr 1fr`), or a responsive\r\nobject (`{ base, sm, md, lg, xl }`) whose values are either of those."
+          "description": "Fixed track count: `repeat(columns, minmax(0, 1fr))`. Wins over `minItemWidth`.\nAccepts a number, an fr-ratio array (`[1.1, 1]` → `1.1fr 1fr`), or a responsive\nobject (`{ base, sm, md, lg, xl }`) whose values are either of those."
         },
         {
           "name": "minItemWidth",
           "type": "ResponsiveValue<string>",
           "required": false,
           "default": null,
-          "description": "Auto-fit tracks: `repeat(auto-fit, minmax(minItemWidth, 1fr))`. Accepts a single\r\nlength or a responsive object. Only used at a breakpoint where `columns` is unset."
+          "description": "Auto-fit tracks: `repeat(auto-fit, minmax(minItemWidth, 1fr))`. Accepts a single\nlength or a responsive object. Only used at a breakpoint where `columns` is unset."
         },
         {
           "name": "gap",
@@ -4287,14 +4287,14 @@
           "type": "boolean",
           "required": false,
           "default": "`false`",
-          "description": "Once a panel has been expanded, keep its content mounted (hidden via\r\n`hidden`/CSS) instead of unmounting it when collapsed again."
+          "description": "Once a panel has been expanded, keep its content mounted (hidden via\n`hidden`/CSS) instead of unmounting it when collapsed again."
         },
         {
           "name": "headingLevel",
           "type": "HeadingLevel",
           "required": false,
           "default": "`3`",
-          "description": "Semantic heading level (`<h2>`–`<h6>`) wrapping each trigger, so the\r\naccordion aligns with the surrounding document outline."
+          "description": "Semantic heading level (`<h2>`–`<h6>`) wrapping each trigger, so the\naccordion aligns with the surrounding document outline."
         }
       ]
     },

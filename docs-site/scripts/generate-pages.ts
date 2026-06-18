@@ -42,7 +42,7 @@ function playgroundNames(): Set<string> {
   if (!existsSync(dir)) return names;
   for (const f of readdirSync(dir)) {
     if (!/\.tsx?$/.test(f) || f === 'index.ts' || f === 'types.ts') continue;
-    const src = readFileSync(resolve(dir, f), 'utf8');
+    const src = readFileSync(resolve(dir, f), 'utf8').replace(/\r\n/g, '\n');
     for (const m of src.matchAll(/^\s{2}(\w+):\s*\{\s*Component:/gm)) names.add(m[1]);
   }
   return names;
@@ -128,7 +128,9 @@ const metaDesc = (c: Component) =>
 // --- 1. parse FEATURES.md --------------------------------------------------
 
 function parseFeatures(): Component[] {
-  const md = readFileSync(resolve(repoRoot, 'docs/FEATURES.md'), 'utf8');
+  // CRLF -> LF so generated pages/controls are identical on Windows and Linux
+  // checkouts (multi-line JSDoc otherwise embeds the source's line endings).
+  const md = readFileSync(resolve(repoRoot, 'docs/FEATURES.md'), 'utf8').replace(/\r\n/g, '\n');
   const lines = md.split('\n');
   const out: Component[] = [];
 
@@ -193,7 +195,7 @@ function parseFeatures(): Component[] {
 function extractAliases(srcPath: string): Record<string, string[]> {
   const abs = resolve(repoRoot, srcPath);
   if (!existsSync(abs)) return {};
-  const src = readFileSync(abs, 'utf8');
+  const src = readFileSync(abs, 'utf8').replace(/\r\n/g, '\n');
   const map: Record<string, string[]> = {};
   for (const m of src.matchAll(/export\s+type\s+(\w+)\s*=\s*([^;]+);/g)) {
     const opts = m[2]
@@ -263,7 +265,7 @@ function parseDefault(doc: string): string {
 function extractProps(srcPath: string, interfaceName: string): PropRow[] | null {
   const abs = resolve(repoRoot, srcPath);
   if (!existsSync(abs)) return null;
-  const src = readFileSync(abs, 'utf8');
+  const src = readFileSync(abs, 'utf8').replace(/\r\n/g, '\n');
   const sf = ts.createSourceFile(abs, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 
   let iface: ts.InterfaceDeclaration | undefined;

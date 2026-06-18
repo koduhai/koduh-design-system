@@ -1,0 +1,4638 @@
+{
+  "version": "1.0.0",
+  "count": 81,
+  "components": [
+    {
+      "name": "Button",
+      "slug": "button",
+      "category": "Actions",
+      "description": "solid/outline/ghost variants × shared tone vocab × `asChild`",
+      "also": [],
+      "sourcePath": "src/components/Button/Button.tsx",
+      "import": "import { Button } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "variant",
+          "type": "ButtonVariant",
+          "required": false,
+          "default": "'solid'",
+          "description": "Visual style."
+        },
+        {
+          "name": "tone",
+          "type": "ButtonTone",
+          "required": false,
+          "default": "'primary'",
+          "description": "Semantic color."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "fullWidth",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Stretch to fill the container width."
+        },
+        {
+          "name": "startIcon",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Icon before the label (ignored when asChild)."
+        },
+        {
+          "name": "endIcon",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Icon after the label (ignored when asChild)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render the single child element instead of a <button>, merging button props onto it."
+        }
+      ]
+    },
+    {
+      "name": "LoadingButton",
+      "slug": "loading-button",
+      "category": "Actions",
+      "description": "`Button` + `loading` + `aria-busy`",
+      "also": ["Button"],
+      "sourcePath": "src/components/LoadingButton/LoadingButton.tsx",
+      "import": "import { LoadingButton, Button } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Show a spinner, set aria-busy, and disable interaction."
+        },
+        {
+          "name": "loadingText",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Screen-reader-only text announced while loading (e.g. \"Saving…\")."
+        }
+      ]
+    },
+    {
+      "name": "ButtonGroup",
+      "slug": "button-group",
+      "category": "Actions",
+      "description": "segmented attached cluster sharing one border (#43)",
+      "also": [],
+      "sourcePath": "src/components/ButtonGroup/ButtonGroup.tsx",
+      "import": "import { ButtonGroup } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "orientation",
+          "type": "ButtonGroupOrientation",
+          "required": false,
+          "default": "'horizontal'",
+          "description": "Layout direction."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Expects Button elements; they are joined into a segmented cluster.\r\n\r\nThe root renders with `role=\"group\"`, which only conveys useful grouping\r\nsemantics to assistive tech when it has an accessible name. Pass an\r\n`aria-label` (or `aria-labelledby`) describing the cluster, e.g.\r\n`<ButtonGroup aria-label=\"Text style\">`. Both forward to the root via the\r\nspread DOM props."
+        }
+      ]
+    },
+    {
+      "name": "SplitButton",
+      "slug": "split-button",
+      "category": "Actions",
+      "description": "primary action + attached dropdown menu (#43)",
+      "also": [],
+      "sourcePath": "src/components/SplitButton/SplitButton.tsx",
+      "import": "import { SplitButton } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Primary action label."
+        },
+        {
+          "name": "onClick",
+          "type": "() => void",
+          "required": false,
+          "default": null,
+          "description": "Primary action handler."
+        },
+        {
+          "name": "items",
+          "type": "MenuEntry[]",
+          "required": true,
+          "default": null,
+          "description": "Secondary actions for the caret menu."
+        },
+        {
+          "name": "tone",
+          "type": "ButtonTone",
+          "required": false,
+          "default": "'primary'",
+          "description": "Shared tone for both buttons."
+        },
+        {
+          "name": "variant",
+          "type": "ButtonVariant",
+          "required": false,
+          "default": "'solid'",
+          "description": "Shared variant for both buttons."
+        },
+        {
+          "name": "size",
+          "type": "ButtonSize",
+          "required": false,
+          "default": "'md'",
+          "description": "Shared size for both buttons."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disables both the primary action and the caret."
+        },
+        {
+          "name": "startIcon",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Leading icon on the primary button."
+        },
+        {
+          "name": "menuPlacement",
+          "type": "PopoverPlacement",
+          "required": false,
+          "default": "'bottom-end'",
+          "description": "Anchored placement of the menu panel."
+        },
+        {
+          "name": "menuLabel",
+          "type": "string",
+          "required": false,
+          "default": "'More actions'",
+          "description": "Accessible label for the caret button."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "ToggleGroup",
+      "slug": "toggle-group",
+      "category": "Actions",
+      "description": "single/multi roving-focus segmented selector (#12)",
+      "also": [],
+      "sourcePath": "src/components/ToggleGroup/ToggleGroup.tsx",
+      "import": "import { ToggleGroup } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "items",
+          "type": "ToggleGroupItem[]",
+          "required": true,
+          "default": null,
+          "description": "Item definitions."
+        },
+        {
+          "name": "type",
+          "type": "'single' | 'multiple'",
+          "required": false,
+          "default": "'single'",
+          "description": "Selection mode. 'single' → radiogroup; 'multiple' → toggle-button group."
+        },
+        {
+          "name": "value",
+          "type": "string | string[]",
+          "required": false,
+          "default": null,
+          "description": "Controlled value: a string for 'single', a string[] for 'multiple'."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string | string[]",
+          "required": false,
+          "default": null,
+          "description": "Uncontrolled initial value."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string | string[]) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the next selection (string for 'single', string[] for 'multiple')."
+        },
+        {
+          "name": "size",
+          "type": "ToggleGroupSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "ToggleGroupTone",
+          "required": false,
+          "default": "'primary'",
+          "description": "Shared tone vocabulary."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disables every item."
+        },
+        {
+          "name": "orientation",
+          "type": "'horizontal' | 'vertical'",
+          "required": false,
+          "default": "'horizontal'",
+          "description": "Layout/keyboard axis."
+        }
+      ]
+    },
+    {
+      "name": "TextField",
+      "slug": "text-field",
+      "category": "Form controls",
+      "description": "labelled text input, density-aware, `FormField`-composing",
+      "also": ["FormField"],
+      "sourcePath": "src/components/TextField/TextField.tsx",
+      "import": "import { TextField, FormField } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label, associated with the input via htmlFor/id. Provide `label`, or wrap the control in a `<FormField>` which supplies it."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Controlled value."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Initial value when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string, event: React.ChangeEvent<HTMLInputElement>) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires on every keystroke with the new value (and the native event)."
+        },
+        {
+          "name": "helperText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Hint shown below the field. Hidden when an error is shown."
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the field in the error state (aria-invalid)."
+        },
+        {
+          "name": "errorText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Message shown below the field when `error` is set; replaces helperText."
+        },
+        {
+          "name": "size",
+          "type": "TextFieldSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "density",
+          "type": "Density",
+          "required": false,
+          "default": "comfortable); set explicitly to set `data-density`",
+          "description": "Field density. `compact` tightens the field's vertical/horizontal padding\r\nvia the `--ku-density-*` vars. Omit to inherit a `data-density` set on an\r\nancestor ("
+        },
+        {
+          "name": "startAdornment",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Content rendered inside the field, before the input (decorative)."
+        },
+        {
+          "name": "endAdornment",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Content rendered inside the field, after the input (decorative)."
+        }
+      ]
+    },
+    {
+      "name": "PasswordInput",
+      "slug": "password-input",
+      "category": "Form controls",
+      "description": "labelled password input with show/hide toggle (#tailwind)",
+      "also": [],
+      "sourcePath": "src/components/PasswordInput/PasswordInput.tsx",
+      "import": "import { PasswordInput } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label, associated with the input. Or wrap in a `<FormField>`."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Controlled value."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Initial value when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string, event: ChangeEvent<HTMLInputElement>) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires on every keystroke with the new value (and the native event)."
+        },
+        {
+          "name": "helperText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Hint shown below the field. Hidden when an error is shown."
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the field in the error state (aria-invalid)."
+        },
+        {
+          "name": "errorText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Message shown below the field when `error` is set; replaces helperText."
+        },
+        {
+          "name": "size",
+          "type": "PasswordInputSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "density",
+          "type": "Density",
+          "required": false,
+          "default": null,
+          "description": "Field density; omit to inherit a `data-density` ancestor."
+        }
+      ]
+    },
+    {
+      "name": "Textarea",
+      "slug": "textarea",
+      "category": "Form controls",
+      "description": "`autoResize`, density",
+      "also": [],
+      "sourcePath": "src/components/Textarea/Textarea.tsx",
+      "import": "import { Textarea } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label, associated with the textarea via htmlFor/id.\r\nProvide `label`, or wrap the control in a `<FormField>` which supplies it."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Controlled value."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Initial value when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string, event: ChangeEvent<HTMLTextAreaElement>) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires on every keystroke with the new value (and the native event)."
+        },
+        {
+          "name": "helperText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Hint shown below the field. Hidden when an error is shown."
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the field in the error state (aria-invalid)."
+        },
+        {
+          "name": "errorText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Message shown below the field when `error` is set; replaces helperText."
+        },
+        {
+          "name": "size",
+          "type": "TextareaSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "autoResize",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Grow the height to fit content. Default false."
+        },
+        {
+          "name": "minRows",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Minimum rows when autoResize is on. Default 2."
+        },
+        {
+          "name": "maxRows",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Maximum rows when autoResize is on; scrolls beyond."
+        }
+      ]
+    },
+    {
+      "name": "NumberField",
+      "slug": "number-field",
+      "category": "Form controls",
+      "description": "steppers + `min`/`max`/`step`, reports `null` on empty",
+      "also": [],
+      "sourcePath": "src/components/NumberField/NumberField.tsx",
+      "import": "import { NumberField } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label, associated with the input via htmlFor/id. Provide `label`,\r\nor wrap the control in a `<FormField>` which supplies it."
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Controlled value."
+        },
+        {
+          "name": "defaultValue",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Initial value when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: number | null, event?: SyntheticEvent) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the parsed value, or `null` when the field is empty."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "Increment for steppers/arrow keys."
+        },
+        {
+          "name": "size",
+          "type": "NumberFieldSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the field in the error state (aria-invalid)."
+        },
+        {
+          "name": "helperText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Hint shown below the field. Hidden when an error is shown."
+        },
+        {
+          "name": "errorText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Message shown below the field when `error` is set; replaces helperText."
+        }
+      ]
+    },
+    {
+      "name": "PinInput",
+      "slug": "pin-input",
+      "category": "Form controls",
+      "description": "fixed-length one-time-code input",
+      "also": [],
+      "sourcePath": "src/components/PinInput/PinInput.tsx",
+      "import": "import { PinInput } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "length",
+          "type": "number",
+          "required": false,
+          "default": "6",
+          "description": "Number of cells."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Controlled value."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Uncontrolled initial value."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the full string whenever any cell changes."
+        },
+        {
+          "name": "onComplete",
+          "type": "(value: string) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires once the last cell is filled (value length === length)."
+        },
+        {
+          "name": "type",
+          "type": "'number' | 'text'",
+          "required": false,
+          "default": "'number'",
+          "description": "Constrains accepted characters."
+        },
+        {
+          "name": "mask",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render cells as password dots."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "PinInputSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "'aria-label'",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible name for the group (when not inside a <FormField>)."
+        },
+        {
+          "name": "onBlur",
+          "type": "(event: FocusEvent<HTMLInputElement>) => void",
+          "required": false,
+          "default": null,
+          "description": "Called when any cell loses focus."
+        }
+      ]
+    },
+    {
+      "name": "Checkbox",
+      "slug": "checkbox",
+      "category": "Form controls",
+      "description": "(+ `indeterminate`)",
+      "also": [],
+      "sourcePath": "src/components/Checkbox/Checkbox.tsx",
+      "import": "import { Checkbox } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Label rendered next to the box; the whole label is the click target."
+        },
+        {
+          "name": "checked",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Controlled checked state."
+        },
+        {
+          "name": "defaultChecked",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Initial checked state when uncontrolled."
+        },
+        {
+          "name": "indeterminate",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Visually + a11y indeterminate; set on the DOM node via ref, not an attribute."
+        },
+        {
+          "name": "onChange",
+          "type": "(checked: boolean, event: React.ChangeEvent<HTMLInputElement>) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the new checked state (and the native event)."
+        },
+        {
+          "name": "size",
+          "type": "CheckboxSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the control in the error state (aria-invalid)."
+        }
+      ]
+    },
+    {
+      "name": "Radio",
+      "slug": "radio",
+      "category": "Form controls",
+      "description": "+ `RadioGroup`",
+      "also": ["RadioGroup"],
+      "sourcePath": "src/components/Radio/Radio.tsx",
+      "import": "import { Radio, RadioGroup } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "default": null,
+          "description": "Value submitted/compared when this radio is selected."
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label, wraps the control so its text is part of the click target."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disable this single option."
+        }
+      ]
+    },
+    {
+      "name": "Switch",
+      "slug": "switch",
+      "category": "Form controls",
+      "description": "",
+      "also": [],
+      "sourcePath": "src/components/Switch/Switch.tsx",
+      "import": "import { Switch } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Label rendered beside the control and used as the accessible name."
+        },
+        {
+          "name": "checked",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Controlled checked state."
+        },
+        {
+          "name": "defaultChecked",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Initial checked state when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(checked: boolean, event: React.ChangeEvent<HTMLInputElement>) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires on toggle with the new checked value (and the native event)."
+        },
+        {
+          "name": "size",
+          "type": "SwitchSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the control in the error state (aria-invalid). Ignored inside a FormField, which drives invalid from validation."
+        }
+      ]
+    },
+    {
+      "name": "Select",
+      "slug": "select",
+      "category": "Form controls",
+      "description": "`options`-driven, `clearable`, `required`, single or `multiple` (chips, #81)",
+      "also": [],
+      "sourcePath": "src/components/Select/Select.tsx",
+      "import": "import { Select } from '@koduhai/design-system';",
+      "props": null
+    },
+    {
+      "name": "Combobox",
+      "slug": "combobox",
+      "category": "Form controls",
+      "description": "searchable, `clearable`, single or `multiple`, async/loading + create-option (#39)",
+      "also": [],
+      "sourcePath": "src/components/Combobox/Combobox.tsx",
+      "import": "import { Combobox } from '@koduhai/design-system';",
+      "props": null
+    },
+    {
+      "name": "TagInput",
+      "slug": "tag-input",
+      "category": "Form controls",
+      "description": "chip-rendering token input",
+      "also": [],
+      "sourcePath": "src/components/TagInput/TagInput.tsx",
+      "import": "import { TagInput } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Provide `label`, or wrap the control in a `<FormField>` which supplies it."
+        },
+        {
+          "name": "value",
+          "type": "string[]",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "defaultValue",
+          "type": "string[]",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "onChange",
+          "type": "(tags: string[], event?: SyntheticEvent) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the next tags array and, where available, the originating event."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Cap the number of tags."
+        },
+        {
+          "name": "allowDuplicates",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Allow duplicate tags."
+        },
+        {
+          "name": "size",
+          "type": "TagInputSize",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "When set, the committed tags are submitted with a native `<form>` as one\r\nhidden input per tag under this name (standard multi-value encoding). The\r\nvisible text input, whose value is the in-progress draft, never carries\r\n`name`, so the draft string is never posted."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "helperText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "errorText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Slider",
+      "slug": "slider",
+      "category": "Form controls",
+      "description": "WAI-ARIA slider, density",
+      "also": [],
+      "sourcePath": "src/components/Slider/Slider.tsx",
+      "import": "import { Slider } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label, rendered as a `<span>` referenced by aria-labelledby. Required\r\nstandalone; optional (and not rendered) inside a `<FormField>`, which supplies it."
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "defaultValue",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "onChange",
+          "type": "(value: number, event?: SyntheticEvent) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the new value and the originating keyboard/pointer event."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "size",
+          "type": "SliderSize",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "formatValue",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": null,
+          "description": "Produces aria-valuetext (and any visible value readout)."
+        },
+        {
+          "name": "helperText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Hint shown below the track. Hidden when an error is shown."
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the slider in the error state (aria-invalid)."
+        },
+        {
+          "name": "errorText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Message shown below the track when `error` is set; replaces helperText."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Rating",
+      "slug": "rating",
+      "category": "Form controls",
+      "description": "keyboard-operable star rating (#32)",
+      "also": [],
+      "sourcePath": "src/components/Rating/Rating.tsx",
+      "import": "import { Rating } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Controlled rating value (0..max)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "number",
+          "required": false,
+          "default": "0",
+          "description": "Initial value when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: number) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the newly selected rating."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": "5",
+          "description": "Number of stars."
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Renders a non-interactive display of the value."
+        },
+        {
+          "name": "size",
+          "type": "RatingSize",
+          "required": false,
+          "default": "'md'",
+          "description": "Star size."
+        },
+        {
+          "name": "'aria-label'",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible name for the rating group."
+        }
+      ]
+    },
+    {
+      "name": "FileUpload",
+      "slug": "file-upload",
+      "category": "Form controls",
+      "description": "drag-and-drop dropzone (#32)",
+      "also": [],
+      "sourcePath": "src/components/FileUpload/FileUpload.tsx",
+      "import": "import { FileUpload } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "onFiles",
+          "type": "(files: File[]) => void",
+          "required": true,
+          "default": null,
+          "description": "Fires with the dropped or selected files."
+        },
+        {
+          "name": "accept",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Native input `accept` (e.g. 'image/*,.pdf')."
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Allow selecting/dropping more than one file."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disables interaction."
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": "a sensible string",
+          "description": "Primary prompt shown in the dropzone."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Base id for the input; derives the instructions id."
+        }
+      ]
+    },
+    {
+      "name": "ColorPicker",
+      "slug": "color-picker",
+      "category": "Form controls",
+      "description": "saturation/value + hue + alpha + hex + swatch (#43)",
+      "also": [],
+      "sourcePath": "src/components/ColorPicker/ColorPicker.tsx",
+      "import": "import { ColorPicker } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Controlled hex value (#RGB / #RRGGBB / #RRGGBBAA)."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "default": "'#1B5FCC'",
+          "description": "Initial value when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(hex: string) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the new hex string whenever the color changes."
+        },
+        {
+          "name": "alpha",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Enable the alpha channel + slider, and #RRGGBBAA output. Default false."
+        },
+        {
+          "name": "swatches",
+          "type": "string[]",
+          "required": false,
+          "default": null,
+          "description": "Preset swatch row. A small DS palette is used when omitted."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label; deferred to an enclosing `<FormField>` when present."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DatePicker",
+      "slug": "date-picker",
+      "category": "Form controls",
+      "description": "input + popover calendar; `granularity='minute'` adds a time field for date+time (#27/#61)",
+      "also": [],
+      "sourcePath": "src/components/DatePicker/DatePicker.tsx",
+      "import": "import { DatePicker } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "Date",
+          "required": false,
+          "default": null,
+          "description": "Controlled selected date."
+        },
+        {
+          "name": "defaultValue",
+          "type": "Date",
+          "required": false,
+          "default": null,
+          "description": "Initial selected date when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(date: Date | null) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the chosen date, or `null` when the field is cleared."
+        },
+        {
+          "name": "granularity",
+          "type": "'day' | 'minute'",
+          "required": false,
+          "default": null,
+          "description": "Selection precision. `'day'` (default) picks a calendar day and truncates the\r\ntime. `'minute'` adds a time field to the popover and carries the full date +\r\ntime in `value`/`onChange`, honoring `min`/`max` at minute resolution."
+        },
+        {
+          "name": "hourCycle",
+          "type": "12 | 24",
+          "required": false,
+          "default": null,
+          "description": "Time field: 12- or 24-hour display (only when `granularity='minute'`). Default 24."
+        },
+        {
+          "name": "withSeconds",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Time field: show a seconds segment (only when `granularity='minute'`)."
+        },
+        {
+          "name": "minuteStep",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Time field: minute step for arrow stepping (only when `granularity='minute'`)."
+        },
+        {
+          "name": "min",
+          "type": "Date",
+          "required": false,
+          "default": null,
+          "description": "Earliest selectable date (inclusive; minute resolution when `granularity='minute'`)."
+        },
+        {
+          "name": "max",
+          "type": "Date",
+          "required": false,
+          "default": null,
+          "description": "Latest selectable date (inclusive; minute resolution when `granularity='minute'`)."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Text shown when no date is selected."
+        },
+        {
+          "name": "size",
+          "type": "DatePickerSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disables the input and trigger."
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the control in the error state (aria-invalid)."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Marks the field required."
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label, associated via htmlFor/id. Omit it (and wrap the control in a\r\n`<FormField>`) to defer the label and aria wiring to the field."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "BCP 47 locale for the formatted value and the calendar."
+        },
+        {
+          "name": "triggerLabel",
+          "type": "string",
+          "required": false,
+          "default": "'Open calendar'",
+          "description": "Accessible label for the calendar trigger button."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Class applied to the root wrapper."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Base id for the control; the calendar/label ids derive from it."
+        }
+      ]
+    },
+    {
+      "name": "DateRangePicker",
+      "slug": "date-range-picker",
+      "category": "Form controls",
+      "description": "two-field range input over the range calendar (#42)",
+      "also": [],
+      "sourcePath": "src/components/DateRangePicker/DateRangePicker.tsx",
+      "import": "import { DateRangePicker } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "DateRange",
+          "required": false,
+          "default": null,
+          "description": "Controlled selected range."
+        },
+        {
+          "name": "defaultValue",
+          "type": "DateRange",
+          "required": false,
+          "default": null,
+          "description": "Initial selected range when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(range: DateRange) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires whenever an endpoint changes (start-only ranges report `end: null`)."
+        },
+        {
+          "name": "min",
+          "type": "Date",
+          "required": false,
+          "default": null,
+          "description": "Earliest selectable date (inclusive)."
+        },
+        {
+          "name": "max",
+          "type": "Date",
+          "required": false,
+          "default": null,
+          "description": "Latest selectable date (inclusive)."
+        },
+        {
+          "name": "size",
+          "type": "DateRangePickerSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disables the inputs and trigger."
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the control in the error state."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Marks the field required."
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label. Omit it (and wrap the control in a `<FormField>`) to defer the\r\nlabel and aria wiring to the field."
+        },
+        {
+          "name": "startPlaceholder",
+          "type": "string",
+          "required": false,
+          "default": "`dateRangePicker",
+          "description": "Placeholder for the start field. startPlaceholder`."
+        },
+        {
+          "name": "endPlaceholder",
+          "type": "string",
+          "required": false,
+          "default": "`dateRangePicker",
+          "description": "Placeholder for the end field. endPlaceholder`."
+        },
+        {
+          "name": "startLabel",
+          "type": "string",
+          "required": false,
+          "default": "`dateRangePicker",
+          "description": "Accessible name for the start field. startLabel`."
+        },
+        {
+          "name": "endLabel",
+          "type": "string",
+          "required": false,
+          "default": "`dateRangePicker",
+          "description": "Accessible name for the end field. endLabel`."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "BCP 47 locale for the formatted values and the calendar."
+        },
+        {
+          "name": "triggerLabel",
+          "type": "string",
+          "required": false,
+          "default": "`datePicker",
+          "description": "Accessible label for the calendar trigger button. triggerLabel`."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Class applied to the root wrapper."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Base id for the control; label/calendar ids derive from it."
+        }
+      ]
+    },
+    {
+      "name": "TimePicker",
+      "slug": "time-picker",
+      "category": "Form controls",
+      "description": "segmented hour/minute(/second) spinbuttons, 12/24h, `FormField`-composing (#42)",
+      "also": ["FormField"],
+      "sourcePath": "src/components/TimePicker/TimePicker.tsx",
+      "import": "import { TimePicker, FormField } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "Date",
+          "required": false,
+          "default": null,
+          "description": "Controlled value; only the time-of-day (hours/minutes/seconds) is read."
+        },
+        {
+          "name": "defaultValue",
+          "type": "Date",
+          "required": false,
+          "default": null,
+          "description": "Initial value when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(date: Date | null) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with a Date carrying the chosen time, or `null` when fully cleared."
+        },
+        {
+          "name": "hourCycle",
+          "type": "12 | 24",
+          "required": false,
+          "default": "24",
+          "description": "12- or 24-hour display."
+        },
+        {
+          "name": "withSeconds",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Show a seconds segment."
+        },
+        {
+          "name": "minuteStep",
+          "type": "number",
+          "required": false,
+          "default": "1",
+          "description": "Step (minutes) applied when arrow-stepping the minute segment."
+        },
+        {
+          "name": "size",
+          "type": "TimePickerSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disables the control."
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Puts the control in the error state."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Marks the field required."
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Visible label. Omit it (and wrap the control in a `<FormField>`) to defer the\r\nlabel and aria wiring to the field."
+        },
+        {
+          "name": "helperText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Hint shown below the control. Hidden when an error is shown."
+        },
+        {
+          "name": "errorText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Message shown below the control when `error` is set; replaces helperText."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "BCP 47 locale for the AM/PM names."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Class applied to the root wrapper."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Base id for the control; label/description ids derive from it."
+        }
+      ]
+    },
+    {
+      "name": "Calendar",
+      "slug": "calendar",
+      "category": "Form controls",
+      "description": "standalone month grid, full keyboard nav, single or `mode='range'` (#27/#42)",
+      "also": [],
+      "sourcePath": "src/components/Calendar/Calendar.tsx",
+      "import": "import { Calendar } from '@koduhai/design-system';",
+      "props": null
+    },
+    {
+      "name": "FormField",
+      "slug": "form-field",
+      "category": "Form controls",
+      "description": "label/required/`aria-*` wiring",
+      "also": [],
+      "sourcePath": "src/components/FormField/FormField.tsx",
+      "import": "import { FormField } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Bind this field to an enclosing <Form> by name (form supplies value + error)."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "error",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "errorText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Shown when `error`; replaces helperText. Ignored for bound fields (the form supplies it)."
+        },
+        {
+          "name": "helperText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Form",
+      "slug": "form",
+      "category": "Form controls",
+      "description": "headless form store with per-field subscriptions, Standard Schema validation, focus-on-error (#38)",
+      "also": ["FormErrorSummary"],
+      "sourcePath": "src/components/Form/Form.tsx",
+      "import": "import { Form, FormErrorSummary } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "form",
+          "type": "FormApi",
+          "required": true,
+          "default": null,
+          "description": "The form instance from useForm()."
+        },
+        {
+          "name": "onValid",
+          "type": "(values: FormValues) => void | Promise<void>",
+          "required": false,
+          "default": null,
+          "description": "Called with validated values on a successful submit."
+        },
+        {
+          "name": "onInvalid",
+          "type": "(errors: FormErrors) => void",
+          "required": false,
+          "default": null,
+          "description": "Called with the error map when submit fails validation."
+        }
+      ]
+    },
+    {
+      "name": "Chip",
+      "slug": "chip",
+      "category": "Data display & feedback",
+      "description": "variants × tones, optional delete, `ReactNode` label",
+      "also": ["ReactNode"],
+      "sourcePath": "src/components/Chip/Chip.tsx",
+      "import": "import { Chip, ReactNode } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Content shown in the chip. A string also seeds the delete button's default\r\naccessible label (`Remove <label>`); for non-string labels pass `deleteLabel`."
+        },
+        {
+          "name": "variant",
+          "type": "ChipVariant",
+          "required": false,
+          "default": "'solid'",
+          "description": "Visual style."
+        },
+        {
+          "name": "tone",
+          "type": "ChipTone",
+          "required": false,
+          "default": "'neutral'",
+          "description": "Semantic color."
+        },
+        {
+          "name": "size",
+          "type": "ChipSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Leading icon (decorative)."
+        },
+        {
+          "name": "onClick",
+          "type": "(event: MouseEvent<HTMLElement>) => void",
+          "required": false,
+          "default": null,
+          "description": "Makes the chip a clickable button."
+        },
+        {
+          "name": "onDelete",
+          "type": "(event: MouseEvent<HTMLButtonElement>) => void",
+          "required": false,
+          "default": null,
+          "description": "Adds a labelled delete affordance. Receives the click event."
+        },
+        {
+          "name": "deleteLabel",
+          "type": "string",
+          "required": false,
+          "default": "\"Remove <label>\"",
+          "description": "Accessible label for the delete button."
+        }
+      ]
+    },
+    {
+      "name": "Avatar",
+      "slug": "avatar",
+      "category": "Data display & feedback",
+      "description": "image + initials fallback, sizes/shapes",
+      "also": [],
+      "sourcePath": "src/components/Avatar/Avatar.tsx",
+      "import": "import { Avatar } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "src",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Image URL. When set, an <img> is rendered."
+        },
+        {
+          "name": "alt",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Alt text for the image. Falls back to `name` when omitted (for a11y when src is set)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Used to derive initials and the aria-label when there is no image, and as the image alt fallback."
+        },
+        {
+          "name": "size",
+          "type": "AvatarSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "shape",
+          "type": "AvatarShape",
+          "required": false,
+          "default": "'circle'",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "AvatarGroup",
+      "slug": "avatar-group",
+      "category": "Data display & feedback",
+      "description": "stacked overlapping avatars + `+N` overflow (#12)",
+      "also": [],
+      "sourcePath": "src/components/AvatarGroup/AvatarGroup.tsx",
+      "import": "import { AvatarGroup } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Cap the number of visible avatars; the remainder collapses into a +N chip."
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Logical total when more avatars exist than are rendered (server-truncated lists)."
+        },
+        {
+          "name": "size",
+          "type": "AvatarSize",
+          "required": false,
+          "default": "'md'",
+          "description": "Propagated to every child Avatar and the overflow chip."
+        },
+        {
+          "name": "shape",
+          "type": "AvatarShape",
+          "required": false,
+          "default": "'circle'",
+          "description": "Propagated to every child Avatar and the overflow chip."
+        },
+        {
+          "name": "spacing",
+          "type": "'tight' | 'normal'",
+          "required": false,
+          "default": "'normal'",
+          "description": "Overlap amount."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible name for the group, announced by assistive tech as the label of\r\nthe avatar stack (e.g. \"Project collaborators\"). Maps to aria-label. Omit to\r\npass aria-label / aria-labelledby directly via props instead."
+        }
+      ]
+    },
+    {
+      "name": "StatusBadge",
+      "slug": "status-badge",
+      "category": "Data display & feedback",
+      "description": "text + dot + color (never color-only)",
+      "also": [],
+      "sourcePath": "src/components/StatusBadge/StatusBadge.tsx",
+      "import": "import { StatusBadge } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "status",
+          "type": "StatusBadgeStatus",
+          "required": true,
+          "default": null,
+          "description": "Semantic status. Drives color and the dot."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "default": null,
+          "description": "Text label — always rendered so color is never the only signal."
+        },
+        {
+          "name": "variant",
+          "type": "StatusBadgeVariant",
+          "required": false,
+          "default": "'subtle'",
+          "description": "Visual style."
+        }
+      ]
+    },
+    {
+      "name": "NotificationBadge",
+      "slug": "notification-badge",
+      "category": "Data display & feedback",
+      "description": "count/dot overlay anchored to a child (#43)",
+      "also": [],
+      "sourcePath": "src/components/NotificationBadge/NotificationBadge.tsx",
+      "import": "import { NotificationBadge } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "The anchored element (icon/avatar/button). Omit for a standalone badge."
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Numeric badge value."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": "99",
+          "description": "Cap before rendering `${max}+`."
+        },
+        {
+          "name": "dot",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Show a dot instead of a count."
+        },
+        {
+          "name": "showZero",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Keep the badge visible when count===0."
+        },
+        {
+          "name": "tone",
+          "type": "ChipTone",
+          "required": false,
+          "default": "'danger'",
+          "description": "Semantic color, reusing the shared tone vocabulary."
+        },
+        {
+          "name": "placement",
+          "type": "NotificationBadgePlacement",
+          "required": false,
+          "default": "'top-end'",
+          "description": "Where the badge sits relative to the child."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible text, e.g. \"3 unread notifications\"."
+        }
+      ]
+    },
+    {
+      "name": "Alert",
+      "slug": "alert",
+      "category": "Data display & feedback",
+      "description": "`role=\"alert\"`/`role=\"status\"`, `dismissable`",
+      "also": [],
+      "sourcePath": "src/components/Alert/Alert.tsx",
+      "import": "import { Alert } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "severity",
+          "type": "AlertSeverity",
+          "required": true,
+          "default": null,
+          "description": "Semantic severity. Drives color, default icon, and ARIA role."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Optional bold heading shown above the body."
+        },
+        {
+          "name": "dismissable",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "When true, shows a labeled dismiss button."
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "required": false,
+          "default": null,
+          "description": "Called when the dismiss button is clicked."
+        },
+        {
+          "name": "closeLabel",
+          "type": "string",
+          "required": false,
+          "default": "the i18n catalog's `dismiss` ('Dismiss')",
+          "description": "Accessible label for the dismiss button."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Custom leading icon. Overrides the severity default.\r\nPass a falsy value (e.g. `null`) to disable the icon entirely."
+        }
+      ]
+    },
+    {
+      "name": "Banner",
+      "slug": "banner",
+      "category": "Data display & feedback",
+      "description": "page-level notice (info/success/warning/danger) (#43)",
+      "also": [],
+      "sourcePath": "src/components/Banner/Banner.tsx",
+      "import": "import { Banner } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "severity",
+          "type": "BannerSeverity",
+          "required": true,
+          "default": null,
+          "description": "Semantic severity. Drives color, default icon, and ARIA role."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Optional bold heading shown above the body."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "The notice message body."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Custom leading icon. Overrides the severity default.\r\nPass `null` to hide the icon entirely."
+        },
+        {
+          "name": "dismissable",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "When true, shows a labeled dismiss button."
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "required": false,
+          "default": null,
+          "description": "Called when the dismiss button is pressed."
+        },
+        {
+          "name": "closeLabel",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible label for the dismiss button. Overrides the i18n catalog's\r\n`dismiss` (default 'Dismiss')."
+        },
+        {
+          "name": "action",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Trailing call-to-action slot (e.g. a Button or Link)."
+        }
+      ]
+    },
+    {
+      "name": "Card",
+      "slug": "card",
+      "category": "Data display & feedback",
+      "description": "(+ `CardHeader` / `CardBody` / `CardFooter` slots)",
+      "also": ["CardHeader", "CardBody", "CardFooter"],
+      "sourcePath": "src/components/Card/Card.tsx",
+      "import": "import { Card, CardHeader, CardBody, CardFooter } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "variant",
+          "type": "CardVariant",
+          "required": false,
+          "default": "'outline'",
+          "description": "Surface style."
+        },
+        {
+          "name": "padding",
+          "type": "CardPadding",
+          "required": false,
+          "default": "'md'",
+          "description": "Inner padding scale."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render the single child element instead of a <div>, merging Card props onto it."
+        }
+      ]
+    },
+    {
+      "name": "EmptyState",
+      "slug": "empty-state",
+      "category": "Data display & feedback",
+      "description": "",
+      "also": [],
+      "sourcePath": "src/components/EmptyState/EmptyState.tsx",
+      "import": "import { EmptyState } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Decorative illustration or icon shown above the title."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Heading text. Required."
+        },
+        {
+          "name": "description",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Supporting copy shown below the title."
+        },
+        {
+          "name": "action",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Call-to-action — pass a real <Button>/<a>."
+        },
+        {
+          "name": "headingLevel",
+          "type": "HeadingLevel",
+          "required": false,
+          "default": "2",
+          "description": "Semantic heading level for the title."
+        }
+      ]
+    },
+    {
+      "name": "Progress",
+      "slug": "progress",
+      "category": "Data display & feedback",
+      "description": "bar with shared tone vocab",
+      "also": [],
+      "sourcePath": "src/components/Progress/Progress.tsx",
+      "import": "import { Progress } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Determinate progress amount. Omit for an indeterminate bar."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Upper bound of `value`. Default 100."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible name; also shown when `showValue` is set."
+        },
+        {
+          "name": "showValue",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render a visible label row with the percentage. Default false."
+        },
+        {
+          "name": "size",
+          "type": "ProgressSize",
+          "required": false,
+          "default": null,
+          "description": "Track thickness. Default 'md'."
+        },
+        {
+          "name": "tone",
+          "type": "ProgressTone",
+          "required": false,
+          "default": null,
+          "description": "Fill color. Default 'primary'."
+        }
+      ]
+    },
+    {
+      "name": "Meter",
+      "slug": "meter",
+      "category": "Data display & feedback",
+      "description": "`role=\"meter\"` measurement gauge with threshold tones (#43)",
+      "also": [],
+      "sourcePath": "src/components/Meter/Meter.tsx",
+      "import": "import { Meter } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "default": null,
+          "description": "The current numeric measurement."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Lower bound. Default 0."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Upper bound. Default 100."
+        },
+        {
+          "name": "low",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Upper bound of the low (often \"poor\") range."
+        },
+        {
+          "name": "high",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Lower bound of the high (often \"poor\") range."
+        },
+        {
+          "name": "optimum",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "The optimal value; its position relative to `low`/`high` determines which band is \"good\"."
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Accessible name; rendered and wired via aria-labelledby when provided."
+        },
+        {
+          "name": "formatValue",
+          "type": "(value: number) => string",
+          "required": false,
+          "default": null,
+          "description": "Formats `value` for `aria-valuetext` and the optional visible readout."
+        },
+        {
+          "name": "size",
+          "type": "MeterSize",
+          "required": false,
+          "default": null,
+          "description": "Track thickness. Default 'md'."
+        },
+        {
+          "name": "showValue",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render the formatted value as visible text. Default false."
+        }
+      ]
+    },
+    {
+      "name": "Spinner",
+      "slug": "spinner",
+      "category": "Data display & feedback",
+      "description": "tone subset, sizes",
+      "also": [],
+      "sourcePath": "src/components/Spinner/Spinner.tsx",
+      "import": "import { Spinner } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "size",
+          "type": "SpinnerSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "SpinnerTone",
+          "required": false,
+          "default": "'primary'",
+          "description": "Semantic color."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible label. When provided, the root is `role=\"status\"` with visually-hidden\r\ntext so screen readers announce it. When omitted, the spinner is decorative\r\n(`aria-hidden`)."
+        }
+      ]
+    },
+    {
+      "name": "Skeleton",
+      "slug": "skeleton",
+      "category": "Data display & feedback",
+      "description": "variants for text/circle/rect, dark-aware",
+      "also": [],
+      "sourcePath": "src/components/Skeleton/Skeleton.tsx",
+      "import": "import { Skeleton } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "variant",
+          "type": "SkeletonVariant",
+          "required": false,
+          "default": "'text'",
+          "description": "Shape of the placeholder."
+        },
+        {
+          "name": "width",
+          "type": "number | string",
+          "required": false,
+          "default": null,
+          "description": "Width. Numbers are treated as px; strings are used verbatim."
+        },
+        {
+          "name": "height",
+          "type": "number | string",
+          "required": false,
+          "default": null,
+          "description": "Height. Numbers are treated as px; strings are used verbatim."
+        },
+        {
+          "name": "animation",
+          "type": "'pulse' | 'none'",
+          "required": false,
+          "default": "'pulse'",
+          "description": "Animation style."
+        }
+      ]
+    },
+    {
+      "name": "Stat",
+      "slug": "stat",
+      "category": "Data display & feedback",
+      "description": "dashboard metric block with `trend`/`delta` + arrow + SR direction text (#12)",
+      "also": [],
+      "sourcePath": "src/components/Stat/Stat.tsx",
+      "import": "import { Stat } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "The metric name."
+        },
+        {
+          "name": "value",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "The metric value; rendered with tabular numerals."
+        },
+        {
+          "name": "delta",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Change indicator text, e.g. \"12%\"."
+        },
+        {
+          "name": "trend",
+          "type": "StatTrend",
+          "required": false,
+          "default": "'neutral'",
+          "description": "Drives the delta colour and direction arrow."
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Optional accent icon shown beside the label."
+        },
+        {
+          "name": "helpText",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Sub-label rendered alongside the delta."
+        }
+      ]
+    },
+    {
+      "name": "CountUp",
+      "slug": "count-up",
+      "category": "Data display & feedback",
+      "description": "animated count-up to target, honors reduced motion (#tailwind)",
+      "also": [],
+      "sourcePath": "src/components/CountUp/CountUp.tsx",
+      "import": "import { CountUp } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "value",
+          "type": "number",
+          "required": true,
+          "default": null,
+          "description": "Target value to animate to."
+        },
+        {
+          "name": "from",
+          "type": "number",
+          "required": false,
+          "default": "0",
+          "description": "Starting value for the first animation."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "default": "800",
+          "description": "Animation duration in ms. `0` renders instantly."
+        },
+        {
+          "name": "decimals",
+          "type": "number",
+          "required": false,
+          "default": "0",
+          "description": "Fixed decimal places when no `format` is given."
+        },
+        {
+          "name": "format",
+          "type": "(n: number) => string",
+          "required": false,
+          "default": null,
+          "description": "Custom formatter (e.g. currency/percent). Overrides `decimals`."
+        }
+      ]
+    },
+    {
+      "name": "Sparkline",
+      "slug": "sparkline",
+      "category": "Data display & feedback",
+      "description": "line/area/bar microchart (#28)",
+      "also": [],
+      "sourcePath": "src/components/Sparkline/Sparkline.tsx",
+      "import": "import { Sparkline } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "data",
+          "type": "number[]",
+          "required": true,
+          "default": null,
+          "description": "Numeric series to plot. An empty array renders an empty (but labeled) svg."
+        },
+        {
+          "name": "type",
+          "type": "SparklineType",
+          "required": false,
+          "default": "'line'",
+          "description": "Shape to draw."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "default": "120",
+          "description": "SVG width in px."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "32",
+          "description": "SVG height in px."
+        },
+        {
+          "name": "color",
+          "type": "string",
+          "required": false,
+          "default": "the first categorical chart color",
+          "description": "Stroke/fill color."
+        },
+        {
+          "name": "'aria-label'",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible label. When omitted, a generic summary is generated from the\r\ndata so the graphic is never unlabeled."
+        }
+      ]
+    },
+    {
+      "name": "Chart",
+      "slug": "chart",
+      "category": "Data display & feedback",
+      "description": "minimal line/bar chart with categorical palette tokens (#28)",
+      "also": [],
+      "sourcePath": "src/components/Chart/Chart.tsx",
+      "import": "import { Chart } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "series",
+          "type": "ChartSeries[]",
+          "required": true,
+          "default": null,
+          "description": "One or more data series."
+        },
+        {
+          "name": "type",
+          "type": "ChartType",
+          "required": false,
+          "default": "'line'",
+          "description": "Render style."
+        },
+        {
+          "name": "categories",
+          "type": "string[]",
+          "required": false,
+          "default": null,
+          "description": "X-axis category labels, aligned by index with each series' data."
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "default": "320",
+          "description": "Chart width in px."
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "default": "180",
+          "description": "Chart height in px."
+        },
+        {
+          "name": "showAxes",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Draw x/y axis lines."
+        },
+        {
+          "name": "'aria-label'",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible label. Falls back to a generated series summary."
+        }
+      ]
+    },
+    {
+      "name": "Table",
+      "slug": "table",
+      "category": "Data display & feedback",
+      "description": "sortable headers, multi-column sort, `selectAllIds`",
+      "also": [],
+      "sourcePath": "src/components/Table/Table.tsx",
+      "import": "import { Table } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "columns",
+          "type": "Column<Row>[]",
+          "required": true,
+          "default": null,
+          "description": "Column definitions; order matches the rendered column order."
+        },
+        {
+          "name": "data",
+          "type": "Row[]",
+          "required": true,
+          "default": null,
+          "description": "Rows to render. An empty array triggers the `empty` slot."
+        },
+        {
+          "name": "getRowId",
+          "type": "(row: Row) => string",
+          "required": true,
+          "default": null,
+          "description": "Returns a stable unique string id for each row (used as React key and selection id)."
+        },
+        {
+          "name": "caption",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Accessible name; visually hidden unless `captionVisible`."
+        },
+        {
+          "name": "captionVisible",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "When true, renders the caption visibly above the table."
+        },
+        {
+          "name": "sortKey",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Controlled sort key."
+        },
+        {
+          "name": "sortDir",
+          "type": "SortDirection",
+          "required": false,
+          "default": null,
+          "description": "Controlled sort direction."
+        },
+        {
+          "name": "onSortChange",
+          "type": "(key: string, dir: SortDirection, event?: MouseEvent) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the requested sort key, toggled direction, and the originating event."
+        },
+        {
+          "name": "sort",
+          "type": "SortRule[]",
+          "required": false,
+          "default": null,
+          "description": "Multi-column sort rules in priority order. When provided, takes precedence\r\nover `sortKey`/`sortDir` and renders an `aria-sort` + priority badge per\r\nsorted column. Omit to keep the single-column `sortKey`/`sortDir` behavior."
+        },
+        {
+          "name": "selectedIds",
+          "type": "string[]",
+          "required": false,
+          "default": null,
+          "description": "Controlled selected row ids."
+        },
+        {
+          "name": "onSelectionChange",
+          "type": "(ids: string[]) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the next selected id set. When `selectAllIds` is omitted, select-all\r\nemits the current page's row ids; when `selectAllIds` is provided it emits that\r\nset instead — so a paginated consumer can select across pages."
+        },
+        {
+          "name": "selectAllIds",
+          "type": "string[]",
+          "required": false,
+          "default": null,
+          "description": "When provided, the header select-all checkbox reflects/toggles THIS id set\r\n(e.g. all rows across pages) instead of only the rendered `data`."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Renders skeleton rows in place of data."
+        },
+        {
+          "name": "loadingRows",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Number of skeleton rows. Default 5."
+        },
+        {
+          "name": "empty",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Shown when `data` is empty and not loading."
+        },
+        {
+          "name": "stickyHeader",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Sticky header for scroll-in-container."
+        },
+        {
+          "name": "density",
+          "type": "Density",
+          "required": false,
+          "default": "comfortable)",
+          "description": "Row/cell density. `compact` tightens cell padding via the `--ku-density-*`\r\nvars. Omit to inherit a `data-density` set on an ancestor (Setting it explicitly sets `data-density` on the table."
+        }
+      ]
+    },
+    {
+      "name": "DataTable",
+      "slug": "data-table",
+      "category": "Data display & feedback",
+      "description": "stateful Table orchestrator: pagination, search, per-column filters, row selection, row expansion, column resize, server-side `manual` hook, opt-in row virtualization (#9/#30/#37)",
+      "also": [],
+      "sourcePath": "src/components/DataTable/DataTable.tsx",
+      "import": "import { DataTable } from '@koduhai/design-system';",
+      "props": null
+    },
+    {
+      "name": "DescriptionList",
+      "slug": "description-list",
+      "category": "Data display & feedback",
+      "description": "`<dl>` key-value primitive",
+      "also": [],
+      "sourcePath": "src/components/DescriptionList/DescriptionList.tsx",
+      "import": "import { DescriptionList } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "items",
+          "type": "DescriptionItem[]",
+          "required": true,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "termWidth",
+          "type": "string",
+          "required": false,
+          "default": "'max-content'",
+          "description": "Fixed width of the term column."
+        },
+        {
+          "name": "gap",
+          "type": "SpaceToken",
+          "required": false,
+          "default": "3",
+          "description": "Row gap (space token)."
+        }
+      ]
+    },
+    {
+      "name": "Tree",
+      "slug": "tree",
+      "category": "Data display & feedback",
+      "description": "keyboard-navigable tree (#32)",
+      "also": [],
+      "sourcePath": "src/components/Tree/Tree.tsx",
+      "import": "import { Tree } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "nodes",
+          "type": "TreeNode[]",
+          "required": true,
+          "default": null,
+          "description": "The hierarchy to render."
+        },
+        {
+          "name": "defaultExpanded",
+          "type": "string[]",
+          "required": false,
+          "default": null,
+          "description": "Initially expanded parent ids when uncontrolled."
+        },
+        {
+          "name": "expanded",
+          "type": "string[]",
+          "required": false,
+          "default": null,
+          "description": "Controlled set of expanded parent ids."
+        },
+        {
+          "name": "onExpandedChange",
+          "type": "(ids: string[]) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the next set of expanded ids."
+        },
+        {
+          "name": "defaultSelectedId",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Initially selected node id when uncontrolled."
+        },
+        {
+          "name": "selectedId",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Controlled selected node id."
+        },
+        {
+          "name": "onSelect",
+          "type": "(id: string) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with a node id when it is selected."
+        }
+      ]
+    },
+    {
+      "name": "Timeline",
+      "slug": "timeline",
+      "category": "Data display & feedback",
+      "description": "vertical/horizontal event list (#32)",
+      "also": [],
+      "sourcePath": "src/components/Timeline/Timeline.tsx",
+      "import": "import { Timeline } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "items",
+          "type": "TimelineItem[]",
+          "required": true,
+          "default": null,
+          "description": "The ordered set of events, newest-first by convention."
+        }
+      ]
+    },
+    {
+      "name": "Code",
+      "slug": "code",
+      "category": "Data display & feedback",
+      "description": "inline + block code surfaces (#32)",
+      "also": ["CodeBlock"],
+      "sourcePath": "src/components/Code/Code.tsx",
+      "import": "import { Code, CodeBlock } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Inline code content."
+        }
+      ]
+    },
+    {
+      "name": "Kbd",
+      "slug": "kbd",
+      "category": "Data display & feedback",
+      "description": "keyboard-key chip (#32)",
+      "also": [],
+      "sourcePath": "src/components/Kbd/Kbd.tsx",
+      "import": "import { Kbd } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "The key label(s) to display."
+        },
+        {
+          "name": "size",
+          "type": "KbdSize",
+          "required": false,
+          "default": "'md'",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Dialog",
+      "slug": "dialog",
+      "category": "Overlays & floating",
+      "description": "native `<dialog>` + `showModal()`, `initialFocus`, pending/loading confirm, warning tone (#57)",
+      "also": ["ConfirmDialog"],
+      "sourcePath": "src/components/Dialog/Dialog.tsx",
+      "import": "import { Dialog, ConfirmDialog } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "default": null,
+          "description": "Whether the dialog is shown modally."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "default": null,
+          "description": "Called with the requested next open state. The dialog only ever requests to\r\nclose (close button, Esc, backdrop), so this fires with `false`. Named to\r\nmatch Popover/Select for a consistent overlay API."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Heading rendered in the dialog header and used as its accessible name."
+        },
+        {
+          "name": "size",
+          "type": "DialogSize",
+          "required": false,
+          "default": "'md'",
+          "description": "Max-width preset."
+        },
+        {
+          "name": "dismissable",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Allow Esc and backdrop click to close. Default true."
+        },
+        {
+          "name": "initialFocus",
+          "type": "RefObject<HTMLElement | null> | string",
+          "required": false,
+          "default": null,
+          "description": "Where to send focus when the dialog opens, overriding the native default\r\n(the first focusable descendant — usually the Close button). A ref to an\r\nelement, or a CSS selector queried within the dialog."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Actions rendered in the dialog footer."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Drawer",
+      "slug": "drawer",
+      "category": "Overlays & floating",
+      "description": "edge slide-in built on `<dialog>` (#12)",
+      "also": [],
+      "sourcePath": "src/components/Drawer/Drawer.tsx",
+      "import": "import { Drawer } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "default": null,
+          "description": "Whether the drawer is shown modally."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "default": null,
+          "description": "Called with the requested next open state (the drawer only requests `false`)."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Heading rendered in the header and used as the accessible name. When omitted,\r\nsupply an `aria-label` (or `aria-labelledby`) so the modal still has an\r\naccessible name (WCAG 4.1.2); both are forwarded to the underlying dialog."
+        },
+        {
+          "name": "side",
+          "type": "DrawerSide",
+          "required": false,
+          "default": "'end'",
+          "description": "Edge the panel is pinned to. Logical, so 'start'/'end' flip in `dir=\"rtl\"`."
+        },
+        {
+          "name": "size",
+          "type": "DrawerSize",
+          "required": false,
+          "default": "'md'",
+          "description": "Panel width (inline sides) or height (block sides)."
+        },
+        {
+          "name": "dismissable",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Allow Esc and backdrop click to close. Default true."
+        },
+        {
+          "name": "initialFocus",
+          "type": "RefObject<HTMLElement | null> | string",
+          "required": false,
+          "default": null,
+          "description": "Where to send focus when the drawer opens, overriding the native default."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Actions rendered in the footer."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Snackbar",
+      "slug": "snackbar",
+      "category": "Overlays & floating",
+      "description": "controlled primitive (transient feedback)",
+      "also": [],
+      "sourcePath": "src/components/Snackbar/Snackbar.tsx",
+      "import": "import { Snackbar } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "default": null,
+          "description": "Controls visibility."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "default": null,
+          "description": "Called with `false` when the snackbar requests to close (close button,\r\nauto-hide, or Esc). Named to match Popover/Dialog for a consistent API."
+        },
+        {
+          "name": "severity",
+          "type": "SnackbarSeverity",
+          "required": false,
+          "default": "'info'",
+          "description": "Semantic severity. Drives color, icon, and ARIA role."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "The message content."
+        },
+        {
+          "name": "action",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Optional action element, e.g. an \"Undo\" button."
+        },
+        {
+          "name": "autoHideDuration",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Auto-dismiss after N ms. 0/undefined disables auto-hide."
+        },
+        {
+          "name": "placement",
+          "type": "SnackbarPlacement",
+          "required": false,
+          "default": "'bottom-center'",
+          "description": "Fixed-position placement."
+        }
+      ]
+    },
+    {
+      "name": "Toaster",
+      "slug": "toaster",
+      "category": "Overlays & floating",
+      "description": "singleton FIFO toast region; `toast.promise()`; per-toast id/placement; multi-`<Toaster>` (#14/#18)",
+      "also": [],
+      "sourcePath": "src/components/Toaster/Toaster.tsx",
+      "import": "import { Toaster } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "placement",
+          "type": "ToasterPlacement",
+          "required": false,
+          "default": "'bottom-right'",
+          "description": "Where the stack anchors."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "default": "3",
+          "description": "Max simultaneously visible; overflow waits FIFO."
+        },
+        {
+          "name": "gap",
+          "type": "1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12",
+          "required": false,
+          "default": "3",
+          "description": "Space between stacked toasts (--ku-space scale)."
+        }
+      ]
+    },
+    {
+      "name": "Popover",
+      "slug": "popover",
+      "category": "Overlays & floating",
+      "description": "Popover API + CSS anchor positioning, JS fallback",
+      "also": [],
+      "sourcePath": "src/components/Popover/Popover.tsx",
+      "import": "import { Popover } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Controlled open state."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Initial open state when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "default": null,
+          "description": "Called with the requested next open state (trigger toggle, Esc, outside click)."
+        },
+        {
+          "name": "trigger",
+          "type": "ReactElement",
+          "required": true,
+          "default": null,
+          "description": "The anchor element. Rendered via `Slot`, which merges only the anchor wiring\r\n(anchor-name custom property + ref) onto your element.\r\n\r\nOpening/closing is the CALLER's responsibility: wire your own `onClick`\r\n(or hover/focus) on this element to drive `open`/`onOpenChange`. Likewise,\r\ntrigger ARIA (`aria-expanded`, `aria-haspopup`, `aria-controls`, or\r\n`aria-describedby`) lives on your element, not here — it is intentionally\r\nconsumer-specific because the correct `haspopup` value and the\r\ncontrols-vs-describedby choice differ per pattern (listbox/menu/tooltip).\r\nThe composing components (`Select`, `Menu`, `Tooltip`) each supply it."
+        },
+        {
+          "name": "placement",
+          "type": "PopoverPlacement",
+          "required": false,
+          "default": "'bottom'",
+          "description": "Anchored placement."
+        },
+        {
+          "name": "offset",
+          "type": "number",
+          "required": false,
+          "default": "8",
+          "description": "Gap (px) between anchor and panel."
+        },
+        {
+          "name": "dismissable",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Allow Esc / outside-click to request close. Default true."
+        },
+        {
+          "name": "role",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "ARIA role for the floating panel; consumers set 'listbox' | 'menu' | 'tooltip' | 'dialog'."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Popconfirm",
+      "slug": "popconfirm",
+      "category": "Overlays & floating",
+      "description": "inline confirmation popover (#43)",
+      "also": [],
+      "sourcePath": "src/components/Popconfirm/Popconfirm.tsx",
+      "import": "import { Popconfirm } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "trigger",
+          "type": "ReactElement",
+          "required": true,
+          "default": null,
+          "description": "The element that opens the confirmation. Popconfirm wires open/close + ARIA onto it."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Optional heading shown above the message."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "The confirmation message."
+        },
+        {
+          "name": "onConfirm",
+          "type": "() => void",
+          "required": true,
+          "default": null,
+          "description": "Called when the user presses confirm; the popover then closes."
+        },
+        {
+          "name": "onCancel",
+          "type": "() => void",
+          "required": false,
+          "default": null,
+          "description": "Called when the user presses cancel."
+        },
+        {
+          "name": "confirmLabel",
+          "type": "string",
+          "required": false,
+          "default": "'Confirm'",
+          "description": "Confirm button label."
+        },
+        {
+          "name": "cancelLabel",
+          "type": "string",
+          "required": false,
+          "default": "'Cancel'",
+          "description": "Cancel button label."
+        },
+        {
+          "name": "confirmTone",
+          "type": "ButtonTone",
+          "required": false,
+          "default": "'primary'",
+          "description": "Confirm button tone."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Controlled open state."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "default": null,
+          "description": "Called with the requested next open state (trigger toggle, Esc, outside click, confirm/cancel)."
+        },
+        {
+          "name": "placement",
+          "type": "PopoverPlacement",
+          "required": false,
+          "default": "'top'",
+          "description": "Anchored placement of the panel."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "HoverCard",
+      "slug": "hover-card",
+      "category": "Overlays & floating",
+      "description": "hover-triggered floating card (#32)",
+      "also": [],
+      "sourcePath": "src/components/HoverCard/HoverCard.tsx",
+      "import": "import { HoverCard } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "trigger",
+          "type": "ReactElement<HTMLAttributes<HTMLElement>>",
+          "required": true,
+          "default": null,
+          "description": "The single trigger element (hover/focus target)."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Arbitrary card content."
+        },
+        {
+          "name": "placement",
+          "type": "PopoverPlacement",
+          "required": false,
+          "default": "'bottom'",
+          "description": "Anchored placement."
+        },
+        {
+          "name": "openDelay",
+          "type": "number",
+          "required": false,
+          "default": "300",
+          "description": "Delay (ms) before opening on hover/focus."
+        },
+        {
+          "name": "closeDelay",
+          "type": "number",
+          "required": false,
+          "default": "150",
+          "description": "Delay (ms) before closing on leave/blur."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Extra class on the floating card panel."
+        }
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "slug": "tooltip",
+      "category": "Overlays & floating",
+      "description": "",
+      "also": [],
+      "sourcePath": "src/components/Tooltip/Tooltip.tsx",
+      "import": "import { Tooltip } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "content",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Tooltip text/content."
+        },
+        {
+          "name": "placement",
+          "type": "PopoverPlacement",
+          "required": false,
+          "default": "'top'",
+          "description": "Anchored placement."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "required": false,
+          "default": "200",
+          "description": "Open/close delay in ms."
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Extra class on the tooltip panel."
+        },
+        {
+          "name": "children",
+          "type": "ReactElement<HTMLAttributes<HTMLElement>>",
+          "required": true,
+          "default": null,
+          "description": "The single trigger element."
+        }
+      ]
+    },
+    {
+      "name": "Menu",
+      "slug": "menu",
+      "category": "Overlays & floating",
+      "description": "array-driven items with separators",
+      "also": [],
+      "sourcePath": "src/components/Menu/Menu.tsx",
+      "import": "import { Menu } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "trigger",
+          "type": "ReactElement",
+          "required": true,
+          "default": null,
+          "description": "The element that toggles the menu. Rendered via Popover's Slot; Menu wires open/close + ARIA onto it."
+        },
+        {
+          "name": "items",
+          "type": "MenuEntry[]",
+          "required": true,
+          "default": null,
+          "description": "Menu entries — actionable items and separators, in order."
+        },
+        {
+          "name": "placement",
+          "type": "PopoverPlacement",
+          "required": false,
+          "default": "'bottom-start'",
+          "description": "Anchored placement of the menu panel."
+        },
+        {
+          "name": "density",
+          "type": "Density",
+          "required": false,
+          "default": "comfortable); set\r\nexplicitly to set `data-density` on the menu list",
+          "description": "Menu density. `compact` tightens item padding via the `--ku-density-*` vars.\r\nOmit to inherit a `data-density` ancestor ("
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "CommandPalette",
+      "slug": "command-palette",
+      "category": "Overlays & floating",
+      "description": "searchable command launcher (#32)",
+      "also": [],
+      "sourcePath": "src/components/CommandPalette/CommandPalette.tsx",
+      "import": "import { CommandPalette } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true,
+          "default": null,
+          "description": "Whether the palette is shown modally."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": true,
+          "default": null,
+          "description": "Called with the requested next open state. Fires with `false` on Esc,\r\nbackdrop click, or after a command runs. Matches the Dialog overlay API."
+        },
+        {
+          "name": "commands",
+          "type": "CommandPaletteCommand[]",
+          "required": true,
+          "default": null,
+          "description": "The available commands."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "default": "'Type a command or search…'",
+          "description": "Search input placeholder."
+        },
+        {
+          "name": "noResultsText",
+          "type": "string",
+          "required": false,
+          "default": "'No results'",
+          "description": "Shown when no command matches."
+        },
+        {
+          "name": "'aria-label'",
+          "type": "string",
+          "required": false,
+          "default": "'Command menu'",
+          "description": "Accessible label for the search input."
+        }
+      ]
+    },
+    {
+      "name": "AppBar",
+      "slug": "app-bar",
+      "category": "Navigation",
+      "description": "top bar with `position`",
+      "also": [],
+      "sourcePath": "src/components/AppBar/AppBar.tsx",
+      "import": "import { AppBar } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "logo",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Brand mark shown at the start."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "App or page title shown next to the logo."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Right-aligned actions (buttons, avatar, menu)."
+        },
+        {
+          "name": "position",
+          "type": "AppBarPosition",
+          "required": false,
+          "default": "'static'",
+          "description": "Scroll behavior."
+        },
+        {
+          "name": "elevation",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Adds a bottom border + shadow."
+        }
+      ]
+    },
+    {
+      "name": "Sidebar",
+      "slug": "sidebar",
+      "category": "Navigation",
+      "description": "`items`-driven, `collapseBelow` matchMedia auto-collapse (#22)",
+      "also": [],
+      "sourcePath": "src/components/Sidebar/Sidebar.tsx",
+      "import": "import { Sidebar } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "items",
+          "type": "SidebarItem[]",
+          "required": true,
+          "default": null,
+          "description": "Flat list of navigation items."
+        },
+        {
+          "name": "collapsed",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Controlled collapsed state."
+        },
+        {
+          "name": "defaultCollapsed",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Initial collapsed state when uncontrolled."
+        },
+        {
+          "name": "onCollapsedChange",
+          "type": "(collapsed: boolean) => void",
+          "required": false,
+          "default": null,
+          "description": "Called with the next collapsed value when the toggle is pressed."
+        },
+        {
+          "name": "collapseBelow",
+          "type": "number | string",
+          "required": false,
+          "default": null,
+          "description": "Auto-collapse to the icon rail at or below this viewport width (number → px,\r\nor any media width like `'48rem'`), via `matchMedia`. Opt-in: omit to keep\r\nthe sidebar width fixed. The toggle still works to expand; resizing back\r\nbelow the breakpoint re-collapses. In controlled mode this drives\r\n`onCollapsedChange` so the parent stays the source of truth."
+        },
+        {
+          "name": "width",
+          "type": "number | string",
+          "required": false,
+          "default": "240",
+          "description": "Expanded width (number → px)."
+        },
+        {
+          "name": "header",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Content above the item list (e.g. brand)."
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Content pinned below the item list (e.g. user menu)."
+        }
+      ]
+    },
+    {
+      "name": "Breadcrumbs",
+      "slug": "breadcrumbs",
+      "category": "Navigation",
+      "description": "",
+      "also": [],
+      "sourcePath": "src/components/Breadcrumbs/Breadcrumbs.tsx",
+      "import": "import { Breadcrumbs } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "items",
+          "type": "BreadcrumbItem[]",
+          "required": true,
+          "default": null,
+          "description": "Ordered list of breadcrumb steps, first → last (current page)."
+        },
+        {
+          "name": "separator",
+          "type": "ReactNode",
+          "required": false,
+          "default": "a chevron icon",
+          "description": "Separator between items."
+        },
+        {
+          "name": "maxItems",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Collapse middle items when more than this many."
+        }
+      ]
+    },
+    {
+      "name": "Tabs",
+      "slug": "tabs",
+      "category": "Navigation",
+      "description": "`lazy` + `keepMounted` panel content (#31)",
+      "also": [],
+      "sourcePath": "src/components/Tabs/Tabs.tsx",
+      "import": "import { Tabs } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "items",
+          "type": "TabItem[]",
+          "required": true,
+          "default": null,
+          "description": "Tab definitions — each item produces one trigger + one panel pair."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Controlled selected tab id."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "required": false,
+          "default": "the first non-disabled item",
+          "description": "Initial selected tab id when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the newly selected tab id."
+        },
+        {
+          "name": "orientation",
+          "type": "'horizontal' | 'vertical'",
+          "required": false,
+          "default": "'horizontal'",
+          "description": "Layout/keyboard axis."
+        },
+        {
+          "name": "lazy",
+          "type": "boolean",
+          "required": false,
+          "default": "`false` (eager — every panel's content is rendered up front)",
+          "description": "Defer rendering an inactive panel's content until it is first activated."
+        },
+        {
+          "name": "keepMounted",
+          "type": "boolean",
+          "required": false,
+          "default": "`false`",
+          "description": "Once a panel has been shown, keep it mounted (hidden via `hidden`/CSS)\r\ninstead of unmounting it when it becomes inactive."
+        }
+      ]
+    },
+    {
+      "name": "Pagination",
+      "slug": "pagination",
+      "category": "Navigation",
+      "description": "(+ exported `getPaginationRange`)",
+      "also": [],
+      "sourcePath": "src/components/Pagination/Pagination.tsx",
+      "import": "import { Pagination } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "count",
+          "type": "number",
+          "required": true,
+          "default": null,
+          "description": "Total number of pages (>= 1)."
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "required": true,
+          "default": null,
+          "description": "Current page, 1-based."
+        },
+        {
+          "name": "onPageChange",
+          "type": "(page: number) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the requested page."
+        },
+        {
+          "name": "siblingCount",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Pages shown on each side of the current page. Default 1."
+        },
+        {
+          "name": "boundaryCount",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Pages shown at each end. Default 1."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disables all controls."
+        },
+        {
+          "name": "previousLabel",
+          "type": "string",
+          "required": false,
+          "default": "the i18n catalog's `pagination",
+          "description": "Accessible label for the Previous control. previous` ('Previous page')."
+        },
+        {
+          "name": "nextLabel",
+          "type": "string",
+          "required": false,
+          "default": "the i18n catalog's `pagination",
+          "description": "Accessible label for the Next control. next` ('Next page')."
+        },
+        {
+          "name": "getItemAriaLabel",
+          "type": "(type: PaginationItemType, page: number) => string",
+          "required": false,
+          "default": null,
+          "description": "Formats the accessible label for each control, for localization. When\r\nomitted, the i18n catalog defaults are used (`pagination.page`/`current`\r\nfor page buttons, `pagination.previous`/`next` for the arrows). For\r\n`'previous'`/`'next'`, `page` is the target page the control navigates to."
+        }
+      ]
+    },
+    {
+      "name": "Stepper",
+      "slug": "stepper",
+      "category": "Navigation",
+      "description": "vertical/horizontal step progress (#32)",
+      "also": [],
+      "sourcePath": "src/components/Stepper/Stepper.tsx",
+      "import": "import { Stepper } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "steps",
+          "type": "StepperStep[]",
+          "required": true,
+          "default": null,
+          "description": "The ordered set of steps to render."
+        },
+        {
+          "name": "activeStep",
+          "type": "number",
+          "required": true,
+          "default": null,
+          "description": "Zero-based index of the active step."
+        },
+        {
+          "name": "orientation",
+          "type": "StepperOrientation",
+          "required": false,
+          "default": "'horizontal'",
+          "description": "Layout direction."
+        },
+        {
+          "name": "onStepClick",
+          "type": "(index: number) => void",
+          "required": false,
+          "default": null,
+          "description": "When provided, completed and visited steps render as buttons that call this\r\nwith the step index. Upcoming (future) steps stay non-interactive."
+        }
+      ]
+    },
+    {
+      "name": "PageHeader",
+      "slug": "page-header",
+      "category": "Navigation",
+      "description": "title + breadcrumbs + actions, `BreadcrumbItem[]` accepted",
+      "also": ["BreadcrumbItem[]"],
+      "sourcePath": "src/components/PageHeader/PageHeader.tsx",
+      "import": "import { PageHeader, BreadcrumbItem[] } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Page or section title. Required."
+        },
+        {
+          "name": "subtitle",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Supporting line shown beneath the title."
+        },
+        {
+          "name": "breadcrumbs",
+          "type": "BreadcrumbItem[] | ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Breadcrumb trail. An array of `BreadcrumbItem` renders a single internal\r\n`<Breadcrumbs>` (one nav landmark). A `ReactNode` is rendered as-is — it\r\nowns its own landmark and is NOT wrapped in a `<nav>` (so passing your own\r\n`<Breadcrumbs>` won't create a nested duplicate nav)."
+        },
+        {
+          "name": "actions",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Right-aligned actions (buttons, menus)."
+        },
+        {
+          "name": "headingLevel",
+          "type": "HeadingLevel",
+          "required": false,
+          "default": "1",
+          "description": "Semantic heading level for the title."
+        }
+      ]
+    },
+    {
+      "name": "Link",
+      "slug": "link",
+      "category": "Navigation",
+      "description": "defaults to `underline=\"always\"` for in-text use",
+      "also": [],
+      "sourcePath": "src/components/Link/Link.tsx",
+      "import": "import { Link } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "tone",
+          "type": "LinkTone",
+          "required": false,
+          "default": "'primary'",
+          "description": "Semantic color."
+        },
+        {
+          "name": "underline",
+          "type": "LinkUnderline",
+          "required": false,
+          "default": "'always' so links embedded in body\r\ntext stay distinguishable without relying on color (WCAG 1",
+          "description": "When the underline shows. 4.1 /\r\nlink-in-text-block). Use 'hover'/'none' for standalone links (nav, lists)\r\nwhere surrounding prose isn't present."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render the consumer element (e.g. a router <Link>), merging props."
+        }
+      ]
+    },
+    {
+      "name": "Stack",
+      "slug": "stack",
+      "category": "Layout & primitives",
+      "description": "flex column, responsive `gap`/`align`/`justify` (#13)",
+      "also": [],
+      "sourcePath": "src/components/Stack/Stack.tsx",
+      "import": "import { Stack } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "gap",
+          "type": "ResponsiveValue<SpaceToken>",
+          "required": false,
+          "default": "4",
+          "description": "Space between children, from the --ku-space scale. Scalar or per-breakpoint."
+        },
+        {
+          "name": "align",
+          "type": "StackAlign",
+          "required": false,
+          "default": null,
+          "description": "align-items."
+        },
+        {
+          "name": "justify",
+          "type": "StackJustify",
+          "required": false,
+          "default": null,
+          "description": "justify-content."
+        },
+        {
+          "name": "wrap",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Allow children to wrap."
+        },
+        {
+          "name": "as",
+          "type": "ElementType",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render. Ignored when asChild."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render the single child instead of a <div>, merging props."
+        }
+      ]
+    },
+    {
+      "name": "Inline",
+      "slug": "inline",
+      "category": "Layout & primitives",
+      "description": "flex row, responsive props (#13)",
+      "also": [],
+      "sourcePath": "src/components/Inline/Inline.tsx",
+      "import": "import { Inline } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "gap",
+          "type": "ResponsiveValue<SpaceToken>",
+          "required": false,
+          "default": "4",
+          "description": "Space between children, from the --ku-space scale. Scalar or per-breakpoint."
+        },
+        {
+          "name": "align",
+          "type": "InlineAlign",
+          "required": false,
+          "default": null,
+          "description": "align-items."
+        },
+        {
+          "name": "justify",
+          "type": "InlineJustify",
+          "required": false,
+          "default": null,
+          "description": "justify-content."
+        },
+        {
+          "name": "wrap",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Allow children to wrap."
+        },
+        {
+          "name": "as",
+          "type": "ElementType",
+          "required": false,
+          "default": "'div'",
+          "description": "Element to render. Ignored when asChild."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render the single child instead of a <div>, merging props."
+        }
+      ]
+    },
+    {
+      "name": "Grid",
+      "slug": "grid",
+      "category": "Layout & primitives",
+      "description": "`columns` or `minItemWidth` auto-fit + track ratios (#19)",
+      "also": [],
+      "sourcePath": "src/components/Grid/Grid.tsx",
+      "import": "import { Grid } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "columns",
+          "type": "ResponsiveValue<GridColumns>",
+          "required": false,
+          "default": null,
+          "description": "Fixed track count: `repeat(columns, minmax(0, 1fr))`. Wins over `minItemWidth`.\r\nAccepts a number, an fr-ratio array (`[1.1, 1]` → `1.1fr 1fr`), or a responsive\r\nobject (`{ base, sm, md, lg, xl }`) whose values are either of those."
+        },
+        {
+          "name": "minItemWidth",
+          "type": "ResponsiveValue<string>",
+          "required": false,
+          "default": null,
+          "description": "Auto-fit tracks: `repeat(auto-fit, minmax(minItemWidth, 1fr))`. Accepts a single\r\nlength or a responsive object. Only used at a breakpoint where `columns` is unset."
+        },
+        {
+          "name": "gap",
+          "type": "ResponsiveValue<SpaceToken>",
+          "required": false,
+          "default": "4",
+          "description": "Space between cells. Accepts a token or a responsive object."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Container",
+      "slug": "container",
+      "category": "Layout & primitives",
+      "description": "max-width + padding, `py`",
+      "also": [],
+      "sourcePath": "src/components/Container/Container.tsx",
+      "import": "import { Container } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "size",
+          "type": "ContainerSize",
+          "required": false,
+          "default": "'lg'",
+          "description": "Max-width preset off the breakpoint scale."
+        },
+        {
+          "name": "padded",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Horizontal padding."
+        },
+        {
+          "name": "py",
+          "type": "SpaceToken",
+          "required": false,
+          "default": null,
+          "description": "Vertical padding (space token). Omitted by default (no vertical padding)."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Render the single child instead of a <div>, merging props."
+        }
+      ]
+    },
+    {
+      "name": "Box",
+      "slug": "box",
+      "category": "Layout & primitives",
+      "description": "curated layout escape hatch (`padding`/`grow`/`minWidth`/`as`)",
+      "also": [],
+      "sourcePath": "src/components/Box/Box.tsx",
+      "import": "import { Box } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "padding",
+          "type": "SpaceToken",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "px",
+          "type": "SpaceToken",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "py",
+          "type": "SpaceToken",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "grow",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "shrink",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "minWidth",
+          "type": "0 | string",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "width",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "as",
+          "type": "ElementType",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Accordion",
+      "slug": "accordion",
+      "category": "Layout & primitives",
+      "description": "`lazy` + `keepMounted`",
+      "also": [],
+      "sourcePath": "src/components/Accordion/Accordion.tsx",
+      "import": "import { Accordion } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "items",
+          "type": "AccordionItemData[]",
+          "required": true,
+          "default": null,
+          "description": "The sections to render."
+        },
+        {
+          "name": "value",
+          "type": "string | string[]",
+          "required": false,
+          "default": null,
+          "description": "Expanded item id(s). string for single-mode, string[] for multiple."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string | string[]",
+          "required": false,
+          "default": null,
+          "description": "Initial expanded id(s) when uncontrolled."
+        },
+        {
+          "name": "onChange",
+          "type": "(value: string | string[]) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the new expanded id (single) or ids (multiple)."
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Allow multiple panels open at once."
+        },
+        {
+          "name": "collapsible",
+          "type": "boolean",
+          "required": false,
+          "default": "true",
+          "description": "Single-mode: allow closing the open item."
+        },
+        {
+          "name": "lazy",
+          "type": "boolean",
+          "required": false,
+          "default": "`false` (eager — every panel's content is rendered up front)",
+          "description": "Defer rendering a collapsed panel's content until it is first expanded."
+        },
+        {
+          "name": "keepMounted",
+          "type": "boolean",
+          "required": false,
+          "default": "`false`",
+          "description": "Once a panel has been expanded, keep its content mounted (hidden via\r\n`hidden`/CSS) instead of unmounting it when collapsed again."
+        },
+        {
+          "name": "headingLevel",
+          "type": "HeadingLevel",
+          "required": false,
+          "default": "`3`",
+          "description": "Semantic heading level (`<h2>`–`<h6>`) wrapping each trigger, so the\r\naccordion aligns with the surrounding document outline."
+        }
+      ]
+    },
+    {
+      "name": "Collapsible",
+      "slug": "collapsible",
+      "category": "Layout & primitives",
+      "description": "single expandable region (#32)",
+      "also": [],
+      "sourcePath": "src/components/Collapsible/Collapsible.tsx",
+      "import": "import { Collapsible } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "trigger",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Content rendered inside the disclosure trigger button."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Content revealed when expanded."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Controlled open state."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Initial open state when uncontrolled."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "(open: boolean) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the new open state on toggle."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Disables the trigger; the panel cannot be toggled while disabled."
+        }
+      ]
+    },
+    {
+      "name": "ScrollArea",
+      "slug": "scroll-area",
+      "category": "Layout & primitives",
+      "description": "styled scroll viewport, horizontal/vertical (#32)",
+      "also": [],
+      "sourcePath": "src/components/ScrollArea/ScrollArea.tsx",
+      "import": "import { ScrollArea } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": true,
+          "default": null,
+          "description": "Content that may overflow the area."
+        },
+        {
+          "name": "maxHeight",
+          "type": "number | string",
+          "required": false,
+          "default": null,
+          "description": "Caps the area height; a number is treated as px."
+        },
+        {
+          "name": "orientation",
+          "type": "ScrollAreaOrientation",
+          "required": false,
+          "default": "'vertical'",
+          "description": "Scroll axis the area allows."
+        }
+      ]
+    },
+    {
+      "name": "Carousel",
+      "slug": "carousel",
+      "category": "Layout & primitives",
+      "description": "keyboard-paginated slide carousel (#32)",
+      "also": [],
+      "sourcePath": "src/components/Carousel/Carousel.tsx",
+      "import": "import { Carousel } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "items",
+          "type": "CarouselItem[]",
+          "required": true,
+          "default": null,
+          "description": "Slides, in display order."
+        },
+        {
+          "name": "defaultIndex",
+          "type": "number",
+          "required": false,
+          "default": "0",
+          "description": "Initial slide index when uncontrolled."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Controlled active slide index."
+        },
+        {
+          "name": "onIndexChange",
+          "type": "(index: number) => void",
+          "required": false,
+          "default": null,
+          "description": "Fires with the next active index on navigation."
+        },
+        {
+          "name": "loop",
+          "type": "boolean",
+          "required": false,
+          "default": "false",
+          "description": "Wrap around past the first/last slide."
+        },
+        {
+          "name": "'aria-label'",
+          "type": "string",
+          "required": false,
+          "default": null,
+          "description": "Accessible name for the carousel region."
+        },
+        {
+          "name": "prevLabel",
+          "type": "string",
+          "required": false,
+          "default": "the i18n catalog ('Previous slide')",
+          "description": "Label for the previous-slide control."
+        },
+        {
+          "name": "nextLabel",
+          "type": "string",
+          "required": false,
+          "default": "the i18n catalog ('Next slide')",
+          "description": "Label for the next-slide control."
+        }
+      ]
+    },
+    {
+      "name": "AspectRatio",
+      "slug": "aspect-ratio",
+      "category": "Layout & primitives",
+      "description": "fixed-ratio wrapper (#32)",
+      "also": [],
+      "sourcePath": "src/components/AspectRatio/AspectRatio.tsx",
+      "import": "import { AspectRatio } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "ratio",
+          "type": "number",
+          "required": false,
+          "default": "16 / 9",
+          "description": "Width-to-height ratio (e.g. 16 / 9)."
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "The content to constrain. Fills the box."
+        }
+      ]
+    },
+    {
+      "name": "Divider",
+      "slug": "divider",
+      "category": "Layout & primitives",
+      "description": "",
+      "also": [],
+      "sourcePath": "src/components/Divider/Divider.tsx",
+      "import": "import { Divider } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "orientation",
+          "type": "'horizontal' | 'vertical'",
+          "required": false,
+          "default": "'horizontal'",
+          "description": ""
+        },
+        {
+          "name": "children",
+          "type": "ReactNode",
+          "required": false,
+          "default": null,
+          "description": "Optional centered label (horizontal only). When present, the divider is decorative (role=\"presentation\")."
+        },
+        {
+          "name": "inset",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Indent the rule from the start edge (useful inside lists/menus)."
+        }
+      ]
+    },
+    {
+      "name": "Text",
+      "slug": "text",
+      "category": "Typography",
+      "description": "`size`/`weight`/`tone` (typographic axis: `default`/`secondary`) × `family`/`numeric`/`transform`/`leading`/`truncate`/`lineClamp`",
+      "also": [],
+      "sourcePath": "src/components/Text/Text.tsx",
+      "import": "import { Text } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "size",
+          "type": "TextSize",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "weight",
+          "type": "TextWeight",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "tone",
+          "type": "TextTone",
+          "required": false,
+          "default": null,
+          "description": "'default' → primary text color; 'secondary' → secondary."
+        },
+        {
+          "name": "leading",
+          "type": "TextLeading",
+          "required": false,
+          "default": null,
+          "description": "Line height: 'tight' | 'normal' | 'relaxed'."
+        },
+        {
+          "name": "family",
+          "type": "TextFamily",
+          "required": false,
+          "default": null,
+          "description": "Font family: 'base' (default) | 'mono'."
+        },
+        {
+          "name": "numeric",
+          "type": "TextNumeric",
+          "required": false,
+          "default": null,
+          "description": "'tabular' enables tabular-nums for aligned figures."
+        },
+        {
+          "name": "transform",
+          "type": "TextTransform",
+          "required": false,
+          "default": null,
+          "description": "Text casing transform. 'none' (default) emits no attribute."
+        },
+        {
+          "name": "truncate",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": "Single-line truncation with an ellipsis. Wins over `lineClamp` when both are set."
+        },
+        {
+          "name": "lineClamp",
+          "type": "number",
+          "required": false,
+          "default": null,
+          "description": "Clamp to N lines with an ellipsis. Ignored when `truncate` is set."
+        },
+        {
+          "name": "as",
+          "type": "ElementType",
+          "required": false,
+          "default": "'span'",
+          "description": "Element to render. Ignored when asChild."
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "required": false,
+          "default": null,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Heading",
+      "slug": "heading",
+      "category": "Typography",
+      "description": "semantic `level` decoupled from visual `size`",
+      "also": [],
+      "sourcePath": "src/components/Heading/Heading.tsx",
+      "import": "import { Heading } from '@koduhai/design-system';",
+      "props": [
+        {
+          "name": "level",
+          "type": "HeadingLevel",
+          "required": true,
+          "default": null,
+          "description": "Semantic level — renders <h1>..<h6>."
+        },
+        {
+          "name": "size",
+          "type": "HeadingSize",
+          "required": false,
+          "default": null,
+          "description": "Visual size; defaults from `level`."
+        },
+        {
+          "name": "weight",
+          "type": "HeadingWeight",
+          "required": false,
+          "default": null,
+          "description": ""
+        },
+        {
+          "name": "leading",
+          "type": "HeadingLeading",
+          "required": false,
+          "default": "`'tight'`",
+          "description": "Line height."
+        }
+      ]
+    }
+  ]
+}
